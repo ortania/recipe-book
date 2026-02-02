@@ -1,0 +1,19 @@
+.draggableWrapper {
+  transition: all 0.2s ease;
+  cursor: grab;
+}
+
+.draggableWrapper:active {
+  cursor: grabbing;
+}
+
+.dragging {
+  opacity: 0.5;
+  transform: scale(var(--basic-font));
+}
+
+.dragOver {
+  border: 2px dashed #2196f3;
+  border-radius: 12px;
+  background: rgba(33, 150, 243, 0.05);
+}

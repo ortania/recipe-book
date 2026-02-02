@@ -1,0 +1,200 @@
+import classes from "./recipe-card-new.module.css";
+import { useState, useEffect } from "react";
+import { FaHeart, FaRegHeart, FaEdit, FaTrash } from "react-icons/fa";
+import { HiOutlineTrash } from "react-icons/hi2";
+import { BsTrash3 } from "react-icons/bs";
+import { Button } from "../controls/button";
+import RecipeDetails from "./RecipeDetails";
+import { ConfirmDialog } from "../forms/confirm-dialog";
+import { formatDifficulty } from "./utils";
+
+const DEFAULT_IMAGE =
+  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='320'%3E%3Crect width='400' height='320' fill='%23e0e0e0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='%23666'%3ENo Image%3C/text%3E%3C/svg%3E";
+
+function RecipeInfo({
+  person,
+  groups,
+  onEdit,
+  onDelete,
+  isAdmin,
+  onToggleFavorite,
+}) {
+  const [isFavorite, setIsFavorite] = useState(person.isFavorite || false);
+  const [showDetails, setShowDetails] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+
+  const getImageSrc = () => {
+    if (
+      !person.image_src ||
+      typeof person.image_src !== "string" ||
+      person.image_src.trim() === ""
+    ) {
+      return DEFAULT_IMAGE;
+    }
+    return person.image_src;
+  };
+
+  // Update local state when person prop changes
+  useEffect(() => {
+    setIsFavorite(person.isFavorite || false);
+  }, [person]);
+
+  const personGroups =
+    person.categories && groups
+      ? person.categories
+          .map((groupId) => groups.find((g) => g.id === groupId))
+          .filter(Boolean)
+      : [];
+
+  const handleFavoriteClick = () => {
+    const newFavoriteStatus = !isFavorite;
+    setIsFavorite(newFavoriteStatus);
+    if (onToggleFavorite) {
+      onToggleFavorite(person.id, newFavoriteStatus);
+    }
+  };
+
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setShowDeleteConfirm(false);
+    try {
+      await onDelete(person.id);
+      setShowSuccessMessage(true);
+      setTimeout(() => {
+        setShowSuccessMessage(false);
+      }, 3000);
+    } catch (error) {
+      console.error("Delete failed:", error);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowDeleteConfirm(false);
+  };
+
+  const handleEdit = (e) => {
+    e.stopPropagation();
+    if (onEdit) {
+      onEdit();
+    }
+  };
+
+  return (
+    <>
+      {showDetails && (
+        <RecipeDetails
+          recipe={person}
+          onClose={() => setShowDetails(false)}
+          onEdit={onEdit}
+          onDelete={onDelete}
+          isAdmin={isAdmin}
+          groups={groups}
+        />
+      )}
+      <div className={classes.recipeCard} onClick={() => setShowDetails(true)}>
+        <div className={classes.imageContainer}>
+          <img
+            src={getImageSrc()}
+            alt={person.name}
+            className={classes.recipeImage}
+            onError={(e) => {
+              e.target.src = DEFAULT_IMAGE;
+            }}
+          />
+          <button
+            className={`${classes.favoriteButton} ${isFavorite ? classes.active : ""}`}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleFavoriteClick();
+            }}
+            aria-label={
+              isFavorite ? "Remove from favorites" : "Add to favorites"
+            }
+          >
+            {isFavorite ? "★" : "☆"}
+          </button>
+
+          {isAdmin && (
+            <div className={classes.actionButtons}>
+              <button
+                onClick={handleEdit}
+                className={classes.actionButton}
+                title="Edit recipe"
+              >
+                <FaEdit />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteClick();
+                }}
+                className={`${classes.actionButton} ${classes.danger}`}
+                title="Delete recipe"
+              >
+                {/* <BsTrash3  /> */}
+                <FaTrash />
+              </button>
+            </div>
+          )}
+        </div>
+
+        <div className={classes.recipeInfo}>
+          <h3 className={classes.recipeName}>{person.name}</h3>
+          {person.rating !== undefined && person.rating > 0 && (
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "0.2rem",
+                margin: "0.3rem 0",
+              }}
+            >
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  style={{
+                    color: star <= person.rating ? "#ffc107" : "#e0e0e0",
+                    fontSize: "1.2rem",
+                  }}
+                >
+                  ★
+                </span>
+              ))}
+            </div>
+          )}
+          <div className={classes.recipeMetadata}>
+            <p className={classes.recipeTime}>{person.prepTime || "20 min"}</p>
+            {person.difficulty && (
+              <span className={classes.recipeDifficulty}>
+                • {formatDifficulty(person.difficulty)}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {showDeleteConfirm && (
+          <ConfirmDialog
+            title="Delete Recipe"
+            message={`Are you sure you want to delete "${person.name}"? This action cannot be undone.`}
+            onConfirm={handleConfirmDelete}
+            onCancel={handleCancelDelete}
+            confirmText="Yes, Delete"
+            cancelText="Cancel"
+          />
+        )}
+
+        {showSuccessMessage && (
+          <div className={classes.successNotification}>
+            ✓ Recipe deleted successfully
+          </div>
+        )}
+      </div>
+    </>
+  );
+}
+
+export { RecipeInfo };

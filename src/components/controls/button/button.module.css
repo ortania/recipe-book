@@ -1,0 +1,41 @@
+/* Button variants */
+.primary {
+  background-color: #2196f3;
+  color: white;
+  border: none;
+}
+
+.primary:hover {
+  background-color: #1976d2;
+}
+
+.danger {
+  background-color: #f44336;
+  color: white;
+  border: none;
+}
+
+.danger:hover {
+  background-color: #d32f2f;
+}
+
+.success {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+}
+
+.success:hover {
+  background-color: #388e3c;
+}
+
+.favorite {
+  background-color: #fff;
+  border: 1px solid #ffd700 !important;
+  color: #333;
+}
+
+.favorite:hover {
+  background-color: #fff8e0;
+  border-color: #ffcc00;
+}

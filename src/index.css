@@ -1,0 +1,172 @@
+@import url("https://fonts.googleapis.com/css2?family=Paytone+One&family=Raleway:wght@400;700&display=swap");
+
+/* #region variables */
+/*
+=============== 
+Variables
+===============
+*/
+
+:root {
+  font-size: 62.5%;
+  /* dark shades of primary color*/
+  --clr-blue-1: hsl(205, 86%, 17%);
+  --clr-blue-2: hsl(205, 77%, 27%);
+  /* --clr-blue-3: hsl(205, 72%, 37%); */
+  --clr-blue-4: hsl(205, 63%, 48%);
+  --clr-blue-3: #0066cc;
+  /* primary/main color */
+  --clr-blue-5: hsl(205, 78%, 60%);
+  /* lighter shades of primary color */
+  --clr-blue-6: hsl(205, 89%, 70%);
+  --clr-blue-7: hsl(205, 90%, 76%);
+  --clr-blue-8: hsl(205, 86%, 81%);
+  --clr-blue-9: hsl(205, 90%, 88%);
+  --clr-blue-10: hsl(205, 100%, 96%);
+
+  /* --clr-blue-11: #f5f5f5; */
+
+  --clr-white: #fff;
+  --clr-black: #222;
+  --clr-red: hsl(0, 100%, 50%);
+  --clr-red-dark: hsl(0, 67%, 44%);
+  --clr-red-light: hsl(360, 71%, 66%);
+
+  --clr-grey-special: #eae6eb;
+
+  --clr-grey-1: hsl(209, 61%, 16%);
+  --clr-grey-2: hsl(211, 39%, 23%);
+  --clr-grey-3: hsl(209, 34%, 30%);
+  --clr-grey-4: hsl(209, 28%, 39%);
+  --clr-grey-5: hsl(210, 22%, 49%);
+  --clr-grey-6: hsl(209, 23%, 60%);
+  --clr-grey-7: hsl(211, 27%, 70%);
+  --clr-grey-8: hsl(210, 31%, 80%);
+  --clr-grey-9: hsl(212, 33%, 89%);
+  --clr-grey-10: hsl(210, 36%, 96%);
+
+  --light-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  --dark-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  --wide-shadow: 5px 0px 15px rgba(0, 0, 0, 0.2);
+
+  --clr-heading: var(--clr-blue-3);
+  --clr-footer: var(--clr-blue-3);
+
+  --transition: all 0.4s linear;
+  --spacing: 0.1rem;
+  --radius: 0.25rem;
+
+  --max-width: 900px;
+
+  --very-large-font: 1.8rem;
+  --large-font: 1.6rem;
+  --basic-font: 1.4rem;
+  --small-font: 1.2rem;
+  --very-small-font: 1rem;
+}
+
+/* #endregion variables */
+
+/* Hide hamburger menu when modal is open */
+body.modal-open button[class*="hamburger"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* #region global */
+/*
+=============== 
+Global Styles
+===============
+*/
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+/* html {
+  font-size: 100%; 
+} */
+
+body {
+  min-height: 100vh;
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu,
+    Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-family: "Raleway", sans-serif;
+
+  background-color: var(--clr-grey-10);
+  color: var(--clr-black);
+  line-height: 1.5;
+  font-size: 1.2rem;
+}
+ul {
+  list-style-type: none;
+}
+a {
+  text-decoration: none;
+}
+h1,
+h2,
+h3,
+h4 {
+  color: var(--clr-heading);
+  letter-spacing: var(--spacing);
+  text-transform: capitalize;
+}
+h1 {
+  font-family: "Paytone One", sans-serif;
+  font-size: 3rem;
+  text-align: center;
+}
+
+h2 {
+  font-size: 2.5rem;
+}
+
+h3 {
+  font-size: 2rem;
+}
+
+p {
+  margin-bottom: 1.3rem;
+  color: var(--clr-black);
+  font-size: 1.8rem;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  height: auto;
+}
+
+@media (min-width: 80rem) {
+  h1 {
+    font-size: 4rem;
+  }
+  h2 {
+    font-size: 3rem;
+  }
+  h3 {
+    font-size: 2rem;
+  }
+
+  body {
+    font-size: var(--small-font);
+  }
+
+  p {
+    font-size: 1.8rem;
+  }
+}
+
+/* #endregion global */
+
+/* Always show scrollbar to prevent layout shifts */
+html {
+  overflow-y: scroll;
+}

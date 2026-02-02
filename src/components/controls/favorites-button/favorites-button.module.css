@@ -1,0 +1,10 @@
+.favoritesButton {
+  background-color: #fff;
+  border: 1px solid #ffd700;
+  color: #333;
+}
+
+.favoritesButton:hover {
+  background-color: #fff8e0;
+  border-color: #ffcc00;
+}

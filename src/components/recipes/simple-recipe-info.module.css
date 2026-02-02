@@ -1,0 +1,75 @@
+.simpleCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  margin-bottom: 0.5rem;
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  max-width: 1300px;
+}
+
+.personInfo {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  overflow: hidden;
+  flex: 1;
+  min-width: 0; /* Allows flex items to shrink below content size */
+}
+
+.name {
+  font-weight: 500;
+  min-width: 120px;
+  max-width: 200px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+}
+
+.phone {
+  color: #666;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  flex-shrink: 1;
+  flex: 1;
+  min-width: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+/* Maintain single line at 800px */
+@media (min-width: 768px) and (max-width: 1000px) {
+  .name {
+    max-width: 150px;
+  }
+
+  .actions button {
+    padding: 0.3em 0.6em;
+    font-size: var(--very-small-font);
+  }
+}
+
+/* Only switch to multi-line layout below 767px */
+@media (max-width: 767px) {
+  .simpleCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .personInfo {
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+
+  .actions {
+    align-self: flex-end;
+  }
+}

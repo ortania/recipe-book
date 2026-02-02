@@ -1,0 +1,204 @@
+.contactCard {
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow:
+    0 2px 4px rgba(0, 0, 0, 0.04),
+    0 8px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid #d1d1d1;
+  transition:
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    border-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.contactCard::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 50%, #f06595 100%);
+  border-radius: 16px 16px 0 0;
+}
+
+.contactCard:hover {
+  transform: translateY(-6px);
+  box-shadow:
+    0 4px 8px rgba(0, 0, 0, 0.08),
+    0 16px 32px rgba(0, 0, 0, 0.12);
+  border-color: #ff6b6b;
+}
+
+.favoriteContainer {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+}
+
+.contactCard img {
+  width: 120px;
+  height: 100px;
+  border-radius: 12px;
+  object-fit: cover;
+  border: 3px solid #f8f9fa;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition:
+    transform 0.3s ease,
+    box-shadow 0.3s ease;
+}
+
+.contactCard:hover img {
+  transform: scale(1.08);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+}
+
+.contactCard p {
+  margin: 0;
+  text-align: center;
+}
+
+.contactCard p:first-of-type {
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0.5rem 0;
+}
+
+.contactCard p:nth-of-type(2),
+.contactCard p:nth-of-type(3) {
+  font-size: 1.2rem;
+  color: #666;
+}
+
+.groupTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin: 0.4rem 0;
+}
+
+.groupTag {
+  padding: 0.4em 0.9em;
+  border-radius: 20px;
+  font-size: var(--very-small-font);
+  font-weight: 600;
+  border: 2px solid;
+  display: inline-block;
+  transition: all 0.2s ease;
+}
+
+.groupTag:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
+}
+
+.groupTag.green {
+  background-color: #c6efce;
+  border-color: #3e8e41;
+  color: #3e8e41;
+}
+
+.groupTag.red {
+  background-color: #ffcdd2;
+  border-color: #b71c1c;
+  color: #b71c1c;
+}
+
+.groupTag.blue {
+  background-color: #add8e6;
+  border-color: #2196f3;
+  color: #2196f3;
+}
+
+.recipeInfo {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 0.75rem 1.25rem;
+  background: #f8f9fa;
+  border-radius: 10px;
+  margin: 0.5rem 0;
+  border: 1px solid #e9ecef;
+}
+
+.infoItem {
+  font-size: var(--very-small-font);
+  font-weight: 600;
+  color: #4a5568;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  white-space: nowrap;
+}
+
+.recipeName {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #2d3748;
+  margin: 0.5rem 0 0.25rem;
+  text-align: center;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+}
+
+.cardContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 0.35rem;
+}
+
+.cardActions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  width: 100%;
+  justify-content: center;
+}
+
+/* Large screens - two column layout */
+@media (min-width: 768px) {
+  .contactCard {
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .contactCard img {
+    flex-shrink: 0;
+    align-self: center;
+  }
+
+  .cardContent {
+    flex: 1;
+    align-items: center;
+  }
+
+  .recipeName {
+    text-align: center;
+  }
+
+  .recipeInfo {
+    justify-content: center;
+  }
+
+  .groupTags {
+    justify-content: center;
+  }
+
+  .cardActions {
+    justify-content: center;
+  }
+}

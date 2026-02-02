@@ -1,0 +1,565 @@
+/* Recipe Details - Cooking Mode */
+
+.recipeCardCooking {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  padding-top: 1rem;
+  width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  position: relative;
+}
+
+.volumeNotification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+  color: white;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  font-size: var(--large-font);
+  font-weight: 600;
+  text-align: center;
+  z-index: 10000;
+  animation: fadeInOut 5s ease-in-out;
+  max-width: 90%;
+}
+
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  90% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
+.headerButtonsCooking {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  gap: 4rem;
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+  z-index: 2000;
+}
+
+.voiceRecognitionIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: 25px;
+  color: white;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.voiceRecognitionIndicator span {
+  font-size: var(--small-font);
+}
+
+.closeButton {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: #333;
+  transition: all 0.2s ease;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+}
+
+.closeButton:hover {
+  background: white;
+  transform: scale(1.1);
+}
+
+.recipeContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 1.5rem;
+  max-width: 900px;
+  width: 100%;
+  overflow: visible;
+  box-sizing: border-box;
+  margin: 0 auto;
+  gap: 2rem;
+}
+
+.servingSelector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  background: #ffffff;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+  max-width: 900px;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.servingControls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.servingControls span {
+  font-size: var(--small-font);
+  text-align: center;
+  min-width: 50px;
+  font-weight: 700;
+}
+
+.servingButtonCooking {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  border: 1px solid #ddd;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: var(--very-large-font);
+  transition: all 0.2s ease;
+}
+
+.servingButtonCooking span {
+  transform: scale(1.2);
+}
+
+.servingButtonCooking:hover {
+  background: #f5f5f5;
+  border-color: #999;
+}
+
+.servingLabelCooking {
+  font-size: var(--basic-font);
+  font-weight: 700;
+  color: #ff6b35;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  border-bottom: 2px solid #f0f0f0;
+  margin-bottom: 1.5rem;
+  max-width: 900px;
+  width: 100%;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: var(--small-font);
+  font-weight: 600;
+  color: #999;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: -2px;
+}
+
+.tab:hover {
+  color: #666;
+}
+
+.activeTab {
+  color: #333;
+  border-bottom-color: #333;
+}
+
+.tabContent {
+  cursor: pointer;
+  max-width: 900px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.progressSection {
+  text-align: left;
+  padding: 1.5rem 0;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.stepInfo {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #64748b;
+}
+
+.progressBadge {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #3b82f6;
+  background: #dbeafe;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+}
+
+.sliderContainer {
+  width: 100%;
+  margin-bottom: 1.5rem;
+}
+
+.progressSlider {
+  width: 100%;
+  height: 8px;
+  border-radius: 10px;
+  outline: none;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.progressSlider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #10b981;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+  transition: all 0.2s;
+}
+
+.progressSlider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.6);
+}
+
+.progressSlider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #10b981;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
+  transition: all 0.2s;
+}
+
+.progressSlider::-moz-range-thumb:hover {
+  transform: scale(1.2);
+  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.6);
+}
+
+.navigationButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: stretch;
+  margin-bottom: 1.5rem;
+}
+
+.navButton,
+.restartButton,
+.nextButton {
+  flex: 1;
+  padding: 1rem 2rem;
+  font-size: 1rem;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  font-weight: 700;
+  transition: all 0.2s;
+}
+
+.navButton {
+  border: 2px solid #e5e7eb;
+}
+
+.restartButton {
+  background-color: #f59e0b;
+  color: white;
+  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+}
+
+.nextButton {
+  background-color: #10b981;
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.instructions {
+  font-size: var(--basic-font);
+  color: #9ca3af;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+/* .instructions span {
+  font-size: var(--basic-font);
+} */
+
+.timerSection {
+  margin-top: 0.5rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
+  border-radius: 20px;
+  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+  border: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.timerContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+}
+
+.timerTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: white;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.timerTitle span {
+  font-size: 1.3rem;
+}
+
+.timerControls {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.timerButton {
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  font-size: 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.timerDisplay {
+  background: white;
+  border-radius: 12px;
+  padding: 0.75rem 1.5rem;
+  min-width: 80px;
+  text-align: center;
+}
+
+.timerInput {
+  border: none;
+  background: transparent;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #6366f1;
+  text-align: center;
+  width: 100%;
+  outline: none;
+  font-family: "SF Mono", monospace;
+}
+
+.startButton {
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  background: white;
+  color: #6366f1;
+  border: none;
+  border-radius: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.completionSection {
+  text-align: center;
+  padding: 3rem 1rem;
+  animation: fadeIn 0.5s ease-in;
+}
+
+.completionIcon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+
+.completionTitle {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #4caf50;
+  margin-bottom: 1rem;
+}
+
+.completionMessage {
+  font-size: 1.2rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.completionButton {
+  padding: 1rem 2rem;
+  font-size: 1.1rem;
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.ingredientsList,
+.instructionsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.ingredientItem,
+.instructionItem {
+  opacity: 1;
+  font-size: 2rem;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  background-color: #fef3c7;
+  padding: 2rem 2.5rem;
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  line-height: 1.8;
+  min-height: 120px;
+  width: 100%;
+  max-width: 100%;
+  border: 2px solid #fde68a;
+  color: #78350f;
+  text-align: center;
+}
+
+.ingredientText,
+.instructionText {
+  font-size: 3rem;
+  text-align: center;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+@media (max-width: 768px) {
+  .recipeCardCooking {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100vw;
+    height: 100vh;
+    max-width: 100%;
+    margin: 0;
+    padding-top: 5rem;
+    z-index: 10005;
+    background: var(--clr-grey-10);
+    overflow-y: auto;
+  }
+
+  .headerButtonsCooking {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background: var(--clr-grey-10);
+    z-index: 10006;
+    padding: 1rem;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .recipeContent {
+    padding: 1rem;
+  }
+
+  .ingredientItem,
+  .instructionItem {
+    font-size: 1.5rem;
+    padding: 1.5rem;
+    min-height: 80px;
+  }
+
+  .ingredientText,
+  .instructionText {
+    font-size: 1.8rem;
+  }
+}

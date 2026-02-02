@@ -1,0 +1,35 @@
+.dialog {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  width: 90%;
+  max-width: 600px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+  text-align: center;
+}
+
+.dialog h3 {
+  margin-top: 0;
+  color: var(--clr-blue-3);
+  font-size: 1.5rem;
+}
+
+.dialog p {
+  margin-bottom: 1.5rem;
+  font-size: 1.4rem;
+  line-height: 1.5;
+}
+
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .dialog {
+    width: 95%;
+    padding: 1.5rem;
+  }
+}

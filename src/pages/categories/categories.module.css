@@ -1,0 +1,241 @@
+.groupsContainer {
+  display: flex;
+  padding: 1rem 3rem;
+  /* background: linear-gradient(
+    135deg,
+    rgba(33, 150, 243, 0.05),
+    rgba(33, 150, 243, 0.1)
+  ); */
+  position: relative;
+  min-height: 100vh;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.groupContent {
+  flex: 2.5;
+  padding: 0 0 0 2rem;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* margin-bottom: 1rem; */
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.headerContainer p {
+  color: inherit;
+  font-weight: 600;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.iconButton {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: none;
+  background: white;
+  color: #333;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.iconButton:hover {
+  background: #f1f3f4;
+  transform: scale(1.05);
+}
+
+.iconButton:active {
+  transform: scale(var(--basic-font));
+}
+
+.addRecipeBtn {
+  font-size: var(--basic-font);
+  font-weight: 600;
+  padding: 0.75rem 1.25rem;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(76, 175, 80, 0.2);
+}
+
+.addRecipeBtn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.disabledButton {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.groupDescription {
+  color: var(--clr-grey-3);
+  font-weight: normal;
+  font-size: 1.4rem;
+}
+
+.groupCard {
+  background: white;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s;
+  cursor: pointer;
+}
+
+.groupCard:hover {
+  transform: translateY(-2px);
+}
+
+.groupHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.groupName {
+  font-weight: 600;
+  color: var(--clr-blue-3);
+}
+
+.groupActions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.deleteButton:hover {
+  color: #f44336;
+}
+
+.editButton:hover {
+  color: #2196f3;
+}
+
+.contactCount {
+  background-color: #e9ecef;
+  padding: 0.2rem 0.8rem;
+  border-radius: 12px;
+  font-size: var(--very-small-font);
+  color: #666;
+}
+
+.groups {
+  display: flex;
+  height: 100%;
+}
+
+@media (max-width: 700px) {
+  .groupsContainer {
+    flex-direction: column;
+    padding: 1rem;
+    min-height: 100vh;
+    overflow: hidden;
+  }
+
+  .groupContent {
+    padding: 0rem;
+  }
+
+  .actions {
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+
+  .actions button {
+    width: 3rem;
+    height: 3rem;
+  }
+}
+
+.searchBarContainer {
+  margin-bottom: 1.5rem;
+  width: 100%;
+}
+
+.searchBar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  background: #f5f5f5;
+  padding: 0.5rem 0.75rem;
+  border-radius: 8px;
+}
+
+.searchInput {
+  flex: 1;
+  border: 1px solid #e0e0e0;
+  background: white;
+  font-size: var(--very-small-font);
+  outline: none;
+  color: #333;
+  padding: 0 0.75rem;
+  border-radius: 6px;
+  height: 36px;
+  box-sizing: border-box;
+  line-height: 36px;
+}
+
+.searchInput::placeholder {
+  color: #999;
+}
+
+.searchInput:focus {
+  border-color: #ccc;
+}
+
+.filterButton,
+.sortingButton {
+  padding: 0 0.75rem;
+  background: transparent;
+  border: none;
+  font-size: var(--very-small-font);
+  font-weight: 400;
+  color: #333;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  height: 36px;
+  box-sizing: border-box;
+}
+
+.filterButton svg,
+.sortingButton svg {
+  font-size: 0.8rem;
+}
+
+.filterButton:hover,
+.sortingButton:hover {
+  color: #000;
+}

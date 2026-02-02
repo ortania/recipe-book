@@ -1,0 +1,205 @@
+/* Recipe Card - Clean Design with Info Below Image */
+
+.recipeCard {
+  position: relative;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+}
+
+.recipeCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.imageContainer {
+  width: 100%;
+  padding-bottom: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.recipeImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.recipeInfo {
+  padding: 0.75rem;
+}
+
+.recipeName {
+  font-size: var(--basic-font);
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+}
+
+.recipeMetadata {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.recipeTime {
+  font-size: var(--very-small-font);
+  color: #999;
+  margin: 0;
+}
+
+.recipeDifficulty {
+  font-size: var(--very-small-font);
+  color: #666;
+  font-weight: 500;
+}
+
+.favoriteButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 23px;
+  height: 23px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.2s ease;
+  z-index: 2;
+}
+
+.favoriteButton:hover {
+  background: white;
+  transform: scale(1.1);
+}
+
+.favoriteButton.active {
+  background: #ff6b6b;
+  color: white;
+}
+
+.actionButtons {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.recipeCard:hover .actionButtons {
+  opacity: 1;
+}
+
+.actionButton {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #333;
+}
+
+.actionButton:hover {
+  background: white;
+  transform: scale(1.05);
+}
+
+.actionButton.danger {
+  background: rgba(244, 67, 54, 0.9);
+  color: white;
+}
+
+.actionButton.danger:hover {
+  background: #f44336;
+  transform: scale(1.05);
+}
+
+.reorderActions {
+  position: absolute;
+  bottom: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  gap: 0.25rem;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 6px;
+  padding: 0.25rem;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+.recipeCard:hover .reorderActions {
+  opacity: 1;
+}
+
+.reorderButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--very-small-font);
+  padding: 0.4rem;
+  transition: all 0.2s ease;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+}
+
+.reorderButton:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: #333;
+}
+
+.successNotification {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+  color: white;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  font-size: var(--basic-font);
+  font-weight: 500;
+  z-index: 10000;
+  animation:
+    slideInRight 0.3s ease,
+    fadeOut 0.3s ease 2.7s;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}

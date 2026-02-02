@@ -1,0 +1,15 @@
+.title {
+  font-size: 1.6rem;
+  color: var(--clr-blue-3);
+  font-weight: 600;
+}
+
+
+
+.actions {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 10;
+}
+

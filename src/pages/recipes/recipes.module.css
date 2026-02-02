@@ -1,0 +1,137 @@
+.contactsContainer {
+  display: flex;
+  flex-direction: column;
+  padding: 3rem 5rem;
+  background: linear-gradient(
+    135deg,
+    rgba(33, 150, 243, 0.05),
+    rgba(33, 150, 243, 0.1)
+  );
+  position: relative;
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+.headerButtons {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+.actions {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  z-index: 10;
+}
+
+.confirmOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.confirmDialog {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  max-width: 500px;
+  width: 90%;
+}
+
+.confirmDialog h3 {
+  margin-top: 0;
+  color: #d32f2f;
+  font-size: 1.5rem;
+}
+
+.confirmDialog p {
+  margin-bottom: 1.5rem;
+  font-size: var(--small-font);
+  line-height: 1.5;
+}
+
+.confirmButtons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+}
+
+.cancelButton {
+  padding: 0.5em 1em;
+  background-color: #f5f5f5;
+  color: #333;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: var(--small-font);
+  transition: all 0.2s ease;
+}
+
+.confirmButton {
+  padding: 0.5em 1em;
+  background-color: #f44336;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: var(--small-font);
+  transition: all 0.2s ease;
+}
+
+.cancelButton:hover {
+  background-color: #e0e0e0;
+}
+
+.confirmButton:hover {
+  background-color: #d32f2f;
+}
+
+@media (max-width: 700px) {
+  .contactsContainer {
+    padding: 1rem;
+
+  }
+
+  .actions {
+    bottom: 1.5rem;
+    right: 1.5rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .headerButtons {
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.5rem;
+  }
+
+  .confirmDialog {
+    padding: 1.5rem;
+    width: 95%;
+  }
+
+  .confirmButtons {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .cancelButton,
+  .confirmButton {
+    width: 100%;
+  }
+}
