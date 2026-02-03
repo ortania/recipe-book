@@ -214,26 +214,28 @@ function RecipeDetailsCookingMode({
       </div>
 
       <div className={classes.recipeContent}>
-        <div className={classes.servingSelector}>
-          <div className={classes.servingControls}>
-            <button
-              className={classes.servingButtonCooking}
-              onClick={() => setServings(servings + 1)}
-            >
-              <span>+</span>
-            </button>
-            <span>{servings}</span>
-            <button
-              className={classes.servingButtonCooking}
-              onClick={() => setServings(Math.max(1, servings - 1))}
-            >
-              <span>-</span>
-            </button>
+        {recipe.servings && (
+          <div className={classes.servingSelector}>
+            <div className={classes.servingControls}>
+              <button
+                className={classes.servingButtonCooking}
+                onClick={() => setServings(servings + 1)}
+              >
+                <span>+</span>
+              </button>
+              <span>{servings}</span>
+              <button
+                className={classes.servingButtonCooking}
+                onClick={() => setServings(Math.max(1, servings - 1))}
+              >
+                <span>-</span>
+              </button>
+            </div>
+            <span className={classes.servingLabelCooking}>
+              Serving {servings}
+            </span>
           </div>
-          <span className={classes.servingLabelCooking}>
-            Serving {servings}
-          </span>
-        </div>
+        )}
 
         <div className={classes.tabs}>
           <button

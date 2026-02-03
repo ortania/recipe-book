@@ -1,5 +1,5 @@
 export function formatDifficulty(difficulty) {
-  if (!difficulty) return "";
+  if (!difficulty || difficulty === "Unknown") return "";
 
   const difficultyMap = {
     VeryEasy: "Very Easy",
@@ -33,7 +33,13 @@ export function search(persons, searchTerm, sortField, sortDirection) {
         const bPrepTime = parseInt(b.prepTime) || 0;
         comparison = aPrepTime - bPrepTime;
       } else if (sortField === "difficulty") {
-        const difficultyOrder = { VeryEasy: 0, Easy: 1, Medium: 2, Hard: 3 };
+        const difficultyOrder = {
+          Unknown: 0,
+          VeryEasy: 1,
+          Easy: 2,
+          Medium: 3,
+          Hard: 4,
+        };
         const aDifficulty = difficultyOrder[a.difficulty] || 0;
         const bDifficulty = difficultyOrder[b.difficulty] || 0;
         comparison = aDifficulty - bDifficulty;

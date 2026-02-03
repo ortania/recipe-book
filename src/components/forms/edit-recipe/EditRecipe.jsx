@@ -437,6 +437,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             onChange={handleChange}
             className={classes.difficultySelect}
           >
+            <option value="Unknown">Unknown</option>
             <option value="VeryEasy">Very Easy</option>
             <option value="Easy">Easy</option>
             <option value="Medium">Medium</option>

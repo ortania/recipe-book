@@ -167,10 +167,13 @@ function RecipeInfo({
             </div>
           )}
           <div className={classes.recipeMetadata}>
-            <p className={classes.recipeTime}>{person.prepTime || "20 min"}</p>
+            {person.prepTime && (
+              <p className={classes.recipeTime}>{person.prepTime}</p>
+            )}
             {person.difficulty && (
               <span className={classes.recipeDifficulty}>
-                • {formatDifficulty(person.difficulty)}
+                {person.prepTime && "• "}
+                {formatDifficulty(person.difficulty)}
               </span>
             )}
           </div>

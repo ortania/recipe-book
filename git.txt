@@ -5,5 +5,26 @@ Add changes to git from VSCode:
 ------------------------------
 
 git add .
-git commit -m "תיאור השינויים"
+git commit -m "describe changes separated by -
 git push
+
+
+
+deployment
+--------------------------------
+
+npm run build
+firebase deploy --only hosting
+
+
+firebase
+--------------------------------
+
+https://console.firebase.google.com/u/0/project/recipe-book-1234-7777/firestore/databases/-default-/data/~2Fcategories
+
+OpenAI
+--------------------------------
+
+https://platform.openai.com/api-keys
+
+https://platform.openai.com/settings/organization/billing/overview

@@ -215,24 +215,26 @@ function RecipeDetailsFull({
           </div>
         )}
 
-        <div className={classes.servingSelector}>
-          <div className={classes.servingControls}>
-            <button
-              className={classes.servingButton}
-              onClick={() => setServings(servings + 1)}
-            >
-              +
-            </button>
-            <span>{servings}</span>
-            <button
-              className={classes.servingButton}
-              onClick={() => setServings(Math.max(1, servings - 1))}
-            >
-              -
-            </button>
+        {recipe.servings && (
+          <div className={classes.servingSelector}>
+            <div className={classes.servingControls}>
+              <button
+                className={classes.servingButton}
+                onClick={() => setServings(servings + 1)}
+              >
+                +
+              </button>
+              <span>{servings}</span>
+              <button
+                className={classes.servingButton}
+                onClick={() => setServings(Math.max(1, servings - 1))}
+              >
+                -
+              </button>
+            </div>
+            <span className={classes.servingLabel}>Serving {servings}</span>
           </div>
-          <span className={classes.servingLabel}>Serving {servings}</span>
-        </div>
+        )}
 
         <div className={classes.tabs}>
           <button
