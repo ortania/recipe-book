@@ -8,7 +8,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 1000;
+  z-index: 10100;
 }
 
 .modalContent {
@@ -24,12 +24,13 @@
 
 @media screen and (max-width: 768px) {
   .modalContent {
-    width: 95%;
-    max-width: 95%;
+    width: 90%;
+    max-width: 90%;
     height: auto;
     max-height: 85vh;
     border-radius: 12px;
     padding: 1.5rem;
+    display: flex;
   }
 }
 

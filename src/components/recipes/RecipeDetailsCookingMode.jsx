@@ -21,13 +21,14 @@ function RecipeDetailsCookingMode({
   const [showCompletion, setShowCompletion] = useState(false);
   const [customTimerInput, setCustomTimerInput] = useState("");
   const [isTimerRunning, setIsTimerRunning] = useState(false);
-  const [timerMinutes, setTimerMinutes] = useState(0);
-  const [timerSeconds, setTimerSeconds] = useState(0);
+  const [totalSeconds, setTotalSeconds] = useState(0);
   const [showVolumeNotification, setShowVolumeNotification] = useState(true);
 
   const originalServings = recipe.servings || 4;
   const handleNextStepRef = useRef();
   const handlePrevStepRef = useRef();
+  const timerStartTimeRef = useRef(null);
+  const isFirstTickRef = useRef(false);
 
   // Hide volume notification after 5 seconds
   useEffect(() => {
@@ -126,28 +127,43 @@ function RecipeDetailsCookingMode({
 
   // Timer functions
   const startTimer = (minutes) => {
-    setTimerMinutes(minutes);
-    setTimerSeconds(0);
+    setTotalSeconds(minutes * 60);
     setIsTimerRunning(true);
+
+    // Voice announcement for timer start
+    const utterance = new SpeechSynthesisUtterance(
+      `Timer started for ${minutes} minutes`,
+    );
+    utterance.lang = "en-US";
+    utterance.rate = 0.9;
+    window.speechSynthesis.speak(utterance);
   };
 
   // Timer countdown effect
   useEffect(() => {
-    if (!isTimerRunning) return;
+    if (!isTimerRunning || totalSeconds <= 0) return;
 
     const interval = setInterval(() => {
-      if (timerSeconds > 0) {
-        setTimerSeconds(timerSeconds - 1);
-      } else if (timerMinutes > 0) {
-        setTimerMinutes(timerMinutes - 1);
-        setTimerSeconds(59);
-      } else {
-        setIsTimerRunning(false);
-      }
+      setTotalSeconds((prev) => {
+        if (prev <= 1) {
+          setIsTimerRunning(false);
+          // Voice announcement for timer end
+          setTimeout(() => {
+            const utterance = new SpeechSynthesisUtterance("Timer finished");
+            utterance.lang = "en-US";
+            utterance.rate = 0.9;
+            utterance.volume = 1.0;
+            window.speechSynthesis.cancel();
+            window.speechSynthesis.speak(utterance);
+          }, 100);
+          return 0;
+        }
+        return prev - 1;
+      });
     }, 1000);
 
     return () => clearInterval(interval);
-  }, [isTimerRunning, timerMinutes, timerSeconds]);
+  }, [isTimerRunning, totalSeconds]);
 
   // Keyboard navigation
   useEffect(() => {
@@ -361,25 +377,33 @@ function RecipeDetailsCookingMode({
                           }
                         }}
                         className={classes.timerButton}
+                        disabled={isTimerRunning}
                       >
                         −
                       </button>
 
                       <div className={classes.timerDisplay}>
-                        <input
-                          type="number"
-                          min="0"
-                          max="180"
-                          value={
-                            customTimerInput ||
-                            (isTimerRunning
-                              ? String(timerMinutes).padStart(2, "0")
-                              : "00")
-                          }
-                          onChange={(e) => setCustomTimerInput(e.target.value)}
-                          onClick={(e) => e.stopPropagation()}
-                          className={classes.timerInput}
-                        />
+                        {isTimerRunning ? (
+                          <div className={classes.timerInput}>
+                            {String(Math.floor(totalSeconds / 60)).padStart(
+                              2,
+                              "0",
+                            )}
+                            :{String(totalSeconds % 60).padStart(2, "0")}
+                          </div>
+                        ) : (
+                          <input
+                            type="number"
+                            min="0"
+                            max="180"
+                            value={customTimerInput || "00"}
+                            onChange={(e) =>
+                              setCustomTimerInput(e.target.value)
+                            }
+                            onClick={(e) => e.stopPropagation()}
+                            className={classes.timerInput}
+                          />
+                        )}
                       </div>
 
                       <button
@@ -389,36 +413,51 @@ function RecipeDetailsCookingMode({
                           setCustomTimerInput(String(currentValue + 1));
                         }}
                         className={classes.timerButton}
+                        disabled={isTimerRunning}
                       >
                         +
                       </button>
 
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const minutes = parseInt(customTimerInput);
-                          if (minutes && minutes > 0) {
-                            startTimer(minutes);
-                            setCustomTimerInput("");
+                      {!isTimerRunning ? (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const minutes = parseInt(customTimerInput);
+                            if (minutes && minutes > 0) {
+                              startTimer(minutes);
+                              setCustomTimerInput("");
+                            }
+                          }}
+                          disabled={
+                            !customTimerInput || parseInt(customTimerInput) <= 0
                           }
-                        }}
-                        disabled={
-                          !customTimerInput || parseInt(customTimerInput) <= 0
-                        }
-                        className={classes.startButton}
-                        style={{
-                          cursor:
-                            customTimerInput && parseInt(customTimerInput) > 0
-                              ? "pointer"
-                              : "not-allowed",
-                          opacity:
-                            customTimerInput && parseInt(customTimerInput) > 0
-                              ? 1
-                              : 0.5,
-                        }}
-                      >
-                        ▶️ Start
-                      </button>
+                          className={classes.startButton}
+                          style={{
+                            cursor:
+                              customTimerInput && parseInt(customTimerInput) > 0
+                                ? "pointer"
+                                : "not-allowed",
+                            opacity:
+                              customTimerInput && parseInt(customTimerInput) > 0
+                                ? 1
+                                : 0.5,
+                          }}
+                        >
+                          ▶️ Start
+                        </button>
+                      ) : (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setIsTimerRunning(false);
+                            setTotalSeconds(0);
+                            setCustomTimerInput("");
+                          }}
+                          className={classes.stopButton}
+                        >
+                          ⏹️ Stop
+                        </button>
+                      )}
                     </div>
                   </div>
                 </div>

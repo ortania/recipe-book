@@ -1,0 +1,9 @@
+https://github.com/ortania/
+
+
+Add changes to git from VSCode:
+------------------------------
+
+git add .
+git commit -m "תיאור השינויים"
+git push

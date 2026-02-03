@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import classes from "./modal.module.css";
 
-function Modal({ children, onClose, className, fullscreen }) {
+function Modal({ children, onClose, className, fullscreen, maxWidth }) {
   useEffect(() => {
     // Add class to body when modal is open
     document.body.classList.add("modal-open");
@@ -49,6 +49,7 @@ function Modal({ children, onClose, className, fullscreen }) {
     <div className={classes.modalOverlay} onClick={handleOverlayClick}>
       <div
         className={`${classes.modalContent} ${className || ""} ${fullscreen ? classes.fullscreen : ""}`}
+        style={maxWidth ? { maxWidth } : undefined}
         onClick={(e) => e.stopPropagation()}
       >
         {children}

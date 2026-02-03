@@ -51,22 +51,31 @@ export const addCategory = async (category) => {
       category.id,
     );
 
+    // Get current categories to determine the order
+    const categoriesRef = collection(db, CATEGORIES_COLLECTION);
+    const querySnapshot = await getDocs(categoriesRef);
+    const currentCount = querySnapshot.size;
+
     const categoryRef = doc(db, CATEGORIES_COLLECTION, category.id);
     const categoryData = {
       ...category,
+      order: currentCount, // Add order field
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
 
     await setDoc(categoryRef, categoryData);
-    console.log("✅ Category added to Firebase successfully");
+    console.log(
+      "✅ Category added to Firebase successfully with order:",
+      currentCount,
+    );
 
     return {
       id: category.id,
-      ...category,
+      ...categoryData,
     };
   } catch (error) {
-    console.error("Error adding category:", error);
+    console.error("❌ Error adding category:", error);
     throw error;
   }
 };

@@ -5,6 +5,7 @@ export * from "./favorites";
 export * from "./footer";
 export * from "./forms";
 export * from "./categories-list";
+export * from "./categories-management";
 export * from "./header";
 export * from "./modal";
 export * from "./navigation";

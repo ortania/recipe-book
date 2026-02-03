@@ -393,7 +393,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           </div>
         </div>
         <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>Prep Time</label>
+          <label className={classes.difficultyLabel}>⏱️ זמן הכנה</label>
           <input
             type="text"
             placeholder="e.g., 15 min"
@@ -405,7 +405,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </div>
 
         <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>Cook Time</label>
+          <label className={classes.difficultyLabel}>🔥 זמן בישול</label>
           <input
             type="text"
             placeholder="e.g., 30 min"
