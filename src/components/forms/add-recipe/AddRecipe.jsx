@@ -556,31 +556,45 @@ function AddRecipe({
             ))}
           </div>
         </div>
-        <input
-          type="text"
-          placeholder="Prep Time (e.g., 15 min)"
-          value={newPerson.prepTime}
-          onChange={(e) =>
-            setNewPerson({ ...newPerson, prepTime: e.target.value })
-          }
-        />
-        <input
-          type="text"
-          placeholder="Cook Time (e.g., 30 min)"
-          value={newPerson.cookTime}
-          onChange={(e) =>
-            setNewPerson({ ...newPerson, cookTime: e.target.value })
-          }
-        />
-        <input
-          type="number"
-          placeholder="Servings"
-          value={newPerson.servings}
-          onChange={(e) =>
-            setNewPerson({ ...newPerson, servings: e.target.value })
-          }
-          min="1"
-        />
+        <div className={classes.difficultySection}>
+          <label className={classes.difficultyLabel}>⏱️ זמן הכנה</label>
+          <input
+            type="text"
+            placeholder="e.g., 15 min"
+            value={newPerson.prepTime}
+            onChange={(e) =>
+              setNewPerson({ ...newPerson, prepTime: e.target.value })
+            }
+            className={classes.difficultySelect}
+          />
+        </div>
+
+        <div className={classes.difficultySection}>
+          <label className={classes.difficultyLabel}>🔥 זמן בישול</label>
+          <input
+            type="text"
+            placeholder="e.g., 30 min"
+            value={newPerson.cookTime}
+            onChange={(e) =>
+              setNewPerson({ ...newPerson, cookTime: e.target.value })
+            }
+            className={classes.difficultySelect}
+          />
+        </div>
+
+        <div className={classes.difficultySection}>
+          <label className={classes.difficultyLabel}>Servings</label>
+          <input
+            type="number"
+            placeholder="Number of servings"
+            value={newPerson.servings}
+            onChange={(e) =>
+              setNewPerson({ ...newPerson, servings: e.target.value })
+            }
+            min="1"
+            className={classes.difficultySelect}
+          />
+        </div>
 
         <div className={classes.difficultySection}>
           <label className={classes.difficultyLabel}>Difficulty</label>
