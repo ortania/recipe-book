@@ -5,6 +5,8 @@ import React, {
   useRef,
   useMemo,
 } from "react";
+import { VscDebugRestart } from "react-icons/vsc";
+import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
 import classes from "./recipe-details-cooking.module.css";
 
 function RecipeDetailsCookingMode({
@@ -13,6 +15,8 @@ function RecipeDetailsCookingMode({
   onExitCookingMode,
   isListening,
   onStepHandlersReady,
+  voiceEnabled,
+  onToggleVoice,
 }) {
   // State management
   const [activeTab, setActiveTab] = useState("ingredients");
@@ -117,9 +121,26 @@ function RecipeDetailsCookingMode({
 
     // Notify parent that handlers are ready
     if (onStepHandlersReady) {
-      onStepHandlersReady(handleNextStepRef, handlePrevStepRef);
+      onStepHandlersReady(
+        handleNextStepRef,
+        handlePrevStepRef,
+        activeTab,
+        setActiveTab,
+        currentStep,
+        ingredientsArray.length,
+        setCurrentStep,
+        setShowCompletion,
+      );
     }
-  }, [handleNextStep, handlePrevStep, onStepHandlersReady]);
+  }, [
+    handleNextStep,
+    handlePrevStep,
+    onStepHandlersReady,
+    activeTab,
+    currentStep,
+    ingredientsArray.length,
+    setShowCompletion,
+  ]);
 
   const handleScreenClick = () => {
     handleNextStepRef.current();
@@ -194,18 +215,37 @@ function RecipeDetailsCookingMode({
 
       <div className={classes.headerButtonsCooking}>
         {/* Voice Recognition Indicator */}
-        <div
-          className={classes.voiceRecognitionIndicator}
+        <button
+          onClick={onToggleVoice}
+          className={classes.voiceToggleButton}
           style={{
-            background: isListening
-              ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
-              : "linear-gradient(135deg, #94a3b8 0%, #64748b 100%)",
-            boxShadow: isListening
-              ? "0 2px 10px rgba(16, 185, 129, 0.4)"
-              : "0 2px 10px rgba(100, 116, 139, 0.4)",
+            background: voiceEnabled
+              ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+              : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
           }}
         >
-          <span>🎤</span>
+          {/* <span>🎤</span> */}
+          <span>
+            {/* {voiceEnabled ? <PiMicrophoneThin /> : <PiMicrophoneSlashThin />} */}
+            <PiMicrophoneThin />
+          </span>
+          <span>{voiceEnabled ? "Stop Mic" : "Start Mic"}</span>
+        </button>
+        <div
+          className={classes.voiceRecognitionIndicator}
+          // style={{
+          //   background: isListening
+          //     ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
+          //     : "linear-gradient(135deg, #94a3b8 0%, #64748b 100%)",
+          //   boxShadow: isListening
+          //     ? "0 2px 10px rgba(16, 185, 129, 0.4)"
+          //     : "0 2px 10px rgba(100, 116, 139, 0.4)",
+          // }}
+        >
+          {/* <span>🎤</span> */}{" "}
+          <span>
+            {voiceEnabled ? <PiMicrophoneThin /> : <PiMicrophoneSlashThin />}
+          </span>
           <span>{isListening ? "מקשיב..." : "לא מקשיב"}</span>
         </div>
         <button onClick={onClose} className={classes.closeButton}>
@@ -246,6 +286,14 @@ function RecipeDetailsCookingMode({
             }}
           >
             Ingredients
+            {activeTab === "ingredients" &&
+              voiceEnabled &&
+              currentStep >= ingredientsArray.length - 1 && (
+                <span className={classes.voiceHint}>
+                  {" "}
+                  (Say "Start" to begin cooking)
+                </span>
+              )}
           </button>
           <button
             className={`${classes.tab} ${activeTab === "instructions" ? classes.activeTab : ""}`}
@@ -331,7 +379,7 @@ function RecipeDetailsCookingMode({
                   }}
                   className={classes.restartButton}
                 >
-                  🔄 Restart
+                  <VscDebugRestart /> Restart
                 </button>
                 <button
                   onClick={(e) => {

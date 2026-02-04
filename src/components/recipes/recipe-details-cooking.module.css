@@ -10,7 +10,7 @@
   overflow-y: auto;
   padding-top: 1rem;
   width: 100%;
-  max-width: 900px;
+  max-width: 1200px;
   margin-left: auto;
   margin-right: auto;
   position: relative;
@@ -65,20 +65,63 @@
   z-index: 2000;
 }
 
+.voiceToggleButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  /* border-radius: 25px; */
+  color: white;
+  font-weight: 600;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-left: 1.5rem;
+  border-radius: 50px;
+}
+
+.voiceToggleButton span {
+  font-size: var(--very-large-font);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.voiceToggleButton:hover {
+  transform: scale(1.05);
+}
+
+.voiceToggleButton:active {
+  transform: scale(0.95);
+}
+
 .voiceRecognitionIndicator {
   display: flex;
   align-items: center;
   gap: 0.5rem;
   padding: 0.5rem 1rem;
-  border-radius: 25px;
+  /* border-radius: 25px; */
   color: white;
-  font-weight: 600;
+  /* font-weight: 600; */
   transition: all 0.3s ease;
-  margin-left: 1.5rem;
 }
 
 .voiceRecognitionIndicator span {
+  font-size: var(--very-very-large-font);
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.voiceHint {
   font-size: var(--small-font);
+  color: #10b981;
+  font-weight: 500;
+  font-style: italic;
 }
 
 .closeButton {
@@ -109,7 +152,7 @@
   align-items: center;
   justify-content: flex-start;
   padding: 1.5rem;
-  max-width: 900px;
+  max-width: 1200px;
   width: 100%;
   overflow: visible;
   box-sizing: border-box;
@@ -123,11 +166,11 @@
   align-items: center;
   padding: 1rem 1.5rem;
   background: #ffffff;
-  border-radius: 20px;
+  /* border-radius: 20px; */
   margin-bottom: 1.5rem;
-  max-width: 900px;
+  max-width: 1200px;
   width: 100%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
 }
 
 .servingControls {
@@ -169,7 +212,7 @@
 .servingLabelCooking {
   font-size: var(--very-large-font);
   font-weight: 700;
-  color: #ff6b35;
+  /* color: #ff6b35; */
 }
 
 .tabs {
@@ -177,7 +220,7 @@
   gap: 0;
   border-bottom: 2px solid #f0f0f0;
   margin-bottom: 1.5rem;
-  max-width: 900px;
+  max-width: 1200px;
   width: 100%;
 }
 
@@ -206,7 +249,7 @@
 
 .tabContent {
   cursor: pointer;
-  max-width: 900px;
+  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
   box-sizing: border-box;
@@ -302,26 +345,31 @@
   padding: 1rem 2rem;
   font-size: var(--basic-font);
   border: none;
-  border-radius: 15px;
+  /* border-radius: 15px; */
   cursor: pointer;
   font-weight: 700;
   transition: all 0.2s;
 }
 
 .navButton {
-  border: 2px solid #e5e7eb;
+  /* border: 2px solid #e5e7eb; */
 }
 
 .restartButton {
-  background-color: #f59e0b;
+  /* background-color: #f59e0b; */
+  background-color: #6b7280;
   color: white;
-  box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  /* box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); */
 }
 
 .nextButton {
   background-color: #10b981;
   color: white;
-  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+  /* box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); */
 }
 
 .instructions {
@@ -503,29 +551,31 @@
 .instructionItem {
   opacity: 1;
   font-size: 3.5rem;
-  font-weight: 600;
+  /* font-weight: 600; */
   transition: all 0.3s ease;
-  background-color: #fef3c7;
+  /* background-color: #fef3c7; */
   padding: 2rem 2.5rem;
-  border-radius: 20px;
+  /* border-radius: 20px; */
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
   line-height: 1.8;
   min-height: 120px;
   width: 100%;
   max-width: 100%;
-  border: 2px solid #fde68a;
-  color: #78350f;
+  /* border: 2px solid #fde68a; */
+  border: 2px solid lightgray;
+  /* color: #78350f; */
+  color: black;
   text-align: center;
 }
 
 .ingredientText,
 .instructionText {
-  font-size: 3.5rem;
+  font-size: 3rem;
   text-align: center;
-  line-height: 1.5;
+  line-height: 1.7;
 }
 
 @keyframes fadeIn {

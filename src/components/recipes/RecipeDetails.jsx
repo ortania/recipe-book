@@ -52,6 +52,7 @@ function RecipeDetails({
   const [customTimerInput, setCustomTimerInput] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState(null);
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
 
   // Refs to store latest handler functions
   const handleNextStepRef = React.useRef();
@@ -59,6 +60,17 @@ function RecipeDetails({
   const shouldRestartRef = React.useRef(true);
   const lastCommandTimeRef = React.useRef(0);
   const wakeLockRef = React.useRef(null);
+  const cookingModeActiveTabRef = React.useRef("ingredients");
+  const cookingModeSetActiveTabRef = React.useRef(null);
+  const cookingModeCurrentStepRef = React.useRef(0);
+  const cookingModeIngredientsLengthRef = React.useRef(0);
+  const cookingModeSetCurrentStepRef = React.useRef(null);
+  const cookingModeSetShowCompletionRef = React.useRef(null);
+
+  // Toggle voice recognition
+  const toggleVoiceRecognition = () => {
+    setVoiceEnabled((prev) => !prev);
+  };
 
   // Function to scale ingredient quantities
   const scaleIngredient = (ingredient) => {
@@ -218,10 +230,10 @@ function RecipeDetails({
 
       // Restart immediately without setting isListening to false
       // This makes it feel more continuous
-      if (isActive && cookingMode) {
+      if (isActive && cookingMode && voiceEnabled) {
         setTimeout(() => {
           try {
-            if (isActive) {
+            if (isActive && voiceEnabled) {
               recognitionInstance.start();
             }
           } catch (e) {
@@ -266,6 +278,12 @@ function RecipeDetails({
         return;
       }
 
+      // Check for 'start' command to switch from ingredients to instructions
+      const startPatterns = ["start", "begin", "cooking", "cook"];
+      const hasStartCommand = startPatterns.some((pattern) =>
+        text.includes(pattern),
+      );
+
       // Check for next commands using partial string matching
       const nextPatterns = [
         "next",
@@ -294,7 +312,35 @@ function RecipeDetails({
         text.includes(pattern),
       );
 
-      if (hasNextCommand) {
+      if (
+        hasStartCommand &&
+        cookingModeActiveTabRef.current === "ingredients"
+      ) {
+        // Check if all ingredients are done (currentStep should be at the last ingredient)
+        const allIngredientsDone =
+          cookingModeCurrentStepRef.current >=
+          cookingModeIngredientsLengthRef.current - 1;
+
+        if (allIngredientsDone) {
+          console.log(
+            "✅ Executing START command - all ingredients done, switching to instructions",
+          );
+          lastCommandTimeRef.current = now;
+          if (
+            cookingModeSetActiveTabRef.current &&
+            cookingModeSetCurrentStepRef.current &&
+            cookingModeSetShowCompletionRef.current
+          ) {
+            cookingModeSetActiveTabRef.current("instructions");
+            cookingModeSetCurrentStepRef.current(0); // Start at first instruction
+            cookingModeSetShowCompletionRef.current(false); // Reset completion
+          }
+        } else {
+          console.log(
+            "⚠️ START command ignored - not all ingredients done yet",
+          );
+        }
+      } else if (hasNextCommand) {
         console.log("✅ Executing NEXT command");
         lastCommandTimeRef.current = now;
         if (handleNextStepRef.current) {
@@ -325,12 +371,14 @@ function RecipeDetails({
 
     setRecognition(recognitionInstance);
 
-    // Auto-start voice recognition
-    console.log("🎤 Starting voice recognition...");
-    try {
-      recognitionInstance.start();
-    } catch (e) {
-      console.error("❌ Recognition start error:", e);
+    // Auto-start voice recognition only if enabled
+    if (voiceEnabled) {
+      console.log("🎤 Starting voice recognition...");
+      try {
+        recognitionInstance.start();
+      } catch (e) {
+        console.error("❌ Recognition start error:", e);
+      }
     }
 
     return () => {
@@ -349,7 +397,7 @@ function RecipeDetails({
       }
       setIsListening(false);
     };
-  }, [cookingMode]); // Only re-run when cookingMode changes, not when steps change
+  }, [cookingMode, voiceEnabled, activeTab]); // Re-run when cookingMode, voiceEnabled, or activeTab changes
 
   // Wake Lock to keep screen on during cooking mode
   React.useEffect(() => {
@@ -408,28 +456,17 @@ function RecipeDetails({
 
     window.addEventListener("keydown", handleKeyPress);
     return () => window.removeEventListener("keydown", handleKeyPress);
-  }, [cookingMode, currentStep, activeTab]);
-
-  const startTimer = (minutes) => {
-    setTimerMinutes(minutes);
-    setTimerSeconds(0);
-    setIsTimerRunning(true);
-    setTimerCompleted(false);
-  };
-
-  const stopTimer = () => {
-    setIsTimerRunning(false);
-  };
+  }, [cookingMode, handleNextStep, handlePrevStep]);
 
   const resetTimer = () => {
-    setIsTimerRunning(false);
     setTimerMinutes(0);
     setTimerSeconds(0);
+    setIsTimerRunning(false);
     setTimerCompleted(false);
   };
 
   return (
-    <Modal onClose={onClose} fullscreen={cookingMode}>
+    <Modal isOpen={true} onClose={onClose}>
       {!cookingMode ? (
         <RecipeDetailsFull
           recipe={recipe}
@@ -446,9 +483,26 @@ function RecipeDetails({
           onClose={onClose}
           onExitCookingMode={handleCookingModeToggle}
           isListening={isListening}
-          onStepHandlersReady={(nextRef, prevRef) => {
+          voiceEnabled={voiceEnabled}
+          onToggleVoice={toggleVoiceRecognition}
+          onStepHandlersReady={(
+            nextRef,
+            prevRef,
+            activeTabValue,
+            setActiveTabFunc,
+            currentStepValue,
+            ingredientsLength,
+            setCurrentStepFunc,
+            setShowCompletionFunc,
+          ) => {
             handleNextStepRef.current = nextRef.current;
             handlePrevStepRef.current = prevRef.current;
+            cookingModeActiveTabRef.current = activeTabValue;
+            cookingModeSetActiveTabRef.current = setActiveTabFunc;
+            cookingModeCurrentStepRef.current = currentStepValue;
+            cookingModeIngredientsLengthRef.current = ingredientsLength;
+            cookingModeSetCurrentStepRef.current = setCurrentStepFunc;
+            cookingModeSetShowCompletionRef.current = setShowCompletionFunc;
           }}
         />
       )}
