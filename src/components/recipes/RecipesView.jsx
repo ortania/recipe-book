@@ -458,12 +458,12 @@ function RecipesView({
                   person.categories && person.categories.includes(group.id),
               );
               if (groupRecipes.length === 0) return null;
-              const displayRecipes = groupRecipes.slice(0, 4);
+              const displayRecipes = groupRecipes.slice(0, 8);
               return (
                 <div key={group.id} className={classes.categorySection}>
                   <div className={classes.sectionHeader}>
                     <h2 className={classes.sectionTitle}>{group.name}</h2>
-                    {groupRecipes.length > 4 && (
+                    {groupRecipes.length > 8 && (
                       <button
                         className={classes.seeMore}
                         onClick={() => onSelectGroup && onSelectGroup(group.id)}
@@ -494,12 +494,12 @@ function RecipesView({
               (person) => !person.categories || person.categories.length === 0,
             );
             if (uncategorizedRecipes.length === 0) return null;
-            const displayRecipes = uncategorizedRecipes.slice(0, 4);
+            const displayRecipes = uncategorizedRecipes.slice(0, 8);
             return (
               <div key="uncategorized" className={classes.categorySection}>
                 <div className={classes.sectionHeader}>
                   <h2 className={classes.sectionTitle}>Uncategorized</h2>
-                  {uncategorizedRecipes.length > 4 && (
+                  {uncategorizedRecipes.length > 8 && (
                     <span className={classes.recipeCount}>
                       {uncategorizedRecipes.length} recipes
                     </span>

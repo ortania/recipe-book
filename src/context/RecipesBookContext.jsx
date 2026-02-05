@@ -18,6 +18,11 @@ import {
   reorderCategories as reorderCategoriesInFirestore,
 } from "../firebase/categoryService";
 import { updateRecipe as updateRecipeInFirebase } from "../firebase/recipeService";
+import {
+  onAuthStateChange,
+  getUserData,
+  logoutUser,
+} from "../firebase/authService";
 
 const RecipeBookContext = createContext();
 
@@ -34,40 +39,73 @@ export const RecipeBookProvider = ({ children }) => {
   const [recipes, setRecipes] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [recipesLoaded, setRecipesLoaded] = useState(false);
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
-  // Load categories from Firestore on mount
+  // Listen to auth state changes
   useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        console.log("🔄 Loading categories from Firebase...");
-        let categoriesFromFirestore = await fetchCategories();
+    const unsubscribe = onAuthStateChange(async (user) => {
+      if (user) {
+        console.log("✅ User authenticated:", user.uid);
+        const userData = await getUserData(user.uid);
+        setCurrentUser({ uid: user.uid, ...userData });
+        setIsAdmin(userData?.isAdmin || false);
+        setIsLoggedIn(true);
 
-        // If no categories exist, initialize with default ones
-        if (categoriesFromFirestore.length === 0) {
-          console.log("📦 No categories found, initializing...");
-          await initializeCategories(initialCategories);
-          categoriesFromFirestore = await fetchCategories();
-        }
-
-        console.log("✅ Loaded categories:", categoriesFromFirestore);
-        setCategories(categoriesFromFirestore);
-        setCategoriesLoaded(true);
-      } catch (error) {
-        console.error("Error loading categories from Firestore:", error);
-        setCategories(initialCategories);
-        setCategoriesLoaded(true);
+        // Load user's data
+        await loadUserData(user.uid);
+      } else {
+        console.log("❌ No user authenticated");
+        setCurrentUser(null);
+        setIsAdmin(false);
+        setIsLoggedIn(false);
+        setRecipes([]);
+        setCategories([]);
+        setRecipesLoaded(false);
+        setCategoriesLoaded(false);
       }
-    };
-    loadCategories();
+      setIsLoading(false);
+    });
+
+    return () => unsubscribe();
   }, []);
+
+  // Load user's categories and recipes
+  const loadUserData = async (userId) => {
+    try {
+      console.log("🔄 Loading user data for:", userId);
+
+      // Load categories
+      let categoriesFromFirestore = await fetchCategories(userId);
+      if (categoriesFromFirestore.length === 0) {
+        console.log("📦 No categories found, initializing...");
+        await initializeCategories(initialCategories, userId);
+        categoriesFromFirestore = await fetchCategories(userId);
+      }
+      setCategories(categoriesFromFirestore);
+      setCategoriesLoaded(true);
+
+      // Load recipes
+      const fetchedRecipes = await fetchRecipes(50, userId);
+      setRecipes(fetchedRecipes);
+      setRecipesLoaded(true);
+
+      console.log("✅ User data loaded");
+    } catch (error) {
+      console.error("Error loading user data:", error);
+    }
+  };
 
   // Category handlers using Firestore
   const addCategory = async (category) => {
     try {
-      const newCategory = await addCategoryToFirestore(category);
+      if (!currentUser) throw new Error("No user logged in");
+      const newCategory = await addCategoryToFirestore(
+        category,
+        currentUser.uid,
+      );
       setCategories((prev) => [...prev, newCategory]);
       return newCategory;
     } catch (error) {
@@ -120,7 +158,22 @@ export const RecipeBookProvider = ({ children }) => {
       throw error;
     }
   };
-  const addRecipe = handleAddRecipe(setRecipes);
+
+  // Recipe handlers
+  const addRecipe = async (newRecipe) => {
+    try {
+      if (!currentUser) throw new Error("No user logged in");
+      console.log("🔥 CONTEXT - Adding recipe to Firebase:", newRecipe.name);
+      const addedRecipe = await handleAddRecipe(
+        setRecipes,
+        currentUser.uid,
+      )(newRecipe);
+      return addedRecipe;
+    } catch (error) {
+      console.error("Error adding recipe:", error);
+      throw error;
+    }
+  };
   const editRecipe = handleEditRecipe(setRecipes);
   const deleteRecipe = handleDeleteRecipe(setRecipes);
   const clearAllRecipes = handleClearAllRecipes(setRecipes);
@@ -171,26 +224,34 @@ export const RecipeBookProvider = ({ children }) => {
     }
   };
 
-  const login = async (adminStatus) => {
+  const login = async (userId) => {
     try {
       setIsLoading(true);
-      const fetchedRecipes = await fetchRecipes(50);
-      setRecipes(fetchedRecipes);
-      setIsAdmin(adminStatus);
+      const userData = await getUserData(userId);
+      setCurrentUser({ uid: userId, ...userData });
+      setIsAdmin(userData?.isAdmin || false);
       setIsLoggedIn(true);
-      setRecipesLoaded(true);
+      await loadUserData(userId);
     } catch (error) {
-      console.error("Error loading recipes:", error);
+      console.error("Error during login:", error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const logout = () => {
-    setIsAdmin(false);
-    setIsLoggedIn(false);
-    setRecipes([]);
-    setRecipesLoaded(false);
+  const logout = async () => {
+    try {
+      await logoutUser();
+      setCurrentUser(null);
+      setIsAdmin(false);
+      setIsLoggedIn(false);
+      setRecipes([]);
+      setCategories([]);
+      setRecipesLoaded(false);
+      setCategoriesLoaded(false);
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   const value = {
@@ -201,6 +262,7 @@ export const RecipeBookProvider = ({ children }) => {
     isLoading,
     recipesLoaded,
     categoriesLoaded,
+    currentUser,
     setRecipes,
     setRecipesLoaded,
     addCategory,

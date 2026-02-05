@@ -16,10 +16,16 @@ import { db } from "./config";
 
 const RECIPES_COLLECTION = "recipes";
 
-export const fetchRecipes = async (limitCount = 50) => {
+export const fetchRecipes = async (limitCount = 50, userId = null) => {
   try {
     const recipesRef = collection(db, RECIPES_COLLECTION);
-    const querySnapshot = await getDocs(recipesRef);
+    let q = recipesRef;
+
+    if (userId) {
+      q = query(recipesRef, where("userId", "==", userId));
+    }
+
+    const querySnapshot = await getDocs(q);
 
     const recipes = [];
     querySnapshot.forEach((doc) => {
@@ -44,20 +50,25 @@ export const fetchRecipes = async (limitCount = 50) => {
   }
 };
 
-export const addRecipe = async (recipe) => {
+export const addRecipe = async (recipe, userId) => {
   try {
     console.log("💾 FIREBASE - Received recipe:", recipe.name);
     console.log("💾 FIREBASE - Recipe rating:", recipe.rating);
     console.log("💾 FIREBASE - Full recipe object:", recipe);
+    console.log("💾 FIREBASE - User ID:", userId);
 
     const recipesRef = collection(db, RECIPES_COLLECTION);
 
-    // Get current recipe count to set order
-    const querySnapshot = await getDocs(recipesRef);
+    // Get current recipe count for this user to set order
+    const userRecipesQuery = userId
+      ? query(recipesRef, where("userId", "==", userId))
+      : recipesRef;
+    const querySnapshot = await getDocs(userRecipesQuery);
     const order = querySnapshot.size;
 
     const recipeData = {
       ...recipe,
+      userId,
       order,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

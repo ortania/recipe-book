@@ -27,7 +27,7 @@ const iconMap = {
 
 function Navigation({ onLogout, links }) {
   const navigate = useNavigate();
-  const { logout } = useRecipeBook();
+  const { logout, currentUser } = useRecipeBook();
   const [isOpen, setIsOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -147,7 +147,14 @@ function Navigation({ onLogout, links }) {
 
         <button className={classes.logoutButton} onClick={handleLogout}>
           <FaSignOutAlt className={classes.icon} />
-          Logout
+          <span className={classes.logoutText}>
+            Logout
+            {currentUser && (
+              <span className={classes.userName}>
+                ({currentUser.displayName || currentUser.email})
+              </span>
+            )}
+          </span>
         </button>
       </nav>
 

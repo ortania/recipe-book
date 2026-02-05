@@ -1,0 +1,69 @@
+.inputWrapper {
+  width: 100%;
+}
+
+.inputWrapper input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: 2px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: var(--basic-font);
+  transition: all 0.3s ease;
+  background: #f8f9fa;
+}
+
+.inputWrapper input:focus {
+  outline: none;
+  border-color: #667eea;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.inputWrapper input:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.passwordInput {
+  position: relative;
+  width: 100%;
+}
+
+.passwordInput input {
+  width: 100%;
+  padding-right: 3.5rem;
+}
+
+.eyeButton {
+  position: absolute;
+  right: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: #999;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 8px;
+}
+
+.eyeButton:hover {
+  color: #667eea;
+  background-color: rgba(102, 126, 234, 0.1);
+}
+
+.eyeButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.eyeButton svg {
+  width: 1.8rem;
+  height: 1.8rem;
+}

@@ -384,22 +384,43 @@
   color: #9aa0a6;
 }
 
+.userInfo {
+  padding: 1rem;
+  margin-top: auto;
+  border-top: 1px solid #e0e0e0;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.logoutText {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.2rem;
+}
+
+.userName {
+  color: #888;
+  font-size: var(--very-small-font);
+  font-weight: 400;
+}
+
 .logoutButton {
   margin-top: auto;
-  margin: auto 0.5rem 0.5rem 0.5rem;
-  padding: 0.65rem 1rem;
   background: transparent;
   border: none;
-  color: #333;
-  border-radius: 6px;
-  cursor: pointer;
+  color: #5f6368;
+  padding: 0.65rem 1rem;
   font-size: var(--basic-font);
-  font-weight: 400;
+  cursor: pointer;
   transition: all 0.15s ease;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  justify-content: flex-start;
+  font-weight: 400;
+  border-radius: 6px;
 }
 
 .logoutButton:hover {

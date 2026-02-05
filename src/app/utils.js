@@ -74,14 +74,16 @@ export const transformRecipe = (recipe, availableCategories) => {
 /**
  * Creates a handler function for adding a new recipe
  * @param {Function} setRecipes - React state setter for recipes
+ * @param {string} userId - User ID to associate with the recipe
  * @returns {Function} - Handler function that takes a new recipe and adds it to Firebase and state
  */
-export const handleAddRecipe = (setRecipes) => async (newRecipe) => {
+export const handleAddRecipe = (setRecipes, userId) => async (newRecipe) => {
   try {
     console.log("🔥 UTILS - Adding recipe to Firebase:", newRecipe.name);
     console.log("🔥 UTILS - Recipe rating:", newRecipe.rating);
+    console.log("🔥 UTILS - User ID:", userId);
     console.log("🔥 UTILS - Full recipe object:", newRecipe);
-    const addedRecipe = await addRecipeToDB(newRecipe);
+    const addedRecipe = await addRecipeToDB(newRecipe, userId);
     console.log("🔥 UTILS - Recipe added to Firebase with ID:", addedRecipe.id);
     console.log("🔥 UTILS - Added recipe rating:", addedRecipe.rating);
     setRecipes((prev) => [...prev, addedRecipe]);

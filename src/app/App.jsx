@@ -8,6 +8,8 @@ import classes from "./app.module.css";
 
 import { MainLayout, ProtectedLayout } from "./layout";
 import { Home, Login, Categories } from "../pages";
+import Signup from "../pages/signup";
+import MigratePage from "../pages/migrate";
 import { RecipeBookProvider, useRecipeBook } from "../context";
 import ConversionTables from "../components/conversion-tables";
 
@@ -32,6 +34,7 @@ function AppContent() {
         {/* Public Routes (Login Page - Has Header/Footer but No Navigation) */}
         <Route element={<MainLayout />}>
           <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
           <Route
             path="/"
             element={
@@ -49,6 +52,7 @@ function AppContent() {
           <Route path="/home" element={<Home />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/conversions" element={<ConversionTables />} />
+          <Route path="/migrate" element={<MigratePage />} />
         </Route>
 
         {/* Redirect unknown routes */}

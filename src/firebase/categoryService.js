@@ -8,6 +8,7 @@ import {
   doc,
   setDoc,
   query,
+  where,
   orderBy,
   writeBatch,
 } from "firebase/firestore";
@@ -16,12 +17,17 @@ import { db } from "./config";
 const CATEGORIES_COLLECTION = "categories";
 
 /**
- * Fetch all categories from Firestore
+ * Fetch all categories from Firestore for a specific user
  */
-export const fetchCategories = async () => {
+export const fetchCategories = async (userId = null) => {
   try {
     const categoriesRef = collection(db, CATEGORIES_COLLECTION);
-    const q = query(categoriesRef, orderBy("order"));
+    let q = query(categoriesRef, orderBy("order"));
+
+    if (userId) {
+      q = query(categoriesRef, where("userId", "==", userId), orderBy("order"));
+    }
+
     const querySnapshot = await getDocs(q);
 
     const categories = [];
@@ -42,7 +48,7 @@ export const fetchCategories = async () => {
 /**
  * Add a new category to Firestore using the provided category ID
  */
-export const addCategory = async (category) => {
+export const addCategory = async (category, userId) => {
   try {
     console.log(
       "💾 FIREBASE - Adding category:",
@@ -51,15 +57,19 @@ export const addCategory = async (category) => {
       category.id,
     );
 
-    // Get current categories to determine the order
+    // Get current categories for this user to determine the order
     const categoriesRef = collection(db, CATEGORIES_COLLECTION);
-    const querySnapshot = await getDocs(categoriesRef);
+    const userCategoriesQuery = userId
+      ? query(categoriesRef, where("userId", "==", userId))
+      : categoriesRef;
+    const querySnapshot = await getDocs(userCategoriesQuery);
     const currentCount = querySnapshot.size;
 
     const categoryRef = doc(db, CATEGORIES_COLLECTION, category.id);
     const categoryData = {
       ...category,
-      order: currentCount, // Add order field
+      userId,
+      order: currentCount,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
@@ -149,15 +159,16 @@ export const deleteCategory = async (categoryId) => {
 /**
  * Initialize categories in Firestore with their original IDs
  */
-export const initializeCategories = async (defaultCategories) => {
+export const initializeCategories = async (defaultCategories, userId) => {
   try {
-    console.log("🔄 Initializing categories in Firestore...");
+    console.log("🔄 Initializing categories in Firestore for user:", userId);
     const batch = writeBatch(db);
 
     defaultCategories.forEach((category, index) => {
       const categoryRef = doc(db, CATEGORIES_COLLECTION, category.id);
       batch.set(categoryRef, {
         ...category,
+        userId,
         order: index,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),

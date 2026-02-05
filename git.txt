@@ -1,5 +1,6 @@
-https://recipe-book-1234-7777.web.app
 
+
+https://recipe-book-82d57.web.app/
 
 https://github.com/ortania/
 
@@ -23,7 +24,8 @@ firebase deploy --only hosting
 firebase
 --------------------------------
 
-https://console.firebase.google.com/u/0/project/recipe-book-1234-7777/firestore/databases/-default-/data/~2Fcategories
+https://console.firebase.google.com/u/0/project/recipe-book-82d57/firestore/databases/-default-/data/~2Fcategories~2F1770109139001
+
 
 OpenAI
 --------------------------------

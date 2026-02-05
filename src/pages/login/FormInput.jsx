@@ -1,18 +1,18 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import React from "react";
+import PropTypes from "prop-types";
 import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
-import classes from './login.module.css';
+import classes from "./FormInput.module.css";
 
-function FormInput({ 
-  type, 
-  placeholder, 
-  value, 
-  onChange, 
-  isLoading, 
-  onFocus, 
-  isPassword, 
-  togglePassword, 
-  showPassword 
+function FormInput({
+  type,
+  placeholder,
+  value,
+  onChange,
+  isLoading,
+  onFocus,
+  isPassword,
+  togglePassword,
+  showPassword,
 }) {
   if (isPassword) {
     return (
@@ -62,13 +62,13 @@ FormInput.propTypes = {
   onFocus: PropTypes.func.isRequired,
   isPassword: PropTypes.bool,
   togglePassword: PropTypes.func,
-  showPassword: PropTypes.bool
+  showPassword: PropTypes.bool,
 };
 
 FormInput.defaultProps = {
   isPassword: false,
   togglePassword: () => {},
-  showPassword: false
+  showPassword: false,
 };
 
 export default FormInput;
