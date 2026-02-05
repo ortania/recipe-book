@@ -10,19 +10,53 @@ import {
   where,
   orderBy,
   limit,
+  startAfter,
   writeBatch,
 } from "firebase/firestore";
 import { db } from "./config";
 
 const RECIPES_COLLECTION = "recipes";
+export const RECIPES_PER_PAGE = 50; // Number of recipes to load per page
 
-export const fetchRecipes = async (limitCount = 50, userId = null) => {
+export const fetchRecipes = async (
+  limitCount = RECIPES_PER_PAGE,
+  userId = null,
+  lastDoc = null,
+) => {
   try {
     const recipesRef = collection(db, RECIPES_COLLECTION);
-    let q = recipesRef;
 
+    // Build query with proper ordering and limit
+    let q;
     if (userId) {
-      q = query(recipesRef, where("userId", "==", userId));
+      q = query(
+        recipesRef,
+        where("userId", "==", userId),
+        orderBy("order"),
+        limit(limitCount),
+      );
+
+      // If we have a last document, start after it for pagination
+      if (lastDoc) {
+        q = query(
+          recipesRef,
+          where("userId", "==", userId),
+          orderBy("order"),
+          startAfter(lastDoc),
+          limit(limitCount),
+        );
+      }
+    } else {
+      q = query(recipesRef, orderBy("order"), limit(limitCount));
+
+      if (lastDoc) {
+        q = query(
+          recipesRef,
+          orderBy("order"),
+          startAfter(lastDoc),
+          limit(limitCount),
+        );
+      }
     }
 
     const querySnapshot = await getDocs(q);
@@ -35,18 +69,14 @@ export const fetchRecipes = async (limitCount = 50, userId = null) => {
       });
     });
 
-    // Sort by order field if it exists, otherwise by name
-    recipes.sort((a, b) => {
-      if (typeof a.order === "number" && typeof b.order === "number") {
-        return a.order - b.order;
-      }
-      return (a.name || "").localeCompare(b.name || "");
-    });
+    // Get the last document for pagination
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    const hasMore = querySnapshot.docs.length === limitCount;
 
-    return recipes.slice(0, limitCount);
+    return { recipes, lastVisible, hasMore };
   } catch (error) {
     console.error("Error fetching recipes:", error);
-    return [];
+    return { recipes: [], lastVisible: null, hasMore: false };
   }
 };
 

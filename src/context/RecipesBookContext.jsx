@@ -9,6 +9,7 @@ import {
   handleClearAllRecipes,
   handleClearCategoryRecipes,
 } from "../app/utils";
+import { RECIPES_PER_PAGE } from "../firebase/recipeService";
 import {
   fetchCategories,
   initializeCategories,
@@ -45,6 +46,8 @@ export const RecipeBookProvider = ({ children }) => {
   const [recipesLoaded, setRecipesLoaded] = useState(false);
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [lastRecipeDoc, setLastRecipeDoc] = useState(null);
+  const [hasMoreRecipes, setHasMoreRecipes] = useState(false);
 
   // Listen to auth state changes
   useEffect(() => {
@@ -91,9 +94,15 @@ export const RecipeBookProvider = ({ children }) => {
       setCategories(categoriesFromFirestore);
       setCategoriesLoaded(true);
 
-      // Load recipes
-      const fetchedRecipes = await fetchRecipes(50, userId);
+      // Load recipes with pagination
+      const {
+        recipes: fetchedRecipes,
+        lastVisible,
+        hasMore,
+      } = await fetchRecipes(RECIPES_PER_PAGE, userId);
       setRecipes(fetchedRecipes);
+      setLastRecipeDoc(lastVisible);
+      setHasMoreRecipes(hasMore);
       setRecipesLoaded(true);
 
       console.log("✅ User data loaded");
@@ -274,6 +283,48 @@ export const RecipeBookProvider = ({ children }) => {
     }
   };
 
+  const loadMoreRecipes = async () => {
+    if (!hasMoreRecipes || !currentUser) return;
+
+    try {
+      console.log("📥 Loading more recipes...");
+      const {
+        recipes: moreRecipes,
+        lastVisible,
+        hasMore,
+      } = await fetchRecipes(RECIPES_PER_PAGE, currentUser.uid, lastRecipeDoc);
+
+      console.log(
+        "🔍 More recipes IDs:",
+        moreRecipes.map((r) => r.id),
+      );
+
+      setRecipes((prev) => {
+        console.log("🔍 Current recipe count:", prev.length);
+        console.log(
+          "🔍 Current recipe IDs:",
+          prev.map((r) => r.id),
+        );
+
+        // Filter out any duplicates
+        const existingIds = new Set(prev.map((r) => r.id));
+        const newRecipes = moreRecipes.filter((r) => !existingIds.has(r.id));
+
+        console.log("🔍 New unique recipes:", newRecipes.length);
+        const result = [...prev, ...newRecipes];
+        console.log("🔍 Total after merge:", result.length);
+
+        return result;
+      });
+
+      setLastRecipeDoc(lastVisible);
+      setHasMoreRecipes(hasMore);
+      console.log("✅ Loaded", moreRecipes.length, "more recipes");
+    } catch (error) {
+      console.error("Error loading more recipes:", error);
+    }
+  };
+
   const logout = async () => {
     try {
       await logoutUser();
@@ -284,6 +335,8 @@ export const RecipeBookProvider = ({ children }) => {
       setCategories([]);
       setRecipesLoaded(false);
       setCategoriesLoaded(false);
+      setLastRecipeDoc(null);
+      setHasMoreRecipes(false);
     } catch (error) {
       console.error("Error during logout:", error);
     }
@@ -298,6 +351,7 @@ export const RecipeBookProvider = ({ children }) => {
     recipesLoaded,
     categoriesLoaded,
     currentUser,
+    hasMoreRecipes,
     setRecipes,
     setRecipesLoaded,
     addCategory,
@@ -310,6 +364,7 @@ export const RecipeBookProvider = ({ children }) => {
     clearCategoryRecipes,
     reorderRecipes,
     reorderCategories,
+    loadMoreRecipes,
     login,
     logout,
   };

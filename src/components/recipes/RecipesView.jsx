@@ -45,6 +45,7 @@ function RecipesView({
   const [showChat, setShowChat] = useState(false);
   const filterRef = useRef(null);
   const sortRef = useRef(null);
+  const { hasMoreRecipes, loadMoreRecipes } = useRecipeBook();
 
   const handleViewChange = (view) => {
     setActiveView(view);
@@ -535,6 +536,14 @@ function RecipesView({
               onToggleFavorite={handleToggleFavorite}
             />
           ))}
+        </div>
+      )}
+
+      {hasMoreRecipes && !showChat && (
+        <div className={classes.loadMoreContainer}>
+          <button className={classes.loadMoreButton} onClick={loadMoreRecipes}>
+            טען עוד מתכונים
+          </button>
         </div>
       )}
 
