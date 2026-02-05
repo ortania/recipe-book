@@ -80,6 +80,9 @@
 @media (max-width: 768px) {
   .contactsContainer {
     padding-top: 9rem;
+    padding-left: 0;
+    padding-right: 0;
+    max-width: 100%;
   }
 
   :global(body.sidebar-open) .viewToggleWrapper,
@@ -130,6 +133,11 @@
 
   .headerTitle {
     margin-top: 1rem;
+    padding-left: 0;
+  }
+
+  .recipeGrid {
+    padding: 0 1rem;
   }
 }
 

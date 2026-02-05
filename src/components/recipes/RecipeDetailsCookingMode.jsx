@@ -363,7 +363,7 @@ function RecipeDetailsCookingMode({
                   disabled={currentStep === 0}
                   className={classes.navButton}
                   style={{
-                    backgroundColor: currentStep === 0 ? "#f3f4f6" : "#ffffff",
+                    backgroundColor: currentStep === 0 ? "#f3f4f6" : "##e8eaed",
                     color: currentStep === 0 ? "#9ca3af" : "#6b7280",
                     cursor: currentStep === 0 ? "not-allowed" : "pointer",
                     opacity: currentStep === 0 ? 0.6 : 1,

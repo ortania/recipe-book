@@ -32,6 +32,12 @@
   max-width: 1200px;
 }
 
+@media (max-width: 768px) {
+  .main {
+    padding: 0;
+  }
+}
+
 .loading {
   display: flex;
   justify-content: center;
