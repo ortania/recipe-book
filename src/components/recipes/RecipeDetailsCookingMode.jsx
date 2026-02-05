@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { VscDebugRestart } from "react-icons/vsc";
 import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
+import { FaStop } from "react-icons/fa";
 import classes from "./recipe-details-cooking.module.css";
 
 function RecipeDetailsCookingMode({
@@ -27,6 +28,7 @@ function RecipeDetailsCookingMode({
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [showVolumeNotification, setShowVolumeNotification] = useState(true);
+  const [showInfo, setShowInfo] = useState(false);
 
   const originalServings = recipe.servings || 4;
   const handleNextStepRef = useRef();
@@ -207,11 +209,11 @@ function RecipeDetailsCookingMode({
   return (
     <div className={classes.recipeCardCooking}>
       {/* Volume Notification */}
-      {showVolumeNotification && (
+      {/* {showVolumeNotification && (
         <div className={classes.volumeNotification}>
           💡 הורד את עוצמת ההתראות במובייל במצב בישול
         </div>
-      )}
+      )} */}
 
       <div className={classes.headerButtonsCooking}>
         {/* Voice Recognition Indicator */}
@@ -219,9 +221,9 @@ function RecipeDetailsCookingMode({
           onClick={onToggleVoice}
           className={classes.voiceToggleButton}
           style={{
-            background: voiceEnabled
-              ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
-              : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
+            background: voiceEnabled ? "#e9edf2" : "#e9edf2",
+            // ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
+            // : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
           }}
         >
           {/* <span>🎤</span> */}
@@ -231,26 +233,21 @@ function RecipeDetailsCookingMode({
           </span>
           <span>{voiceEnabled ? "Stop Mic" : "Start Mic"}</span>
         </button>
-        <div
-          className={classes.voiceRecognitionIndicator}
-          // style={{
-          //   background: isListening
-          //     ? "linear-gradient(135deg, #10b981 0%, #059669 100%)"
-          //     : "linear-gradient(135deg, #94a3b8 0%, #64748b 100%)",
-          //   boxShadow: isListening
-          //     ? "0 2px 10px rgba(16, 185, 129, 0.4)"
-          //     : "0 2px 10px rgba(100, 116, 139, 0.4)",
-          // }}
-        >
-          {/* <span>🎤</span> */}{" "}
-          <span>
-            {voiceEnabled ? <PiMicrophoneThin /> : <PiMicrophoneSlashThin />}
-          </span>
-          <span>{isListening ? "מקשיב..." : "לא מקשיב"}</span>
+        <div className={classes.headerRight}>
+          <button
+            className={classes.infoButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowInfo(true);
+            }}
+            title="עזרה"
+          >
+            ?
+          </button>
+          <button onClick={onClose} className={classes.closeButton}>
+            ✕
+          </button>
         </div>
-        <button onClick={onClose} className={classes.closeButton}>
-          ✕
-        </button>
       </div>
 
       <div className={classes.recipeContent}>
@@ -307,6 +304,49 @@ function RecipeDetailsCookingMode({
         </div>
 
         <div className={classes.tabContent} onClick={handleScreenClick}>
+          {activeTab === "ingredients" && !showCompletion && (
+            <ul className={classes.ingredientsList}>
+              {ingredientsArray.length > 0 ? (
+                ingredientsArray.map((ingredient, index) => (
+                  <li
+                    key={index}
+                    className={classes.ingredientItem}
+                    style={{
+                      display: index !== currentStep ? "none" : "flex",
+                    }}
+                  >
+                    <span className={classes.ingredientText}>
+                      {scaleIngredient(ingredient)}
+                    </span>
+                  </li>
+                ))
+              ) : (
+                <p>No ingredients listed</p>
+              )}
+            </ul>
+          )}
+
+          {activeTab === "instructions" && !showCompletion && (
+            <ol className={classes.instructionsList}>
+              {instructionsArray.length > 0 ? (
+                instructionsArray.map((instruction, index) => (
+                  <li
+                    key={index}
+                    className={classes.instructionItem}
+                    style={{
+                      display: index !== currentStep ? "none" : "flex",
+                    }}
+                  >
+                    <span className={classes.instructionText}>
+                      {instruction}
+                    </span>
+                  </li>
+                ))
+              ) : (
+                <p>No instructions provided</p>
+              )}
+            </ol>
+          )}
           {!showCompletion && (
             <div className={classes.progressSection}>
               <div className={classes.progressHeader}>
@@ -392,28 +432,74 @@ function RecipeDetailsCookingMode({
                 </button>
               </div>
 
-              {/* Instructions */}
-              <div className={classes.instructions}>
-                <span>
-                  👆 <strong>Click</strong> = Next Step
-                </span>
-                <span>
-                  ⌨️ <strong>←→</strong> Navigate
-                </span>
-                <span>
-                  🎤 <strong>Next/Previous</strong> Voice
-                </span>
-                {/* <span>
-                  <strong>ESC</strong> Exit
-                </span> */}
-              </div>
+              {/* Info Modal */}
+              {showInfo && (
+                <div
+                  className={classes.infoModalOverlay}
+                  onClick={() => setShowInfo(false)}
+                >
+                  <div
+                    className={classes.infoModal}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className={classes.infoModalHeader}>
+                      <h3>איך להשתמש במצב בישול</h3>
+                      <button
+                        className={classes.infoModalClose}
+                        onClick={() => setShowInfo(false)}
+                      >
+                        ✕
+                      </button>
+                    </div>
+                    <div className={classes.infoModalBody}>
+                      <div className={classes.infoSection}>
+                        <div className={classes.infoItem}>
+                          <span className={classes.infoEmoji}>⚠️</span>
+                          <div>
+                            <strong>כדי להשתמש במיקרופון </strong>
+                            <p >
+                              הורד את עוצמת ההתראות במובייל במצב בישול
+                            </p>
+                          </div>
+                        </div>
+                        <div className={classes.infoItem}>
+                          <span className={classes.infoEmoji}>👆</span>
+                          <div>
+                            <strong>לחיצה על המסך</strong>
+                            <p>לחץ בכל מקום על המסך למעבר לשלב הבא</p>
+                          </div>
+                        </div>
+                        <div className={classes.infoItem}>
+                          <span className={classes.infoEmoji}>⌨️</span>
+                          <div>
+                            <strong>מקלדת</strong>
+                            <p>השתמש בחצים ימין/שמאל לניווט בין השלבים</p>
+                          </div>
+                        </div>
+                        <div className={classes.infoItem}>
+                          <span className={classes.infoEmoji}>🎤</span>
+                          <div>
+                            <strong>שליטה קולית</strong>
+                            <p>הפעל את המיקרופון ואמור:</p>
+                            <ul className={classes.voiceCommands}>
+                              <li>"הבא" או "Next" - מעבר לשלב הבא</li>
+                              <li>"הקודם" או "Previous" - חזרה לשלב קודם</li>
+                              <li>"התחל" או "Start" - מעבר להוראות הבישול</li>
+                            </ul>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Timer Section - Only show in Instructions tab */}
               {activeTab === "instructions" && (
                 <div className={classes.timerSection}>
                   <div className={classes.timerContent}>
                     <div className={classes.timerTitle}>
-                      <span>⏱️</span>
+                      <span>🔥</span>
                       Cooking Timer
                     </div>
 
@@ -467,48 +553,49 @@ function RecipeDetailsCookingMode({
                       >
                         +
                       </button>
-
-                      {!isTimerRunning ? (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const minutes = parseInt(customTimerInput);
-                            if (minutes && minutes > 0) {
-                              startTimer(minutes);
-                              setCustomTimerInput("");
-                            }
-                          }}
-                          disabled={
-                            !customTimerInput || parseInt(customTimerInput) <= 0
-                          }
-                          className={classes.startButton}
-                          style={{
-                            cursor:
-                              customTimerInput && parseInt(customTimerInput) > 0
-                                ? "pointer"
-                                : "not-allowed",
-                            opacity:
-                              customTimerInput && parseInt(customTimerInput) > 0
-                                ? 1
-                                : 0.5,
-                          }}
-                        >
-                          ▶️ Start
-                        </button>
-                      ) : (
-                        <button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setIsTimerRunning(false);
-                            setTotalSeconds(0);
-                            setCustomTimerInput("");
-                          }}
-                          className={classes.stopButton}
-                        >
-                          ⏹️ Stop
-                        </button>
-                      )}
                     </div>
+
+                    {!isTimerRunning ? (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          const minutes = parseInt(customTimerInput);
+                          if (minutes && minutes > 0) {
+                            startTimer(minutes);
+                            setCustomTimerInput("");
+                          }
+                        }}
+                        disabled={
+                          !customTimerInput || parseInt(customTimerInput) <= 0
+                        }
+                        className={classes.startButton}
+                        style={{
+                          cursor:
+                            customTimerInput && parseInt(customTimerInput) > 0
+                              ? "pointer"
+                              : "not-allowed",
+                          opacity:
+                            customTimerInput && parseInt(customTimerInput) > 0
+                              ? 1
+                              : 0.5,
+                        }}
+                      >
+                        ▶ Start
+                      </button>
+                    ) : (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setIsTimerRunning(false);
+                          setTotalSeconds(0);
+                          setCustomTimerInput("");
+                        }}
+                        className={classes.stopButton}
+                      >
+                        <FaStop />
+                        Stop
+                      </button>
+                    )}
                   </div>
                 </div>
               )}
@@ -544,50 +631,6 @@ function RecipeDetailsCookingMode({
                 {activeTab === "ingredients" ? "▶️ Start Cooking" : "✓ Done"}
               </button>
             </div>
-          )}
-
-          {activeTab === "ingredients" && !showCompletion && (
-            <ul className={classes.ingredientsList}>
-              {ingredientsArray.length > 0 ? (
-                ingredientsArray.map((ingredient, index) => (
-                  <li
-                    key={index}
-                    className={classes.ingredientItem}
-                    style={{
-                      display: index !== currentStep ? "none" : "flex",
-                    }}
-                  >
-                    <span className={classes.ingredientText}>
-                      {scaleIngredient(ingredient)}
-                    </span>
-                  </li>
-                ))
-              ) : (
-                <p>No ingredients listed</p>
-              )}
-            </ul>
-          )}
-
-          {activeTab === "instructions" && !showCompletion && (
-            <ol className={classes.instructionsList}>
-              {instructionsArray.length > 0 ? (
-                instructionsArray.map((instruction, index) => (
-                  <li
-                    key={index}
-                    className={classes.instructionItem}
-                    style={{
-                      display: index !== currentStep ? "none" : "flex",
-                    }}
-                  >
-                    <span className={classes.instructionText}>
-                      {instruction}
-                    </span>
-                  </li>
-                ))
-              ) : (
-                <p>No instructions provided</p>
-              )}
-            </ol>
           )}
         </div>
       </div>

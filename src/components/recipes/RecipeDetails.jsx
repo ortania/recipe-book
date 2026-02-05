@@ -52,7 +52,7 @@ function RecipeDetails({
   const [customTimerInput, setCustomTimerInput] = useState("");
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState(null);
-  const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [voiceEnabled, setVoiceEnabled] = useState(false);
 
   // Refs to store latest handler functions
   const handleNextStepRef = React.useRef();
@@ -215,7 +215,7 @@ function RecipeDetails({
     console.log("✅ Speech recognition API found");
 
     const recognitionInstance = new SpeechRecognition();
-    recognitionInstance.continuous = false; // Stop after each result to prevent browser from stopping unexpectedly
+    recognitionInstance.continuous = false; // Stop after each result - restart manually
     recognitionInstance.interimResults = false; // Only get final results
     recognitionInstance.lang = "en-US"; // English for better compatibility
     recognitionInstance.maxAlternatives = 1; // Reduce processing to minimize beeps
@@ -228,9 +228,15 @@ function RecipeDetails({
     recognitionInstance.onend = () => {
       console.log("🎤 Voice recognition ENDED - Restarting...");
 
-      // Restart immediately without setting isListening to false
-      // This makes it feel more continuous
+      // Let browser fully stop before restarting
       if (isActive && cookingMode && voiceEnabled) {
+        // Ensure recognition is fully stopped
+        try {
+          recognitionInstance.stop();
+        } catch (e) {
+          // Already stopped, ignore
+        }
+
         setTimeout(() => {
           try {
             if (isActive && voiceEnabled) {
@@ -240,7 +246,7 @@ function RecipeDetails({
             console.error("❌ Recognition restart error:", e);
             setIsListening(false);
           }
-        }, 50); // Restart very quickly (50ms)
+        }, 100); // Short delay after ensuring stop
       } else {
         setIsListening(false);
       }

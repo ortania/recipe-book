@@ -14,6 +14,8 @@
   margin-left: auto;
   margin-right: auto;
   position: relative;
+  /* background: #f8f9fa; */
+  background: white;
 }
 
 .volumeNotification {
@@ -72,8 +74,8 @@
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   /* border-radius: 25px; */
-  color: white;
-  font-weight: 600;
+  color: black;
+  /* font-weight: 600; */
   border: none;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -82,7 +84,7 @@
 }
 
 .voiceToggleButton span {
-  font-size: var(--very-large-font);
+  font-size: var(--basic-font);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -110,7 +112,7 @@
 }
 
 .voiceRecognitionIndicator span {
-  font-size: var(--very-very-large-font);
+  font-size: var(--large-font);
   color: black;
   display: flex;
   align-items: center;
@@ -127,15 +129,16 @@
 
 .closeButton {
   background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-radius: 50%;
+  /* border: 1px solid rgba(0, 0, 0, 0.2); */
+  /* border-radius: 50%; */
+  border: none;
   width: 36px;
   height: 36px;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: 2rem;
   color: #333;
   transition: all 0.2s ease;
   margin-right: 1.5rem;
@@ -158,20 +161,20 @@
   overflow: visible;
   box-sizing: border-box;
   margin: 0 auto;
-  gap: 2rem;
+  gap: 1rem;
 }
 
 .servingSelector {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 1.5rem;
+  padding: 1.5rem 2rem;
   background: #ffffff;
-  /* border-radius: 20px; */
-  margin-bottom: 1.5rem;
+  border-radius: 0;
+  margin-bottom: 0;
   max-width: 1200px;
   width: 100%;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
+  box-shadow: none;
 }
 
 .servingControls {
@@ -188,16 +191,17 @@
 }
 
 .servingButtonCooking {
-  width: 45px;
-  height: 45px;
+  width: 50px;
+  height: 50px;
   border-radius: 50%;
-  border: 1px solid #ddd;
+  border: 2px solid #e0e0e0;
   background: white;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: var(--very-large-font);
+  font-size: 1.5rem;
+  color: #666;
   transition: all 0.2s ease;
 }
 
@@ -211,41 +215,46 @@
 }
 
 .servingLabelCooking {
-  font-size: var(--very-large-font);
-  font-weight: 700;
+  font-size: var(--large-font);
+  /* font-weight: 700; */
   /* color: #ff6b35; */
 }
 
 .tabs {
   display: flex;
   gap: 0;
-  border-bottom: 2px solid #f0f0f0;
-  margin-bottom: 1.5rem;
+  /* border-bottom: 3px solid #e0e0e0; */
+  margin-bottom: 0;
   max-width: 1200px;
   width: 100%;
+  background: white;
 }
 
 .tab {
   flex: 1;
-  padding: 0.75rem 1rem;
+  padding: 1rem 1.5rem;
   background: none;
   border: none;
-  border-bottom: 3px solid transparent;
+  border-bottom: 2px solid transparent;
   font-size: var(--basic-font);
   font-weight: 600;
-  color: #999;
+  color: #94a3b8;
   cursor: pointer;
   transition: all 0.2s ease;
-  margin-bottom: -2px;
+  margin-bottom: -3px;
 }
 
 .tab:hover {
   color: #666;
 }
 
+:not(.activeTab) {
+  border-bottom-color: rgb(217, 216, 216);
+}
+
 .activeTab {
-  color: #333;
-  border-bottom-color: #333;
+  color: #10b981;
+  border-bottom-color: #10b981;
 }
 
 .tabContent {
@@ -265,70 +274,57 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 1rem;
+  /* margin-bottom: 1rem; */
+  line-height: 0.8;
 }
 
 .stepInfo {
-  font-size: 1rem;
-  font-weight: 600;
-  color: #64748b;
+  font-size: var(--basic-font);
+  /* font-weight: 600; */
+  /* color: #64748b; */
+  margin-bottom: 0.5rem;
 }
 
 .progressBadge {
-  font-size: 1rem;
-  font-weight: 700;
-  color: #3b82f6;
-  background: #dbeafe;
-  padding: 0.25rem 0.75rem;
-  border-radius: 20px;
+  font-size: var(--basic-font);
+  /* font-weight: 700; */
+  color: #10b981;
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
 }
 
 .sliderContainer {
   width: 100%;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
 .progressSlider {
   width: 100%;
-  height: 8px;
+  height: 6px;
   border-radius: 10px;
   outline: none;
   cursor: pointer;
   -webkit-appearance: none;
   appearance: none;
+  background: #e5e7eb;
 }
 
 .progressSlider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #10b981;
+  width: 0;
+  height: 0;
+  opacity: 0;
   cursor: pointer;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
-  transition: all 0.2s;
-}
-
-.progressSlider::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.6);
 }
 
 .progressSlider::-moz-range-thumb {
-  width: 20px;
-  height: 20px;
-  border-radius: 50%;
-  background: #10b981;
+  width: 0;
+  height: 0;
+  opacity: 0;
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 6px rgba(16, 185, 129, 0.4);
-  transition: all 0.2s;
-}
-
-.progressSlider::-moz-range-thumb:hover {
-  transform: scale(1.2);
-  box-shadow: 0 3px 10px rgba(16, 185, 129, 0.6);
 }
 
 .navigationButtons {
@@ -353,48 +349,223 @@
 }
 
 .navButton {
-  /* border: 2px solid #e5e7eb; */
-  background-color: #e8eaed;
+  background-color: #f1f5f9;
+  color: #94a3b8;
+  border-radius: 12px;
+  box-shadow: none;
 }
 
 .restartButton {
-  /* background-color: #f59e0b; */
-  background-color: #6b7280;
+  background-color: #475569;
   color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  /* box-shadow: 0 4px 12px rgba(245, 158, 11, 0.3); */
+  border-radius: 12px;
+  box-shadow: none;
 }
 
 .nextButton {
   background-color: #10b981;
   color: white;
-  /* box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3); */
+  border-radius: 12px;
+  box-shadow: none;
 }
 
-.instructions {
-  font-size: var(--basic-font);
-  color: #9ca3af;
-  text-align: center;
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.infoButton {
+  background: white;
+  border: 2px solid #e0e0e0;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #0369a1;
+  transition: all 0.2s ease;
+}
+
+.infoButton:hover {
+  background: #e0f2fe;
+  border-color: #0369a1;
+  transform: scale(1.05);
+}
+
+.infoModalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
   justify-content: center;
-  gap: 1.5rem;
-  flex-wrap: wrap;
-  margin-bottom: 1rem;
+  align-items: center;
+  z-index: 10200;
+  animation: fadeIn 0.2s ease;
 }
 
-/* .instructions span {
-  font-size: var(--basic-font);
-} */
+.infoModal {
+  background: white;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.infoModalHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
+}
+
+.infoModalHeader h3 {
+  margin: 0;
+  font-size: var(--large-font);
+  font-weight: 600;
+  color: white;
+}
+
+.infoModalClose {
+  background: rgba(255, 255, 255, 0.2);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1.2rem;
+  color: white;
+  transition: all 0.2s ease;
+}
+
+.infoModalClose:hover {
+  background: rgba(255, 255, 255, 0.3);
+  transform: scale(1.1);
+}
+
+.infoModalBody {
+  padding: 2rem;
+  overflow-y: auto;
+  max-height: calc(80vh - 80px);
+}
+
+.infoSection {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.infoItem {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 1rem;
+  background: #f8fafc;
+  /* border-radius: 12px; */
+  border-right: 4px solid #0369a1;
+}
+
+.infoEmoji {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.infoItem strong {
+  display: block;
+  font-size: var(--large-font);
+  color: #0f172a;
+  margin-bottom: 0.5rem;
+}
+
+.infoItem p {
+  margin: 0;
+  color: #475569;
+  line-height: 1.6;
+}
+
+.voiceCommands {
+  list-style: none;
+  padding: 0;
+  margin: 0.75rem 0 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.voiceCommands li {
+  padding: 0.5rem 0.75rem;
+  background: white;
+  border-radius: 6px;
+  color: #334155;
+  font-size: 0.95rem;
+  border-right: 2px solid #10b981;
+}
+
+.timerContent {
+  display: flex;
+  /* flex-direction: column; */
+  justify-content: space-between;
+  align-items: center;
+  position: relative;
+  z-index: 1;
+  gap: 1.5rem;
+}
+
+@media (max-width: 768px) {
+  .infoModal {
+    width: 95%;
+    max-width: 95%;
+  }
+
+  .infoModalBody {
+    padding: 1.5rem;
+  }
+
+  .infoItem {
+    padding: 0.75rem;
+  }
+
+  .infoEmoji {
+    font-size: 1.5rem;
+  }
+}
 
 .timerSection {
-  margin-top: 0.5rem;
+  margin-top: 1.5rem;
   padding: 1.5rem 2rem;
-  background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-  border-radius: 20px;
-  box-shadow: 0 4px 20px rgba(139, 92, 246, 0.3);
+  background: #e0f2fe;
+  border-radius: 12px;
+  box-shadow: none;
   border: none;
   position: relative;
   overflow: hidden;
@@ -402,19 +573,22 @@
 
 .timerContent {
   display: flex;
+  flex-direction: row;
   justify-content: space-between;
   align-items: center;
   position: relative;
   z-index: 1;
+  gap: 1.5rem;
 }
 
 .timerTitle {
-  font-size: 1.1rem;
+  font-size: var(--large-font);
   font-weight: 600;
-  color: white;
+  color: #0369a1;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  white-space: nowrap;
 }
 
 .timerTitle span {
@@ -424,18 +598,20 @@
 .timerControls {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 1rem;
+  flex: 1;
+  justify-content: center;
 }
 
 .timerButton {
   width: 45px;
   height: 45px;
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.2);
-  border: 2px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  font-size: 1.5rem;
-  font-weight: 600;
+  border-radius: 8px;
+  background: white;
+  border: 2px solid #bae6fd;
+  color: #0369a1;
+  font-size: 4rem;
+  /* font-weight: 600; */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -445,31 +621,35 @@
 
 .timerDisplay {
   background: white;
-  border-radius: 12px;
-  padding: 0.75rem 1.5rem;
-  min-width: 80px;
+  border-radius: 8px;
+  padding: 0.75rem 3rem;
+  /* padding: 0.75em 1.5em; */
+  min-width: 150px;
   text-align: center;
 }
 
 .timerInput {
   border: none;
   background: transparent;
-  font-size: 1.5rem;
+  font-size: 2rem;
   font-weight: 700;
-  color: #6366f1;
+  color: #0c4a6e;
   text-align: center;
   width: 100%;
   outline: none;
   font-family: "SF Mono", monospace;
 }
 
-.startButton {
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
+.startButton,
+.stopButton {
+  padding: 0.75em 1.5em;
+  font-size: var(--large-font);
+  /* background: #0c4a6e; */
   background: white;
-  color: #6366f1;
+  /* color: white; */
+  color: #0c4a6e;
   border: none;
-  border-radius: 12px;
+  border-radius: 8px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -479,12 +659,12 @@
 }
 
 .startButton:hover {
-  background: #6366f1;
+  background: #547a8e;
   color: white;
 }
 
 .stopButton {
-  padding: 0.75rem 1.5rem;
+  /* padding: 0.75rem 1.5rem;
   font-size: 1rem;
   background: white;
   color: #ef4444;
@@ -495,11 +675,11 @@
   align-items: center;
   gap: 0.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.2s ease; */
 }
 
 .stopButton:hover {
-  background: #ef4444;
+  background: #f47373;
   color: white;
 }
 
@@ -552,32 +732,32 @@
 .ingredientItem,
 .instructionItem {
   opacity: 1;
-  font-size: 3.5rem;
-  /* font-weight: 600; */
+  font-size: 1.5rem;
+  font-weight: 400;
   transition: all 0.3s ease;
-  /* background-color: #fef3c7; */
+  /* background-color: #fef9e7; */
   padding: 2rem 2.5rem;
-  /* border-radius: 20px; */
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
+  box-shadow: none;
   line-height: 1.8;
   min-height: 120px;
   width: 100%;
   max-width: 100%;
-  /* border: 2px solid #fde68a; */
-  border: 2px solid lightgray;
-  /* color: #78350f; */
-  color: black;
+  /* border: 2px solid #f9e79f; */
+  color: #333;
   text-align: center;
+  /* margin: 1.5rem 0; */
 }
 
 .ingredientText,
 .instructionText {
-  font-size: 3rem;
+  font-size: var(--very-very-large-font);
   text-align: center;
   line-height: 1.7;
+  color: #333;
 }
 
 @keyframes fadeIn {
@@ -648,5 +828,9 @@
 
   .voiceRecognitionIndicator span {
     font-size: var(--very-large-font);
+  }
+
+  .timerContent {
+    flex-direction: column;
   }
 }
