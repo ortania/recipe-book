@@ -23,6 +23,8 @@ import {
   getUserData,
   logoutUser,
 } from "../firebase/authService";
+import { doc, writeBatch } from "firebase/firestore";
+import { db } from "../firebase/config";
 
 const RecipeBookContext = createContext();
 
@@ -81,8 +83,10 @@ export const RecipeBookProvider = ({ children }) => {
       let categoriesFromFirestore = await fetchCategories(userId);
       if (categoriesFromFirestore.length === 0) {
         console.log("📦 No categories found, initializing...");
-        await initializeCategories(initialCategories, userId);
-        categoriesFromFirestore = await fetchCategories(userId);
+        categoriesFromFirestore = await initializeCategories(
+          initialCategories,
+          userId,
+        );
       }
       setCategories(categoriesFromFirestore);
       setCategoriesLoaded(true);
@@ -133,24 +137,41 @@ export const RecipeBookProvider = ({ children }) => {
       await deleteCategoryFromFirestore(categoryId);
       setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
 
-      // Remove the deleted category from all recipes
-      setRecipes((prev) =>
-        prev.map((recipe) => {
+      // Remove the deleted category from all recipes using batch write
+      setRecipes((prev) => {
+        const batch = writeBatch(db);
+        let hasUpdates = false;
+
+        const updatedRecipes = prev.map((recipe) => {
           if (recipe.categories && recipe.categories.includes(categoryId)) {
             const updatedCategories = recipe.categories.filter(
               (catId) => catId !== categoryId,
             );
-            // Update recipe in Firebase
-            updateRecipeInFirebase(recipe.id, {
-              categories: updatedCategories,
-            }).catch((error) =>
-              console.error("Error updating recipe categories:", error),
-            );
+
+            // Add to batch
+            const recipeRef = doc(db, "recipes", recipe.id);
+            batch.update(recipeRef, { categories: updatedCategories });
+            hasUpdates = true;
+
             return { ...recipe, categories: updatedCategories };
           }
           return recipe;
-        }),
-      );
+        });
+
+        // Commit batch if there are updates
+        if (hasUpdates) {
+          batch
+            .commit()
+            .then(() =>
+              console.log("✅ Recipe categories batch update successful"),
+            )
+            .catch((error) =>
+              console.error("Error updating recipe categories:", error),
+            );
+        }
+
+        return updatedRecipes;
+      });
 
       return true;
     } catch (error) {
@@ -188,18 +209,32 @@ export const RecipeBookProvider = ({ children }) => {
       console.log("📦 Moving recipe:", movedRecipe?.name);
       newRecipes.splice(toIndex, 0, movedRecipe);
 
-      // Update order field for all recipes and persist to Firebase
-      newRecipes.forEach(async (recipe, index) => {
+      // Use batch write for all recipe order updates
+      const batch = writeBatch(db);
+      let hasUpdates = false;
+
+      newRecipes.forEach((recipe, index) => {
         if (recipe.order !== index) {
-          try {
-            console.log("💾 Updating order for:", recipe.name, "to", index);
-            const { updateRecipe } = await import("../firebase/recipeService");
-            await updateRecipe(recipe.id, { order: index });
-          } catch (error) {
-            console.error("Error updating recipe order:", error);
-          }
+          console.log(
+            "💾 Batching order update for:",
+            recipe.name,
+            "to",
+            index,
+          );
+          const recipeRef = doc(db, "recipes", recipe.id);
+          batch.update(recipeRef, { order: index });
+          hasUpdates = true;
         }
       });
+
+      if (hasUpdates) {
+        batch
+          .commit()
+          .then(() => console.log("✅ Recipe order batch update successful"))
+          .catch((error) =>
+            console.error("Error updating recipe order:", error),
+          );
+      }
 
       return newRecipes;
     });

@@ -5,6 +5,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { BsTrash3 } from "react-icons/bs";
 import { GoTrash } from "react-icons/go";
+import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 
 function RecipeDetailsFull({
@@ -22,6 +23,7 @@ function RecipeDetailsFull({
   const [checkedIngredients, setCheckedIngredients] = useState({});
   const [checkedInstructions, setCheckedInstructions] = useState({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [notesExpanded, setNotesExpanded] = useState(false);
 
   const originalServings = recipe.servings || 4;
 
@@ -210,8 +212,23 @@ function RecipeDetailsFull({
 
         {recipe.notes && (
           <div className={classes.notesSection}>
-            <h3 className={classes.notesTitle}>📝 Notes</h3>
-            <p className={classes.notesText}>{recipe.notes}</p>
+            <button
+              className={classes.notesHeader}
+              onClick={() => setNotesExpanded(!notesExpanded)}
+            >
+              <div className={classes.notesTitleWrapper}>
+                <span className={classes.notesIcon}>📝</span>
+                <h3 className={classes.notesTitle}>Notes</h3>
+              </div>
+              <span className={classes.expandIcon}>
+                {notesExpanded ? <MdExpandLess /> : <MdExpandMore />}
+              </span>
+            </button>
+            {notesExpanded && (
+              <div className={classes.notesContent}>
+                <p className={classes.notesText}>{recipe.notes}</p>
+              </div>
+            )}
           </div>
         )}
 

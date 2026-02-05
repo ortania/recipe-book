@@ -164,20 +164,22 @@ export const initializeCategories = async (defaultCategories, userId) => {
     console.log("🔄 Initializing categories in Firestore for user:", userId);
     const batch = writeBatch(db);
 
-    defaultCategories.forEach((category, index) => {
+    const categoriesWithMetadata = defaultCategories.map((category, index) => ({
+      ...category,
+      userId,
+      order: index,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    }));
+
+    categoriesWithMetadata.forEach((category) => {
       const categoryRef = doc(db, CATEGORIES_COLLECTION, category.id);
-      batch.set(categoryRef, {
-        ...category,
-        userId,
-        order: index,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      });
+      batch.set(categoryRef, category);
     });
 
     await batch.commit();
     console.log("✅ Categories initialized successfully with original IDs");
-    return defaultCategories;
+    return categoriesWithMetadata;
   } catch (error) {
     console.error("Error initializing categories:", error);
     throw error;
