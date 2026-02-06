@@ -508,6 +508,46 @@
   box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
 }
 
+.nutritionSection {
+  margin: 1rem 0;
+  padding: 1rem;
+  background-color: #f0fdf4;
+  border-radius: 8px;
+  border: 1px solid #bbf7d0;
+}
+
+.nutritionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 0.75rem;
+}
+
+.nutritionField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nutritionField label {
+  font-size: 0.85rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.nutritionField input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: var(--very-small-font);
+}
+
+@media (max-width: 480px) {
+  .nutritionGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
 .colorPicker {
   margin: 1rem 0;
 }

@@ -1,0 +1,90 @@
+// Real recipe data with high-quality Unsplash food photography
+export const recipes = [
+  {
+    name: "Chocolate Lava Cake",
+    time: "45 min",
+    difficulty: "Medium",
+    rating: 5,
+    category: "Desserts",
+    image: "https://images.unsplash.com/photo-1624353365286-3f8d62daad51?w=600&h=600&fit=crop",
+    color: "#4a2c2a",
+  },
+  {
+    name: "Fresh Caesar Salad",
+    time: "15 min",
+    difficulty: "Easy",
+    rating: 4,
+    category: "Salads",
+    image: "https://images.unsplash.com/photo-1546793665-c74683f339c1?w=600&h=600&fit=crop",
+    color: "#5a7247",
+  },
+  {
+    name: "Grilled Salmon",
+    time: "30 min",
+    difficulty: "Medium",
+    rating: 5,
+    category: "Main Course",
+    image: "https://images.unsplash.com/photo-1467003909585-2f8a72700288?w=600&h=600&fit=crop",
+    color: "#c4724e",
+  },
+  {
+    name: "Margherita Pizza",
+    time: "25 min",
+    difficulty: "Easy",
+    rating: 5,
+    category: "Main Course",
+    image: "https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=600&h=600&fit=crop",
+    color: "#c44d34",
+  },
+  {
+    name: "Avocado Toast",
+    time: "10 min",
+    difficulty: "Easy",
+    rating: 4,
+    category: "Breakfast",
+    image: "https://images.unsplash.com/photo-1541519227354-08fa5d50c44d?w=600&h=600&fit=crop",
+    color: "#6b8e4e",
+  },
+  {
+    name: "Beef Bourguignon",
+    time: "2.5 hrs",
+    difficulty: "Hard",
+    rating: 5,
+    category: "Main Course",
+    image: "https://images.unsplash.com/photo-1534939561126-855b8675edd7?w=600&h=600&fit=crop",
+    color: "#6b3a2a",
+  },
+  {
+    name: "Tiramisu",
+    time: "40 min",
+    difficulty: "Medium",
+    rating: 5,
+    category: "Desserts",
+    image: "https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=600&h=600&fit=crop",
+    color: "#8b6f4e",
+  },
+  {
+    name: "Pad Thai",
+    time: "35 min",
+    difficulty: "Medium",
+    rating: 4,
+    category: "Main Course",
+    image: "https://images.unsplash.com/photo-1559314809-0d155014e29e?w=600&h=600&fit=crop",
+    color: "#c49a3c",
+  },
+];
+
+export const categories = [
+  { name: "All", color: "#8B7355", count: 24 },
+  { name: "Main Course", color: "#C44D34", count: 8 },
+  { name: "Desserts", color: "#9B59B6", count: 6 },
+  { name: "Salads", color: "#27AE60", count: 4 },
+  { name: "Breakfast", color: "#F39C12", count: 3 },
+  { name: "Appetizers", color: "#3498DB", count: 3 },
+];
+
+export const navLinks = [
+  { label: "Categories", icon: "📂", active: true },
+  { label: "Favorites", icon: "⭐", active: false },
+  { label: "Conversions", icon: "📊", active: false },
+];

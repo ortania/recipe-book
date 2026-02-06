@@ -9,6 +9,13 @@
   margin: 0 auto;
 }
 
+.exportButtonWrapper {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
 .headerButtons {
   position: absolute;
   top: 0;
@@ -435,4 +442,72 @@
 .checkedText {
   text-decoration: line-through;
   color: #999 !important;
+}
+
+/* Nutrition Section */
+.nutritionSection {
+  margin: 1rem 0;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid #e0e0e0;
+}
+
+.nutritionToggle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: #f0fdf4;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #2e7d32;
+  transition: background-color 0.2s;
+}
+
+.nutritionToggle:hover {
+  background: #dcfce7;
+}
+
+.nutritionIcon {
+  font-size: 1.3rem;
+  color: #16a34a;
+}
+
+.nutritionContent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  padding: 1rem;
+  background: #fafffe;
+}
+
+.nutritionItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e8f5e9;
+}
+
+.nutritionLabel {
+  font-size: 0.85rem;
+  color: #666;
+  font-weight: 500;
+}
+
+.nutritionValue {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2e7d32;
+}
+
+@media (max-width: 480px) {
+  .nutritionContent {
+    grid-template-columns: 1fr;
+  }
 }

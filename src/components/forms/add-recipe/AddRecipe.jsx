@@ -29,6 +29,13 @@ function AddRecipe({
     isFavorite: false,
     notes: "",
     rating: 0,
+    nutrition: {
+      calories: "",
+      protein: "",
+      carbs: "",
+      fat: "",
+      fiber: "",
+    },
   });
 
   const [recipeText, setRecipeText] = useState("");
@@ -72,6 +79,7 @@ function AddRecipe({
       isFavorite: newPerson.isFavorite,
       notes: newPerson.notes,
       rating: newPerson.rating || 0,
+      nutrition: newPerson.nutrition,
     });
     setNewPerson({
       name: "",
@@ -87,6 +95,13 @@ function AddRecipe({
       isFavorite: false,
       notes: "",
       rating: 0,
+      nutrition: {
+        calories: "",
+        protein: "",
+        carbs: "",
+        fat: "",
+        fiber: "",
+      },
     });
     onCancel();
   };
@@ -672,6 +687,96 @@ function AddRecipe({
             className={classes.textarea}
             rows="3"
           />
+        </div>
+
+        <div className={classes.nutritionSection}>
+          <label className={classes.fieldLabel}>
+            🥗 Nutritional Values (per serving)
+          </label>
+          <div className={classes.nutritionGrid}>
+            <div className={classes.nutritionField}>
+              <label>Calories</label>
+              <input
+                type="text"
+                placeholder="e.g., 250 kcal"
+                value={newPerson.nutrition.calories}
+                onChange={(e) =>
+                  setNewPerson({
+                    ...newPerson,
+                    nutrition: {
+                      ...newPerson.nutrition,
+                      calories: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className={classes.nutritionField}>
+              <label>Protein</label>
+              <input
+                type="text"
+                placeholder="e.g., 12g"
+                value={newPerson.nutrition.protein}
+                onChange={(e) =>
+                  setNewPerson({
+                    ...newPerson,
+                    nutrition: {
+                      ...newPerson.nutrition,
+                      protein: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className={classes.nutritionField}>
+              <label>Carbs</label>
+              <input
+                type="text"
+                placeholder="e.g., 30g"
+                value={newPerson.nutrition.carbs}
+                onChange={(e) =>
+                  setNewPerson({
+                    ...newPerson,
+                    nutrition: {
+                      ...newPerson.nutrition,
+                      carbs: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className={classes.nutritionField}>
+              <label>Fat</label>
+              <input
+                type="text"
+                placeholder="e.g., 8g"
+                value={newPerson.nutrition.fat}
+                onChange={(e) =>
+                  setNewPerson({
+                    ...newPerson,
+                    nutrition: { ...newPerson.nutrition, fat: e.target.value },
+                  })
+                }
+              />
+            </div>
+            <div className={classes.nutritionField}>
+              <label>Fiber</label>
+              <input
+                type="text"
+                placeholder="e.g., 4g"
+                value={newPerson.nutrition.fiber}
+                onChange={(e) =>
+                  setNewPerson({
+                    ...newPerson,
+                    nutrition: {
+                      ...newPerson.nutrition,
+                      fiber: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+          </div>
         </div>
 
         <div className={classes.difficultySection}>

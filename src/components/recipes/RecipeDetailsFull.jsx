@@ -6,7 +6,9 @@ import { HiOutlineTrash } from "react-icons/hi2";
 import { BsTrash3 } from "react-icons/bs";
 import { GoTrash } from "react-icons/go";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
+import { GiMeal } from "react-icons/gi";
 import { ConfirmDialog } from "../forms/confirm-dialog";
+import { ExportImageButton } from "./export-image-button";
 
 function RecipeDetailsFull({
   recipe,
@@ -24,6 +26,7 @@ function RecipeDetailsFull({
   const [checkedInstructions, setCheckedInstructions] = useState({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [notesExpanded, setNotesExpanded] = useState(false);
+  const [showNutrition, setShowNutrition] = useState(false);
 
   const originalServings = recipe.servings || 4;
 
@@ -102,6 +105,9 @@ function RecipeDetailsFull({
 
   return (
     <div className={classes.recipeCard}>
+      <div className={classes.exportButtonWrapper}>
+        <ExportImageButton recipe={recipe} />
+      </div>
       <div className={classes.headerButtons}>
         <button onClick={onClose} className={classes.closeButton}>
           ✕
@@ -178,9 +184,10 @@ function RecipeDetailsFull({
           {recipe.cookTime && (
             <span className={classes.infoItem}>Cook {recipe.cookTime}</span>
           )}
-          {(recipe.prepTime || recipe.cookTime) && (recipe.difficulty !== 'Unknown' && (
-            <span className={classes.infoDot}>•</span>
-          ))}
+          {(recipe.prepTime || recipe.cookTime) &&
+            recipe.difficulty !== "Unknown" && (
+              <span className={classes.infoDot}>•</span>
+            )}
           {recipe.difficulty && (
             <span className={classes.infoItem}>
               {formatDifficulty(recipe.difficulty)}
@@ -209,6 +216,66 @@ function RecipeDetailsFull({
             >
               {recipe.sourceUrl}
             </a>
+          </div>
+        )}
+
+        {recipe.nutrition && Object.values(recipe.nutrition).some((v) => v) && (
+          <div className={classes.nutritionSection}>
+            <button
+              className={classes.nutritionToggle}
+              onClick={() => setShowNutrition(!showNutrition)}
+              title="Nutritional Values"
+            >
+              <GiMeal className={classes.nutritionIcon} />
+              <span>Nutritional Values</span>
+              <span className={classes.expandIcon}>
+                {showNutrition ? <MdExpandLess /> : <MdExpandMore />}
+              </span>
+            </button>
+            {showNutrition && (
+              <div className={classes.nutritionContent}>
+                {recipe.nutrition.calories && (
+                  <div className={classes.nutritionItem}>
+                    <span className={classes.nutritionLabel}>Calories</span>
+                    <span className={classes.nutritionValue}>
+                      {recipe.nutrition.calories}
+                    </span>
+                  </div>
+                )}
+                {recipe.nutrition.protein && (
+                  <div className={classes.nutritionItem}>
+                    <span className={classes.nutritionLabel}>Protein</span>
+                    <span className={classes.nutritionValue}>
+                      {recipe.nutrition.protein}
+                    </span>
+                  </div>
+                )}
+                {recipe.nutrition.carbs && (
+                  <div className={classes.nutritionItem}>
+                    <span className={classes.nutritionLabel}>Carbs</span>
+                    <span className={classes.nutritionValue}>
+                      {recipe.nutrition.carbs}
+                    </span>
+                  </div>
+                )}
+                {recipe.nutrition.fat && (
+                  <div className={classes.nutritionItem}>
+                    <span className={classes.nutritionLabel}>Fat</span>
+                    <span className={classes.nutritionValue}>
+                      {recipe.nutrition.fat}
+                    </span>
+                  </div>
+                )}
+                {recipe.nutrition.fiber && (
+                  <div className={classes.nutritionItem}>
+                    <span className={classes.nutritionLabel}>Fiber</span>
+                    <span className={classes.nutritionValue}>
+                      {recipe.nutrition.fiber}
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         )}
 

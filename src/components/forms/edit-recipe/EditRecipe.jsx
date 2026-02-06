@@ -23,6 +23,13 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     isFavorite: person.isFavorite || false,
     notes: person.notes || "",
     rating: person.rating || 0,
+    nutrition: person.nutrition || {
+      calories: "",
+      protein: "",
+      carbs: "",
+      fat: "",
+      fiber: "",
+    },
   });
 
   const [draggedIngredientIndex, setDraggedIngredientIndex] = useState(null);
@@ -48,6 +55,13 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       isFavorite: person.isFavorite || false,
       notes: person.notes || "",
       rating: person.rating || 0,
+      nutrition: person.nutrition || {
+        calories: "",
+        protein: "",
+        carbs: "",
+        fat: "",
+        fiber: "",
+      },
     });
   }, [person]);
 
@@ -264,6 +278,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       isFavorite: editedPerson.isFavorite,
       notes: editedPerson.notes,
       rating: editedPerson.rating || 0,
+      nutrition: editedPerson.nutrition,
     };
     console.log("📝 EDIT FORM - updatedPerson.rating:", updatedPerson.rating);
     console.log(
@@ -501,6 +516,99 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             className={classes.textarea}
             rows="3"
           />
+        </div>
+
+        <div className={classes.nutritionSection}>
+          <label className={classes.fieldLabel}>
+            🥗 Nutritional Values (per serving)
+          </label>
+          <div className={classes.nutritionGrid}>
+            <div className={classes.nutritionField}>
+              <label>Calories</label>
+              <input
+                type="text"
+                placeholder="e.g., 250 kcal"
+                value={editedPerson.nutrition.calories}
+                onChange={(e) =>
+                  setEditedPerson({
+                    ...editedPerson,
+                    nutrition: {
+                      ...editedPerson.nutrition,
+                      calories: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className={classes.nutritionField}>
+              <label>Protein</label>
+              <input
+                type="text"
+                placeholder="e.g., 12g"
+                value={editedPerson.nutrition.protein}
+                onChange={(e) =>
+                  setEditedPerson({
+                    ...editedPerson,
+                    nutrition: {
+                      ...editedPerson.nutrition,
+                      protein: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className={classes.nutritionField}>
+              <label>Carbs</label>
+              <input
+                type="text"
+                placeholder="e.g., 30g"
+                value={editedPerson.nutrition.carbs}
+                onChange={(e) =>
+                  setEditedPerson({
+                    ...editedPerson,
+                    nutrition: {
+                      ...editedPerson.nutrition,
+                      carbs: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className={classes.nutritionField}>
+              <label>Fat</label>
+              <input
+                type="text"
+                placeholder="e.g., 8g"
+                value={editedPerson.nutrition.fat}
+                onChange={(e) =>
+                  setEditedPerson({
+                    ...editedPerson,
+                    nutrition: {
+                      ...editedPerson.nutrition,
+                      fat: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className={classes.nutritionField}>
+              <label>Fiber</label>
+              <input
+                type="text"
+                placeholder="e.g., 4g"
+                value={editedPerson.nutrition.fiber}
+                onChange={(e) =>
+                  setEditedPerson({
+                    ...editedPerson,
+                    nutrition: {
+                      ...editedPerson.nutrition,
+                      fiber: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+          </div>
         </div>
 
         <div className={classes.difficultySection}>

@@ -1,0 +1,19 @@
+{
+  "name": "recipe-book-promo-video",
+  "version": "1.0.0",
+  "description": "Promotional video for Recipe Book project using Remotion",
+  "type": "module",
+  "scripts": {
+    "start": "npx remotion studio",
+    "build": "npx remotion render RecipeBookPromo out/video.mp4 --codec h264",
+    "build:webm": "npx remotion render RecipeBookPromo out/video.webm --codec vp8",
+    "upgrade": "npx remotion upgrade"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.242",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "remotion": "4.0.242"
+  },
+  "devDependencies": {}
+}

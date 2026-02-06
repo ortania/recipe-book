@@ -202,11 +202,95 @@
 
 .inputContainer {
   display: flex;
-  gap: 0.75rem;
+  flex-direction: column;
+  gap: 0.5rem;
   padding: 1.5rem;
   border-top: 1px solid #e9ecef;
   background: white;
   border-radius: 0 0 12px 12px;
+}
+
+.inputRow {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.imageUploadButton {
+  background: none;
+  border: 1.5px solid #dee2e6;
+  color: #666;
+  width: 44px;
+  min-width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: var(--basic-font);
+}
+
+.imageUploadButton:hover:not(:disabled) {
+  border-color: #2196f3;
+  color: #2196f3;
+  background: #e3f2fd;
+}
+
+.imageUploadButton:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.imagePreviewBar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 0.75rem;
+  background: #f0f7ff;
+  border: 1px solid #bbdefb;
+  border-radius: 10px;
+}
+
+.imagePreviewThumb {
+  width: 48px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+}
+
+.imagePreviewName {
+  flex: 1;
+  font-size: var(--small-font);
+  color: #555;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.imagePreviewRemove {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 0.25em;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.imagePreviewRemove:hover {
+  color: #c62828;
+}
+
+.chatImage {
+  max-width: 100%;
+  max-height: 200px;
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+  display: block;
 }
 
 .input {
@@ -279,5 +363,10 @@
     position: sticky;
     bottom: 0;
     background: white;
+  }
+
+  .imagePreviewThumb {
+    width: 40px;
+    height: 40px;
   }
 }

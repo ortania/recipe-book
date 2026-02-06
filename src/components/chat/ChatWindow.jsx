@@ -1,9 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { FaPaperPlane, FaTimes, FaTrash } from "react-icons/fa";
+import { FaPaperPlane, FaTimes, FaTrash, FaImage } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { PiTrash } from "react-icons/pi";
 import { CiSearch } from "react-icons/ci";
-import { sendChatMessage } from "../../services/openai";
+import {
+  sendChatMessage,
+  analyzeImageForNutrition,
+} from "../../services/openai";
 import classes from "./chat-window.module.css";
 
 function ChatWindow({ onClose, recipeContext = null }) {
@@ -15,6 +18,7 @@ function ChatWindow({ onClose, recipeContext = null }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const messagesEndRef = useRef(null);
+  const fileInputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -25,7 +29,8 @@ function ChatWindow({ onClose, recipeContext = null }) {
   }, [messages]);
 
   useEffect(() => {
-    localStorage.setItem("chatMessages", JSON.stringify(messages));
+    const messagesForStorage = messages.map(({ image, ...rest }) => rest);
+    localStorage.setItem("chatMessages", JSON.stringify(messagesForStorage));
   }, [messages]);
 
   useEffect(() => {
@@ -60,9 +65,57 @@ function ChatWindow({ onClose, recipeContext = null }) {
     localStorage.removeItem("chatMessages");
   };
 
+  const handleImageSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    if (!file.type.startsWith("image/")) {
+      setError("Please select an image file.");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image must be smaller than 5MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      handleImageAnalysis(reader.result);
+    };
+    reader.readAsDataURL(file);
+    e.target.value = "";
+  };
+
+  const handleImageAnalysis = async (imageBase64) => {
+    const userImageMsg = {
+      role: "user",
+      content: "🖼️ Analyze nutritional values",
+      image: imageBase64,
+    };
+    setMessages((prev) => [...prev, userImageMsg]);
+    setIsLoading(true);
+    setError("");
+
+    try {
+      const response = await analyzeImageForNutrition(imageBase64);
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: response },
+      ]);
+    } catch (err) {
+      setError(err.message || "Failed to analyze image. Please try again.");
+      console.error("Image analysis error:", err);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    if (isLoading) return;
+
+    if (!input.trim()) return;
 
     const userMessage = { role: "user", content: input };
     const updatedMessages = [...messages, userMessage];
@@ -129,7 +182,16 @@ function ChatWindow({ onClose, recipeContext = null }) {
                   : classes.assistantMessage
               }`}
             >
-              <div className={classes.messageContent}>{message.content}</div>
+              <div className={classes.messageContent}>
+                {message.image && (
+                  <img
+                    src={message.image}
+                    alt="Uploaded food"
+                    className={classes.chatImage}
+                  />
+                )}
+                {message.content}
+              </div>
             </div>
           ))}
           {isLoading && (
@@ -148,21 +210,39 @@ function ChatWindow({ onClose, recipeContext = null }) {
         </div>
 
         <form className={classes.inputContainer} onSubmit={handleSubmit}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder="Ask about recipes, cooking tips..."
-            className={classes.input}
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            className={classes.sendButton}
-            disabled={isLoading || !input.trim()}
-          >
-            <FaPaperPlane />
-          </button>
+          <div className={classes.inputRow}>
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleImageSelect}
+              style={{ display: "none" }}
+            />
+            <button
+              type="button"
+              className={classes.imageUploadButton}
+              onClick={() => fileInputRef.current?.click()}
+              disabled={isLoading}
+              title="Upload food image for nutritional analysis"
+            >
+              <FaImage />
+            </button>
+            <input
+              type="text"
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Ask about recipes, cooking tips..."
+              className={classes.input}
+              disabled={isLoading}
+            />
+            <button
+              type="submit"
+              className={classes.sendButton}
+              disabled={isLoading || !input.trim()}
+            >
+              <FaPaperPlane />
+            </button>
+          </div>
         </form>
       </div>
     </div>
