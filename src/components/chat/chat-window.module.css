@@ -240,7 +240,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
 }
 
 .sendButton:hover:not(:disabled) {

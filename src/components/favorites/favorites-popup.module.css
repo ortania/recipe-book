@@ -58,7 +58,7 @@
 
 .noFavorites {
   text-align: center;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: #666;
   padding: 2rem 0;
 }
@@ -70,7 +70,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   align-self: center;
   color: #000;
 }

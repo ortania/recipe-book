@@ -170,19 +170,21 @@ function RecipeDetailsFull({
 
         <div className={classes.recipeInfo}>
           {recipe.prepTime && (
-            <span className={classes.infoItem}>{recipe.prepTime}</span>
+            <span className={classes.infoItem}>Prep {recipe.prepTime}</span>
           )}
-          {recipe.cookTime && <span className={classes.infoDot}>•</span>}
+          {recipe.prepTime && recipe.cookTime && (
+            <span className={classes.infoDot}>•</span>
+          )}
           {recipe.cookTime && (
-            <span className={classes.infoItem}>{recipe.cookTime}</span>
+            <span className={classes.infoItem}>Cook {recipe.cookTime}</span>
           )}
+          {(recipe.prepTime || recipe.cookTime) && (recipe.difficulty !== 'Unknown' && (
+            <span className={classes.infoDot}>•</span>
+          ))}
           {recipe.difficulty && (
-            <>
-              <span className={classes.infoDot}>•</span>
-              <span className={classes.infoItem}>
-                {formatDifficulty(recipe.difficulty)}
-              </span>
-            </>
+            <span className={classes.infoItem}>
+              {formatDifficulty(recipe.difficulty)}
+            </span>
           )}
         </div>
 

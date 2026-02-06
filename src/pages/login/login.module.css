@@ -11,7 +11,6 @@
   top: 0;
   left: 0;
   overflow-y: auto;
-
 }
 
 .loginForm {
@@ -128,7 +127,7 @@
   color: #c33;
   padding: 1rem;
   border-radius: 12px;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   text-align: center;
   margin: 0;
   border: 1px solid #fcc;
@@ -196,7 +195,7 @@
 
 .signupLink {
   text-align: center;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: #666;
   margin: 0;
 }

@@ -33,6 +33,6 @@
 @media (max-width: 768px) {
   .toggleButton {
     padding: 6px 16px;
-    font-size: var(--small-font);
+    font-size: var(--basic-font);
   }
 }

@@ -37,7 +37,6 @@ function RecipesView({
   const [isSimpleView, setIsSimpleView] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
-  const [selectedCategory, setSelectedCategory] = useState("all");
   const [keywordFilter, setKeywordFilter] = useState("");
   const [selectedPrepTime, setSelectedPrepTime] = useState("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
@@ -82,11 +81,11 @@ function RecipesView({
   const filteredAndSortedPersons = useMemo(() => {
     let filtered = localPersons;
 
-    // Filter by category
-    if (selectedCategory !== "all") {
+    // Filter by currently selected category from categories list
+    if (selectedGroup !== "all") {
       filtered = filtered.filter(
         (person) =>
-          person.categories && person.categories.includes(selectedCategory),
+          person.categories && person.categories.includes(selectedGroup),
       );
     }
 
@@ -111,7 +110,9 @@ function RecipesView({
     // Filter by prep time
     if (selectedPrepTime !== "all") {
       filtered = filtered.filter((person) => {
-        const prepTime = parseInt(person.prepTime) || 0;
+        // Extract number from text like "15 min" or "15 דקות"
+        const prepTimeMatch = person.prepTime?.match(/\d+/);
+        const prepTime = prepTimeMatch ? parseInt(prepTimeMatch[0]) : 0;
         switch (selectedPrepTime) {
           case "quick":
             return prepTime <= 15;
@@ -127,9 +128,13 @@ function RecipesView({
 
     // Filter by difficulty
     if (selectedDifficulty !== "all") {
-      filtered = filtered.filter(
-        (person) => person.difficulty === selectedDifficulty,
-      );
+      filtered = filtered.filter((person) => {
+        if (!person.difficulty) return false;
+        // Case-insensitive comparison
+        return (
+          person.difficulty.toLowerCase() === selectedDifficulty.toLowerCase()
+        );
+      });
     }
 
     // Search and sort
@@ -139,7 +144,7 @@ function RecipesView({
     searchTerm,
     sortField,
     sortDirection,
-    selectedCategory,
+    selectedGroup,
     keywordFilter,
     selectedPrepTime,
     selectedDifficulty,
@@ -284,29 +289,6 @@ function RecipesView({
                       </button>
                     )}
                   </div>
-                </div>
-                <div className={classes.filterDivider}></div>
-                <div className={classes.filterSection}>
-                  <label className={classes.filterLabel}>קטגוריה:</label>
-                  <button
-                    className={selectedCategory === "all" ? classes.active : ""}
-                    onClick={() => setSelectedCategory("all")}
-                  >
-                    הכל
-                  </button>
-                  {groups
-                    .filter((g) => g.id !== "all")
-                    .map((group) => (
-                      <button
-                        key={group.id}
-                        className={
-                          selectedCategory === group.id ? classes.active : ""
-                        }
-                        onClick={() => setSelectedCategory(group.id)}
-                      >
-                        {group.name}
-                      </button>
-                    ))}
                 </div>
                 <div className={classes.filterDivider}></div>
                 <div className={classes.filterSection}>

@@ -64,13 +64,14 @@
 }
 
 .iconButton {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.9rem !important;
+  height: 2.9rem !important;
   border-radius: 50%;
-  border: 1px solid lightgray;
-  background: white;
-  color: #333;
-  font-size: 1.1rem;
+  border: 1px solid rgba(0, 0, 0, 0.674) !important;
+  /* background: white; */
+  background: transparent;
+  color: black;
+  /* font-size: 2rem; */
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -168,7 +169,7 @@
   }
 
   .headerTitle {
-    margin-top: 1rem;
+    margin-top: 3rem;
     padding-left: 0;
   }
 
@@ -236,8 +237,11 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 150px;
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
   z-index: 100;
-  overflow: hidden;
+  -webkit-overflow-scrolling: touch;
 }
 
 .dropdownMenu button {
@@ -289,7 +293,7 @@
   padding: 0.5rem 2rem 0.5rem 0.75rem;
   border: 1px solid #e0e0e0;
   border-radius: 6px;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   outline: none;
   background-color: #ffffff !important;
   transition: border-color 0.2s;
@@ -321,7 +325,7 @@
 
 .keywordInput::placeholder {
   color: #999 !important;
-  opacity: 1 !important;
+  opacity: 0.6 !important;
 }
 
 .clearKeyword {

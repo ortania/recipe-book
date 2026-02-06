@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   FaArrowUp,
   FaArrowDown,
@@ -30,6 +30,31 @@ function CategoriesList({
     useRecipeBook();
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
+
+  // Prevent body scroll when mobile categories are open
+  useEffect(() => {
+    if (isMobileOpen) {
+      const scrollY = window.scrollY;
+      document.body.style.position = "fixed";
+      document.body.style.top = `-${scrollY}px`;
+      document.body.style.width = "100%";
+      document.body.style.overflow = "hidden";
+    } else {
+      const scrollY = document.body.style.top;
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+      window.scrollTo(0, parseInt(scrollY || "0") * -1);
+    }
+
+    return () => {
+      document.body.style.position = "";
+      document.body.style.top = "";
+      document.body.style.width = "";
+      document.body.style.overflow = "";
+    };
+  }, [isMobileOpen]);
 
   const handleMoveUp = (index) => {
     if (index > 0) {

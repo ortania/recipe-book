@@ -121,7 +121,7 @@
 }
 
 .voiceHint {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: #10b981;
   font-weight: 500;
   font-style: italic;
@@ -732,7 +732,7 @@
 .ingredientItem,
 .instructionItem {
   opacity: 1;
-  font-size: 1.5rem;
+  font-size: var(--large-font);
   font-weight: 400;
   transition: all 0.3s ease;
   /* background-color: #fef9e7; */

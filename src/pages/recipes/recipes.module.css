@@ -61,7 +61,7 @@
 
 .confirmDialog p {
   margin-bottom: 1.5rem;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   line-height: 1.5;
 }
 
@@ -78,7 +78,7 @@
   border: 1px solid #ccc;
   border-radius: 4px;
   cursor: pointer;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   transition: all 0.2s ease;
 }
 
@@ -89,7 +89,7 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   transition: all 0.2s ease;
 }
 
