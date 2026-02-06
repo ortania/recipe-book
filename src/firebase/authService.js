@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword,
   signOut,
   onAuthStateChanged,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 import { doc, setDoc, getDoc } from "firebase/firestore";
 import { auth, db } from "./config";
@@ -14,7 +15,7 @@ export const signupUser = async (email, password, displayName) => {
     const userCredential = await createUserWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
     const user = userCredential.user;
 
@@ -38,7 +39,7 @@ export const loginUser = async (email, password) => {
     const userCredential = await signInWithEmailAndPassword(
       auth,
       email,
-      password
+      password,
     );
     console.log("✅ User logged in:", userCredential.user.uid);
     return userCredential.user;
@@ -73,4 +74,15 @@ export const getUserData = async (userId) => {
 
 export const onAuthStateChange = (callback) => {
   return onAuthStateChanged(auth, callback);
+};
+
+export const resetPassword = async (email) => {
+  try {
+    await sendPasswordResetEmail(auth, email);
+    console.log("✅ Password reset email sent to:", email);
+    return { success: true };
+  } catch (error) {
+    console.error("Error sending password reset email:", error);
+    throw error;
+  }
 };

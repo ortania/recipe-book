@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import FormInput from "./FormInput";
 import { useRecipeBook } from "../../context";
-import { loginUser } from "../../firebase/authService";
+import { loginUser, resetPassword } from "../../firebase/authService";
 
 import classes from "./login.module.css";
 
@@ -17,6 +17,10 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showWelcome, setShowWelcome] = useState(false);
+  const [showForgotPassword, setShowForgotPassword] = useState(false);
+  const [resetEmail, setResetEmail] = useState("");
+  const [resetMessage, setResetMessage] = useState("");
+  const [isResetting, setIsResetting] = useState(false);
 
   const navigate = useNavigate();
 
@@ -44,6 +48,40 @@ function Login() {
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
+  };
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    setError("");
+    setResetMessage("");
+    setIsResetting(true);
+
+    if (!resetEmail) {
+      setError("Please enter your email address");
+      setIsResetting(false);
+      return;
+    }
+
+    try {
+      await resetPassword(resetEmail);
+      setResetMessage("Password reset email sent! Check your inbox.");
+      setTimeout(() => {
+        setShowForgotPassword(false);
+        setResetEmail("");
+        setResetMessage("");
+      }, 3000);
+    } catch (error) {
+      if (error.code === "auth/user-not-found") {
+        setError("No account found with this email");
+      } else if (error.code === "auth/invalid-email") {
+        setError("Invalid email address");
+      } else {
+        setError("Failed to send reset email. Please try again.");
+      }
+      console.error("Password reset error:", error);
+    } finally {
+      setIsResetting(false);
+    }
   };
 
   // Login submission handler
@@ -107,6 +145,15 @@ function Login() {
           {isLoading ? "Logging in..." : "Login"}
         </button>
 
+        <p className={classes.forgotPassword}>
+          <span
+            onClick={() => setShowForgotPassword(true)}
+            className={classes.link}
+          >
+            Forgot Password?
+          </span>
+        </p>
+
         <p className={classes.signupLink}>
           Don't have an account?{" "}
           <span onClick={() => navigate("/signup")} className={classes.link}>
@@ -114,6 +161,54 @@ function Login() {
           </span>
         </p>
       </form>
+
+      {showForgotPassword && (
+        <div
+          className={classes.loginContainer}
+          onClick={() => setShowForgotPassword(false)}
+        >
+          <form
+            className={classes.loginForm}
+            onSubmit={handleForgotPassword}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className={classes.title}>Reset Password</p>
+            <p className={classes.subtitle}>
+              Enter your email address and we'll send you a link to reset your
+              password.
+            </p>
+            {error && <p className={classes.error}>{error}</p>}
+            {resetMessage && <p className={classes.success}>{resetMessage}</p>}
+
+            <FormInput
+              type="email"
+              placeholder="Email"
+              value={resetEmail}
+              onChange={(e) => setResetEmail(e.target.value)}
+              isLoading={isResetting}
+              onFocus={handleFocus}
+            />
+
+            <button type="submit" disabled={isResetting}>
+              {isResetting ? "Sending..." : "Send Reset Link"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowForgotPassword(false);
+                setResetEmail("");
+                setError("");
+                setResetMessage("");
+              }}
+              className={classes.backButton}
+              disabled={isResetting}
+            >
+              Back to Login
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }
