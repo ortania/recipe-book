@@ -35,9 +35,63 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     },
   });
 
+  const [originalServings] = useState(parseInt(person.servings) || 1);
+  const [originalNutrition] = useState({
+    calories: "",
+    protein: "",
+    carbs: "",
+    fat: "",
+    fiber: "",
+    sugars: "",
+    note: "",
+    ...person.nutrition,
+  });
   const [draggedIngredientIndex, setDraggedIngredientIndex] = useState(null);
   const [draggedInstructionIndex, setDraggedInstructionIndex] = useState(null);
   const [uploadingImage, setUploadingImage] = useState(false);
+
+  const scaleNutritionValue = (text, ratio) => {
+    if (!text || typeof text !== "string") return text;
+    return text.replace(/(\d+\.?\d*)/g, (match) => {
+      const num = parseFloat(match);
+      const scaled = num * ratio;
+      return scaled % 1 === 0 ? scaled.toString() : scaled.toFixed(1);
+    });
+  };
+
+  const handleServingsChange = (e) => {
+    const newServings = e.target.value;
+    const newServingsNum = parseInt(newServings);
+
+    if (newServingsNum > 0 && originalServings > 0) {
+      const ratio = newServingsNum / originalServings;
+      const scaledNutrition = {};
+      for (const key of [
+        "calories",
+        "protein",
+        "carbs",
+        "fat",
+        "fiber",
+        "sugars",
+      ]) {
+        scaledNutrition[key] = scaleNutritionValue(
+          originalNutrition[key],
+          ratio,
+        );
+      }
+      scaledNutrition.note = editedPerson.nutrition.note;
+      setEditedPerson((prev) => ({
+        ...prev,
+        servings: newServings,
+        nutrition: scaledNutrition,
+      }));
+    } else {
+      setEditedPerson((prev) => ({
+        ...prev,
+        servings: newServings,
+      }));
+    }
+  };
 
   useEffect(() => {
     setEditedPerson({
@@ -444,7 +498,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             placeholder="Number of servings"
             name="servings"
             value={editedPerson.servings}
-            onChange={handleChange}
+            onChange={handleServingsChange}
             min="1"
             className={classes.difficultySelect}
           />
