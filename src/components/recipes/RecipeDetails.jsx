@@ -6,6 +6,7 @@ import { Button } from "../controls/button";
 import classes from "./recipe-details.module.css";
 import { formatDifficulty } from "./utils";
 import { FaRegEdit } from "react-icons/fa";
+import { useRecipeBook } from "../../context/RecipesBookContext";
 
 function RecipeDetails({
   recipe,
@@ -53,6 +54,7 @@ function RecipeDetails({
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState(null);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
+  const { copyRecipeToUser, currentUser } = useRecipeBook();
 
   // Refs to store latest handler functions
   const handleNextStepRef = React.useRef();
@@ -482,6 +484,8 @@ function RecipeDetails({
           isAdmin={isAdmin}
           getCategoryName={getCategoryName}
           onEnterCookingMode={handleCookingModeToggle}
+          onCopyRecipe={copyRecipeToUser}
+          currentUserId={currentUser?.uid}
         />
       ) : (
         <RecipeDetailsCookingMode

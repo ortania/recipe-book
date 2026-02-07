@@ -2,12 +2,12 @@ import React, { useState, useMemo } from "react";
 import classes from "./recipe-details-full.module.css";
 import { formatDifficulty } from "./utils";
 import { FaRegEdit } from "react-icons/fa";
-import { HiOutlineTrash } from "react-icons/hi2";
 import { BsTrash3 } from "react-icons/bs";
-import { GoTrash } from "react-icons/go";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { GiMeal } from "react-icons/gi";
+import { IoCopyOutline } from "react-icons/io5";
 import { ConfirmDialog } from "../forms/confirm-dialog";
+import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
 import { ExportImageButton } from "./export-image-button";
 
 function RecipeDetailsFull({
@@ -18,6 +18,8 @@ function RecipeDetailsFull({
   isAdmin,
   getCategoryName,
   onEnterCookingMode,
+  onCopyRecipe,
+  currentUserId,
 }) {
   // State management
   const [activeTab, setActiveTab] = useState("ingredients");
@@ -27,6 +29,11 @@ function RecipeDetailsFull({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [notesExpanded, setNotesExpanded] = useState(false);
   const [showNutrition, setShowNutrition] = useState(false);
+  const [showCopyDialog, setShowCopyDialog] = useState(false);
+
+  const handleCopyClick = () => {
+    setShowCopyDialog(true);
+  };
 
   const originalServings = recipe.servings || 4;
 
@@ -91,6 +98,19 @@ function RecipeDetailsFull({
     });
   };
 
+  const scaleNutrition = (value) => {
+    if (!value || servings === originalServings) return value;
+    const ratio = servings / originalServings;
+    const numberRegex = /(\d+\.?\d*)/g;
+    return value.replace(numberRegex, (match) => {
+      const num = parseFloat(match);
+      const scaled = num * ratio;
+      return scaled % 1 === 0
+        ? scaled.toString()
+        : scaled.toFixed(1).replace(/\.0$/, "");
+    });
+  };
+
   const handleDeleteClick = () => {
     setShowDeleteConfirm(true);
   };
@@ -105,37 +125,18 @@ function RecipeDetailsFull({
 
   return (
     <div className={classes.recipeCard}>
-      <div className={classes.exportButtonWrapper}>
-        <ExportImageButton recipe={recipe} />
-      </div>
-      <div className={classes.headerButtons}>
-        <button onClick={onClose} className={classes.closeButton}>
-          ✕
-        </button>
-        {isAdmin && (
-          <div className={classes.adminButtons}>
-            {onEdit && (
-              <button
-                onClick={() => {
-                  onClose();
-                  onEdit(recipe);
-                }}
-                className={classes.editButton}
-              >
-                <FaRegEdit title="Edit" />
-              </button>
-            )}
-            {onDelete && (
-              <button
-                onClick={handleDeleteClick}
-                className={classes.deleteButton}
-              >
-                <BsTrash3 title="Delete" />
-              </button>
-            )}
-          </div>
-        )}
-      </div>
+      <button onClick={onClose} className={classes.closeButton}>
+        ✕
+      </button>
+
+      {showCopyDialog && (
+        <CopyRecipeDialog
+          recipeName={recipe.name}
+          currentUserId={currentUserId}
+          onCopy={(targetUserId) => onCopyRecipe(recipe, targetUserId)}
+          onCancel={() => setShowCopyDialog(false)}
+        />
+      )}
 
       {showDeleteConfirm && (
         <ConfirmDialog
@@ -152,6 +153,51 @@ function RecipeDetailsFull({
             alt={recipe.name}
             className={classes.recipeImage}
           />
+        </div>
+      )}
+
+      {isAdmin && (
+        <div className={classes.actionBar}>
+          {onEdit && (
+            <button
+              onClick={() => {
+                onClose();
+                onEdit(recipe);
+              }}
+              className={classes.actionButton}
+              title="Edit"
+            >
+              <FaRegEdit />
+              <span>Edit</span>
+            </button>
+          )}
+          {onDelete && (
+            <button
+              onClick={handleDeleteClick}
+              className={`${classes.actionButton} ${classes.actionDelete}`}
+              title="Delete"
+            >
+              <BsTrash3 />
+              <span>Delete</span>
+            </button>
+          )}
+          {onCopyRecipe && (
+            <button
+              onClick={handleCopyClick}
+              className={classes.actionButton}
+              title="Copy"
+            >
+              <IoCopyOutline />
+              <span>Copy</span>
+            </button>
+          )}
+          <ExportImageButton recipe={recipe} />
+        </div>
+      )}
+
+      {!isAdmin && (
+        <div className={classes.actionBar}>
+          <ExportImageButton recipe={recipe} />
         </div>
       )}
 
@@ -219,65 +265,73 @@ function RecipeDetailsFull({
           </div>
         )}
 
-        {recipe.nutrition && Object.values(recipe.nutrition).some((v) => v) && (
-          <div className={classes.nutritionSection}>
-            <button
-              className={classes.nutritionToggle}
-              onClick={() => setShowNutrition(!showNutrition)}
-              title="Nutritional Values"
-            >
-              <GiMeal className={classes.nutritionIcon} />
-              <span>Nutritional Values</span>
-              <span className={classes.expandIcon}>
-                {showNutrition ? <MdExpandLess /> : <MdExpandMore />}
-              </span>
-            </button>
-            {showNutrition && (
-              <div className={classes.nutritionContent}>
-                {recipe.nutrition.calories && (
-                  <div className={classes.nutritionItem}>
-                    <span className={classes.nutritionLabel}>Calories</span>
-                    <span className={classes.nutritionValue}>
-                      {recipe.nutrition.calories}
-                    </span>
-                  </div>
-                )}
-                {recipe.nutrition.protein && (
-                  <div className={classes.nutritionItem}>
-                    <span className={classes.nutritionLabel}>Protein</span>
-                    <span className={classes.nutritionValue}>
-                      {recipe.nutrition.protein}
-                    </span>
-                  </div>
-                )}
-                {recipe.nutrition.carbs && (
-                  <div className={classes.nutritionItem}>
-                    <span className={classes.nutritionLabel}>Carbs</span>
-                    <span className={classes.nutritionValue}>
-                      {recipe.nutrition.carbs}
-                    </span>
-                  </div>
-                )}
-                {recipe.nutrition.fat && (
-                  <div className={classes.nutritionItem}>
-                    <span className={classes.nutritionLabel}>Fat</span>
-                    <span className={classes.nutritionValue}>
-                      {recipe.nutrition.fat}
-                    </span>
-                  </div>
-                )}
-                {recipe.nutrition.fiber && (
-                  <div className={classes.nutritionItem}>
-                    <span className={classes.nutritionLabel}>Fiber</span>
-                    <span className={classes.nutritionValue}>
-                      {recipe.nutrition.fiber}
-                    </span>
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        )}
+        {recipe.nutrition &&
+          Object.entries(recipe.nutrition).some(
+            ([k, v]) => v && k !== "note",
+          ) && (
+            <div className={classes.nutritionSection}>
+              <button
+                className={classes.nutritionToggle}
+                onClick={() => setShowNutrition(!showNutrition)}
+                title="ערכים תזונתיים"
+              >
+                <div className={classes.nutritionTitleWrapper}>
+                  <GiMeal className={classes.nutritionIcon} />
+                  <span>ערכים תזונתיים</span>
+                </div>
+                <span className={classes.expandIcon}>
+                  {showNutrition ? <MdExpandLess /> : <MdExpandMore />}
+                </span>
+              </button>
+              {showNutrition && (
+                <div className={classes.nutritionContent}>
+                  <p className={classes.nutritionTitle}>
+                    למנה אחת של {recipe.name} (מתוך {servings} מנות
+                    {recipe.nutrition.note ? `, ${recipe.nutrition.note}` : ""}
+                    ):
+                  </p>
+                  <ul className={classes.nutritionList}>
+                    {recipe.nutrition.calories && (
+                      <li>
+                        <span className={classes.nutritionEmoji}>🔥</span>{" "}
+                        קלוריות: {scaleNutrition(recipe.nutrition.calories)}
+                      </li>
+                    )}
+                    {recipe.nutrition.protein && (
+                      <li>
+                        <span className={classes.nutritionEmoji}>🍗</span>{" "}
+                        חלבון: {scaleNutrition(recipe.nutrition.protein)}
+                      </li>
+                    )}
+                    {recipe.nutrition.fat && (
+                      <li>
+                        <span className={classes.nutritionEmoji}>🥑</span> שומן:{" "}
+                        {scaleNutrition(recipe.nutrition.fat)}
+                      </li>
+                    )}
+                    {recipe.nutrition.carbs && (
+                      <li>
+                        <span className={classes.nutritionEmoji}>🍞</span>{" "}
+                        פחמימות: {scaleNutrition(recipe.nutrition.carbs)}
+                      </li>
+                    )}
+                    {recipe.nutrition.sugars && (
+                      <li>
+                        <span className={classes.nutritionEmoji}>🍬</span>{" "}
+                        סוכרים: {scaleNutrition(recipe.nutrition.sugars)}
+                      </li>
+                    )}
+                    {recipe.nutrition.fiber && (
+                      <li>
+                        <span className={classes.nutritionEmoji}>🥬</span> סיבים
+                        תזונתיים: {scaleNutrition(recipe.nutrition.fiber)}
+                      </li>
+                    )}
+                  </ul>
+                </div>
+              )}
+            </div>
+          )}
 
         {recipe.notes && (
           <div className={classes.notesSection}>

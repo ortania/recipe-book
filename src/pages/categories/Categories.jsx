@@ -36,6 +36,7 @@ function Categories() {
     deleteRecipe,
     clearCategoryRecipes,
     isAdmin,
+    currentUser,
   } = useRecipeBook();
 
   const [selectedGroup, setSelectedGroup] = useState("all");

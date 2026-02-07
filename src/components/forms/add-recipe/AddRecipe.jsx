@@ -35,6 +35,8 @@ function AddRecipe({
       carbs: "",
       fat: "",
       fiber: "",
+      sugars: "",
+      note: "",
     },
   });
 
@@ -101,6 +103,8 @@ function AddRecipe({
         carbs: "",
         fat: "",
         fiber: "",
+        sugars: "",
+        note: "",
       },
     });
     onCancel();
@@ -690,15 +694,13 @@ function AddRecipe({
         </div>
 
         <div className={classes.nutritionSection}>
-          <label className={classes.fieldLabel}>
-            🥗 Nutritional Values (per serving)
-          </label>
+          <label className={classes.fieldLabel}>🥗 ערכים תזונתיים (למנה)</label>
           <div className={classes.nutritionGrid}>
             <div className={classes.nutritionField}>
-              <label>Calories</label>
+              <label>🔥 קלוריות</label>
               <input
                 type="text"
-                placeholder="e.g., 250 kcal"
+                placeholder='לדוגמה: כ~150 קק"ל'
                 value={newPerson.nutrition.calories}
                 onChange={(e) =>
                   setNewPerson({
@@ -712,10 +714,10 @@ function AddRecipe({
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>Protein</label>
+              <label>🍗 חלבון</label>
               <input
                 type="text"
-                placeholder="e.g., 12g"
+                placeholder="לדוגמה: כ~2.5 גרם"
                 value={newPerson.nutrition.protein}
                 onChange={(e) =>
                   setNewPerson({
@@ -729,10 +731,24 @@ function AddRecipe({
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>Carbs</label>
+              <label>🥑 שומן</label>
               <input
                 type="text"
-                placeholder="e.g., 30g"
+                placeholder="לדוגמה: כ~9-10 גרם"
+                value={newPerson.nutrition.fat}
+                onChange={(e) =>
+                  setNewPerson({
+                    ...newPerson,
+                    nutrition: { ...newPerson.nutrition, fat: e.target.value },
+                  })
+                }
+              />
+            </div>
+            <div className={classes.nutritionField}>
+              <label>🍞 פחמימות</label>
+              <input
+                type="text"
+                placeholder="לדוגמה: כ~14-15 גרם"
                 value={newPerson.nutrition.carbs}
                 onChange={(e) =>
                   setNewPerson({
@@ -746,24 +762,27 @@ function AddRecipe({
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>Fat</label>
+              <label>🍬 סוכרים</label>
               <input
                 type="text"
-                placeholder="e.g., 8g"
-                value={newPerson.nutrition.fat}
+                placeholder="לדוגמה: כ~11-12 גרם"
+                value={newPerson.nutrition.sugars}
                 onChange={(e) =>
                   setNewPerson({
                     ...newPerson,
-                    nutrition: { ...newPerson.nutrition, fat: e.target.value },
+                    nutrition: {
+                      ...newPerson.nutrition,
+                      sugars: e.target.value,
+                    },
                   })
                 }
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>Fiber</label>
+              <label>🥬 סיבים תזונתיים</label>
               <input
                 type="text"
-                placeholder="e.g., 4g"
+                placeholder="לדוגמה: כ~0.5-1 גרם"
                 value={newPerson.nutrition.fiber}
                 onChange={(e) =>
                   setNewPerson({
@@ -776,6 +795,23 @@ function AddRecipe({
                 }
               />
             </div>
+          </div>
+          <div className={classes.nutritionNoteField}>
+            <label>📝 הערה</label>
+            <input
+              type="text"
+              placeholder="לדוגמה: בלי אגוזים/צימוקים"
+              value={newPerson.nutrition.note}
+              onChange={(e) =>
+                setNewPerson({
+                  ...newPerson,
+                  nutrition: {
+                    ...newPerson.nutrition,
+                    note: e.target.value,
+                  },
+                })
+              }
+            />
           </div>
         </div>
 

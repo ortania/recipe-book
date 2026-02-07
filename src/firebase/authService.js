@@ -5,7 +5,15 @@ import {
   onAuthStateChanged,
   sendPasswordResetEmail,
 } from "firebase/auth";
-import { doc, setDoc, getDoc } from "firebase/firestore";
+import {
+  doc,
+  setDoc,
+  getDoc,
+  collection,
+  getDocs,
+  query,
+  where,
+} from "firebase/firestore";
 import { auth, db } from "./config";
 
 const USERS_COLLECTION = "users";
@@ -74,6 +82,35 @@ export const getUserData = async (userId) => {
 
 export const onAuthStateChange = (callback) => {
   return onAuthStateChanged(auth, callback);
+};
+
+export const fetchAllUsers = async () => {
+  try {
+    const usersRef = collection(db, USERS_COLLECTION);
+    const querySnapshot = await getDocs(usersRef);
+    const users = [];
+    querySnapshot.forEach((doc) => {
+      users.push({ id: doc.id, ...doc.data() });
+    });
+    return users;
+  } catch (error) {
+    console.error("Error fetching all users:", error);
+    return [];
+  }
+};
+
+export const findUserByEmail = async (email) => {
+  try {
+    const usersRef = collection(db, USERS_COLLECTION);
+    const q = query(usersRef, where("email", "==", email.toLowerCase().trim()));
+    const querySnapshot = await getDocs(q);
+    if (querySnapshot.empty) return null;
+    const userDoc = querySnapshot.docs[0];
+    return { id: userDoc.id, ...userDoc.data() };
+  } catch (error) {
+    console.error("Error finding user by email:", error);
+    return null;
+  }
 };
 
 export const resetPassword = async (email) => {

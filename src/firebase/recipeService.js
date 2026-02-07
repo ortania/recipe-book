@@ -25,6 +25,14 @@ export const fetchRecipes = async (
 ) => {
   try {
     const recipesRef = collection(db, RECIPES_COLLECTION);
+    console.log(
+      "📥 fetchRecipes called - userId:",
+      userId,
+      "limit:",
+      limitCount,
+      "lastDoc:",
+      !!lastDoc,
+    );
 
     // Build query with proper ordering and limit
     let q;
@@ -59,7 +67,22 @@ export const fetchRecipes = async (
       }
     }
 
-    const querySnapshot = await getDocs(q);
+    let querySnapshot;
+    try {
+      querySnapshot = await getDocs(q);
+    } catch (indexError) {
+      console.warn(
+        "⚠️ fetchRecipes index query failed, falling back to simple query:",
+        indexError.message,
+      );
+      // Fallback: query without orderBy (no composite index needed)
+      if (userId) {
+        q = query(recipesRef, where("userId", "==", userId), limit(limitCount));
+      } else {
+        q = query(recipesRef, limit(limitCount));
+      }
+      querySnapshot = await getDocs(q);
+    }
 
     const recipes = [];
     querySnapshot.forEach((doc) => {
@@ -69,13 +92,32 @@ export const fetchRecipes = async (
       });
     });
 
+    // Sort client-side if we used fallback
+    recipes.sort((a, b) => (a.order || 0) - (b.order || 0));
+
+    console.log(
+      "📥 fetchRecipes result - found:",
+      recipes.length,
+      "recipes for userId:",
+      userId,
+    );
+    if (recipes.length > 0) {
+      console.log(
+        "📥 First recipe:",
+        recipes[0].name,
+        "userId:",
+        recipes[0].userId,
+      );
+    }
+
     // Get the last document for pagination
     const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
     const hasMore = querySnapshot.docs.length === limitCount;
 
     return { recipes, lastVisible, hasMore };
   } catch (error) {
-    console.error("Error fetching recipes:", error);
+    console.error("❌ Error fetching recipes:", error);
+    console.error("❌ Error details:", error.message);
     return { recipes: [], lastVisible: null, hasMore: false };
   }
 };
@@ -207,15 +249,23 @@ export const deleteRecipe = async (recipeId) => {
   }
 };
 
-export const deleteRecipesByCategory = async (categoryId) => {
+export const deleteRecipesByCategory = async (categoryId, userId = null) => {
   try {
     const recipesRef = collection(db, RECIPES_COLLECTION);
     let q;
 
     if (categoryId === "all") {
-      q = query(recipesRef);
+      q = userId
+        ? query(recipesRef, where("userId", "==", userId))
+        : query(recipesRef);
     } else {
-      q = query(recipesRef, where("categories", "array-contains", categoryId));
+      q = userId
+        ? query(
+            recipesRef,
+            where("userId", "==", userId),
+            where("categories", "array-contains", categoryId),
+          )
+        : query(recipesRef, where("categories", "array-contains", categoryId));
     }
 
     const querySnapshot = await getDocs(q);
@@ -229,6 +279,44 @@ export const deleteRecipesByCategory = async (categoryId) => {
     return true;
   } catch (error) {
     console.error("Error deleting recipes by category:", error);
+    throw error;
+  }
+};
+
+export const copyRecipeToUser = async (recipe, targetUserId) => {
+  try {
+    const recipesRef = collection(db, RECIPES_COLLECTION);
+
+    // Get current recipe count for target user to set order
+    const userRecipesQuery = query(
+      recipesRef,
+      where("userId", "==", targetUserId),
+    );
+    const querySnapshot = await getDocs(userRecipesQuery);
+    const order = querySnapshot.size;
+
+    // Strip the original id and userId, create a fresh copy
+    const { id, userId, createdAt, updatedAt, ...recipeData } = recipe;
+
+    const copiedRecipe = {
+      ...recipeData,
+      userId: targetUserId,
+      order,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    const docRef = await addDoc(recipesRef, copiedRecipe);
+    console.log(
+      "📋 Recipe copied to user:",
+      targetUserId,
+      "new ID:",
+      docRef.id,
+    );
+
+    return { id: docRef.id, ...copiedRecipe };
+  } catch (error) {
+    console.error("Error copying recipe to user:", error);
     throw error;
   }
 };

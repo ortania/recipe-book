@@ -30,7 +30,7 @@ function ExportImageButton({ recipe }) {
         <span className={classes.icon}>📸</span>
       )}
       <span className={classes.label}>
-        {isGenerating ? "Generating..." : "Export Image"}
+        {isGenerating ? "Generating..." : "Export to Image"}
       </span>
     </button>
   );

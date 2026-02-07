@@ -56,18 +56,6 @@ function CategoriesList({
     };
   }, [isMobileOpen]);
 
-  const handleMoveUp = (index) => {
-    if (index > 0) {
-      reorderCategories(index, index - 1);
-    }
-  };
-
-  const handleMoveDown = (index) => {
-    if (index < groups.length - 1) {
-      reorderCategories(index, index + 1);
-    }
-  };
-
   const handleCategorySelect = (groupId) => {
     onSelectGroup(groupId);
     setIsMobileOpen(false); // Close dropdown after selection

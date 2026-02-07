@@ -154,11 +154,10 @@ export const handleDeleteRecipe = (setRecipes) => async (recipeId) => {
  * @param {Function} setRecipes - React state setter for recipes
  * @returns {Function} - Handler function that clears all recipes from Firebase and state
  */
-export const handleClearAllRecipes = (setRecipes) => async () => {
+export const handleClearAllRecipes = (setRecipes, userId) => async () => {
   try {
-    console.log("Clearing all recipes from Firebase");
-    const recipes = await fetchRecipesFromDB();
-    await Promise.all(recipes.map((recipe) => deleteRecipeFromDB(recipe.id)));
+    console.log("Clearing all recipes from Firebase for user:", userId);
+    await deleteRecipesByCategoryFromDB("all", userId);
     console.log("All recipes cleared from Firebase");
     setRecipes([]);
   } catch (error) {
@@ -189,10 +188,10 @@ export const handleLogout =
  * @returns {Function} - Handler function that removes all recipes from a specific category from Firebase and state
  */
 export const handleClearCategoryRecipes =
-  (setRecipes) => async (categoryId) => {
+  (setRecipes, userId) => async (categoryId) => {
     try {
       console.log("Clearing category recipes from Firebase:", categoryId);
-      await deleteRecipesByCategoryFromDB(categoryId);
+      await deleteRecipesByCategoryFromDB(categoryId, userId);
       console.log("Category recipes cleared from Firebase");
       if (categoryId === "all") {
         setRecipes([]);

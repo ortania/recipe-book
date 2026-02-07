@@ -1,0 +1,193 @@
+.dialog {
+  background-color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 450px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin: 0 auto;
+  text-align: center;
+  direction: rtl;
+}
+
+.dialog h3 {
+  margin-top: 0;
+  color: var(--clr-blue-3);
+  font-size: var(--very-large-font);
+  margin-bottom: 0.5rem;
+}
+
+.recipeName {
+  font-size: var(--basic-font);
+  color: #555;
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  font-style: italic;
+}
+
+/* Email input section */
+.inputSection {
+  margin-bottom: 1rem;
+  text-align: right;
+}
+
+.inputLabel {
+  display: block;
+  font-size: var(--basic-font);
+  /* font-weight: 600; */
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.inputRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.emailInput {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: var(--basic-font);
+  direction: ltr;
+  text-align: left;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.emailInput:focus {
+  border-color: var(--clr-blue-3);
+}
+
+.addButton {
+  padding: 0.6em 1.2em;
+  border: none;
+  border-radius: 8px;
+  background: var(--clr-blue-3);
+  color: white;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.addButton:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+.addButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.errorText {
+  color: #dc2626;
+  font-size: var(--basic-font);
+  margin: 0.4rem 0 0;
+  text-align: right;
+}
+
+/* Recipient chips */
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  justify-content: center;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.5rem 0.3rem 0.75rem;
+  background: #e3f2fd;
+  border: 1px solid #90caf9;
+  border-radius: 20px;
+  font-size: var(--basic-font);
+  color: #1565c0;
+  font-weight: 500;
+}
+
+.chipName {
+  white-space: nowrap;
+}
+
+.chipRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #1565c0;
+  font-size: var(--basic-font);
+  padding: 0;
+  border-radius: 50%;
+  transition: all 0.15s;
+  width: 20px;
+  height: 20px;
+}
+
+.chipRemove:hover {
+  background: rgba(21, 101, 192, 0.15);
+  color: #0d47a1;
+}
+
+/* Buttons */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.buttons button {
+  font-size: var(--basic-font);
+}
+
+/* Results */
+.resultSection {
+  padding: 1rem 0;
+}
+
+.successMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0;
+}
+
+.successIcon {
+  font-size: var(--basic-font);
+}
+
+.successMessage p {
+  font-size: var(--large-font);
+  color: #2e7d32;
+  font-weight: 600;
+}
+
+.errorMessage p {
+  font-size: var(--basic-font);
+  color: #dc2626;
+  font-weight: 500;
+}
+
+@media (max-width: 480px) {
+  .dialog {
+    width: 95%;
+    padding: 1.25rem;
+  }
+
+  .inputRow {
+    flex-direction: column;
+  }
+
+  .addButton {
+    width: 100%;
+  }
+}

@@ -23,12 +23,15 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     isFavorite: person.isFavorite || false,
     notes: person.notes || "",
     rating: person.rating || 0,
-    nutrition: person.nutrition || {
+    nutrition: {
       calories: "",
       protein: "",
       carbs: "",
       fat: "",
       fiber: "",
+      sugars: "",
+      note: "",
+      ...person.nutrition,
     },
   });
 
@@ -55,12 +58,15 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       isFavorite: person.isFavorite || false,
       notes: person.notes || "",
       rating: person.rating || 0,
-      nutrition: person.nutrition || {
+      nutrition: {
         calories: "",
         protein: "",
         carbs: "",
         fat: "",
         fiber: "",
+        sugars: "",
+        note: "",
+        ...person.nutrition,
       },
     });
   }, [person]);
@@ -519,15 +525,13 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </div>
 
         <div className={classes.nutritionSection}>
-          <label className={classes.fieldLabel}>
-            🥗 Nutritional Values (per serving)
-          </label>
+          <label className={classes.fieldLabel}>🥗 ערכים תזונתיים (למנה)</label>
           <div className={classes.nutritionGrid}>
             <div className={classes.nutritionField}>
-              <label>Calories</label>
+              <label>🔥 קלוריות</label>
               <input
                 type="text"
-                placeholder="e.g., 250 kcal"
+                placeholder='לדוגמה: כ~150 קק"ל'
                 value={editedPerson.nutrition.calories}
                 onChange={(e) =>
                   setEditedPerson({
@@ -541,10 +545,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>Protein</label>
+              <label>🍗 חלבון</label>
               <input
                 type="text"
-                placeholder="e.g., 12g"
+                placeholder="לדוגמה: כ~2.5 גרם"
                 value={editedPerson.nutrition.protein}
                 onChange={(e) =>
                   setEditedPerson({
@@ -558,27 +562,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>Carbs</label>
+              <label>🥑 שומן</label>
               <input
                 type="text"
-                placeholder="e.g., 30g"
-                value={editedPerson.nutrition.carbs}
-                onChange={(e) =>
-                  setEditedPerson({
-                    ...editedPerson,
-                    nutrition: {
-                      ...editedPerson.nutrition,
-                      carbs: e.target.value,
-                    },
-                  })
-                }
-              />
-            </div>
-            <div className={classes.nutritionField}>
-              <label>Fat</label>
-              <input
-                type="text"
-                placeholder="e.g., 8g"
+                placeholder="לדוגמה: כ~9-10 גרם"
                 value={editedPerson.nutrition.fat}
                 onChange={(e) =>
                   setEditedPerson({
@@ -592,10 +579,44 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>Fiber</label>
+              <label>🍞 פחמימות</label>
               <input
                 type="text"
-                placeholder="e.g., 4g"
+                placeholder="לדוגמה: כ~14-15 גרם"
+                value={editedPerson.nutrition.carbs}
+                onChange={(e) =>
+                  setEditedPerson({
+                    ...editedPerson,
+                    nutrition: {
+                      ...editedPerson.nutrition,
+                      carbs: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className={classes.nutritionField}>
+              <label>🍬 סוכרים</label>
+              <input
+                type="text"
+                placeholder="לדוגמה: כ~11-12 גרם"
+                value={editedPerson.nutrition.sugars}
+                onChange={(e) =>
+                  setEditedPerson({
+                    ...editedPerson,
+                    nutrition: {
+                      ...editedPerson.nutrition,
+                      sugars: e.target.value,
+                    },
+                  })
+                }
+              />
+            </div>
+            <div className={classes.nutritionField}>
+              <label>🥬 סיבים תזונתיים</label>
+              <input
+                type="text"
+                placeholder="לדוגמה: כ~0.5-1 גרם"
                 value={editedPerson.nutrition.fiber}
                 onChange={(e) =>
                   setEditedPerson({
@@ -608,6 +629,23 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 }
               />
             </div>
+          </div>
+          <div className={classes.nutritionNoteField}>
+            <label>📝 הערה</label>
+            <input
+              type="text"
+              placeholder="לדוגמה: בלי אגוזים/צימוקים"
+              value={editedPerson.nutrition.note}
+              onChange={(e) =>
+                setEditedPerson({
+                  ...editedPerson,
+                  nutrition: {
+                    ...editedPerson.nutrition,
+                    note: e.target.value,
+                  },
+                })
+              }
+            />
           </div>
         </div>
 

@@ -10,6 +10,7 @@ import { MainLayout, ProtectedLayout } from "./layout";
 import { Home, Login, Categories } from "../pages";
 import Signup from "../pages/signup";
 import MigratePage from "../pages/migrate";
+import Repair from "../pages/repair/Repair";
 import { RecipeBookProvider, useRecipeBook } from "../context";
 import ConversionTables from "../components/conversion-tables";
 
@@ -53,6 +54,7 @@ function AppContent() {
           <Route path="/categories" element={<Categories />} />
           <Route path="/conversions" element={<ConversionTables />} />
           <Route path="/migrate" element={<MigratePage />} />
+          <Route path="/repair" element={<Repair />} />
         </Route>
 
         {/* Redirect unknown routes */}

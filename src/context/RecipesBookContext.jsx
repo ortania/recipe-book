@@ -18,7 +18,10 @@ import {
   deleteCategory as deleteCategoryFromFirestore,
   reorderCategories as reorderCategoriesInFirestore,
 } from "../firebase/categoryService";
-import { updateRecipe as updateRecipeInFirebase } from "../firebase/recipeService";
+import {
+  updateRecipe as updateRecipeInFirebase,
+  copyRecipeToUser as copyRecipeToUserInDB,
+} from "../firebase/recipeService";
 import {
   onAuthStateChange,
   getUserData,
@@ -91,7 +94,18 @@ export const RecipeBookProvider = ({ children }) => {
           userId,
         );
       }
-      setCategories(categoriesFromFirestore);
+      // Always ensure "All" virtual category is first
+      const allCategory = {
+        id: "all",
+        name: "All",
+        description: "All recipes in the recipe book",
+        color: "#607D8B",
+      };
+      const hasAll = categoriesFromFirestore.some((c) => c.id === "all");
+      const finalCategories = hasAll
+        ? categoriesFromFirestore
+        : [allCategory, ...categoriesFromFirestore];
+      setCategories(finalCategories);
       setCategoriesLoaded(true);
 
       // Load recipes with pagination
@@ -130,9 +144,16 @@ export const RecipeBookProvider = ({ children }) => {
   const editCategory = async (editedCategory) => {
     try {
       const { id, ...updatedData } = editedCategory;
-      const updatedCategory = await updateCategoryInFirestore(id, updatedData);
+      // Use docId for Firestore operations if available
+      const firestoreId = editedCategory.docId || id;
+      const updatedCategory = await updateCategoryInFirestore(
+        firestoreId,
+        updatedData,
+      );
       setCategories((prev) =>
-        prev.map((cat) => (cat.id === id ? editedCategory : cat)),
+        prev.map((cat) =>
+          cat.id === id ? { ...editedCategory, docId: cat.docId } : cat,
+        ),
       );
       return updatedCategory;
     } catch (error) {
@@ -143,7 +164,10 @@ export const RecipeBookProvider = ({ children }) => {
 
   const deleteCategory = async (categoryId) => {
     try {
-      await deleteCategoryFromFirestore(categoryId);
+      // Find the docId for this category
+      const categoryToDelete = categories.find((cat) => cat.id === categoryId);
+      const docId = categoryToDelete?.docId || categoryId;
+      await deleteCategoryFromFirestore(categoryId, docId);
       setCategories((prev) => prev.filter((cat) => cat.id !== categoryId));
 
       // Remove the deleted category from all recipes using batch write
@@ -206,8 +230,16 @@ export const RecipeBookProvider = ({ children }) => {
   };
   const editRecipe = handleEditRecipe(setRecipes);
   const deleteRecipe = handleDeleteRecipe(setRecipes);
-  const clearAllRecipes = handleClearAllRecipes(setRecipes);
-  const clearCategoryRecipes = handleClearCategoryRecipes(setRecipes);
+
+  const clearAllRecipes = async () => {
+    if (!currentUser) throw new Error("No user logged in");
+    return handleClearAllRecipes(setRecipes, currentUser.uid)();
+  };
+
+  const clearCategoryRecipes = async (categoryId) => {
+    if (!currentUser) throw new Error("No user logged in");
+    return handleClearCategoryRecipes(setRecipes, currentUser.uid)(categoryId);
+  };
 
   const reorderRecipes = async (fromIndex, toIndex) => {
     console.log("🔄 reorderRecipes called:", { fromIndex, toIndex });
@@ -251,16 +283,23 @@ export const RecipeBookProvider = ({ children }) => {
 
   const reorderCategories = async (fromIndex, toIndex) => {
     try {
+      // Indices come from editableCategories (without "All").
+      // Offset by 1 if "All" is the first item in the full categories array.
+      const offset =
+        categories.length > 0 && categories[0].id === "all" ? 1 : 0;
+      const adjustedFrom = fromIndex + offset;
+      const adjustedTo = toIndex + offset;
+
       const newCategories = [...categories];
-      const [movedCategory] = newCategories.splice(fromIndex, 1);
-      newCategories.splice(toIndex, 0, movedCategory);
+      const [movedCategory] = newCategories.splice(adjustedFrom, 1);
+      newCategories.splice(adjustedTo, 0, movedCategory);
 
       // Update state immediately for responsive UI
       setCategories(newCategories);
 
-      // Save to Firebase
-      await reorderCategoriesInFirestore(newCategories);
-      console.log("✅ Category order saved to Firebase");
+      // Save to Firebase - filter out the virtual "All" category
+      const categoriesToSave = newCategories.filter((c) => c.id !== "all");
+      await reorderCategoriesInFirestore(categoriesToSave);
     } catch (error) {
       console.error("Error reordering categories:", error);
       // Revert to original order on error
@@ -325,6 +364,18 @@ export const RecipeBookProvider = ({ children }) => {
     }
   };
 
+  const copyRecipeToUser = async (recipe, targetUserId) => {
+    try {
+      if (!currentUser) throw new Error("No user logged in");
+      const copiedRecipe = await copyRecipeToUserInDB(recipe, targetUserId);
+      console.log("📋 Recipe copied successfully:", copiedRecipe.id);
+      return copiedRecipe;
+    } catch (error) {
+      console.error("Error copying recipe:", error);
+      throw error;
+    }
+  };
+
   const logout = async () => {
     try {
       await logoutUser();
@@ -365,6 +416,7 @@ export const RecipeBookProvider = ({ children }) => {
     reorderRecipes,
     reorderCategories,
     loadMoreRecipes,
+    copyRecipeToUser,
     login,
     logout,
   };

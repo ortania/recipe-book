@@ -23,6 +23,9 @@ function CategoriesManagement({
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [draggedIndex, setDraggedIndex] = useState(null);
 
+  // Filter out the virtual "All" category - it's not reorderable
+  const editableCategories = categories.filter((c) => c.id !== "all");
+
   const handleDragStart = (e, index) => {
     setDraggedIndex(index);
     e.dataTransfer.effectAllowed = "move";
@@ -64,7 +67,7 @@ function CategoriesManagement({
   };
 
   const handleMoveDown = (index) => {
-    if (index < categories.length - 1) {
+    if (index < editableCategories.length - 1) {
       onReorderCategories(index, index + 1);
     }
   };
@@ -98,11 +101,6 @@ function CategoriesManagement({
     }
   };
 
-  console.log(
-    "CategoriesManagement rendering with categories:",
-    categories.length,
-  );
-
   return (
     <Modal onClose={onClose} maxWidth="1200px">
       <div className={classes.container}>
@@ -126,7 +124,7 @@ function CategoriesManagement({
           </div>
 
           <div className={classes.categoriesList}>
-            {categories.map((category, index) => (
+            {editableCategories.map((category, index) => (
               <div
                 key={category.id}
                 className={classes.categoryCard}
@@ -160,7 +158,7 @@ function CategoriesManagement({
                       e.stopPropagation();
                       handleMoveDown(index);
                     }}
-                    disabled={index === categories.length - 1}
+                    disabled={index === editableCategories.length - 1}
                     title="הורד"
                   >
                     <IoArrowDown />

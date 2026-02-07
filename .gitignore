@@ -25,6 +25,8 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+video
+video2
 
 
 # windsurf rules

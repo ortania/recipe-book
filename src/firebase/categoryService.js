@@ -31,10 +31,14 @@ export const fetchCategories = async (userId = null) => {
     const querySnapshot = await getDocs(q);
 
     const categories = [];
-    querySnapshot.forEach((doc) => {
+    querySnapshot.forEach((docSnap) => {
+      const data = docSnap.data();
       categories.push({
-        id: doc.id,
-        ...doc.data(),
+        ...data,
+        // Use the data 'id' field if it exists (e.g. "salads"), otherwise use Firestore doc ID
+        id: data.id || docSnap.id,
+        // Always keep the Firestore doc ID for update/delete operations
+        docId: docSnap.id,
       });
     });
 
@@ -65,7 +69,6 @@ export const addCategory = async (category, userId) => {
     const querySnapshot = await getDocs(userCategoriesQuery);
     const currentCount = querySnapshot.size;
 
-    const categoryRef = doc(db, CATEGORIES_COLLECTION, category.id);
     const categoryData = {
       ...category,
       userId,
@@ -74,15 +77,17 @@ export const addCategory = async (category, userId) => {
       updatedAt: new Date().toISOString(),
     };
 
-    await setDoc(categoryRef, categoryData);
+    // Use addDoc to generate a unique Firestore doc ID (no collisions between users)
+    const docRef = await addDoc(categoriesRef, categoryData);
     console.log(
       "✅ Category added to Firebase successfully with order:",
       currentCount,
     );
 
     return {
-      id: category.id,
       ...categoryData,
+      id: category.id,
+      docId: docRef.id,
     };
   } catch (error) {
     console.error("❌ Error adding category:", error);
@@ -95,7 +100,9 @@ export const addCategory = async (category, userId) => {
  */
 export const updateCategory = async (categoryId, updatedData) => {
   try {
-    const categoryRef = doc(db, CATEGORIES_COLLECTION, categoryId);
+    // Use docId (Firestore document ID) if available, otherwise fall back to categoryId
+    const firestoreDocId = updatedData.docId || categoryId;
+    const categoryRef = doc(db, CATEGORIES_COLLECTION, firestoreDocId);
     const dataToSave = {
       ...updatedData,
       updatedAt: new Date().toISOString(),
@@ -116,10 +123,17 @@ export const updateCategory = async (categoryId, updatedData) => {
 /**
  * Delete a category from Firestore
  */
-export const deleteCategory = async (categoryId) => {
-  console.log("🔥 Firebase deleteCategory called with ID:", categoryId);
+export const deleteCategory = async (categoryId, docId = null) => {
+  // Use docId (Firestore document ID) if provided, otherwise fall back to categoryId
+  const firestoreDocId = docId || categoryId;
+  console.log(
+    "🔥 Firebase deleteCategory called with ID:",
+    categoryId,
+    "docId:",
+    firestoreDocId,
+  );
   try {
-    const categoryRef = doc(db, CATEGORIES_COLLECTION, categoryId);
+    const categoryRef = doc(db, CATEGORIES_COLLECTION, firestoreDocId);
     console.log("🔥 Category reference path:", categoryRef.path);
 
     const beforeSnapshot = await getDoc(categoryRef);
@@ -162,24 +176,29 @@ export const deleteCategory = async (categoryId) => {
 export const initializeCategories = async (defaultCategories, userId) => {
   try {
     console.log("🔄 Initializing categories in Firestore for user:", userId);
-    const batch = writeBatch(db);
+    const categoriesRef = collection(db, CATEGORIES_COLLECTION);
+    const results = [];
 
-    const categoriesWithMetadata = defaultCategories.map((category, index) => ({
-      ...category,
-      userId,
-      order: index,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    }));
+    // Filter out "all" - it's a virtual UI category, not stored in Firestore
+    const categoriesToStore = defaultCategories.filter((c) => c.id !== "all");
 
-    categoriesWithMetadata.forEach((category) => {
-      const categoryRef = doc(db, CATEGORIES_COLLECTION, category.id);
-      batch.set(categoryRef, category);
-    });
+    for (let index = 0; index < categoriesToStore.length; index++) {
+      const category = categoriesToStore[index];
+      const categoryData = {
+        ...category,
+        userId,
+        order: index,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
 
-    await batch.commit();
-    console.log("✅ Categories initialized successfully with original IDs");
-    return categoriesWithMetadata;
+      // Use addDoc to get a unique auto-generated Firestore doc ID per user
+      const docRef = await addDoc(categoriesRef, categoryData);
+      results.push({ ...categoryData, docId: docRef.id });
+    }
+
+    console.log("✅ Categories initialized successfully for user:", userId);
+    return results;
   } catch (error) {
     console.error("Error initializing categories:", error);
     throw error;
@@ -195,7 +214,8 @@ export const reorderCategories = async (categories) => {
     const batch = writeBatch(db);
 
     categories.forEach((category, index) => {
-      const categoryRef = doc(db, CATEGORIES_COLLECTION, category.id);
+      const firestoreDocId = category.docId || category.id;
+      const categoryRef = doc(db, CATEGORIES_COLLECTION, firestoreDocId);
       batch.update(categoryRef, {
         order: index,
         updatedAt: new Date().toISOString(),

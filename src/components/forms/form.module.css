@@ -540,6 +540,28 @@
   border: 1px solid #ddd;
   border-radius: 4px;
   font-size: var(--very-small-font);
+  direction: rtl;
+}
+
+.nutritionNoteField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin-top: 0.75rem;
+}
+
+.nutritionNoteField label {
+  font-size: 0.85rem;
+  color: #555;
+  font-weight: 500;
+}
+
+.nutritionNoteField input {
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: var(--very-small-font);
+  direction: rtl;
 }
 
 @media (max-width: 480px) {
