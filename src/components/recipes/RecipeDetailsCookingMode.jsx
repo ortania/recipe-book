@@ -132,6 +132,7 @@ function RecipeDetailsCookingMode({
         ingredientsArray.length,
         setCurrentStep,
         setShowCompletion,
+        showCompletion,
       );
     }
   }, [
@@ -142,6 +143,7 @@ function RecipeDetailsCookingMode({
     currentStep,
     ingredientsArray.length,
     setShowCompletion,
+    showCompletion,
   ]);
 
   const handleScreenClick = () => {
@@ -234,16 +236,18 @@ function RecipeDetailsCookingMode({
           <span>{voiceEnabled ? "Stop Mic" : "Start Mic"}</span>
         </button>
         <div className={classes.headerRight}>
-          <button
-            className={classes.infoButton}
-            onClick={(e) => {
-              e.stopPropagation();
-              setShowInfo(true);
-            }}
-            title="עזרה"
-          >
-            ?
-          </button>
+          {!(showCompletion && activeTab === "instructions") && (
+            <button
+              className={classes.infoButton}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowInfo(true);
+              }}
+              title="עזרה"
+            >
+              ?
+            </button>
+          )}
           <button onClick={onClose} className={classes.closeButton}>
             ✕
           </button>
@@ -457,9 +461,7 @@ function RecipeDetailsCookingMode({
                           <span className={classes.infoEmoji}>⚠️</span>
                           <div>
                             <strong>כדי להשתמש במיקרופון </strong>
-                            <p >
-                              הורד את עוצמת ההתראות במובייל במצב בישול
-                            </p>
+                            <p>הורד את עוצמת ההתראות במובייל במצב בישול</p>
                           </div>
                         </div>
                         <div className={classes.infoItem}>

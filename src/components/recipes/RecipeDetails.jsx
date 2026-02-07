@@ -61,6 +61,7 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
   const cookingModeIngredientsLengthRef = React.useRef(0);
   const cookingModeSetCurrentStepRef = React.useRef(null);
   const cookingModeSetShowCompletionRef = React.useRef(null);
+  const cookingModeShowCompletionRef = React.useRef(false);
 
   // Toggle voice recognition
   const toggleVoiceRecognition = () => {
@@ -315,31 +316,21 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
 
       if (
         hasStartCommand &&
-        cookingModeActiveTabRef.current === "ingredients"
+        cookingModeActiveTabRef.current === "ingredients" &&
+        cookingModeShowCompletionRef.current
       ) {
-        // Check if all ingredients are done (currentStep should be at the last ingredient)
-        const allIngredientsDone =
-          cookingModeCurrentStepRef.current >=
-          cookingModeIngredientsLengthRef.current - 1;
-
-        if (allIngredientsDone) {
-          console.log(
-            "✅ Executing START command - all ingredients done, switching to instructions",
-          );
-          lastCommandTimeRef.current = now;
-          if (
-            cookingModeSetActiveTabRef.current &&
-            cookingModeSetCurrentStepRef.current &&
-            cookingModeSetShowCompletionRef.current
-          ) {
-            cookingModeSetActiveTabRef.current("instructions");
-            cookingModeSetCurrentStepRef.current(0); // Start at first instruction
-            cookingModeSetShowCompletionRef.current(false); // Reset completion
-          }
-        } else {
-          console.log(
-            "⚠️ START command ignored - not all ingredients done yet",
-          );
+        console.log(
+          "✅ Executing START command - completion shown, switching to instructions",
+        );
+        lastCommandTimeRef.current = now;
+        if (
+          cookingModeSetActiveTabRef.current &&
+          cookingModeSetCurrentStepRef.current &&
+          cookingModeSetShowCompletionRef.current
+        ) {
+          cookingModeSetActiveTabRef.current("instructions");
+          cookingModeSetCurrentStepRef.current(0);
+          cookingModeSetShowCompletionRef.current(false);
         }
       } else if (hasNextCommand) {
         console.log("✅ Executing NEXT command");
@@ -496,6 +487,7 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
             ingredientsLength,
             setCurrentStepFunc,
             setShowCompletionFunc,
+            showCompletionValue,
           ) => {
             handleNextStepRef.current = nextRef.current;
             handlePrevStepRef.current = prevRef.current;
@@ -505,6 +497,7 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
             cookingModeIngredientsLengthRef.current = ingredientsLength;
             cookingModeSetCurrentStepRef.current = setCurrentStepFunc;
             cookingModeSetShowCompletionRef.current = setShowCompletionFunc;
+            cookingModeShowCompletionRef.current = showCompletionValue;
           }}
         />
       )}
