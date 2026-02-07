@@ -93,7 +93,6 @@ function Login() {
     try {
       const user = await loginUser(email, password);
       await login(user.uid);
-      navigate("/categories");
     } catch (error) {
       if (
         error.code === "auth/invalid-credential" ||

@@ -24,7 +24,6 @@ function Recipes() {
     editRecipe,
     deleteRecipe,
     clearAllRecipes,
-    isAdmin,
   } = useRecipeBook();
 
   const [showAddPerson, setShowAddPerson] = useState(false);
@@ -55,30 +54,26 @@ function Recipes() {
           >
             ★ Favorites
           </FavoritesButton>
-          {isAdmin && (
-            <Button
-              variant="danger"
-              onClick={handleClearAllClick}
-              disabled={recipes.length === 0}
-              className={recipes.length === 0 ? classes.disabledButton : ""}
-              title="Remove all recipes"
-            >
-              Clear All
-            </Button>
-          )}
+          <Button
+            variant="danger"
+            onClick={handleClearAllClick}
+            disabled={recipes.length === 0}
+            className={recipes.length === 0 ? classes.disabledButton : ""}
+            title="Remove all recipes"
+          >
+            Clear All
+          </Button>
         </div>
       </div>
 
-      {isAdmin && (
-        <div className={pageClasses.actions}>
-          <AddButton
-            onClick={() => setShowAddPerson(true)}
-            title="Add New Recipe"
-          >
-            +
-          </AddButton>
-        </div>
-      )}
+      <div className={pageClasses.actions}>
+        <AddButton
+          onClick={() => setShowAddPerson(true)}
+          title="Add New Recipe"
+        >
+          +
+        </AddButton>
+      </div>
 
       {showAddPerson && (
         <AddRecipe
@@ -96,7 +91,6 @@ function Recipes() {
           onClose={() => setShowFavorites(false)}
           onEditPerson={editRecipe}
           onDeletePerson={deleteRecipe}
-          isAdmin={isAdmin}
         />
       )}
 
@@ -116,7 +110,6 @@ function Recipes() {
         groups={categories}
         onEditPerson={editRecipe}
         onDeletePerson={deleteRecipe}
-        isAdmin={isAdmin}
       />
 
       <UpButton onClick={scrollToTop} title="Scroll to top">

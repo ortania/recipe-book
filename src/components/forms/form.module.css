@@ -530,7 +530,7 @@
 }
 
 .nutritionField label {
-  font-size: 0.85rem;
+  font-size: var(--basic-font);
   color: #555;
   font-weight: 500;
 }
@@ -539,7 +539,7 @@
   padding: 0.5rem 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: var(--very-small-font);
+  font-size: var(--mall-font);
   direction: rtl;
 }
 
@@ -551,7 +551,7 @@
 }
 
 .nutritionNoteField label {
-  font-size: 0.85rem;
+  font-size: var(--basic-font);
   color: #555;
   font-weight: 500;
 }
@@ -560,7 +560,7 @@
   padding: 0.5rem 0.75rem;
   border: 1px solid #ddd;
   border-radius: 4px;
-  font-size: var(--very-small-font);
+  font-size: var(--small-font);
   direction: rtl;
 }
 

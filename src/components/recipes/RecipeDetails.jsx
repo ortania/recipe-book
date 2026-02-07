@@ -8,14 +8,7 @@ import { formatDifficulty } from "./utils";
 import { FaRegEdit } from "react-icons/fa";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 
-function RecipeDetails({
-  recipe,
-  onClose,
-  onEdit,
-  onDelete,
-  isAdmin,
-  groups = [],
-}) {
+function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
   if (!recipe) return null;
 
   // Function to get category name from ID
@@ -481,7 +474,6 @@ function RecipeDetails({
           onClose={onClose}
           onEdit={onEdit}
           onDelete={onDelete}
-          isAdmin={isAdmin}
           getCategoryName={getCategoryName}
           onEnterCookingMode={handleCookingModeToggle}
           onCopyRecipe={copyRecipeToUser}

@@ -22,13 +22,30 @@ const CATEGORIES_COLLECTION = "categories";
 export const fetchCategories = async (userId = null) => {
   try {
     const categoriesRef = collection(db, CATEGORIES_COLLECTION);
-    let q = query(categoriesRef, orderBy("order"));
+    let q;
 
     if (userId) {
       q = query(categoriesRef, where("userId", "==", userId), orderBy("order"));
+    } else {
+      q = query(categoriesRef, orderBy("order"));
     }
 
-    const querySnapshot = await getDocs(q);
+    let querySnapshot;
+    try {
+      querySnapshot = await getDocs(q);
+    } catch (indexError) {
+      console.warn(
+        "⚠️ fetchCategories index query failed, falling back to simple query:",
+        indexError.message,
+      );
+      // Fallback: query without orderBy (no composite index needed)
+      if (userId) {
+        q = query(categoriesRef, where("userId", "==", userId));
+      } else {
+        q = query(categoriesRef);
+      }
+      querySnapshot = await getDocs(q);
+    }
 
     const categories = [];
     querySnapshot.forEach((docSnap) => {
@@ -41,6 +58,9 @@ export const fetchCategories = async (userId = null) => {
         docId: docSnap.id,
       });
     });
+
+    // Sort client-side if we used fallback
+    categories.sort((a, b) => (a.order || 0) - (b.order || 0));
 
     return categories;
   } catch (error) {

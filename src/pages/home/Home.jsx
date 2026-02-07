@@ -15,7 +15,7 @@ import pageClasses from "../page.module.css";
 import classes from "./home.module.css";
 
 function Home() {
-  const { isAdmin } = useRecipeBook();
+  const {} = useRecipeBook();
   const [typedTitle, setTypedTitle] = useState("");
   const [showSubtitle, setShowSubtitle] = useState(false);
   const [visibleFeatures, setVisibleFeatures] = useState([false, false, false]);

@@ -11,14 +11,7 @@ import { formatDifficulty } from "./utils";
 const DEFAULT_IMAGE =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='320'%3E%3Crect width='400' height='320' fill='%23e0e0e0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='%23666'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-function RecipeInfo({
-  person,
-  groups,
-  onEdit,
-  onDelete,
-  isAdmin,
-  onToggleFavorite,
-}) {
+function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
   const [isFavorite, setIsFavorite] = useState(person.isFavorite || false);
   const [showDetails, setShowDetails] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -91,7 +84,6 @@ function RecipeInfo({
           onClose={() => setShowDetails(false)}
           onEdit={onEdit}
           onDelete={onDelete}
-          isAdmin={isAdmin}
           groups={groups}
         />
       )}
@@ -118,28 +110,26 @@ function RecipeInfo({
             {isFavorite ? "★" : "☆"}
           </button>
 
-          {isAdmin && (
-            <div className={classes.actionButtons}>
-              <button
-                onClick={handleEdit}
-                className={classes.actionButton}
-                title="Edit recipe"
-              >
-                <FaEdit />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteClick();
-                }}
-                className={`${classes.actionButton} ${classes.danger}`}
-                title="Delete recipe"
-              >
-                {/* <BsTrash3  /> */}
-                <FaTrash />
-              </button>
-            </div>
-          )}
+          <div className={classes.actionButtons}>
+            <button
+              onClick={handleEdit}
+              className={classes.actionButton}
+              title="Edit recipe"
+            >
+              <FaEdit />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDeleteClick();
+              }}
+              className={`${classes.actionButton} ${classes.danger}`}
+              title="Delete recipe"
+            >
+              {/* <BsTrash3  /> */}
+              <FaTrash />
+            </button>
+          </div>
         </div>
 
         <div className={classes.recipeInfo}>

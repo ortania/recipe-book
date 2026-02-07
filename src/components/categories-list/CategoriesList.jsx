@@ -20,7 +20,6 @@ function CategoriesList({
   groups,
   selectedGroup,
   onSelectGroup,
-  isAdmin,
   onShowAddGroup,
   onEditGroup,
   onDeleteGroup,
@@ -74,33 +73,29 @@ function CategoriesList({
             <span className={classes.mobileToggleText}>Categories</span>
             {isMobileOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
           </button>
-          {isAdmin && (
-            <button
-              className={classes.manageButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowManagement(true);
-              }}
-              title="ניהול קטגוריות"
-            >
-              <MdSettings />
-            </button>
-          )}
+          <button
+            className={classes.manageButton}
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowManagement(true);
+            }}
+            title="ניהול קטגוריות"
+          >
+            <MdSettings />
+          </button>
         </div>
         <div
           className={`${classes.categoriesContent} ${isMobileOpen ? classes.open : ""}`}
         >
-          {isAdmin && (
-            <div className={classes.groupActions}>
-              <button
-                className={classes.manageButtonDesktop}
-                onClick={() => setShowManagement(true)}
-                title="ניהול קטגוריות"
-              >
-                <MdSettings /> Category Management
-              </button>
-            </div>
-          )}
+          <div className={classes.groupActions}>
+            <button
+              className={classes.manageButtonDesktop}
+              onClick={() => setShowManagement(true)}
+              title="ניהול קטגוריות"
+            >
+              <MdSettings /> Category Management
+            </button>
+          </div>
           <div className={classes.groupButtons}>
             {groups.map((group, index) => (
               <div key={group.id} className={classes.groupItem}>

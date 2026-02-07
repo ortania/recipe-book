@@ -518,4 +518,8 @@ body.modal-open .hamburger {
     background: rgba(0, 0, 0, 0.5);
     z-index: 999;
   }
+
+  .logoutButton {
+    margin-bottom: 8rem;
+  }
 }

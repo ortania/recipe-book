@@ -35,7 +35,6 @@ function Categories() {
     editRecipe,
     deleteRecipe,
     clearCategoryRecipes,
-    isAdmin,
     currentUser,
   } = useRecipeBook();
 
@@ -95,7 +94,6 @@ function Categories() {
         groups={categories}
         selectedGroup={selectedGroup}
         onSelectGroup={setSelectedGroup}
-        isAdmin={isAdmin}
         onShowAddGroup={() => setShowAddGroup(true)}
         onEditGroup={setEditingCategory}
         onDeleteGroup={handleDeleteCategory}
@@ -127,7 +125,6 @@ function Categories() {
           onDeletePerson={deleteRecipe}
           onAddPerson={() => setShowAddPerson(true)}
           onShowFavorites={() => setShowFavorites(true)}
-          isAdmin={isAdmin}
           selectedGroup={selectedGroup}
           onSelectGroup={setSelectedGroup}
         />
@@ -139,7 +136,6 @@ function Categories() {
             onClose={() => setShowFavorites(false)}
             onEditPerson={editRecipe}
             onDeletePerson={deleteRecipe}
-            isAdmin={isAdmin}
             groupName={
               selectedGroup === "all" ? "All Recipes" : currentGroup.name
             }

@@ -10,7 +10,6 @@ function FavoritesPopup({
   onClose,
   onEditPerson,
   onDeletePerson,
-  isAdmin,
   groupName = "All Recipes",
 }) {
   const favoritePersons = persons.filter((person) => person.isFavorite);
@@ -31,7 +30,6 @@ function FavoritesPopup({
             groups={groups}
             onEditPerson={onEditPerson}
             onDeletePerson={onDeletePerson}
-            isAdmin={isAdmin}
           />
         )}
 

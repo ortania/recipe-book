@@ -34,8 +34,14 @@ function AppContent() {
       <Routes>
         {/* Public Routes (Login Page - Has Header/Footer but No Navigation) */}
         <Route element={<MainLayout />}>
-          <Route path="/login" element={<Login />} />
-          <Route path="/signup" element={<Signup />} />
+          <Route
+            path="/login"
+            element={isLoggedIn ? <Navigate to="/categories" /> : <Login />}
+          />
+          <Route
+            path="/signup"
+            element={isLoggedIn ? <Navigate to="/categories" /> : <Signup />}
+          />
           <Route
             path="/"
             element={

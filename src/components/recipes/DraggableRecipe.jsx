@@ -7,7 +7,6 @@ function DraggableRecipe({
   groups,
   onEdit,
   onDelete,
-  isAdmin,
   onToggleFavorite,
   index,
   onDragStart,
@@ -42,7 +41,7 @@ function DraggableRecipe({
   return (
     <div
       className={`${classes.draggableWrapper} ${isDragging ? classes.dragging : ""} ${dragOver ? classes.dragOver : ""}`}
-      draggable={isAdmin}
+      draggable={true}
       onDragStart={handleDragStart}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -53,7 +52,6 @@ function DraggableRecipe({
         groups={groups}
         onEdit={onEdit}
         onDelete={onDelete}
-        isAdmin={isAdmin}
         onToggleFavorite={onToggleFavorite}
       />
     </div>

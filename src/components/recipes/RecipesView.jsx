@@ -22,7 +22,6 @@ function RecipesView({
   persons,
   onAddPerson,
   onShowFavorites,
-  isAdmin,
   groups = [],
   onEditPerson,
   onDeletePerson,
@@ -219,15 +218,13 @@ function RecipesView({
           >
             <IoMdStarOutline />
           </button>
-          {isAdmin && (
-            <button
-              className={classes.iconButton}
-              onClick={onAddPerson}
-              title="Add New Recipe"
-            >
-              <IoAddOutline />
-            </button>
-          )}
+          <button
+            className={classes.iconButton}
+            onClick={onAddPerson}
+            title="Add New Recipe"
+          >
+            <IoAddOutline />
+          </button>
         </div>
       </div>
 
@@ -463,7 +460,6 @@ function RecipesView({
                         groups={groups}
                         onEdit={() => setEditingPerson(person)}
                         onDelete={onDeletePerson}
-                        isAdmin={isAdmin}
                         onToggleFavorite={handleToggleFavorite}
                       />
                     ))}
@@ -496,7 +492,6 @@ function RecipesView({
                       groups={groups}
                       onEdit={() => setEditingPerson(person)}
                       onDelete={onDeletePerson}
-                      isAdmin={isAdmin}
                       onToggleFavorite={handleToggleFavorite}
                     />
                   ))}
@@ -514,7 +509,6 @@ function RecipesView({
               groups={groups}
               onEdit={() => setEditingPerson(person)}
               onDelete={onDeletePerson}
-              isAdmin={isAdmin}
               onToggleFavorite={handleToggleFavorite}
             />
           ))}

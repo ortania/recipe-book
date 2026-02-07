@@ -6,6 +6,8 @@ import {
   doc,
   writeBatch,
   deleteDoc,
+  query,
+  where,
 } from "firebase/firestore";
 import { db } from "../../firebase/config";
 import { fetchAllUsers } from "../../firebase/authService";
@@ -41,14 +43,35 @@ function Repair() {
         })),
       );
 
-      // Fetch ALL recipes (no filter)
+      // Fetch recipes per user (Firestore rules may block cross-user reads)
       const recipesRef = collection(db, "recipes");
-      const recipeSnapshot = await getDocs(recipesRef);
       const allRecipes = [];
-      recipeSnapshot.forEach((d) => {
-        const data = d.data();
-        allRecipes.push({ id: d.id, ...data });
-      });
+      for (const user of allUsers) {
+        try {
+          const userQuery = query(recipesRef, where("userId", "==", user.id));
+          const userSnapshot = await getDocs(userQuery);
+          userSnapshot.forEach((d) => {
+            allRecipes.push({ id: d.id, ...d.data() });
+          });
+        } catch (err) {
+          console.warn(
+            `⚠️ Could not fetch recipes for user ${user.id}:`,
+            err.message,
+          );
+        }
+      }
+      // Also try to fetch recipes without userId (orphaned)
+      try {
+        const allSnapshot = await getDocs(recipesRef);
+        allSnapshot.forEach((d) => {
+          const data = d.data();
+          if (!data.userId) {
+            allRecipes.push({ id: d.id, ...data });
+          }
+        });
+      } catch (err) {
+        console.warn("⚠️ Could not fetch orphaned recipes:", err.message);
+      }
       allRecipes.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
       setRecipes(allRecipes);
       console.log("📋 Recipes found:", allRecipes.length);
@@ -56,13 +79,23 @@ function Repair() {
         ...new Set(allRecipes.map((r) => r.userId)),
       ]);
 
-      // Fetch ALL categories (no filter)
+      // Fetch categories per user
       const catsRef = collection(db, "categories");
-      const catSnapshot = await getDocs(catsRef);
       const allCats = [];
-      catSnapshot.forEach((d) => {
-        allCats.push({ id: d.id, ...d.data() });
-      });
+      for (const user of allUsers) {
+        try {
+          const userCatQuery = query(catsRef, where("userId", "==", user.id));
+          const userCatSnapshot = await getDocs(userCatQuery);
+          userCatSnapshot.forEach((d) => {
+            allCats.push({ id: d.id, ...d.data() });
+          });
+        } catch (err) {
+          console.warn(
+            `⚠️ Could not fetch categories for user ${user.id}:`,
+            err.message,
+          );
+        }
+      }
       setCategories(allCats);
       console.log("📂 Categories found:", allCats.length);
       console.log("📂 Category userIds:", [

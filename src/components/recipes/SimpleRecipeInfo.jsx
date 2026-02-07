@@ -8,7 +8,6 @@ function SimpleRecipeInfo({
   groups,
   onEdit,
   onDelete,
-  isAdmin,
   onToggleFavorite,
 }) {
   const [isFavorite, setIsFavorite] = useState(person.isFavorite || false);
@@ -60,21 +59,17 @@ function SimpleRecipeInfo({
           >
             View
           </Button>
-          {isAdmin && (
-            <>
-              <Button onClick={() => onEdit(person)} title="Edit recipe">
-                Edit
-              </Button>
-              <Button
-                variant="danger"
-                onClick={handleDelete}
-                className={classes.deleteButton}
-                title="Delete recipe"
-              >
-                Delete
-              </Button>
-            </>
-          )}
+          <Button onClick={() => onEdit(person)} title="Edit recipe">
+            Edit
+          </Button>
+          <Button
+            variant="danger"
+            onClick={handleDelete}
+            className={classes.deleteButton}
+            title="Delete recipe"
+          >
+            Delete
+          </Button>
         </div>
       </div>
 

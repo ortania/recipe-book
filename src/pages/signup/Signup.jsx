@@ -41,7 +41,7 @@ function Signup() {
 
     try {
       await signupUser(email, password, displayName);
-      navigate("/");
+      // Navigation handled automatically by AppContent when isLoggedIn becomes true
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         setError("Email already in use");

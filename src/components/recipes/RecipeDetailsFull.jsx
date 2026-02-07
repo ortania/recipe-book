@@ -15,7 +15,6 @@ function RecipeDetailsFull({
   onClose,
   onEdit,
   onDelete,
-  isAdmin,
   getCategoryName,
   onEnterCookingMode,
   onCopyRecipe,
@@ -156,50 +155,42 @@ function RecipeDetailsFull({
         </div>
       )}
 
-      {isAdmin && (
-        <div className={classes.actionBar}>
-          {onEdit && (
-            <button
-              onClick={() => {
-                onClose();
-                onEdit(recipe);
-              }}
-              className={classes.actionButton}
-              title="Edit"
-            >
-              <FaRegEdit />
-              <span>Edit</span>
-            </button>
-          )}
-          {onDelete && (
-            <button
-              onClick={handleDeleteClick}
-              className={`${classes.actionButton} ${classes.actionDelete}`}
-              title="Delete"
-            >
-              <BsTrash3 />
-              <span>Delete</span>
-            </button>
-          )}
-          {onCopyRecipe && (
-            <button
-              onClick={handleCopyClick}
-              className={classes.actionButton}
-              title="Copy"
-            >
-              <IoCopyOutline />
-              <span>Copy</span>
-            </button>
-          )}
-          <ExportImageButton recipe={recipe} />
-        </div>
-      )}
-
-      {!isAdmin && (
-        <div className={classes.actionBar}>
-          <ExportImageButton recipe={recipe} />
-        </div>
-      )}
+      <div className={classes.actionBar}>
+        {onEdit && (
+          <button
+            onClick={() => {
+              onClose();
+              onEdit(recipe);
+            }}
+            className={classes.actionButton}
+            title="Edit"
+          >
+            <FaRegEdit />
+            <span>Edit</span>
+          </button>
+        )}
+        {onDelete && (
+          <button
+            onClick={handleDeleteClick}
+            className={`${classes.actionButton} ${classes.actionDelete}`}
+            title="Delete"
+          >
+            <BsTrash3 />
+            <span>Delete</span>
+          </button>
+        )}
+        {onCopyRecipe && (
+          <button
+            onClick={handleCopyClick}
+            className={classes.actionButton}
+            title="Copy"
+          >
+            <IoCopyOutline />
+            <span>Copy</span>
+          </button>
+        )}
+        <ExportImageButton recipe={recipe} />
+      </div>
 
       <div className={classes.recipeContent}>
         <h2 className={classes.recipeName}>{recipe.name}</h2>

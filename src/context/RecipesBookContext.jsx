@@ -1,7 +1,6 @@
 import { createContext, useContext, useState, useEffect } from "react";
 import { categories as initialCategories } from "../app/data/data";
 import {
-  fetchRecipes,
   transformRecipe,
   handleAddRecipe,
   handleEditRecipe,
@@ -9,7 +8,7 @@ import {
   handleClearAllRecipes,
   handleClearCategoryRecipes,
 } from "../app/utils";
-import { RECIPES_PER_PAGE } from "../firebase/recipeService";
+import { fetchRecipes, RECIPES_PER_PAGE } from "../firebase/recipeService";
 import {
   fetchCategories,
   initializeCategories,
@@ -56,14 +55,22 @@ export const RecipeBookProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = onAuthStateChange(async (user) => {
       if (user) {
+        setIsLoading(true);
         console.log("✅ User authenticated:", user.uid);
-        const userData = await getUserData(user.uid);
+        let userData = await getUserData(user.uid);
+        // Retry if user document not yet created (race condition on signup)
+        if (!userData) {
+          console.log("⏳ User document not found, retrying...");
+          await new Promise((resolve) => setTimeout(resolve, 1500));
+          userData = await getUserData(user.uid);
+        }
         setCurrentUser({ uid: user.uid, ...userData });
-        setIsAdmin(userData?.isAdmin || false);
-        setIsLoggedIn(true);
+        setIsAdmin(true);
 
-        // Load user's data
+        // Load user's data BEFORE setting isLoggedIn
+        // so the redirect to /categories happens only after data is ready
         await loadUserData(user.uid);
+        setIsLoggedIn(true);
       } else {
         console.log("❌ No user authenticated");
         setCurrentUser(null);
@@ -312,9 +319,10 @@ export const RecipeBookProvider = ({ children }) => {
       setIsLoading(true);
       const userData = await getUserData(userId);
       setCurrentUser({ uid: userId, ...userData });
-      setIsAdmin(userData?.isAdmin || false);
-      setIsLoggedIn(true);
+      setIsAdmin(true);
+      // Load data BEFORE setting isLoggedIn so redirect happens with data ready
       await loadUserData(userId);
+      setIsLoggedIn(true);
     } catch (error) {
       console.error("Error during login:", error);
     } finally {
