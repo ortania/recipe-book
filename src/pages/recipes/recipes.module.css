@@ -1,4 +1,4 @@
-.contactsContainer {
+.recipesContainer {
   display: flex;
   flex-direction: column;
   padding: 3rem 5rem;
@@ -102,7 +102,7 @@
 }
 
 @media (max-width: 768px) {
-  .contactsContainer {
+  .recipesContainer {
     padding: 1rem;
     width: 100%;
   }

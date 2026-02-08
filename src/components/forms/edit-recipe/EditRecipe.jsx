@@ -2,9 +2,11 @@ import { useState, useEffect } from "react";
 import { Modal } from "../../modal";
 import { Button } from "../../controls/button";
 import { FaGripVertical } from "react-icons/fa";
+import { useLanguage } from "../../../context";
 import classes from "../form.module.css";
 
 function EditRecipe({ person, onSave, onCancel, groups = [] }) {
+  const { t } = useLanguage();
   const [editedPerson, setEditedPerson] = useState({
     name: person.name,
     image_src: person.image_src || "",
@@ -352,10 +354,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   return (
     <Modal onClose={onCancel}>
       <form className={classes.form} onSubmit={handleSubmit}>
-        <h2 className={classes.formTitle}>Edit Recipe</h2>
+        <h2 className={classes.formTitle}>{t("recipes", "editRecipe")}</h2>
         <input
           type="text"
-          placeholder="Recipe Name *"
+          placeholder={t("recipes", "recipeName")}
           name="name"
           value={editedPerson.name}
           onChange={handleChange}
@@ -363,7 +365,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         />
 
         <div className={classes.imageSection}>
-          <label className={classes.imageLabel}>🖼️ Image URL</label>
+          <label className={classes.imageLabel}>
+            🖼️ {t("recipes", "imageUrl")}
+          </label>
           <input
             type="text"
             placeholder="Enter image URL"
@@ -384,9 +388,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </div>
         <div className={classes.listSection}>
           <div className={classes.listHeader}>
-            <h3>📝 Ingredients</h3>
-            <Button onClick={addIngredient} title="Add ingredient">
-              + Add
+            <h3>📝 {t("recipes", "ingredients")}</h3>
+            <Button onClick={addIngredient} title={t("recipes", "add")}>
+              {t("recipes", "add")}
             </Button>
           </div>
           <div className={classes.itemsList}>
@@ -427,9 +431,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
 
         <div className={classes.listSection}>
           <div className={classes.listHeader}>
-            <h3>👨‍🍳 Instructions</h3>
-            <Button onClick={addInstruction} title="Add instruction">
-              + Add
+            <h3>👨‍🍳 {t("recipes", "instructions")}</h3>
+            <Button onClick={addInstruction} title={t("recipes", "add")}>
+              {t("recipes", "add")}
             </Button>
           </div>
           <div className={classes.itemsList}>
@@ -468,7 +472,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           </div>
         </div>
         <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>⏱️ זמן הכנה</label>
+          <label className={classes.difficultyLabel}>
+            ⏱️ {t("recipes", "prepTime")}
+          </label>
           <input
             type="text"
             placeholder="e.g., 15 min"
@@ -480,7 +486,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </div>
 
         <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>🔥 זמן בישול</label>
+          <label className={classes.difficultyLabel}>
+            🔥 {t("recipes", "cookTime")}
+          </label>
           <input
             type="text"
             placeholder="e.g., 30 min"
@@ -492,7 +500,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </div>
 
         <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>Servings</label>
+          <label className={classes.difficultyLabel}>
+            {t("recipes", "servings")}
+          </label>
           <input
             type="number"
             placeholder="Number of servings"
@@ -505,23 +515,27 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </div>
 
         <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>Difficulty</label>
+          <label className={classes.difficultyLabel}>
+            {t("recipes", "difficulty")}
+          </label>
           <select
             name="difficulty"
             value={editedPerson.difficulty}
             onChange={handleChange}
             className={classes.difficultySelect}
           >
-            <option value="Unknown">Unknown</option>
-            <option value="VeryEasy">Very Easy</option>
-            <option value="Easy">Easy</option>
-            <option value="Medium">Medium</option>
-            <option value="Hard">Hard</option>
+            <option value="Unknown">{t("difficulty", "Unknown")}</option>
+            <option value="VeryEasy">{t("difficulty", "VeryEasy")}</option>
+            <option value="Easy">{t("difficulty", "Easy")}</option>
+            <option value="Medium">{t("difficulty", "Medium")}</option>
+            <option value="Hard">{t("difficulty", "Hard")}</option>
           </select>
         </div>
 
         <div className={classes.fieldSection}>
-          <label className={classes.fieldLabel}>Source URL</label>
+          <label className={classes.fieldLabel}>
+            {t("recipes", "sourceUrl")}
+          </label>
           <input
             type="url"
             placeholder="Source URL (where recipe is from)"
@@ -532,7 +546,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </div>
 
         <div className={classes.fieldSection}>
-          <label className={classes.fieldLabel}>Image (Optional)</label>
+          <label className={classes.fieldLabel}>
+            {t("recipes", "imageOptional")}
+          </label>
           <input
             type="url"
             placeholder="Image URL (optional)"
@@ -549,7 +565,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             }}
           >
             <span style={{ fontSize: "0.9rem", color: "#666" }}>
-              Or upload from computer:
+              {t("recipes", "uploadFromComputer")}
             </span>
             <input
               type="file"
@@ -560,14 +576,14 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             />
             {uploadingImage && (
               <span style={{ fontSize: "0.9rem", color: "#666" }}>
-                Uploading...
+                {t("recipes", "uploading")}
               </span>
             )}
           </div>
         </div>
 
         <div className={classes.fieldSection}>
-          <label className={classes.fieldLabel}>Notes</label>
+          <label className={classes.fieldLabel}>{t("recipes", "notes")}</label>
           <textarea
             placeholder="Notes (optional - personal comments, tips, modifications)"
             name="notes"
@@ -579,10 +595,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </div>
 
         <div className={classes.nutritionSection}>
-          <label className={classes.fieldLabel}>🥗 ערכים תזונתיים (למנה)</label>
+          <label className={classes.fieldLabel}>
+            🥗 {t("recipes", "nutrition")}
+          </label>
           <div className={classes.nutritionGrid}>
             <div className={classes.nutritionField}>
-              <label>🔥 קלוריות</label>
+              <label>🔥 {t("recipes", "calories")}</label>
               <input
                 type="text"
                 placeholder='לדוגמה: כ~150 קק"ל'
@@ -599,7 +617,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>🍗 חלבון</label>
+              <label>🍗 {t("recipes", "protein")}</label>
               <input
                 type="text"
                 placeholder="לדוגמה: כ~2.5 גרם"
@@ -616,7 +634,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>🥑 שומן</label>
+              <label>🥑 {t("recipes", "fat")}</label>
               <input
                 type="text"
                 placeholder="לדוגמה: כ~9-10 גרם"
@@ -633,7 +651,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>🍞 פחמימות</label>
+              <label>🍞 {t("recipes", "carbs")}</label>
               <input
                 type="text"
                 placeholder="לדוגמה: כ~14-15 גרם"
@@ -650,7 +668,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>🍬 סוכרים</label>
+              <label>🍬 {t("recipes", "sugars")}</label>
               <input
                 type="text"
                 placeholder="לדוגמה: כ~11-12 גרם"
@@ -667,7 +685,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               />
             </div>
             <div className={classes.nutritionField}>
-              <label>🥬 סיבים תזונתיים</label>
+              <label>🥬 {t("recipes", "fiber")}</label>
               <input
                 type="text"
                 placeholder="לדוגמה: כ~0.5-1 גרם"
@@ -685,7 +703,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             </div>
           </div>
           <div className={classes.nutritionNoteField}>
-            <label>📝 הערה</label>
+            <label>📝 {t("recipes", "note")}</label>
             <input
               type="text"
               placeholder="לדוגמה: בלי אגוזים/צימוקים"
@@ -704,7 +722,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </div>
 
         <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>Rating</label>
+          <label className={classes.difficultyLabel}>
+            {t("recipes", "rating")}
+          </label>
           <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -744,7 +764,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                   textDecoration: "underline",
                 }}
               >
-                Clear
+                {t("recipes", "clear")}
               </button>
             )}
           </div>
@@ -783,7 +803,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               className={classes.favoriteCheckbox}
             />
             <span className={classes.favoriteText}>
-              {editedPerson.isFavorite ? "★ Favorite" : "☆ Add to favorites"}
+              {editedPerson.isFavorite
+                ? t("recipes", "favorite")
+                : t("recipes", "addToFavorites")}
             </span>
           </label>
         </div>
@@ -794,10 +816,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             onClick={onCancel}
             className={classes.cancelBtn}
           >
-            Cancel
+            {t("recipes", "cancel")}
           </button>
           <button type="submit" className={classes.submitBtn}>
-            Save Changes
+            {t("recipes", "saveChanges")}
           </button>
         </div>
       </form>

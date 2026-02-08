@@ -11,15 +11,21 @@ import { Home, Login, Categories } from "../pages";
 import Signup from "../pages/signup";
 import MigratePage from "../pages/migrate";
 import Repair from "../pages/repair/Repair";
-import { RecipeBookProvider, useRecipeBook } from "../context";
+import {
+  RecipeBookProvider,
+  useRecipeBook,
+  LanguageProvider,
+} from "../context";
 import ConversionTables from "../components/conversion-tables";
 import Settings from "../pages/settings/Settings";
 
 function App() {
   return (
-    <RecipeBookProvider>
-      <AppContent />
-    </RecipeBookProvider>
+    <LanguageProvider>
+      <RecipeBookProvider>
+        <AppContent />
+      </RecipeBookProvider>
+    </LanguageProvider>
   );
 }
 

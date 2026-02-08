@@ -1,5 +1,6 @@
 .groupsContainer {
   display: flex;
+  direction: ltr;
   padding: 1rem 3rem;
   /* background: linear-gradient(
     135deg,

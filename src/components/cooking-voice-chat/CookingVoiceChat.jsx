@@ -1,7 +1,96 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
 import { sendCookingChatMessage } from "../../services/openai";
+import { useLanguage } from "../../context";
 import classes from "./cooking-voice-chat.module.css";
+
+const SPEECH_LANG_MAP = {
+  he: "he-IL",
+  en: "en-US",
+  ru: "ru-RU",
+  de: "de-DE",
+  mixed: "he-IL",
+};
+
+const STATUS_TEXT = {
+  thinking: {
+    he: "חושב...",
+    en: "Thinking...",
+    ru: "Думаю...",
+    de: "Denke nach...",
+    mixed: "חושב...",
+  },
+  speaking: {
+    he: "מדבר...",
+    en: "Speaking...",
+    ru: "Говорю...",
+    de: "Spreche...",
+    mixed: "מדבר...",
+  },
+  listening: {
+    he: "מקשיב...",
+    en: "Listening...",
+    ru: "Слушаю...",
+    de: "Höre zu...",
+    mixed: "מקשיב...",
+  },
+  notUnderstood: {
+    he: "לא הבנתי, נסה שוב",
+    en: "Didn't catch that, try again",
+    ru: "Не понял, попробуйте ещё",
+    de: "Nicht verstanden, nochmal",
+    mixed: "לא הבנתי, נסה שוב",
+  },
+  error: {
+    he: "שגיאה בתקשורת",
+    en: "Communication error",
+    ru: "Ошибка связи",
+    de: "Kommunikationsfehler",
+    mixed: "שגיאה בתקשורת",
+  },
+  errorSpeak: {
+    he: "סליחה, הייתה שגיאה",
+    en: "Sorry, there was an error",
+    ru: "Извините, произошла ошибка",
+    de: "Entschuldigung, ein Fehler ist aufgetreten",
+    mixed: "סליחה, הייתה שגיאה",
+  },
+  fallback: {
+    he: "לא הצלחתי להבין",
+    en: "I didn't understand",
+    ru: "Не удалось понять",
+    de: "Konnte nicht verstehen",
+    mixed: "לא הצלחתי להבין",
+  },
+  stopChat: {
+    he: "עצור צ'אט",
+    en: "Stop Chat",
+    ru: "Стоп",
+    de: "Chat stoppen",
+    mixed: "Stop Chat",
+  },
+  voiceChat: {
+    he: "צ'אט קולי",
+    en: "Voice Chat",
+    ru: "Голосовой чат",
+    de: "Sprachchat",
+    mixed: "Voice Chat",
+  },
+  notSupported: {
+    he: "זיהוי קולי לא נתמך בדפדפן זה",
+    en: "Speech recognition not supported in this browser",
+    ru: "Распознавание речи не поддерживается",
+    de: "Spracherkennung nicht unterstützt",
+    mixed: "זיהוי קולי לא נתמך בדפדפן זה",
+  },
+  micAccess: {
+    he: "יש לאפשר גישה למיקרופון",
+    en: "Please allow microphone access",
+    ru: "Разрешите доступ к микрофону",
+    de: "Bitte Mikrofonzugriff erlauben",
+    mixed: "יש לאפשר גישה למיקרופון",
+  },
+};
 
 function CookingVoiceChat({
   recipe,
@@ -16,6 +105,11 @@ function CookingVoiceChat({
   onStopTimer,
   isTimerRunning,
 }) {
+  const { language } = useLanguage();
+  const lang = language || "he";
+  const speechLang = SPEECH_LANG_MAP[lang] || "he-IL";
+  const st = (key) => STATUS_TEXT[key]?.[lang] || STATUS_TEXT[key]?.he || key;
+
   const [isActive, setIsActive] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
@@ -58,7 +152,7 @@ function CookingVoiceChat({
       }
       window.speechSynthesis.cancel();
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = "he-IL";
+      utterance.lang = speechLang;
       utterance.rate = 1.1;
       utterance.onstart = () => setIsSpeaking(true);
       utterance.onend = () => {
@@ -121,7 +215,7 @@ function CookingVoiceChat({
     async (text) => {
       isProcessingRef.current = true;
       setIsProcessing(true);
-      setStatusText("חושב...");
+      setStatusText(st("thinking"));
 
       // Stop recognition completely before processing
       stopRecognitionTemporarily();
@@ -137,11 +231,11 @@ function CookingVoiceChat({
           isTimerRunning: isTimerRunningRef.current,
         };
 
-        const response = await sendCookingChatMessage(text, recipeData);
-        const responseText = response.text || "לא הצלחתי להבין";
+        const response = await sendCookingChatMessage(text, recipeData, lang);
+        const responseText = response.text || st("fallback");
 
         setLastResponse(responseText);
-        setStatusText("מדבר...");
+        setStatusText(st("speaking"));
 
         if (response.action) {
           handleAction(response.action);
@@ -150,8 +244,8 @@ function CookingVoiceChat({
         await speak(responseText);
       } catch (error) {
         console.error("Voice chat error:", error);
-        setLastResponse("שגיאה בתקשורת");
-        await speak("סליחה, הייתה שגיאה");
+        setLastResponse(st("error"));
+        await speak(st("errorSpeak"));
       } finally {
         setIsProcessing(false);
         isProcessingRef.current = false;
@@ -175,7 +269,7 @@ function CookingVoiceChat({
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("זיהוי קולי לא נתמך בדפדפן זה");
+      alert(st("notSupported"));
       return;
     }
 
@@ -192,11 +286,11 @@ function CookingVoiceChat({
     const recognition = new SpeechRecognition();
     recognition.continuous = true;
     recognition.interimResults = false;
-    recognition.lang = "he-IL";
+    recognition.lang = speechLang;
     recognition.maxAlternatives = 1;
 
     recognition.onstart = () => {
-      setStatusText("מקשיב...");
+      setStatusText(st("listening"));
     };
 
     recognition.onresult = (event) => {
@@ -209,7 +303,7 @@ function CookingVoiceChat({
       console.log("🎤 Voice chat heard:", text, "confidence:", confidence);
 
       if (confidence < 0.4 || !text) {
-        setStatusText("לא הבנתי, נסה שוב");
+        setStatusText(st("notUnderstood"));
         return;
       }
 
@@ -241,7 +335,7 @@ function CookingVoiceChat({
     recognition.onerror = (event) => {
       console.error("Voice chat recognition error:", event.error);
       if (event.error === "not-allowed") {
-        alert("יש לאפשר גישה למיקרופון");
+        alert(st("micAccess"));
         setIsActive(false);
         isActiveRef.current = false;
         return;
@@ -327,7 +421,7 @@ function CookingVoiceChat({
           {isActive ? <PiMicrophoneThin /> : <PiMicrophoneSlashThin />}
         </span>
         <span className={classes.buttonLabel}>
-          {isActive ? "Stop Chat" : "Voice Chat"}
+          {isActive ? st("stopChat") : st("voiceChat")}
         </span>
       </button>
 

@@ -3,7 +3,8 @@ import { FaFilter, FaPlus, FaStar } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
 import { IoMdStarOutline } from "react-icons/io";
 import { IoChevronDown, IoAddOutline } from "react-icons/io5";
-import { useRecipeBook } from "../../context";
+import { useRecipeBook, useLanguage } from "../../context";
+import useTranslatedList from "../../hooks/useTranslatedList";
 
 import classes from "./recipes-view-new.module.css";
 
@@ -28,6 +29,7 @@ function RecipesView({
   selectedGroup,
   onSelectGroup,
 }) {
+  const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
@@ -198,14 +200,17 @@ function RecipesView({
     setIsSimpleView((prev) => !prev);
   };
 
+  const { getTranslated: getTranslatedGroup } = useTranslatedList(
+    groups,
+    "name",
+  );
   const selectedGroupData = groups.find((g) => g.id === selectedGroup);
-  const groupTitle =
-    selectedGroup === "all"
-      ? "All Recipes"
-      : selectedGroupData?.name || "All Recipes";
+  const groupTitle = selectedGroupData
+    ? getTranslatedGroup(selectedGroupData)
+    : t("categories", "all");
 
   return (
-    <div className={classes.contactsContainer}>
+    <div className={classes.recipesContainer}>
       <div className={classes.viewToggleWrapper}>
         <div className={classes.viewToggle}>
           <ViewToggle activeView={activeView} onViewChange={handleViewChange} />
@@ -241,7 +246,7 @@ function RecipesView({
         <SearchBox
           searchTerm={searchTerm}
           onSearchChange={setSearchTerm}
-          placeholder="Search for labels"
+          placeholder={t("common", "search")}
         />
         <div className={classes.headerControls}>
           <div className={classes.dropdownContainer} ref={filterRef}>
@@ -249,7 +254,7 @@ function RecipesView({
               className={classes.filterButton}
               onClick={() => setShowFilterMenu(!showFilterMenu)}
             >
-              <CiFilter /> Filter <IoChevronDown />
+              <CiFilter /> {t("recipesView", "filter")} <IoChevronDown />
             </button>
             {showFilterMenu && (
               <div
@@ -257,7 +262,9 @@ function RecipesView({
                 onClick={(e) => e.stopPropagation()}
               >
                 <div className={classes.filterSection}>
-                  <label className={classes.filterLabel}>מילות מפתח:</label>
+                  <label className={classes.filterLabel}>
+                    {t("common", "search")}:
+                  </label>
                   <div className={classes.inputWrapper}>
                     <input
                       type="text"
@@ -289,12 +296,14 @@ function RecipesView({
                 </div>
                 <div className={classes.filterDivider}></div>
                 <div className={classes.filterSection}>
-                  <label className={classes.filterLabel}>זמן הכנה:</label>
+                  <label className={classes.filterLabel}>
+                    {t("recipes", "prepTime")}:
+                  </label>
                   <button
                     className={selectedPrepTime === "all" ? classes.active : ""}
                     onClick={() => setSelectedPrepTime("all")}
                   >
-                    הכל
+                    {t("categories", "all")}
                   </button>
                   <button
                     className={
@@ -302,7 +311,7 @@ function RecipesView({
                     }
                     onClick={() => setSelectedPrepTime("quick")}
                   >
-                    מהיר (עד 15 דק')
+                    ≤15 {t("recipes", "minutes")}
                   </button>
                   <button
                     className={
@@ -310,7 +319,7 @@ function RecipesView({
                     }
                     onClick={() => setSelectedPrepTime("medium")}
                   >
-                    בינוני (15-30 דק')
+                    15-30 {t("recipes", "minutes")}
                   </button>
                   <button
                     className={
@@ -318,19 +327,21 @@ function RecipesView({
                     }
                     onClick={() => setSelectedPrepTime("long")}
                   >
-                    ארוך (מעל 30 דק')
+                    30+ {t("recipes", "minutes")}
                   </button>
                 </div>
                 <div className={classes.filterDivider}></div>
                 <div className={classes.filterSection}>
-                  <label className={classes.filterLabel}>רמת קושי:</label>
+                  <label className={classes.filterLabel}>
+                    {t("recipes", "difficulty")}:
+                  </label>
                   <button
                     className={
                       selectedDifficulty === "all" ? classes.active : ""
                     }
                     onClick={() => setSelectedDifficulty("all")}
                   >
-                    הכל
+                    {t("categories", "all")}
                   </button>
                   <button
                     className={
@@ -338,7 +349,7 @@ function RecipesView({
                     }
                     onClick={() => setSelectedDifficulty("VeryEasy")}
                   >
-                    קל מאוד
+                    {t("difficulty", "VeryEasy")}
                   </button>
                   <button
                     className={
@@ -346,7 +357,7 @@ function RecipesView({
                     }
                     onClick={() => setSelectedDifficulty("Easy")}
                   >
-                    קל
+                    {t("difficulty", "Easy")}
                   </button>
                   <button
                     className={
@@ -354,7 +365,7 @@ function RecipesView({
                     }
                     onClick={() => setSelectedDifficulty("Medium")}
                   >
-                    בינוני
+                    {t("difficulty", "Medium")}
                   </button>
                   <button
                     className={
@@ -362,7 +373,7 @@ function RecipesView({
                     }
                     onClick={() => setSelectedDifficulty("Hard")}
                   >
-                    קשה
+                    {t("difficulty", "Hard")}
                   </button>
                 </div>
               </div>
@@ -374,7 +385,7 @@ function RecipesView({
               className={classes.sortingButton}
               onClick={() => setShowSortMenu(!showSortMenu)}
             >
-              Sorting <IoChevronDown />
+              {t("recipesView", "sorting")} <IoChevronDown />
             </button>
             {showSortMenu && (
               <div className={classes.dropdownMenu}>
@@ -385,7 +396,7 @@ function RecipesView({
                     setShowSortMenu(false);
                   }}
                 >
-                  Name{" "}
+                  {t("recipesView", "sortByName")}{" "}
                   {sortField === "name" &&
                     (sortDirection === "asc" ? "↑" : "↓")}
                 </button>
@@ -396,7 +407,7 @@ function RecipesView({
                     setShowSortMenu(false);
                   }}
                 >
-                  Prep Time{" "}
+                  {t("recipesView", "sortByPrepTime")}{" "}
                   {sortField === "prepTime" &&
                     (sortDirection === "asc" ? "↑" : "↓")}
                 </button>
@@ -407,7 +418,7 @@ function RecipesView({
                     setShowSortMenu(false);
                   }}
                 >
-                  Difficulty{" "}
+                  {t("recipesView", "sortByDifficulty")}{" "}
                   {sortField === "difficulty" &&
                     (sortDirection === "asc" ? "↑" : "↓")}
                 </button>
@@ -427,11 +438,11 @@ function RecipesView({
       )}
 
       {filteredAndSortedPersons.length === 0 ? (
-        <div className={classes.noResults}>No recipes found</div>
+        <div className={classes.noResults}>{t("recipesView", "noResults")}</div>
       ) : selectedGroup === "all" ? (
         <div>
           {groups
-            .filter((group) => group.id !== "all")
+            .filter((group) => group.id !== "all" && group.id !== "other")
             .map((group) => {
               const groupRecipes = filteredAndSortedPersons.filter(
                 (person) =>
@@ -442,13 +453,15 @@ function RecipesView({
               return (
                 <div key={group.id} className={classes.categorySection}>
                   <div className={classes.sectionHeader}>
-                    <h2 className={classes.sectionTitle}>{group.name}</h2>
+                    <h2 className={classes.sectionTitle}>
+                      {getTranslatedGroup(group)}
+                    </h2>
                     {groupRecipes.length > 8 && (
                       <button
                         className={classes.seeMore}
                         onClick={() => onSelectGroup && onSelectGroup(group.id)}
                       >
-                        See more
+                        {t("categories", "seeMore")}
                       </button>
                     )}
                   </div>
@@ -477,7 +490,9 @@ function RecipesView({
             return (
               <div key="other" className={classes.categorySection}>
                 <div className={classes.sectionHeader}>
-                  <h2 className={classes.sectionTitle}>Other</h2>
+                  <h2 className={classes.sectionTitle}>
+                    {t("categories", "other")}
+                  </h2>
                   {uncategorizedRecipes.length > 8 && (
                     <span className={classes.recipeCount}>
                       {uncategorizedRecipes.length} recipes
@@ -518,7 +533,7 @@ function RecipesView({
       {hasMoreRecipes && !showChat && (
         <div className={classes.loadMoreContainer}>
           <button className={classes.loadMoreButton} onClick={loadMoreRecipes}>
-            טען עוד מתכונים
+            {t("recipesView", "loadMore")}
           </button>
         </div>
       )}

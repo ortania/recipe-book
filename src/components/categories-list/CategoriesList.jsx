@@ -12,8 +12,9 @@ import { BsTrash3 } from "react-icons/bs";
 import { MdSettings } from "react-icons/md";
 import { IoAddOutline } from "react-icons/io5";
 import { Button } from "../controls/button";
-import { useRecipeBook } from "../../context";
+import { useRecipeBook, useLanguage } from "../../context";
 import { CategoriesManagement } from "../categories-management";
+import useTranslatedList from "../../hooks/useTranslatedList";
 import classes from "./categories-list.module.css";
 
 function CategoriesList({
@@ -27,6 +28,8 @@ function CategoriesList({
 }) {
   const { reorderCategories, addCategory, editCategory, deleteCategory } =
     useRecipeBook();
+  const { t } = useLanguage();
+  const { getTranslated } = useTranslatedList(groups, "name");
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
 
@@ -70,7 +73,9 @@ function CategoriesList({
             aria-label="Toggle categories"
             title="Categories"
           >
-            <span className={classes.mobileToggleText}>Categories</span>
+            <span className={classes.mobileToggleText}>
+              {t("nav", "categories")}
+            </span>
             {isMobileOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
           </button>
           <button
@@ -93,7 +98,7 @@ function CategoriesList({
               onClick={() => setShowManagement(true)}
               title="ניהול קטגוריות"
             >
-              <MdSettings /> Category Management
+              <MdSettings /> {t("categories", "categoryManagement")}
             </button>
           </div>
           <div className={classes.groupButtons}>
@@ -113,7 +118,7 @@ function CategoriesList({
                         : "transparent",
                   }}
                 >
-                  {group.name}
+                  {getTranslated(group)}
                   <span className={classes.contactCount}>
                     {getGroupContacts(group.id).length}
                   </span>

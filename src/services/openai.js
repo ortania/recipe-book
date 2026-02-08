@@ -57,7 +57,19 @@ export const analyzeImageForNutrition = async (base64Image) => {
   });
 };
 
-export const sendCookingChatMessage = async (userText, recipeData) => {
+const LANG_NAMES = {
+  he: "Hebrew",
+  en: "English",
+  ru: "Russian",
+  de: "German",
+  mixed: "Hebrew",
+};
+
+export const sendCookingChatMessage = async (
+  userText,
+  recipeData,
+  language = "he",
+) => {
   const {
     recipeName,
     ingredients,
@@ -67,6 +79,8 @@ export const sendCookingChatMessage = async (userText, recipeData) => {
     servings,
     isTimerRunning,
   } = recipeData;
+
+  const langName = LANG_NAMES[language] || "Hebrew";
 
   const currentItemText = instructions[currentStep] || "";
 
@@ -89,7 +103,7 @@ RULES:
 - When answering about an instruction step, ALWAYS mention the specific ingredient quantities needed for that step.
 - If the user asks "what do I need for this step" or similar, list the relevant ingredients with their exact quantities.
 - If the user asks to go to next step, previous step, or a specific step, include the action in your response.
-- Always respond in Hebrew.
+- Always respond in ${langName}.
 - Keep answers SHORT - this will be read aloud.
 - You MUST respond with valid JSON in this exact format:
 {"text": "your spoken response here", "action": null}
@@ -133,10 +147,15 @@ User: "תעצור את הטיימר" → {"text": "עוצר את הטיימר", 
   }
 };
 
-export const sendChatMessage = async (messages, recipeContext = null) => {
+export const sendChatMessage = async (
+  messages,
+  recipeContext = null,
+  language = "he",
+) => {
+  const langName = LANG_NAMES[language] || "Hebrew";
   const systemMessage = {
     role: "system",
-    content: `You are a helpful cooking assistant. You help users with recipe questions, ingredient substitutions, cooking techniques, and adjusting recipe quantities. Always be friendly, concise, and practical in your responses. Always respond in Hebrew.`,
+    content: `You are a helpful cooking assistant. You help users with recipe questions, ingredient substitutions, cooking techniques, and adjusting recipe quantities. Always be friendly, concise, and practical in your responses. Always respond in ${langName}.`,
   };
 
   // Limit to last 5 messages to prevent token limit errors

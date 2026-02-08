@@ -2,6 +2,7 @@ import React from "react";
 import { Modal } from "../modal";
 import { RecipesView } from "../recipes/RecipesView";
 import { Button } from "../controls/button";
+import { useLanguage } from "../../context";
 import classes from "./favorites-popup.module.css";
 
 function FavoritesPopup({
@@ -12,18 +13,21 @@ function FavoritesPopup({
   onDeletePerson,
   groupName = "All Recipes",
 }) {
+  const { t } = useLanguage();
   const favoritePersons = persons.filter((person) => person.isFavorite);
 
   return (
     <Modal onClose={onClose} className={classes.wideModal}>
       <div className={classes.favoritesContainer}>
         <h2 className={classes.title}>
-          Favorite Recipes{" "}
-          {groupName !== "All Recipes" ? `in ${groupName}` : ""}
+          {t("favorites", "title")}{" "}
+          {groupName !== t("common", "allRecipes")
+            ? `${t("favorites", "inGroup")} ${groupName}`
+            : ""}
         </h2>
 
         {favoritePersons.length === 0 ? (
-          <p className={classes.noFavorites}>No favorite recipes yet</p>
+          <p className={classes.noFavorites}>{t("favorites", "noFavorites")}</p>
         ) : (
           <RecipesView
             persons={favoritePersons}
@@ -38,7 +42,7 @@ function FavoritesPopup({
           onClick={onClose}
           variant="primary"
         >
-          Close
+          {t("common", "close")}
         </Button>
       </div>
     </Modal>

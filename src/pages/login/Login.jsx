@@ -2,13 +2,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import FormInput from "./FormInput";
-import { useRecipeBook } from "../../context";
+import { useRecipeBook, useLanguage } from "../../context";
 import { loginUser, resetPassword } from "../../firebase/authService";
 
 import classes from "./login.module.css";
 
 function Login() {
   const { login } = useRecipeBook();
+  const { t } = useLanguage();
 
   // State management
   const [email, setEmail] = useState("");
@@ -113,15 +114,15 @@ function Login() {
   return (
     <div className={classes.loginContainer}>
       {showWelcome && (
-        <p className={classes.welcome}>Welcome to Recipe Book App! 👋</p>
+        <p className={classes.welcome}>{t("common", "welcomeApp")}</p>
       )}
       <form className={classes.loginForm} onSubmit={handleSubmit}>
-        <p className={classes.title}>Login</p>
+        <p className={classes.title}>{t("auth", "login")}</p>
         {error && <p className={classes.error}>{error}</p>}
 
         <FormInput
           type="email"
-          placeholder="Email"
+          placeholder={t("auth", "email")}
           value={email}
           onChange={handleEmailChange}
           isLoading={isLoading}
@@ -130,7 +131,7 @@ function Login() {
 
         <FormInput
           type="password"
-          placeholder="Password"
+          placeholder={t("auth", "password")}
           value={password}
           onChange={handlePasswordChange}
           isLoading={isLoading}
@@ -141,7 +142,7 @@ function Login() {
         />
 
         <button type="submit" disabled={isLoading}>
-          {isLoading ? "Logging in..." : "Login"}
+          {isLoading ? t("auth", "loggingIn") : t("auth", "login")}
         </button>
 
         <p className={classes.forgotPassword}>
@@ -149,14 +150,14 @@ function Login() {
             onClick={() => setShowForgotPassword(true)}
             className={classes.link}
           >
-            Forgot Password?
+            {t("auth", "forgotPassword")}
           </span>
         </p>
 
         <p className={classes.signupLink}>
-          Don't have an account?{" "}
+          {t("auth", "noAccount")}{" "}
           <span onClick={() => navigate("/signup")} className={classes.link}>
-            Sign Up
+            {t("auth", "signup")}
           </span>
         </p>
       </form>
@@ -171,17 +172,14 @@ function Login() {
             onSubmit={handleForgotPassword}
             onClick={(e) => e.stopPropagation()}
           >
-            <p className={classes.title}>Reset Password</p>
-            <p className={classes.subtitle}>
-              Enter your email address and we'll send you a link to reset your
-              password.
-            </p>
+            <p className={classes.title}>{t("auth", "resetTitle")}</p>
+            <p className={classes.subtitle}>{t("auth", "resetInstructions")}</p>
             {error && <p className={classes.error}>{error}</p>}
             {resetMessage && <p className={classes.success}>{resetMessage}</p>}
 
             <FormInput
               type="email"
-              placeholder="Email"
+              placeholder={t("auth", "email")}
               value={resetEmail}
               onChange={(e) => setResetEmail(e.target.value)}
               isLoading={isResetting}
@@ -189,7 +187,7 @@ function Login() {
             />
 
             <button type="submit" disabled={isResetting}>
-              {isResetting ? "Sending..." : "Send Reset Link"}
+              {isResetting ? "..." : t("auth", "resetPassword")}
             </button>
 
             <button
@@ -203,7 +201,7 @@ function Login() {
               className={classes.backButton}
               disabled={isResetting}
             >
-              Back to Login
+              {t("auth", "login")}
             </button>
           </form>
         </div>

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Modal } from "../../modal";
+import { useLanguage } from "../../../context";
 import classes from "../form.module.css";
 
 // Array of visually distinct colors
@@ -17,6 +18,7 @@ const COLORS = [
 ];
 
 function AddCategory({ onAddGroup, onCancel }) {
+  const { t } = useLanguage();
   const [groupName, setGroupName] = useState("");
   const [groupDescription, setGroupDescription] = useState("");
   const [groupColor, setGroupColor] = useState(COLORS[0]);
@@ -40,22 +42,24 @@ function AddCategory({ onAddGroup, onCancel }) {
   return (
     <Modal onClose={onCancel}>
       <form className={classes.form} onSubmit={handleSubmit}>
-        <h2 className={classes.formTitle}>Add New Category</h2>
+        <h2 className={classes.formTitle}>{t("categories", "addCategory")}</h2>
         <input
           type="text"
-          placeholder="Category Name *"
+          placeholder={t("categories", "categoryName")}
           value={groupName}
           onChange={(e) => setGroupName(e.target.value)}
           required
         />
         <input
           type="text"
-          placeholder="Description"
+          placeholder={t("categories", "description")}
           value={groupDescription}
           onChange={(e) => setGroupDescription(e.target.value)}
         />
         <div className={classes.colorPicker}>
-          <label className={classes.colorLabel}>Color:</label>
+          <label className={classes.colorLabel}>
+            {t("categories", "color")}
+          </label>
           <div className={classes.colorOptions}>
             {COLORS.map((color) => (
               <button
@@ -75,10 +79,10 @@ function AddCategory({ onAddGroup, onCancel }) {
             onClick={onCancel}
             className={classes.cancelBtn}
           >
-            Cancel
+            {t("categories", "cancel")}
           </button>
           <button type="submit" className={classes.submitBtn}>
-            Add Category
+            {t("categories", "addCategory")}
           </button>
         </div>
       </form>

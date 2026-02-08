@@ -124,6 +124,44 @@
   line-height: 1.5;
 }
 
+.languageGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.languageButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6em 1.2em;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: var(--basic-font);
+}
+
+.languageButton:hover {
+  border-color: var(--clr-blue-3);
+  background: #f0f7ff;
+}
+
+.languageButtonActive {
+  border-color: var(--clr-blue-3);
+  background: #e8f0fe;
+}
+
+.languageFlag {
+  font-size: var(--large-font);
+}
+
+.languageName {
+  font-size: var(--basic-font);
+  color: #333;
+}
+
 .resetButton {
   padding: 0.5em 1.2em;
   border: 1px solid #d1d5db;

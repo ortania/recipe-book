@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaUserFriends, FaUsers, FaSearch } from "react-icons/fa";
 import { PiArrowFatLineUp } from "react-icons/pi";
-import { useRecipeBook } from "../../context";
+import { useRecipeBook, useLanguage } from "../../context";
 import { UpButton } from "../../components";
 import { Button } from "../../components/controls/button";
 
@@ -16,6 +16,7 @@ import classes from "./home.module.css";
 
 function Home() {
   const {} = useRecipeBook();
+  const { t } = useLanguage();
   const [typedTitle, setTypedTitle] = useState("");
   const [showSubtitle, setShowSubtitle] = useState(false);
   const [visibleFeatures, setVisibleFeatures] = useState([false, false, false]);
@@ -28,7 +29,7 @@ function Home() {
   ]);
   const [floatingShapes, setFloatingShapes] = useState([]);
 
-  const fullTitle = "Welcome to Recipe Book";
+  const fullTitle = t("home", "welcome");
   const featuresRef = useRef(null);
   const containerRef = useRef(null);
 
@@ -254,8 +255,7 @@ function Home() {
             showSubtitle ? classes.fadeIn : classes.hidden
           }`}
         >
-          Discover and organize your favorite recipes with our modern and
-          intuitive recipe management system
+          {t("home", "subtitle")}
         </p>
 
         <div className={classes.features} ref={featuresRef}>
@@ -270,9 +270,11 @@ function Home() {
             >
               <FaUserFriends />
             </div>
-            <h3 className={classes.featureTitle}>Recipe Management</h3>
+            <h3 className={classes.featureTitle}>
+              {t("home", "recipeManagement")}
+            </h3>
             <p className={classes.featureDescription}>
-              Easily add, edit, and organize your recipes in one place
+              {t("home", "recipeManagementDesc")}
             </p>
           </div>
 
@@ -287,9 +289,11 @@ function Home() {
             >
               <FaUsers />
             </div>
-            <h3 className={classes.featureTitle}>Category Organization</h3>
+            <h3 className={classes.featureTitle}>
+              {t("home", "categoryOrganization")}
+            </h3>
             <p className={classes.featureDescription}>
-              Create and manage categories to better organize your recipes
+              {t("home", "categoryOrganizationDesc")}
             </p>
           </div>
 
@@ -304,9 +308,9 @@ function Home() {
             >
               <FaSearch />
             </div>
-            <h3 className={classes.featureTitle}>Quick Search</h3>
+            <h3 className={classes.featureTitle}>{t("home", "quickSearch")}</h3>
             <p className={classes.featureDescription}>
-              Find recipes instantly with our powerful search feature
+              {t("home", "quickSearchDesc")}
             </p>
           </div>
         </div>
@@ -317,7 +321,7 @@ function Home() {
           }`}
         >
           <Button className={classes.ctaButton} variant="primary">
-            Get Started
+            {t("home", "getStarted")}
           </Button>
         </div>
       </div>

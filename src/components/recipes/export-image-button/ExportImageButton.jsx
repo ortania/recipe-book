@@ -1,8 +1,10 @@
 import React, { useState } from "react";
 import { generateRecipeImage } from "../generateRecipeImage";
 import classes from "./export-image-button.module.css";
+import { useLanguage } from "../../../context";
 
 function ExportImageButton({ recipe }) {
+  const { t } = useLanguage();
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleExport = async () => {
@@ -22,7 +24,7 @@ function ExportImageButton({ recipe }) {
       className={classes.exportButton}
       onClick={handleExport}
       disabled={isGenerating}
-      title="Export as image"
+      title={t("recipes", "exportAsImage")}
     >
       {isGenerating ? (
         <span className={classes.spinner} />
@@ -30,7 +32,9 @@ function ExportImageButton({ recipe }) {
         <span className={classes.icon}>📸</span>
       )}
       <span className={classes.label}>
-        {isGenerating ? "Generating..." : "Export to Image"}
+        {isGenerating
+          ? t("recipes", "generating")
+          : t("recipes", "exportToImage")}
       </span>
     </button>
   );

@@ -9,6 +9,7 @@ import { VscDebugRestart } from "react-icons/vsc";
 import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
 import { FaStop } from "react-icons/fa";
 import { CookingVoiceChat } from "../cooking-voice-chat";
+import { useLanguage } from "../../context";
 import classes from "./recipe-details-cooking.module.css";
 
 function RecipeDetailsCookingMode({
@@ -20,6 +21,7 @@ function RecipeDetailsCookingMode({
   voiceEnabled,
   onToggleVoice,
 }) {
+  const { t } = useLanguage();
   // State management
   const [activeTab, setActiveTab] = useState("ingredients");
   const [servings, setServings] = useState(recipe.servings || 4);
@@ -230,7 +232,11 @@ function RecipeDetailsCookingMode({
           <span>
             <PiMicrophoneThin />
           </span>
-          <span>{voiceEnabled ? "Stop Mic" : "Start Mic"}</span>
+          <span>
+            {voiceEnabled
+              ? t("voiceChat", "stopChat")
+              : t("voiceChat", "startChat")}
+          </span>
         </button>
         {activeTab === "instructions" && (
           <div className={classes.cooking}>
@@ -307,7 +313,7 @@ function RecipeDetailsCookingMode({
               setCurrentStep(0);
             }}
           >
-            Ingredients
+            {t("recipes", "ingredients")}
             {activeTab === "ingredients" &&
               voiceEnabled &&
               currentStep >= ingredientsArray.length - 1 && (
@@ -324,7 +330,7 @@ function RecipeDetailsCookingMode({
               setCurrentStep(0);
             }}
           >
-            Instructions
+            {t("recipes", "instructions")}
           </button>
         </div>
 
@@ -376,7 +382,7 @@ function RecipeDetailsCookingMode({
             <div className={classes.progressSection}>
               <div className={classes.progressHeader}>
                 <div className={classes.stepInfo}>
-                  Step {currentStep + 1} of{" "}
+                  {t("recipes", "step")} {currentStep + 1} {t("recipes", "of")}{" "}
                   {activeTab === "ingredients"
                     ? ingredientsArray.length
                     : instructionsArray.length}
@@ -434,7 +440,7 @@ function RecipeDetailsCookingMode({
                     opacity: currentStep === 0 ? 0.6 : 1,
                   }}
                 >
-                  ← Previous
+                  ← {t("recipes", "prev")}
                 </button>
                 <button
                   onClick={(e) => {
@@ -444,7 +450,7 @@ function RecipeDetailsCookingMode({
                   }}
                   className={classes.restartButton}
                 >
-                  <VscDebugRestart /> Restart
+                  <VscDebugRestart /> {t("recipes", "resetTimer")}
                 </button>
                 <button
                   onClick={(e) => {
@@ -453,7 +459,7 @@ function RecipeDetailsCookingMode({
                   }}
                   className={classes.nextButton}
                 >
-                  Next →
+                  {t("recipes", "next")} →
                 </button>
               </div>
 
@@ -523,7 +529,7 @@ function RecipeDetailsCookingMode({
                   <div className={classes.timerContent}>
                     <div className={classes.timerTitle}>
                       <span>🔥</span>
-                      Cooking Timer
+                      {t("recipes", "timer")}
                     </div>
 
                     <div className={classes.timerControls}>
@@ -603,7 +609,7 @@ function RecipeDetailsCookingMode({
                               : 0.5,
                         }}
                       >
-                        ▶ Start
+                        ▶ {t("recipes", "startTimer")}
                       </button>
                     ) : (
                       <button
@@ -616,7 +622,7 @@ function RecipeDetailsCookingMode({
                         className={classes.stopButton}
                       >
                         <FaStop />
-                        Stop
+                        {t("recipes", "stopTimer")}
                       </button>
                     )}
                   </div>
@@ -630,8 +636,8 @@ function RecipeDetailsCookingMode({
               <div className={classes.completionIcon}>🎉</div>
               <div className={classes.completionTitle}>
                 {activeTab === "ingredients"
-                  ? "All Ingredients Ready!"
-                  : "Recipe Complete!"}
+                  ? t("recipes", "ingredients") + " ✓"
+                  : t("recipes", "finish") + "!"}
               </div>
               <div className={classes.completionMessage}>
                 {activeTab === "ingredients"
@@ -651,7 +657,9 @@ function RecipeDetailsCookingMode({
                 }}
                 className={classes.completionButton}
               >
-                {activeTab === "ingredients" ? "▶️ Start Cooking" : "✓ Done"}
+                {activeTab === "ingredients"
+                  ? "▶️ " + t("recipes", "startCooking")
+                  : "✓ " + t("recipes", "finish")}
               </button>
             </div>
           )}

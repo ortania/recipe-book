@@ -7,6 +7,7 @@ import { Button } from "../controls/button";
 import { AddCategory } from "../forms/add-category";
 import { EditCategory } from "../forms/edit-category";
 import { ConfirmDialog } from "../forms/confirm-dialog";
+import { useLanguage } from "../../context";
 import classes from "./categories-management.module.css";
 
 function CategoriesManagement({
@@ -18,6 +19,7 @@ function CategoriesManagement({
   onReorderCategories,
   getGroupContacts,
 }) {
+  const { t } = useLanguage();
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
@@ -107,7 +109,9 @@ function CategoriesManagement({
     <Modal onClose={onClose} maxWidth="1200px">
       <div className={classes.container}>
         <div className={classes.header}>
-          <h2 className={classes.title}>Category Management </h2>
+          <h2 className={classes.title}>
+            {t("categories", "categoryManagement")}{" "}
+          </h2>
           <button onClick={onClose} className={classes.closeButton}>
             ✕
           </button>
@@ -121,7 +125,7 @@ function CategoriesManagement({
               className={classes.addButton}
             >
               <IoAddOutline className={classes.addIcon} />
-              הוסף קטגוריה חדשה
+              {t("categories", "addNewCategory")}
             </Button>
           </div>
 
@@ -181,7 +185,8 @@ function CategoriesManagement({
                     )}
                   </div>
                   <span className={classes.recipeCount}>
-                    {getGroupContacts(category.id).length} מתכונים
+                    {getGroupContacts(category.id).length}{" "}
+                    {t("categories", "recipes")}
                   </span>
                 </div>
 
@@ -229,7 +234,7 @@ function CategoriesManagement({
 
         {categoryToDelete && (
           <ConfirmDialog
-            message={`האם אתה בטוח שברצונך למחוק את הקטגוריה "${categoryToDelete.name}"?`}
+            message={`${t("categories", "deleteConfirm")} "${categoryToDelete.name}"?`}
             onConfirm={handleConfirmDelete}
             onCancel={() => setCategoryToDelete(null)}
           />

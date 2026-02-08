@@ -12,7 +12,7 @@ import {
   FavoritesPopup,
   ConfirmDialog,
 } from "../../components";
-import { useRecipeBook } from "../../context";
+import { useRecipeBook, useLanguage } from "../../context";
 
 import { scrollToTop } from "../utils";
 
@@ -25,6 +25,7 @@ function Recipes() {
     deleteRecipe,
     clearAllRecipes,
   } = useRecipeBook();
+  const { t } = useLanguage();
 
   const [showAddPerson, setShowAddPerson] = useState(false);
   const [showFavorites, setShowFavorites] = useState(false);
@@ -44,15 +45,15 @@ function Recipes() {
   };
 
   return (
-    <div className={classes.contactsContainer}>
+    <div className={classes.recipesContainer}>
       <div className={classes.headerContainer}>
-        <p className={pageClasses.title}>Recipes</p>
+        <p className={pageClasses.title}>{t("recipesView", "recipesTab")}</p>
         <div className={classes.headerButtons}>
           <FavoritesButton
             onClick={() => setShowFavorites(true)}
             title="View favorite recipes"
           >
-            ★ Favorites
+            {t("recipes", "favorite")}
           </FavoritesButton>
           <Button
             variant="danger"
@@ -61,7 +62,7 @@ function Recipes() {
             className={recipes.length === 0 ? classes.disabledButton : ""}
             title="Remove all recipes"
           >
-            Clear All
+            {t("recipes", "clearAll")}
           </Button>
         </div>
       </div>
@@ -96,12 +97,12 @@ function Recipes() {
 
       {showConfirmClear && (
         <ConfirmDialog
-          title="Clear All Recipes"
-          message="Are you sure you want to delete all recipes? This action cannot be undone."
+          title={t("recipes", "clearAllRecipes")}
+          message={t("recipes", "clearAllMsg")}
           onConfirm={handleConfirmClear}
           onCancel={handleCancelClear}
-          confirmText="Clear All"
-          cancelText="Cancel"
+          confirmText={t("recipes", "clearAll")}
+          cancelText={t("common", "cancel")}
         />
       )}
 

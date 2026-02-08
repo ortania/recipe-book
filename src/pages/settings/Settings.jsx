@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
 import { applyFontScale } from "../../utils/applyFontScale";
+import { useLanguage } from "../../context";
+import { LANGUAGES } from "../../utils/translations";
 import classes from "./settings.module.css";
 
 const DEFAULT_SCALE = 1;
@@ -8,6 +10,8 @@ const MAX_SCALE = 1.8;
 const STEP = 0.1;
 
 function Settings() {
+  const { language, setLanguage, t } = useLanguage();
+
   const [scale, setScale] = useState(() => {
     const saved = localStorage.getItem("fontScale");
     return saved ? parseFloat(saved) : DEFAULT_SCALE;
@@ -24,16 +28,40 @@ function Settings() {
 
   return (
     <div className={classes.settingsPage}>
-      <h1 className={classes.title}>הגדרות</h1>
+      <h1 className={classes.title}>{t("settings", "title")}</h1>
+
+      <div className={classes.section}>
+        <div className={classes.sectionTitle}>
+          <span className={classes.sectionIcon}>🌐</span>
+          {t("settings", "language")}
+        </div>
+
+        <div className={classes.languageGrid}>
+          {LANGUAGES.map((lang) => (
+            <button
+              key={lang.code}
+              className={`${classes.languageButton} ${
+                language === lang.code ? classes.languageButtonActive : ""
+              }`}
+              onClick={() => setLanguage(lang.code)}
+            >
+              <span className={classes.languageFlag}>{lang.flag}</span>
+              <span className={classes.languageName}>{lang.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
 
       <div className={classes.section}>
         <div className={classes.sectionTitle}>
           <span className={classes.sectionIcon}>♿</span>
-          נגישות
+          {t("settings", "accessibility")}
         </div>
 
         <div className={classes.fontSizeControl}>
-          <div className={classes.fontSizeLabel}>גודל פונט</div>
+          <div className={classes.fontSizeLabel}>
+            {t("settings", "fontSize")}
+          </div>
 
           <div className={classes.fontSizeSlider}>
             <span className={classes.sliderLabel}>א</span>
@@ -52,15 +80,17 @@ function Settings() {
           <div className={classes.scaleValue}>×{scale.toFixed(1)}</div>
 
           <div className={classes.previewBox}>
-            <div className={classes.previewTitle}>תצוגה מקדימה:</div>
+            <div className={classes.previewTitle}>
+              {t("settings", "preview")}
+            </div>
             <div className={classes.previewText}>
-              טקסט לדוגמה - כך ייראה הטקסט באפליקציה
+              {t("settings", "previewText")}
             </div>
           </div>
 
           {scale !== DEFAULT_SCALE && (
             <button className={classes.resetButton} onClick={handleReset}>
-              איפוס לברירת מחדל (×1.0)
+              {t("settings", "resetFont")} (×1.0)
             </button>
           )}
         </div>

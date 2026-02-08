@@ -1,9 +1,9 @@
 /* Recipes View - Modern Design */
 
-.contactsContainer {
+.recipesContainer {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 1.5rem;
+  padding: 0 1.5rem 1.5rem 1.5rem;
 }
 
 .viewToggleWrapper {
@@ -115,7 +115,7 @@
 }
 
 @media (max-width: 768px) {
-  .contactsContainer {
+  .recipesContainer {
     padding-top: 9rem;
     padding-left: 0;
     padding-right: 0;

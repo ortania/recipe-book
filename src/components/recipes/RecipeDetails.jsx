@@ -7,8 +7,45 @@ import classes from "./recipe-details.module.css";
 import { formatDifficulty } from "./utils";
 import { FaRegEdit } from "react-icons/fa";
 import { useRecipeBook } from "../../context/RecipesBookContext";
+import { useLanguage } from "../../context";
+import useTranslatedRecipe from "../../hooks/useTranslatedRecipe";
+
+const SPEECH_LANG_MAP = {
+  he: "he-IL",
+  en: "en-US",
+  ru: "ru-RU",
+  de: "de-DE",
+  mixed: "he-IL",
+};
+
+const VOICE_COMMANDS = {
+  start: {
+    he: ["התחל", "בישול", "התחלה", "בשל"],
+    en: ["start", "begin", "cooking", "cook"],
+    ru: ["начать", "старт", "готовить", "начало"],
+    de: ["start", "anfangen", "kochen", "beginn"],
+    mixed: ["התחל", "בישול", "start", "begin"],
+  },
+  next: {
+    he: ["הבא", "קדימה", "המשך", "עוד", "דלג"],
+    en: ["next", "forward", "go", "continue", "skip"],
+    ru: ["дальше", "следующий", "вперед", "продолжить"],
+    de: ["weiter", "nächste", "vor", "fortfahren"],
+    mixed: ["הבא", "קדימה", "next", "forward"],
+  },
+  prev: {
+    he: ["הקודם", "אחורה", "חזור", "חזרה"],
+    en: ["prev", "previous", "back", "return", "reverse"],
+    ru: ["назад", "предыдущий", "обратно", "вернуть"],
+    de: ["zurück", "vorherige", "rückwärts"],
+    mixed: ["הקודם", "אחורה", "back", "previous"],
+  },
+};
 
 function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
+  const { language } = useLanguage();
+  const { translated: translatedRecipe, isTranslating } =
+    useTranslatedRecipe(recipe);
   if (!recipe) return null;
 
   // Function to get category name from ID - use context categories for up-to-date names
@@ -213,7 +250,7 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
     const recognitionInstance = new SpeechRecognition();
     recognitionInstance.continuous = false; // Stop after each result - restart manually
     recognitionInstance.interimResults = false; // Only get final results
-    recognitionInstance.lang = "en-US"; // English for better compatibility
+    recognitionInstance.lang = SPEECH_LANG_MAP[language] || "he-IL";
     recognitionInstance.maxAlternatives = 1; // Reduce processing to minimize beeps
 
     recognitionInstance.onstart = () => {
@@ -280,36 +317,21 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
         return;
       }
 
-      // Check for 'start' command to switch from ingredients to instructions
-      const startPatterns = ["start", "begin", "cooking", "cook"];
+      // Check for voice commands in the current language
+      const startPatterns =
+        VOICE_COMMANDS.start[language] || VOICE_COMMANDS.start.he;
       const hasStartCommand = startPatterns.some((pattern) =>
         text.includes(pattern),
       );
 
-      // Check for next commands using partial string matching
-      const nextPatterns = [
-        "next",
-        "forward",
-        "go",
-        "continue",
-        "skip",
-        "kadima",
-        "aba",
-      ];
+      const nextPatterns =
+        VOICE_COMMANDS.next[language] || VOICE_COMMANDS.next.he;
       const hasNextCommand = nextPatterns.some((pattern) =>
         text.includes(pattern),
       );
 
-      // Check for previous commands using partial string matching
-      const prevPatterns = [
-        "prev",
-        "previous",
-        "back",
-        "return",
-        "reverse",
-        "ahora",
-        "kodem",
-      ];
+      const prevPatterns =
+        VOICE_COMMANDS.prev[language] || VOICE_COMMANDS.prev.he;
       const hasPrevCommand = prevPatterns.some((pattern) =>
         text.includes(pattern),
       );
@@ -389,7 +411,7 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
       }
       setIsListening(false);
     };
-  }, [cookingMode, voiceEnabled, activeTab]); // Re-run when cookingMode, voiceEnabled, or activeTab changes
+  }, [cookingMode, voiceEnabled, activeTab, language]);
 
   // Wake Lock to keep screen on during cooking mode
   React.useEffect(() => {
@@ -461,7 +483,9 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
     <Modal isOpen={true} onClose={onClose}>
       {!cookingMode ? (
         <RecipeDetailsFull
-          recipe={recipe}
+          recipe={translatedRecipe}
+          originalRecipe={recipe}
+          isTranslating={isTranslating}
           onClose={onClose}
           onEdit={onEdit}
           onDelete={onDelete}
@@ -472,7 +496,7 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
         />
       ) : (
         <RecipeDetailsCookingMode
-          recipe={recipe}
+          recipe={translatedRecipe}
           onClose={onClose}
           onExitCookingMode={handleCookingModeToggle}
           isListening={isListening}

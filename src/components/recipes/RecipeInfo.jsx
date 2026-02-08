@@ -7,11 +7,15 @@ import { Button } from "../controls/button";
 import RecipeDetails from "./RecipeDetails";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { formatDifficulty } from "./utils";
+import { useLanguage } from "../../context";
+import useTranslatedText from "../../hooks/useTranslatedText";
 
 const DEFAULT_IMAGE =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='320'%3E%3Crect width='400' height='320' fill='%23e0e0e0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='%23666'%3ENo Image%3C/text%3E%3C/svg%3E";
 
 function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
+  const { t } = useLanguage();
+  const translatedName = useTranslatedText(person.name);
   const [isFavorite, setIsFavorite] = useState(person.isFavorite || false);
   const [showDetails, setShowDetails] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -133,7 +137,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
         </div>
 
         <div className={classes.recipeInfo}>
-          <h3 className={classes.recipeName}>{person.name}</h3>
+          <h3 className={classes.recipeName}>{translatedName}</h3>
           {person.rating !== undefined && person.rating > 0 && (
             <div
               style={{
@@ -171,18 +175,18 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
 
         {showDeleteConfirm && (
           <ConfirmDialog
-            title="Delete Recipe"
-            message={`Are you sure you want to delete "${person.name}"? This action cannot be undone.`}
+            title={t("confirm", "deleteRecipe")}
+            message={`${t("confirm", "deleteRecipeMsg")} "${person.name}"? ${t("confirm", "cannotUndo")}.`}
             onConfirm={handleConfirmDelete}
             onCancel={handleCancelDelete}
-            confirmText="Yes, Delete"
-            cancelText="Cancel"
+            confirmText={t("confirm", "yesDelete")}
+            cancelText={t("common", "cancel")}
           />
         )}
 
         {showSuccessMessage && (
           <div className={classes.successNotification}>
-            ✓ Recipe deleted successfully
+            {t("confirm", "recipeDeleted")}
           </div>
         )}
       </div>

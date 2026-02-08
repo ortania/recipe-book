@@ -17,7 +17,7 @@ import {
 import { FaPlus, FaStar } from "react-icons/fa";
 import { PiArrowFatLineUp } from "react-icons/pi";
 import { EditCategory } from "../../components/forms/edit-category";
-import { useRecipeBook } from "../../context";
+import { useRecipeBook, useLanguage } from "../../context";
 
 import { scrollToTop } from "../utils";
 
@@ -37,6 +37,7 @@ function Categories() {
     clearCategoryRecipes,
     currentUser,
   } = useRecipeBook();
+  const { t } = useLanguage();
 
   const [selectedGroup, setSelectedGroup] = useState("all");
   const [showAddGroup, setShowAddGroup] = useState(false);
@@ -107,7 +108,7 @@ function Categories() {
         getGroupContacts={getGroupContacts}
       />
 
-      <div className={classes.groupContent}>
+      <div className={classes.groupContent} dir="auto">
         {showAddGroup && (
           <AddCategory
             onAddGroup={addCategory}
@@ -144,7 +145,9 @@ function Categories() {
             onEditPerson={editRecipe}
             onDeletePerson={deleteRecipe}
             groupName={
-              selectedGroup === "all" ? "All Recipes" : currentGroup.name
+              selectedGroup === "all"
+                ? t("common", "allRecipes")
+                : currentGroup.name
             }
           />
         )}
@@ -159,27 +162,27 @@ function Categories() {
 
         {showConfirmClear && (
           <ConfirmDialog
-            title="Confirm Clear"
-            message={`Are you sure you want to clear ${
+            title={t("confirm", "confirmClear")}
+            message={`${t("confirm", "deleteRecipeMsg")} ${
               selectedGroup === "all"
-                ? "all recipes"
-                : `all recipes in the "${currentGroup.name}" category`
+                ? t("common", "allRecipes").toLowerCase()
+                : `"${currentGroup.name}"`
             }?`}
             onConfirm={handleConfirmClear}
             onCancel={handleCancelClear}
-            confirmText="Yes, Clear"
-            cancelText="Cancel"
+            confirmText={t("confirm", "yesClear")}
+            cancelText={t("common", "cancel")}
           />
         )}
 
         {categoryToDelete && (
           <ConfirmDialog
-            title="Delete Category"
-            message="Are you sure you want to delete this category? This action cannot be undone."
+            title={t("confirm", "deleteCategory")}
+            message={t("confirm", "deleteCategoryMsg")}
             onConfirm={confirmDeleteCategory}
             onCancel={cancelDeleteCategory}
-            confirmText="Yes, Delete"
-            cancelText="Cancel"
+            confirmText={t("confirm", "yesDelete")}
+            cancelText={t("common", "cancel")}
           />
         )}
 

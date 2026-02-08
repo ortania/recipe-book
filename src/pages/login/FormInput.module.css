@@ -31,12 +31,12 @@
 
 .passwordInput input {
   width: 100%;
-  padding-right: 3.5rem;
+  padding-inline-end: 3.5rem;
 }
 
 .eyeButton {
   position: absolute;
-  right: 0.8rem;
+  inset-inline-end: 0.8rem;
   top: 50%;
   transform: translateY(-50%);
   background: none;

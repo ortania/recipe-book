@@ -7,9 +7,11 @@ import {
   sendChatMessage,
   analyzeImageForNutrition,
 } from "../../services/openai";
+import { useLanguage } from "../../context";
 import classes from "./chat-window.module.css";
 
 function ChatWindow({ onClose, recipeContext = null }) {
+  const { t, language } = useLanguage();
   const [messages, setMessages] = useState(() => {
     const savedMessages = localStorage.getItem("chatMessages");
     return savedMessages ? JSON.parse(savedMessages) : [];
@@ -125,7 +127,11 @@ function ChatWindow({ onClose, recipeContext = null }) {
     setError("");
 
     try {
-      const response = await sendChatMessage(updatedMessages, recipeContext);
+      const response = await sendChatMessage(
+        updatedMessages,
+        recipeContext,
+        language,
+      );
       const finalMessages = [
         ...updatedMessages,
         { role: "assistant", content: response },
@@ -145,7 +151,7 @@ function ChatWindow({ onClose, recipeContext = null }) {
         <div className={classes.chatHeader}>
           <h3>
             <CiSearch className={classes.searchIcon} />
-            <span>Cooking Assistant</span>
+            <span>{t("chat", "cookingAssistant")}</span>
           </h3>
           <div className={classes.headerButtons}>
             <button
@@ -167,10 +173,10 @@ function ChatWindow({ onClose, recipeContext = null }) {
           {messages.length > 0 && (
             <>
               <div className={classes.conversationsHeader}>
-                <h4>Conversations</h4>
+                <h4>{t("chat", "conversations")}</h4>
               </div>
               <div className={classes.separator}></div>
-              <div className={classes.chatLogLabel}>Chat Log</div>
+              <div className={classes.chatLogLabel}>{t("nav", "chatLog")}</div>
             </>
           )}
           {messages.map((message, index) => (
@@ -231,7 +237,7 @@ function ChatWindow({ onClose, recipeContext = null }) {
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="Ask about recipes, cooking tips..."
+              placeholder={t("chat", "placeholder")}
               className={classes.input}
               disabled={isLoading}
             />

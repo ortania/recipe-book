@@ -1,10 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { signupUser } from "../../firebase/authService";
+import { useLanguage } from "../../context";
 import FormInput from "../login/FormInput";
 import classes from "../login/login.module.css";
 
 function Signup() {
+  const { t } = useLanguage();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -61,12 +63,12 @@ function Signup() {
   return (
     <div className={classes.loginContainer}>
       <form className={classes.loginForm} onSubmit={handleSubmit}>
-        <p className={classes.title}>Sign Up</p>
+        <p className={classes.title}>{t("auth", "signup")}</p>
         {error && <p className={classes.error}>{error}</p>}
 
         <FormInput
           type="text"
-          placeholder="Display Name"
+          placeholder={t("auth", "displayName")}
           value={displayName}
           onChange={(e) => setDisplayName(e.target.value)}
           isLoading={isLoading}
@@ -75,7 +77,7 @@ function Signup() {
 
         <FormInput
           type="email"
-          placeholder="Email"
+          placeholder={t("auth", "email")}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           isLoading={isLoading}
@@ -84,7 +86,7 @@ function Signup() {
 
         <FormInput
           type="password"
-          placeholder="Password"
+          placeholder={t("auth", "password")}
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           isLoading={isLoading}
@@ -96,7 +98,7 @@ function Signup() {
 
         <FormInput
           type="password"
-          placeholder="Confirm Password"
+          placeholder={t("auth", "confirmPassword")}
           value={confirmPassword}
           onChange={(e) => setConfirmPassword(e.target.value)}
           isLoading={isLoading}
@@ -107,13 +109,13 @@ function Signup() {
         />
 
         <button type="submit" disabled={isLoading}>
-          {isLoading ? "Creating Account..." : "Sign Up"}
+          {isLoading ? t("auth", "creatingAccount") : t("auth", "signup")}
         </button>
 
         <p className={classes.signupLink}>
-          Already have an account?{" "}
+          {t("auth", "hasAccount")}{" "}
           <span onClick={() => navigate("/")} className={classes.link}>
-            Login
+            {t("auth", "login")}
           </span>
         </p>
       </form>

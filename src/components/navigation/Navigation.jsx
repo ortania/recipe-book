@@ -16,7 +16,7 @@ import { IoMdClose } from "react-icons/io";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FiHome } from "react-icons/fi";
 import { MdOutlineChat } from "react-icons/md";
-import { useRecipeBook } from "../../context";
+import { useRecipeBook, useLanguage } from "../../context";
 import classes from "./navigation.module.css";
 
 const iconMap = {
@@ -27,9 +27,17 @@ const iconMap = {
   Settings: IoSettingsOutline,
 };
 
+const navTranslationMap = {
+  Home: "home",
+  Categories: "categories",
+  Conversions: "conversions",
+  Settings: "settings",
+};
+
 function Navigation({ onLogout, links }) {
   const navigate = useNavigate();
   const { logout, currentUser } = useRecipeBook();
+  const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -121,7 +129,7 @@ function Navigation({ onLogout, links }) {
               }
             >
               {Icon && <Icon className={classes.icon} />}
-              {el.name}
+              {t("nav", navTranslationMap[el.name] || el.name.toLowerCase())}
             </NavLink>
           );
         })}
@@ -130,7 +138,7 @@ function Navigation({ onLogout, links }) {
 
         <div className={classes.chatLogSection}>
           <MdOutlineChat className={classes.icon} />
-          Chat Log
+          {t("nav", "chatLog")}
         </div>
 
         {chatHistory.length > 0 && (
@@ -155,13 +163,13 @@ function Navigation({ onLogout, links }) {
           }
         >
           <IoSettingsOutline className={classes.icon} />
-          Settings
+          {t("nav", "settings")}
         </NavLink>
 
         <button className={classes.logoutButton} onClick={handleLogout}>
           <FaSignOutAlt className={classes.icon} />
           <span className={classes.logoutText}>
-            Logout
+            {t("nav", "logout")}
             {currentUser && (
               <span className={classes.userName}>
                 {currentUser.displayName || currentUser.email}
@@ -183,7 +191,7 @@ function Navigation({ onLogout, links }) {
             onClick={(e) => e.stopPropagation()}
           >
             <div className={classes.chatPopupHeader}>
-              <h3>Chat History</h3>
+              <h3>{t("nav", "chatHistory")}</h3>
               <button
                 onClick={() => setSelectedChat(null)}
                 className={classes.closePopup}

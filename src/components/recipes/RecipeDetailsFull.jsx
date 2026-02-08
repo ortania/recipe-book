@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from "react";
 import classes from "./recipe-details-full.module.css";
 import { formatDifficulty } from "./utils";
+import { useLanguage } from "../../context";
 import { FaRegEdit } from "react-icons/fa";
 import { BsTrash3 } from "react-icons/bs";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
@@ -12,6 +13,8 @@ import { ExportImageButton } from "./export-image-button";
 
 function RecipeDetailsFull({
   recipe,
+  originalRecipe,
+  isTranslating,
   onClose,
   onEdit,
   onDelete,
@@ -20,6 +23,7 @@ function RecipeDetailsFull({
   onCopyRecipe,
   currentUserId,
 }) {
+  const { t } = useLanguage();
   // State management
   const [activeTab, setActiveTab] = useState("ingredients");
   const [servings, setServings] = useState(recipe.servings || 4);
@@ -166,7 +170,7 @@ function RecipeDetailsFull({
             title="Edit"
           >
             <FaRegEdit />
-            <span>Edit</span>
+            <span>{t("recipes", "edit")}</span>
           </button>
         )}
         {onDelete && (
@@ -176,24 +180,37 @@ function RecipeDetailsFull({
             title="Delete"
           >
             <BsTrash3 />
-            <span>Delete</span>
+            <span>{t("recipes", "delete")}</span>
           </button>
         )}
         {onCopyRecipe && (
           <button
             onClick={handleCopyClick}
             className={classes.actionButton}
-            title="Copy"
+            title={t("recipes", "copy")}
           >
             <IoCopyOutline />
-            <span>Copy</span>
+            <span>{t("recipes", "copy")}</span>
           </button>
         )}
         <ExportImageButton recipe={recipe} />
       </div>
 
       <div className={classes.recipeContent}>
-        <h2 className={classes.recipeName}>{recipe.name}</h2>
+        <h2 className={classes.recipeName}>
+          {recipe.name}
+          {isTranslating && (
+            <span
+              style={{
+                fontSize: "0.8rem",
+                color: "#999",
+                marginInlineStart: "0.5rem",
+              }}
+            >
+              ⏳
+            </span>
+          )}
+        </h2>
 
         {recipe.rating > 0 && (
           <div className={classes.rating}>
@@ -213,13 +230,17 @@ function RecipeDetailsFull({
 
         <div className={classes.recipeInfo}>
           {recipe.prepTime && (
-            <span className={classes.infoItem}>Prep {recipe.prepTime}</span>
+            <span className={classes.infoItem}>
+              {t("recipes", "prepTime")} {recipe.prepTime}
+            </span>
           )}
           {recipe.prepTime && recipe.cookTime && (
             <span className={classes.infoDot}>•</span>
           )}
           {recipe.cookTime && (
-            <span className={classes.infoItem}>Cook {recipe.cookTime}</span>
+            <span className={classes.infoItem}>
+              {t("recipes", "cookTime")} {recipe.cookTime}
+            </span>
           )}
           {(recipe.prepTime || recipe.cookTime) &&
             recipe.difficulty !== "Unknown" && (
@@ -244,7 +265,9 @@ function RecipeDetailsFull({
 
         {recipe.sourceUrl && (
           <div className={classes.sourceUrl}>
-            <span className={classes.sourceLabel}>Source:</span>
+            <span className={classes.sourceLabel}>
+              {t("recipes", "sourceUrl")}:
+            </span>
             <a
               href={recipe.sourceUrl}
               target="_blank"
@@ -268,7 +291,7 @@ function RecipeDetailsFull({
               >
                 <div className={classes.nutritionTitleWrapper}>
                   <GiMeal className={classes.nutritionIcon} />
-                  <span>ערכים תזונתיים</span>
+                  <span>{t("recipes", "nutrition")}</span>
                 </div>
                 <span className={classes.expandIcon}>
                   {showNutrition ? <MdExpandLess /> : <MdExpandMore />}
@@ -285,37 +308,43 @@ function RecipeDetailsFull({
                     {recipe.nutrition.calories && (
                       <li>
                         <span className={classes.nutritionEmoji}>🔥</span>{" "}
-                        קלוריות: {scaleNutrition(recipe.nutrition.calories)}
+                        {t("recipes", "calories")}:{" "}
+                        {scaleNutrition(recipe.nutrition.calories)}
                       </li>
                     )}
                     {recipe.nutrition.protein && (
                       <li>
                         <span className={classes.nutritionEmoji}>🍗</span>{" "}
-                        חלבון: {scaleNutrition(recipe.nutrition.protein)}
+                        {t("recipes", "protein")}:{" "}
+                        {scaleNutrition(recipe.nutrition.protein)}
                       </li>
                     )}
                     {recipe.nutrition.fat && (
                       <li>
-                        <span className={classes.nutritionEmoji}>🥑</span> שומן:{" "}
+                        <span className={classes.nutritionEmoji}>🥑</span>{" "}
+                        {t("recipes", "fat")}:{" "}
                         {scaleNutrition(recipe.nutrition.fat)}
                       </li>
                     )}
                     {recipe.nutrition.carbs && (
                       <li>
                         <span className={classes.nutritionEmoji}>🍞</span>{" "}
-                        פחמימות: {scaleNutrition(recipe.nutrition.carbs)}
+                        {t("recipes", "carbs")}:{" "}
+                        {scaleNutrition(recipe.nutrition.carbs)}
                       </li>
                     )}
                     {recipe.nutrition.sugars && (
                       <li>
                         <span className={classes.nutritionEmoji}>🍬</span>{" "}
-                        סוכרים: {scaleNutrition(recipe.nutrition.sugars)}
+                        {t("recipes", "sugars")}:{" "}
+                        {scaleNutrition(recipe.nutrition.sugars)}
                       </li>
                     )}
                     {recipe.nutrition.fiber && (
                       <li>
-                        <span className={classes.nutritionEmoji}>🥬</span> סיבים
-                        תזונתיים: {scaleNutrition(recipe.nutrition.fiber)}
+                        <span className={classes.nutritionEmoji}>🥬</span>{" "}
+                        {t("recipes", "fiber")}:{" "}
+                        {scaleNutrition(recipe.nutrition.fiber)}
                       </li>
                     )}
                   </ul>
@@ -332,7 +361,7 @@ function RecipeDetailsFull({
             >
               <div className={classes.notesTitleWrapper}>
                 <span className={classes.notesIcon}>📝</span>
-                <h3 className={classes.notesTitle}>Notes</h3>
+                <h3 className={classes.notesTitle}>{t("recipes", "notes")}</h3>
               </div>
               <span className={classes.expandIcon}>
                 {notesExpanded ? <MdExpandLess /> : <MdExpandMore />}
@@ -363,7 +392,9 @@ function RecipeDetailsFull({
                 -
               </button>
             </div>
-            <span className={classes.servingLabel}>Serving {servings}</span>
+            <span className={classes.servingLabel}>
+              {t("recipes", "servings")} {servings}
+            </span>
           </div>
         )}
 
@@ -372,20 +403,20 @@ function RecipeDetailsFull({
             className={`${classes.tab} ${activeTab === "ingredients" ? classes.activeTab : ""}`}
             onClick={() => setActiveTab("ingredients")}
           >
-            Ingredients
+            {t("recipes", "ingredients")}
           </button>
           <button
             className={`${classes.tab} ${activeTab === "instructions" ? classes.activeTab : ""}`}
             onClick={() => setActiveTab("instructions")}
           >
-            Instructions
+            {t("recipes", "instructions")}
           </button>
           <button
             className={classes.tab}
             onClick={onEnterCookingMode}
             style={{ marginLeft: "auto" }}
           >
-            👨‍🍳 Cooking Mode
+            👨‍🍳 {t("recipes", "cookingMode")}
           </button>
         </div>
 
