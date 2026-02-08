@@ -13,6 +13,7 @@ import MigratePage from "../pages/migrate";
 import Repair from "../pages/repair/Repair";
 import { RecipeBookProvider, useRecipeBook } from "../context";
 import ConversionTables from "../components/conversion-tables";
+import Settings from "../pages/settings/Settings";
 
 function App() {
   return (
@@ -59,6 +60,7 @@ function AppContent() {
           <Route path="/home" element={<Home />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/conversions" element={<ConversionTables />} />
+          <Route path="/settings" element={<Settings />} />
           <Route path="/migrate" element={<MigratePage />} />
           <Route path="/repair" element={<Repair />} />
         </Route>

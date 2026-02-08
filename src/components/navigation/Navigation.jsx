@@ -11,6 +11,7 @@ import {
   FaChevronUp,
   FaCalculator,
 } from "react-icons/fa";
+import { IoSettingsOutline } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FiHome } from "react-icons/fi";
@@ -23,6 +24,7 @@ const iconMap = {
   Home: FiHome,
   Categories: FaList,
   Conversions: FaCalculator,
+  Settings: IoSettingsOutline,
 };
 
 function Navigation({ onLogout, links }) {
@@ -145,13 +147,24 @@ function Navigation({ onLogout, links }) {
           </div>
         )}
 
+        <NavLink
+          to="/settings"
+          onClick={closeSidebar}
+          className={({ isActive }) =>
+            `${classes.navLink} ${classes.settingsLink} ${isActive ? classes.active : ""}`
+          }
+        >
+          <IoSettingsOutline className={classes.icon} />
+          Settings
+        </NavLink>
+
         <button className={classes.logoutButton} onClick={handleLogout}>
           <FaSignOutAlt className={classes.icon} />
           <span className={classes.logoutText}>
             Logout
             {currentUser && (
               <span className={classes.userName}>
-                ({currentUser.displayName || currentUser.email})
+                {currentUser.displayName || currentUser.email}
               </span>
             )}
           </span>
