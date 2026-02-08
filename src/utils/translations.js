@@ -737,6 +737,34 @@ const translations = {
       de: "Möchten Sie die Kategorie wirklich löschen",
       mixed: "Are you sure you want to delete the category",
     },
+    moveUp: {
+      he: "העלה",
+      en: "Move up",
+      ru: "Вверх",
+      de: "Nach oben",
+      mixed: "Move up",
+    },
+    moveDown: {
+      he: "הורד",
+      en: "Move down",
+      ru: "Вниз",
+      de: "Nach unten",
+      mixed: "Move down",
+    },
+    editCategoryTitle: {
+      he: "ערוך קטגוריה",
+      en: "Edit category",
+      ru: "Редактировать категорию",
+      de: "Kategorie bearbeiten",
+      mixed: "Edit category",
+    },
+    deleteCategoryTitle: {
+      he: "מחק קטגוריה",
+      en: "Delete category",
+      ru: "Удалить категорию",
+      de: "Kategorie löschen",
+      mixed: "Delete category",
+    },
     other: {
       he: "אחר",
       en: "Other",
@@ -819,6 +847,20 @@ const translations = {
 
   // ===================== RECIPES (continued) =====================
   recipesView: {
+    emptyTitle: {
+      he: "אין לך עדיין מתכונים",
+      en: "You don't have any recipes",
+      ru: "У вас пока нет рецептов",
+      de: "Sie haben noch keine Rezepte",
+      mixed: "You don't have any recipes",
+    },
+    addNewRecipe: {
+      he: "הוסף מתכון חדש",
+      en: "Add new recipe",
+      ru: "Добавить новый рецепт",
+      de: "Neues Rezept hinzufügen",
+      mixed: "Add new recipe",
+    },
     noResults: {
       he: "לא נמצאו מתכונים",
       en: "No recipes found",
@@ -963,6 +1005,214 @@ const translations = {
       ru: "✓ Рецепт успешно удалён",
       de: "✓ Rezept erfolgreich gelöscht",
       mixed: "✓ Recipe deleted successfully",
+    },
+  },
+
+  // ===================== COPY RECIPE =====================
+  copyRecipe: {
+    title: {
+      he: "העתקת מתכון",
+      en: "Copy Recipe",
+      ru: "Копировать рецепт",
+      de: "Rezept kopieren",
+      mixed: "Copy Recipe",
+    },
+    enterEmail: {
+      he: "הזן אימייל של משתמש:",
+      en: "Enter user email:",
+      ru: "Введите email пользователя:",
+      de: "E-Mail des Benutzers eingeben:",
+      mixed: "Enter user email:",
+    },
+    add: {
+      he: "הוסף",
+      en: "Add",
+      ru: "Добавить",
+      de: "Hinzufügen",
+      mixed: "Add",
+    },
+    remove: {
+      he: "הסר",
+      en: "Remove",
+      ru: "Удалить",
+      de: "Entfernen",
+      mixed: "Remove",
+    },
+    cancel: {
+      he: "ביטול",
+      en: "Cancel",
+      ru: "Отмена",
+      de: "Abbrechen",
+      mixed: "Cancel",
+    },
+    copy: {
+      he: "העתק",
+      en: "Copy",
+      ru: "Копировать",
+      de: "Kopieren",
+      mixed: "Copy",
+    },
+    copyToUsers: {
+      he: "העתק ל-{count} משתמשים",
+      en: "Copy to {count} users",
+      ru: "Копировать {count} пользователям",
+      de: "An {count} Benutzer kopieren",
+      mixed: "Copy to {count} users",
+    },
+    copying: {
+      he: "מעתיק...",
+      en: "Copying...",
+      ru: "Копирование...",
+      de: "Kopiere...",
+      mixed: "Copying...",
+    },
+    invalidEmail: {
+      he: "כתובת אימייל לא תקינה",
+      en: "Invalid email address",
+      ru: "Неверный адрес электронной почты",
+      de: "Ungültige E-Mail-Adresse",
+      mixed: "Invalid email address",
+    },
+    emailExists: {
+      he: "האימייל כבר ברשימה",
+      en: "Email already in the list",
+      ru: "Email уже в списке",
+      de: "E-Mail bereits in der Liste",
+      mixed: "Email already in the list",
+    },
+    userNotFound: {
+      he: "לא נמצא משתמש עם אימייל זה",
+      en: "No user found with this email",
+      ru: "Пользователь с таким email не найден",
+      de: "Kein Benutzer mit dieser E-Mail gefunden",
+      mixed: "No user found with this email",
+    },
+    cannotCopyToSelf: {
+      he: "לא ניתן להעתיק לעצמך",
+      en: "Cannot copy to yourself",
+      ru: "Нельзя копировать себе",
+      de: "Kann nicht an sich selbst kopieren",
+      mixed: "Cannot copy to yourself",
+    },
+    copiedSuccess: {
+      he: "הועתק בהצלחה ל:",
+      en: "Successfully copied to:",
+      ru: "Успешно скопировано:",
+      de: "Erfolgreich kopiert an:",
+      mixed: "Successfully copied to:",
+    },
+    copyFailed: {
+      he: "נכשל עבור:",
+      en: "Failed for:",
+      ru: "Не удалось для:",
+      de: "Fehlgeschlagen für:",
+      mixed: "Failed for:",
+    },
+  },
+
+  // ===================== COOKING MODE =====================
+  cookingMode: {
+    helpTitle: {
+      he: "עזרה",
+      en: "Help",
+      ru: "Помощь",
+      de: "Hilfe",
+      mixed: "Help",
+    },
+    howToUse: {
+      he: "איך להשתמש במצב בישול",
+      en: "How to use cooking mode",
+      ru: "Как использовать режим готовки",
+      de: "So verwenden Sie den Kochmodus",
+      mixed: "How to use cooking mode",
+    },
+    micWarningTitle: {
+      he: "כדי להשתמש במיקרופון ",
+      en: "To use the microphone ",
+      ru: "Для использования микрофона ",
+      de: "Um das Mikrofon zu verwenden ",
+      mixed: "To use the microphone ",
+    },
+    micWarningText: {
+      he: "הורד את עוצמת ההתראות במובייל במצב בישול",
+      en: "Lower the notification volume on mobile in cooking mode",
+      ru: "Уменьшите громкость уведомлений на мобильном в режиме готовки",
+      de: "Verringern Sie die Benachrichtigungslautstärke auf dem Handy im Kochmodus",
+      mixed: "Lower the notification volume on mobile in cooking mode",
+    },
+    tapScreenTitle: {
+      he: "לחיצה על המסך",
+      en: "Tap the screen",
+      ru: "Нажатие на экран",
+      de: "Tippen Sie auf den Bildschirm",
+      mixed: "Tap the screen",
+    },
+    tapScreenText: {
+      he: "לחץ בכל מקום על המסך למעבר לשלב הבא",
+      en: "Tap anywhere on the screen to go to the next step",
+      ru: "Нажмите в любом месте экрана для перехода к следующему шагу",
+      de: "Tippen Sie irgendwo auf den Bildschirm, um zum nächsten Schritt zu gelangen",
+      mixed: "Tap anywhere on the screen to go to the next step",
+    },
+    keyboardTitle: {
+      he: "מקלדת",
+      en: "Keyboard",
+      ru: "Клавиатура",
+      de: "Tastatur",
+      mixed: "Keyboard",
+    },
+    keyboardText: {
+      he: "השתמש בחצים ימין/שמאל לניווט בין השלבים",
+      en: "Use left/right arrows to navigate between steps",
+      ru: "Используйте стрелки влево/вправо для навигации между шагами",
+      de: "Verwenden Sie die Pfeiltasten links/rechts zur Navigation zwischen den Schritten",
+      mixed: "Use left/right arrows to navigate between steps",
+    },
+    voiceTitle: {
+      he: "שליטה קולית",
+      en: "Voice control",
+      ru: "Голосовое управление",
+      de: "Sprachsteuerung",
+      mixed: "Voice control",
+    },
+    voiceText: {
+      he: "הפעל את המיקרופון ואמור:",
+      en: "Turn on the microphone and say:",
+      ru: "Включите микрофон и скажите:",
+      de: "Schalten Sie das Mikrofon ein und sagen Sie:",
+      mixed: "Turn on the microphone and say:",
+    },
+    voiceNext: {
+      he: '"הבא" או "Next" - מעבר לשלב הבא',
+      en: '"Next" - go to the next step',
+      ru: '"Далее" или "Next" - перейти к следующему шагу',
+      de: '"Weiter" oder "Next" - zum nächsten Schritt',
+      mixed: '"Next" - go to the next step',
+    },
+    voicePrevious: {
+      he: '"הקודם" או "Previous" - חזרה לשלב קודם',
+      en: '"Previous" - go back to the previous step',
+      ru: '"Назад" или "Previous" - вернуться к предыдущему шагу',
+      de: '"Zurück" oder "Previous" - zum vorherigen Schritt',
+      mixed: '"Previous" - go back to the previous step',
+    },
+    voiceStart: {
+      he: '"התחל" או "Start" - מעבר להוראות הבישול',
+      en: '"Start" - go to the cooking instructions',
+      ru: '"Начать" или "Start" - перейти к инструкциям',
+      de: '"Start" - zu den Kochanweisungen',
+      mixed: '"Start" - go to the cooking instructions',
+    },
+  },
+
+  // ===================== RECIPE DETAILS =====================
+  recipeDetails: {
+    nutritionTitle: {
+      he: "ערכים תזונתיים",
+      en: "Nutritional values",
+      ru: "Пищевая ценность",
+      de: "Nährwerte",
+      mixed: "Nutritional values",
     },
   },
 
@@ -1272,7 +1522,7 @@ const translations = {
 };
 
 export const LANGUAGES = [
-  { code: "mixed", label: "עברית + English", flag: "🇮🇱" },
+  // { code: "mixed", label: "עברית + English", flag: "🇮🇱" },
   { code: "he", label: "עברית", flag: "🇮🇱" },
   { code: "en", label: "English", flag: "🇬🇧" },
   { code: "ru", label: "Русский", flag: "🇷🇺" },

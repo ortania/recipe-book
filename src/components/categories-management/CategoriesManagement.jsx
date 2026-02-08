@@ -8,6 +8,7 @@ import { AddCategory } from "../forms/add-category";
 import { EditCategory } from "../forms/edit-category";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { useLanguage } from "../../context";
+import useTranslatedList from "../../hooks/useTranslatedList";
 import classes from "./categories-management.module.css";
 
 function CategoriesManagement({
@@ -20,6 +21,10 @@ function CategoriesManagement({
   getGroupContacts,
 }) {
   const { t } = useLanguage();
+  const { getTranslated, getTranslatedDesc } = useTranslatedList(
+    categories,
+    "name",
+  );
   const [showAddCategory, setShowAddCategory] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
   const [categoryToDelete, setCategoryToDelete] = useState(null);
@@ -154,7 +159,7 @@ function CategoriesManagement({
                       handleMoveUp(index);
                     }}
                     disabled={index === 0}
-                    title="העלה"
+                    title={t("categories", "moveUp")}
                   >
                     <IoArrowUp />
                   </button>
@@ -165,7 +170,7 @@ function CategoriesManagement({
                       handleMoveDown(index);
                     }}
                     disabled={index === editableCategories.length - 1}
-                    title="הורד"
+                    title={t("categories", "moveDown")}
                   >
                     <IoArrowDown />
                   </button>
@@ -177,10 +182,12 @@ function CategoriesManagement({
                     style={{ backgroundColor: category.color }}
                   />
                   <div className={classes.categoryDetails}>
-                    <h3 className={classes.categoryName}>{category.name}</h3>
+                    <h3 className={classes.categoryName}>
+                      {getTranslated(category)}
+                    </h3>
                     {category.description && (
                       <p className={classes.categoryDescription}>
-                        {category.description}
+                        {getTranslatedDesc(category)}
                       </p>
                     )}
                   </div>
@@ -197,7 +204,7 @@ function CategoriesManagement({
                       e.stopPropagation();
                       handleEditClick(category);
                     }}
-                    title="ערוך קטגוריה"
+                    title={t("categories", "editCategoryTitle")}
                   >
                     <FaRegEdit />
                   </button>
@@ -207,7 +214,7 @@ function CategoriesManagement({
                       e.stopPropagation();
                       handleDeleteClick(category);
                     }}
-                    title="מחק קטגוריה"
+                    title={t("categories", "deleteCategoryTitle")}
                   >
                     <BsTrash3 />
                   </button>
@@ -234,7 +241,7 @@ function CategoriesManagement({
 
         {categoryToDelete && (
           <ConfirmDialog
-            message={`${t("categories", "deleteConfirm")} "${categoryToDelete.name}"?`}
+            message={`${t("categories", "deleteConfirm")} "${getTranslated(categoryToDelete)}"?`}
             onConfirm={handleConfirmDelete}
             onCancel={() => setCategoryToDelete(null)}
           />

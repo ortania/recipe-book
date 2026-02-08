@@ -439,7 +439,7 @@
 .hamburger {
   display: none;
   position: fixed;
-  top: 2.5rem;
+  top: 0.75rem;
   left: 1rem;
   z-index: 10002;
   background: transparent;
@@ -487,9 +487,9 @@ body.modal-open .hamburger {
   .mobileLogo {
     display: block;
     position: fixed;
-    top: 0.5rem;
-    left: 50%;
-    transform: translateX(-50%);
+    top: 0.75rem;
+    left: 3.5rem;
+    transform: none;
     z-index: 10003;
     font-size: var(--very-large-font);
   }

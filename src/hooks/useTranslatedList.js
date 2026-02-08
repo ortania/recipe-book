@@ -18,6 +18,7 @@ const CATEGORY_KEY_MAP = {
 function useTranslatedList(items, key = "name") {
   const { language } = useLanguage();
   const [apiTranslations, setApiTranslations] = useState({});
+  const [descTranslations, setDescTranslations] = useState({});
 
   useEffect(() => {
     if (!items || items.length === 0) return;
@@ -25,26 +26,39 @@ function useTranslatedList(items, key = "name") {
     let cancelled = false;
 
     const translateUnknown = async () => {
-      const results = {};
+      const nameResults = {};
+      const descResults = {};
       for (const item of items) {
         if (!item || typeof item === "string") continue;
         const id = item.id;
         const name = item[key];
+        const desc = item.description;
         if (!name || id === "all" || id === "other") continue;
-        if (CATEGORY_KEY_MAP[id]) continue;
 
-        const translated = await translateText(name, language);
-        if (cancelled) return;
-        if (translated !== name) {
-          results[id] = translated;
+        if (!CATEGORY_KEY_MAP[id]) {
+          const translated = await translateText(name, language);
+          if (cancelled) return;
+          if (translated !== name) {
+            nameResults[id] = translated;
+          }
+        }
+
+        if (desc) {
+          const translatedDesc = await translateText(desc, language);
+          if (cancelled) return;
+          if (translatedDesc !== desc) {
+            descResults[id] = translatedDesc;
+          }
         }
       }
       if (!cancelled) {
-        setApiTranslations(results);
+        setApiTranslations(nameResults);
+        setDescTranslations(descResults);
       }
     };
 
     setApiTranslations({});
+    setDescTranslations({});
     translateUnknown();
 
     return () => {
@@ -82,7 +96,16 @@ function useTranslatedList(items, key = "name") {
     return originalName;
   };
 
-  return { getTranslated };
+  const getTranslatedDesc = (item) => {
+    if (!item || typeof item === "string") return "";
+    const id = item.id;
+    const originalDesc = item.description || "";
+    if (!originalDesc) return originalDesc;
+    if (descTranslations[id]) return descTranslations[id];
+    return originalDesc;
+  };
+
+  return { getTranslated, getTranslatedDesc };
 }
 
 export default useTranslatedList;

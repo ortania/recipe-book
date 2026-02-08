@@ -5,6 +5,10 @@
   /* padding: 4px; */
   gap: 4px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 }
 
 .toggleButton {

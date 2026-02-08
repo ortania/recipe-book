@@ -270,7 +270,7 @@ function RecipeDetailsCookingMode({
                 e.stopPropagation();
                 setShowInfo(true);
               }}
-              title="עזרה"
+              title={t("cookingMode", "helpTitle")}
             >
               ?
             </button>
@@ -474,7 +474,7 @@ function RecipeDetailsCookingMode({
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className={classes.infoModalHeader}>
-                      <h3>איך להשתמש במצב בישול</h3>
+                      <h3>{t("cookingMode", "howToUse")}</h3>
                       <button
                         className={classes.infoModalClose}
                         onClick={() => setShowInfo(false)}
@@ -487,33 +487,37 @@ function RecipeDetailsCookingMode({
                         <div className={classes.infoItem}>
                           <span className={classes.infoEmoji}>⚠️</span>
                           <div>
-                            <strong>כדי להשתמש במיקרופון </strong>
-                            <p>הורד את עוצמת ההתראות במובייל במצב בישול</p>
+                            <strong>
+                              {t("cookingMode", "micWarningTitle")}
+                            </strong>
+                            <p>{t("cookingMode", "micWarningText")}</p>
                           </div>
                         </div>
                         <div className={classes.infoItem}>
                           <span className={classes.infoEmoji}>👆</span>
                           <div>
-                            <strong>לחיצה על המסך</strong>
-                            <p>לחץ בכל מקום על המסך למעבר לשלב הבא</p>
+                            <strong>
+                              {t("cookingMode", "tapScreenTitle")}
+                            </strong>
+                            <p>{t("cookingMode", "tapScreenText")}</p>
                           </div>
                         </div>
                         <div className={classes.infoItem}>
                           <span className={classes.infoEmoji}>⌨️</span>
                           <div>
-                            <strong>מקלדת</strong>
-                            <p>השתמש בחצים ימין/שמאל לניווט בין השלבים</p>
+                            <strong>{t("cookingMode", "keyboardTitle")}</strong>
+                            <p>{t("cookingMode", "keyboardText")}</p>
                           </div>
                         </div>
                         <div className={classes.infoItem}>
                           <span className={classes.infoEmoji}>🎤</span>
                           <div>
-                            <strong>שליטה קולית</strong>
-                            <p>הפעל את המיקרופון ואמור:</p>
+                            <strong>{t("cookingMode", "voiceTitle")}</strong>
+                            <p>{t("cookingMode", "voiceText")}</p>
                             <ul className={classes.voiceCommands}>
-                              <li>"הבא" או "Next" - מעבר לשלב הבא</li>
-                              <li>"הקודם" או "Previous" - חזרה לשלב קודם</li>
-                              <li>"התחל" או "Start" - מעבר להוראות הבישול</li>
+                              <li>{t("cookingMode", "voiceNext")}</li>
+                              <li>{t("cookingMode", "voicePrevious")}</li>
+                              <li>{t("cookingMode", "voiceStart")}</li>
                             </ul>
                           </div>
                         </div>

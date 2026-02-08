@@ -3,9 +3,11 @@ import { IoClose } from "react-icons/io5";
 import { Button } from "../../controls/button";
 import { Modal } from "../../modal";
 import { findUserByEmail } from "../../../firebase/authService";
+import { useLanguage } from "../../../context";
 import classes from "./copy-recipe-dialog.module.css";
 
 function CopyRecipeDialog({ recipeName, currentUserId, onCopy, onCancel }) {
+  const { t } = useLanguage();
   const [emailInput, setEmailInput] = useState("");
   const [recipients, setRecipients] = useState([]);
   const [isCopying, setIsCopying] = useState(false);
@@ -20,12 +22,12 @@ function CopyRecipeDialog({ recipeName, currentUserId, onCopy, onCancel }) {
     if (!email) return;
 
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setError("כתובת אימייל לא תקינה");
+      setError(t("copyRecipe", "invalidEmail"));
       return;
     }
 
     if (recipients.some((r) => r.email === email)) {
-      setError("האימייל כבר ברשימה");
+      setError(t("copyRecipe", "emailExists"));
       return;
     }
 
@@ -34,13 +36,13 @@ function CopyRecipeDialog({ recipeName, currentUserId, onCopy, onCancel }) {
 
     const user = await findUserByEmail(email);
     if (!user) {
-      setError("לא נמצא משתמש עם אימייל זה");
+      setError(t("copyRecipe", "userNotFound"));
       setIsSearching(false);
       return;
     }
 
     if (user.id === currentUserId) {
-      setError("לא ניתן להעתיק לעצמך");
+      setError(t("copyRecipe", "cannotCopyToSelf"));
       setIsSearching(false);
       return;
     }
@@ -97,7 +99,7 @@ function CopyRecipeDialog({ recipeName, currentUserId, onCopy, onCancel }) {
   return (
     <Modal onClose={onCancel}>
       <div className={classes.dialog}>
-        <h3>📋 העתקת מתכון</h3>
+        <h3>📋 {t("copyRecipe", "title")}</h3>
         <p className={classes.recipeName}>"{recipeName}"</p>
 
         {done ? (
@@ -105,19 +107,26 @@ function CopyRecipeDialog({ recipeName, currentUserId, onCopy, onCancel }) {
             {results.success.length > 0 && (
               <div className={classes.successMessage}>
                 <span className={classes.successIcon}>✅</span>
-                <p>הועתק בהצלחה ל: {results.success.join(", ")}</p>
+                <p>
+                  {t("copyRecipe", "copiedSuccess")}{" "}
+                  {results.success.join(", ")}
+                </p>
               </div>
             )}
             {results.failed.length > 0 && (
               <div className={classes.errorMessage}>
-                <p>נכשל עבור: {results.failed.join(", ")}</p>
+                <p>
+                  {t("copyRecipe", "copyFailed")} {results.failed.join(", ")}
+                </p>
               </div>
             )}
           </div>
         ) : (
           <>
             <div className={classes.inputSection}>
-              <label className={classes.inputLabel}>הזן אימייל של משתמש:</label>
+              <label className={classes.inputLabel}>
+                {t("copyRecipe", "enterEmail")}
+              </label>
               <div className={classes.inputRow}>
                 <input
                   ref={inputRef}
@@ -138,7 +147,7 @@ function CopyRecipeDialog({ recipeName, currentUserId, onCopy, onCancel }) {
                   className={classes.addButton}
                   disabled={!emailInput.trim() || isSearching}
                 >
-                  {isSearching ? "..." : "הוסף"}
+                  {isSearching ? "..." : t("copyRecipe", "add")}
                 </button>
               </div>
               {error && <p className={classes.errorText}>{error}</p>}
@@ -152,7 +161,7 @@ function CopyRecipeDialog({ recipeName, currentUserId, onCopy, onCancel }) {
                     <button
                       className={classes.chipRemove}
                       onClick={() => handleRemoveRecipient(r.email)}
-                      title="הסר"
+                      title={t("copyRecipe", "remove")}
                     >
                       <IoClose />
                     </button>
@@ -162,20 +171,23 @@ function CopyRecipeDialog({ recipeName, currentUserId, onCopy, onCancel }) {
             )}
 
             <div className={classes.buttons}>
-              <Button onClick={onCancel} title="ביטול">
-                ביטול
+              <Button onClick={onCancel} title={t("copyRecipe", "cancel")}>
+                {t("copyRecipe", "cancel")}
               </Button>
               <Button
                 variant="primary"
                 onClick={handleCopy}
                 disabled={recipients.length === 0 || isCopying}
-                title="העתק מתכון"
+                title={t("copyRecipe", "copy")}
               >
                 {isCopying
-                  ? "מעתיק..."
+                  ? t("copyRecipe", "copying")
                   : recipients.length > 1
-                    ? `העתק ל-${recipients.length} משתמשים`
-                    : "העתק"}
+                    ? t("copyRecipe", "copyToUsers").replace(
+                        "{count}",
+                        recipients.length,
+                      )
+                    : t("copyRecipe", "copy")}
               </Button>
             </div>
           </>

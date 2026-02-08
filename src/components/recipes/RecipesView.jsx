@@ -3,6 +3,7 @@ import { FaFilter, FaPlus, FaStar } from "react-icons/fa";
 import { CiFilter } from "react-icons/ci";
 import { IoMdStarOutline } from "react-icons/io";
 import { IoChevronDown, IoAddOutline } from "react-icons/io5";
+import { IoBookOutline } from "react-icons/io5";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 
@@ -208,6 +209,20 @@ function RecipesView({
   const groupTitle = selectedGroupData
     ? getTranslatedGroup(selectedGroupData)
     : t("categories", "all");
+
+  if (!persons || persons.length === 0) {
+    return (
+      <div className={classes.recipesContainer}>
+        <div className={classes.emptyState}>
+          <IoBookOutline className={classes.emptyIcon} />
+          <p className={classes.emptyText}>{t("recipesView", "emptyTitle")}</p>
+          <button className={classes.emptyButton} onClick={onAddPerson}>
+            {t("recipesView", "addNewRecipe")}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={classes.recipesContainer}>

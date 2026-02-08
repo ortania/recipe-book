@@ -38,7 +38,7 @@
 
   inset-block-start: 50%;
   transform: translateY(-50%);
-  right: 0;
+  inset-inline-end: 0;
 }
 
 .headerTitle {
@@ -116,7 +116,7 @@
 
 @media (max-width: 768px) {
   .recipesContainer {
-    padding-top: 9rem;
+    padding-top: 6rem;
     padding-left: 0;
     padding-right: 0;
     max-width: 100%;
@@ -139,7 +139,10 @@
     padding: 0.75rem 1rem;
     margin: 0;
     border-bottom: 1px solid #d1d1d1;
-    margin-top: 7rem;
+    margin-top: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .viewToggleWrapper::before {
@@ -148,7 +151,7 @@
     top: 0;
     left: 0;
     right: 0;
-    height: 7rem;
+    height: 3rem;
     background: hsl(210, 36%, 96%);
     z-index: 10000;
   }
@@ -158,7 +161,6 @@
     transform: none;
     display: flex;
     justify-content: center;
-    width: 100%;
   }
 
   .iconButtons {
@@ -443,4 +445,43 @@
   .sectionTitle {
     font-size: 1.3rem;
   }
+}
+
+/* Empty state for new users */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  gap: 1rem;
+}
+
+.emptyIcon {
+  font-size: 4rem;
+  color: #b0b0b0;
+}
+
+.emptyText {
+  font-size: 1.1rem;
+  color: #666;
+  margin: 0;
+}
+
+.emptyButton {
+  margin-top: 0.5rem;
+  padding: 0.85em 2.5em;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background: #222;
+  border: none;
+  border-radius: 2rem;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.emptyButton:hover {
+  background: #444;
 }

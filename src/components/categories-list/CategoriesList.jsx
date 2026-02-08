@@ -84,7 +84,7 @@ function CategoriesList({
               e.stopPropagation();
               setShowManagement(true);
             }}
-            title="ניהול קטגוריות"
+            title={t("categories", "categoryManagement")}
           >
             <MdSettings />
           </button>
@@ -96,7 +96,7 @@ function CategoriesList({
             <button
               className={classes.manageButtonDesktop}
               onClick={() => setShowManagement(true)}
-              title="ניהול קטגוריות"
+              title={t("categories", "categoryManagement")}
             >
               <MdSettings /> {t("categories", "categoryManagement")}
             </button>

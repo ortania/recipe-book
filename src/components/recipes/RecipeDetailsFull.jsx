@@ -287,7 +287,7 @@ function RecipeDetailsFull({
               <button
                 className={classes.nutritionToggle}
                 onClick={() => setShowNutrition(!showNutrition)}
-                title="ערכים תזונתיים"
+                title={t("recipeDetails", "nutritionTitle")}
               >
                 <div className={classes.nutritionTitleWrapper}>
                   <GiMeal className={classes.nutritionIcon} />
