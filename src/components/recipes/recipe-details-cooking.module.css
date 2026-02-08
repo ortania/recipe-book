@@ -127,6 +127,11 @@
   font-style: italic;
 }
 
+.cooking {
+  width: 100%;
+  position: relative;
+}
+
 .closeButton {
   background: rgba(255, 255, 255, 0.9);
   /* border: 1px solid rgba(0, 0, 0, 0.2); */
@@ -754,7 +759,7 @@
 
 .ingredientText,
 .instructionText {
-  font-size: var(--very-very-large-font);
+  font-size: var(--huge-font);
   text-align: center;
   line-height: 1.7;
   color: #333;

@@ -1,0 +1,130 @@
+.voiceChatContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.voiceChatButton {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4em 0.8em;
+  border: none;
+  border-radius: 20px;
+  background: #e9edf2;
+  color: #374151;
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  white-space: nowrap;
+}
+
+.voiceChatButton.active {
+  background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+  color: white;
+  box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+}
+
+.voiceChatButton.speaking {
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+  }
+  50% {
+    box-shadow: 0 2px 16px rgba(99, 102, 241, 0.7);
+  }
+}
+
+.buttonIcon {
+  display: flex;
+  align-items: center;
+  font-size: var(--basic-font);
+}
+
+.buttonLabel {
+  font-size: var(--basic-font);
+  font-weight: 500;
+}
+
+.statusArea {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0.5rem;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  width: 80%;
+  min-width: 200px;
+  max-width: 500px;
+  text-align: center;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+.statusText {
+  font-size: var(--large-font);
+  color: #d1d5db;
+  margin-bottom: 0.3rem;
+}
+
+.responseText {
+ font-size: var(--large-font);
+  color: #ffffff;
+  line-height: 1.4;
+  direction: rtl;
+}
+
+.processingIndicator {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #a5b4fc;
+  border-radius: 50%;
+  animation: bounce 1.4s ease-in-out infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .statusArea {
+    min-width: 160px;
+    max-width: 250px;
+    padding: 0.5rem 0.8rem;
+  }
+
+  .voiceChatButton {
+    padding: 0.35em 0.7em;
+    font-size: var(--basic-font);
+  }
+}

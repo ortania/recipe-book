@@ -8,6 +8,7 @@ import React, {
 import { VscDebugRestart } from "react-icons/vsc";
 import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
 import { FaStop } from "react-icons/fa";
+import { CookingVoiceChat } from "../cooking-voice-chat";
 import classes from "./recipe-details-cooking.module.css";
 
 function RecipeDetailsCookingMode({
@@ -224,17 +225,37 @@ function RecipeDetailsCookingMode({
           className={classes.voiceToggleButton}
           style={{
             background: voiceEnabled ? "#e9edf2" : "#e9edf2",
-            // ? "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)"
-            // : "linear-gradient(135deg, #10b981 0%, #059669 100%)",
           }}
         >
-          {/* <span>🎤</span> */}
           <span>
-            {/* {voiceEnabled ? <PiMicrophoneThin /> : <PiMicrophoneSlashThin />} */}
             <PiMicrophoneThin />
           </span>
           <span>{voiceEnabled ? "Stop Mic" : "Start Mic"}</span>
         </button>
+        {activeTab === "instructions" && (
+          <div className={classes.cooking}>
+            <CookingVoiceChat
+              recipe={recipe}
+              ingredients={ingredientsArray}
+              instructions={instructionsArray}
+              currentStep={currentStep}
+              servings={servings}
+              onNextStep={() => handleNextStepRef.current()}
+              onPrevStep={() => handlePrevStepRef.current()}
+              onGotoStep={(step) => {
+                setCurrentStep(step);
+                setShowCompletion(false);
+              }}
+              onStartTimer={(minutes) => startTimer(minutes)}
+              onStopTimer={() => {
+                setIsTimerRunning(false);
+                setTotalSeconds(0);
+                setCustomTimerInput("");
+              }}
+              isTimerRunning={isTimerRunning}
+            />
+          </div>
+        )}
         <div className={classes.headerRight}>
           {!(showCompletion && activeTab === "instructions") && (
             <button
