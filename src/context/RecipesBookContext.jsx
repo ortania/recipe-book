@@ -108,10 +108,17 @@ export const RecipeBookProvider = ({ children }) => {
         description: "All recipes in the recipe book",
         color: "#607D8B",
       };
+      const otherCategory = {
+        id: "other",
+        name: "Other",
+        description: "Uncategorized recipes",
+        color: "#9E9E9E",
+      };
       const hasAll = categoriesFromFirestore.some((c) => c.id === "all");
-      const finalCategories = hasAll
+      const withAll = hasAll
         ? categoriesFromFirestore
         : [allCategory, ...categoriesFromFirestore];
+      const finalCategories = [...withAll, otherCategory];
       setCategories(finalCategories);
       setCategoriesLoaded(true);
 
@@ -140,7 +147,15 @@ export const RecipeBookProvider = ({ children }) => {
         category,
         currentUser.uid,
       );
-      setCategories((prev) => [...prev, newCategory]);
+      setCategories((prev) => {
+        const otherIndex = prev.findIndex((c) => c.id === "other");
+        if (otherIndex !== -1) {
+          const updated = [...prev];
+          updated.splice(otherIndex, 0, newCategory);
+          return updated;
+        }
+        return [...prev, newCategory];
+      });
       return newCategory;
     } catch (error) {
       console.error("Error adding category:", error);
@@ -304,8 +319,10 @@ export const RecipeBookProvider = ({ children }) => {
       // Update state immediately for responsive UI
       setCategories(newCategories);
 
-      // Save to Firebase - filter out the virtual "All" category
-      const categoriesToSave = newCategories.filter((c) => c.id !== "all");
+      // Save to Firebase - filter out the virtual "All" and "Other" categories
+      const categoriesToSave = newCategories.filter(
+        (c) => c.id !== "all" && c.id !== "other",
+      );
       await reorderCategoriesInFirestore(categoriesToSave);
     } catch (error) {
       console.error("Error reordering categories:", error);

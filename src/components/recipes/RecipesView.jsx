@@ -475,9 +475,9 @@ function RecipesView({
             if (uncategorizedRecipes.length === 0) return null;
             const displayRecipes = uncategorizedRecipes.slice(0, 8);
             return (
-              <div key="uncategorized" className={classes.categorySection}>
+              <div key="other" className={classes.categorySection}>
                 <div className={classes.sectionHeader}>
-                  <h2 className={classes.sectionTitle}>Uncategorized</h2>
+                  <h2 className={classes.sectionTitle}>Other</h2>
                   {uncategorizedRecipes.length > 8 && (
                     <span className={classes.recipeCount}>
                       {uncategorizedRecipes.length} recipes

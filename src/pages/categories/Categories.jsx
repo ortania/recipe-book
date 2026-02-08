@@ -51,7 +51,14 @@ function Categories() {
     if (groupId === "all") {
       return recipes;
     }
-    return recipes.filter((recipe) => recipe.categories.includes(groupId));
+    if (groupId === "other") {
+      return recipes.filter(
+        (recipe) => !recipe.categories || recipe.categories.length === 0,
+      );
+    }
+    return recipes.filter(
+      (recipe) => recipe.categories && recipe.categories.includes(groupId),
+    );
   };
 
   const currentGroupContacts = getGroupContacts(selectedGroup);
