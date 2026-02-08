@@ -296,10 +296,12 @@ export const copyRecipeToUser = async (recipe, targetUserId) => {
     const order = querySnapshot.size;
 
     // Strip the original id and userId, create a fresh copy
-    const { id, userId, createdAt, updatedAt, ...recipeData } = recipe;
+    const { id, userId, createdAt, updatedAt, categories, ...recipeData } =
+      recipe;
 
     const copiedRecipe = {
       ...recipeData,
+      categories: [],
       userId: targetUserId,
       order,
       createdAt: new Date().toISOString(),

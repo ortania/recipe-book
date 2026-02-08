@@ -11,9 +11,9 @@ import { useRecipeBook } from "../../context/RecipesBookContext";
 function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
   if (!recipe) return null;
 
-  // Function to get category name from ID
+  // Function to get category name from ID - use context categories for up-to-date names
   const getCategoryName = (categoryId) => {
-    const category = groups.find((g) => g.id === categoryId);
+    const category = categories.find((g) => g.id === categoryId);
     return category ? category.name : categoryId;
   };
 
@@ -47,7 +47,7 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState(null);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const { copyRecipeToUser, currentUser } = useRecipeBook();
+  const { copyRecipeToUser, currentUser, categories } = useRecipeBook();
 
   // Refs to store latest handler functions
   const handleNextStepRef = React.useRef();
