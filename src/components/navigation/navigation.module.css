@@ -1,6 +1,6 @@
 .nav {
   position: fixed;
-  left: 0;
+  inset-inline-start: 0;
   top: 0;
   height: 100vh;
   width: 230px;
@@ -9,7 +9,7 @@
   flex-direction: column;
   padding: 1.5rem;
   box-shadow: none;
-  border-right: 1px solid #d1d1d1;
+  border-inline-end: 1px solid #d1d1d1;
   z-index: 1000;
 }
 
@@ -89,7 +89,7 @@
   border-radius: 8px;
   transition: all 0.2s ease;
   margin: 0.5rem 0;
-  text-align: left;
+  text-align: start;
 }
 
 .chatLogSection .icon {
@@ -109,7 +109,7 @@
   background: transparent;
   border: none;
   padding: 0.5rem 1rem;
-  text-align: left;
+  text-align: start;
   color: #5f6368;
   font-size: var(--basic-font);
   border-radius: 6px;
@@ -208,7 +208,7 @@
   background: #f8f9fa;
   padding: 1rem;
   /* border-radius: 8px; */
-  border-left: 3px solid #2196f3;
+  border-inline-start: 3px solid #2196f3;
 }
 
 .chatLogHeader {
@@ -234,7 +234,7 @@
 
 .chatLogHeader span {
   flex: 1;
-  text-align: left;
+  text-align: start;
 }
 
 .chatLogList {
@@ -440,7 +440,7 @@
   display: none;
   position: fixed;
   top: 0.75rem;
-  left: 1rem;
+  inset-inline-start: 1rem;
   z-index: 10002;
   background: transparent;
   /* background: white; */
@@ -488,12 +488,12 @@ body.modal-open .hamburger {
     display: block;
     position: fixed;
     top: 0.75rem;
-    left: 3.5rem;
+    inset-inline-start: 3.5rem;
     transform: none;
     z-index: 10003;
     font-size: 1.9rem;
     padding: 0;
-    margin-left: 1rem;
+    margin-inline-start: 1rem;
   }
 
   .mobileLogo .logo,
@@ -509,8 +509,15 @@ body.modal-open .hamburger {
   }
 
   .nav {
-    transform: translateX(-100%);
     transition: transform 0.3s ease;
+  }
+
+  :global(html[dir="rtl"]) .nav {
+    transform: translateX(100%);
+  }
+
+  :global(html:not([dir="rtl"])) .nav {
+    transform: translateX(-100%);
   }
 
   .nav.open {

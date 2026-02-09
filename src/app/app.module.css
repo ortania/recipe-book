@@ -6,7 +6,7 @@
 }
 
 .contentWrapper {
-  margin-left: 220px;
+  margin-inline-start: 220px;
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -15,7 +15,7 @@
 
 @media (max-width: 768px) {
   .contentWrapper {
-    margin-left: 0;
+    margin-inline-start: 0;
   }
 }
 

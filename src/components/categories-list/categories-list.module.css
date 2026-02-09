@@ -7,7 +7,7 @@
   gap: 16px;
   padding: 0 16px 16px 16px;
   background-color: inherit;
-  border-right: 1px solid #d1d1d1;
+  border-inline-end: 1px solid #d1d1d1;
   min-width: 250px;
   align-self: flex-start;
 }
@@ -98,10 +98,10 @@
   cursor: pointer;
   font-size: var(--basic-font);
   font-weight: 500;
-  text-align: left;
+  text-align: start;
   transition: all 0.3s ease;
-  border-left-width: 4px;
-  border-left-style: solid;
+  border-inline-start-width: 4px;
+  border-inline-start-style: solid;
   position: relative;
 }
 
@@ -295,7 +295,7 @@
 @media (max-width: 768px) {
   .groupList {
     position: relative;
-    border-right: none;
+    border-inline-end: none;
     min-width: 0;
     width: 0;
     padding: 0;

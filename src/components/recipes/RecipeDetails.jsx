@@ -9,6 +9,7 @@ import { FaRegEdit } from "react-icons/fa";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
 import useTranslatedRecipe from "../../hooks/useTranslatedRecipe";
+import useTranslatedList from "../../hooks/useTranslatedList";
 
 const SPEECH_LANG_MAP = {
   he: "he-IL",
@@ -46,12 +47,15 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
   const { language } = useLanguage();
   const { translated: translatedRecipe, isTranslating } =
     useTranslatedRecipe(recipe);
+  const { getTranslated: getTranslatedGroup } = useTranslatedList(
+    groups,
+    "name",
+  );
   if (!recipe) return null;
 
-  // Function to get category name from ID - use context categories for up-to-date names
   const getCategoryName = (categoryId) => {
-    const category = categories.find((g) => g.id === categoryId);
-    return category ? category.name : categoryId;
+    const category = groups.find((g) => g.id === categoryId);
+    return category ? getTranslatedGroup(category) : categoryId;
   };
 
   const ingredientsArray = Array.isArray(recipe.ingredients)

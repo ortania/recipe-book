@@ -123,7 +123,7 @@
 }
 
 .categoryName {
-  font-size: 1.25rem;
+  font-size: var(--basic-font);
   font-weight: 700;
   color: #1f2937;
   margin: 0 0 0.5rem 0;
@@ -131,14 +131,14 @@
 }
 
 .categoryDescription {
-  font-size: 1rem;
+  font-size: var(--basic-font);
   color: #6b7280;
   margin: 0;
   line-height: 1.5;
 }
 
 .recipeCount {
-  font-size: 1rem;
+  font-size: var(--basic-font);
   font-weight: 600;
   color: #4f9dde;
   background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%);
@@ -175,7 +175,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1rem;
+  font-size: 1.5rem;
   color: #4f9dde;
   transition: all 0.2s ease;
   flex-shrink: 0;
@@ -246,14 +246,13 @@
 /* Mobile responsive */
 @media (max-width: 768px) {
   .container {
-    width: 92vw;
-    max-width: 92vw;
+    width: 100%;
+    max-width: 100%;
     max-height: 90vh;
   }
 
   .header {
     padding: 1rem 1.5rem;
-
   }
 
   .title {
@@ -345,7 +344,7 @@
   }
 
   .categoryName {
-    font-size: 1rem;
+    font-size: var(--basic-font);
     margin: 0 0 0.25rem 0;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -354,15 +353,15 @@
   }
 
   .categoryDescription {
-    font-size: 0.85rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    font-size: var(--basic-font);
+    /* overflow: hidden;
+    text-overflow: ellipsis; */
+    /* white-space: nowrap; */
     text-align: center;
   }
 
   .recipeCount {
-    font-size: 0.8rem;
+    font-size: var(--basic-font);
     padding: 0.25rem 0.5rem;
     margin-top: 0;
   }

@@ -134,6 +134,7 @@ function Categories() {
           onShowFavorites={() => setShowFavorites(true)}
           selectedGroup={selectedGroup}
           onSelectGroup={setSelectedGroup}
+          showGreeting
         />
 
         {showFavorites && (

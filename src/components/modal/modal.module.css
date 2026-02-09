@@ -24,12 +24,12 @@
 
 @media screen and (max-width: 768px) {
   .modalContent {
-    width: 90%;
-    max-width: 90%;
+    width: 96%;
+    max-width: 96%;
     height: auto;
     max-height: 90vh;
-    border-radius: 12px;
-    padding: 1.5rem;
+    border-radius: 16px;
+    padding: 0;
     display: flex;
   }
 }

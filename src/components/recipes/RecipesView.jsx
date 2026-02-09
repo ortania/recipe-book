@@ -32,6 +32,7 @@ function RecipesView({
   onDeletePerson,
   selectedGroup,
   onSelectGroup,
+  showGreeting = false,
 }) {
   const { t } = useLanguage();
   const [searchTerm, setSearchTerm] = useState("");
@@ -216,7 +217,7 @@ function RecipesView({
   if (!persons || persons.length === 0) {
     return (
       <div className={classes.recipesContainer}>
-        <Greeting />
+        {showGreeting && <Greeting />}
         <div className={classes.emptyState}>
           <IoBookOutline className={classes.emptyIcon} />
           <p className={classes.emptyText}>{t("recipesView", "emptyTitle")}</p>
@@ -262,7 +263,7 @@ function RecipesView({
             </span>
           )}
         </div>
-        <Greeting />
+        {showGreeting && <Greeting />}
       </div>
 
       <div className={classes.searchHeader}>

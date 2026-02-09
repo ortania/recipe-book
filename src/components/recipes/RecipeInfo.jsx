@@ -138,11 +138,21 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
 
         <div className={classes.recipeInfo}>
           <h3 className={classes.recipeName}>{translatedName}</h3>
+          <div className={classes.recipeMetadata}>
+            {person.prepTime && (
+              <p className={classes.recipeTime}>{person.prepTime}</p>
+            )}
+            {person.difficulty && (
+              <span className={classes.recipeDifficulty}>
+                {person.prepTime && "• "}
+                {formatDifficulty(person.difficulty)}
+              </span>
+            )}
+          </div>
           {person.rating !== undefined && person.rating > 0 && (
             <div
               style={{
                 display: "flex",
-                justifyContent: "center",
                 gap: "0.2rem",
                 margin: "0.3rem 0",
               }}
@@ -160,17 +170,6 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
               ))}
             </div>
           )}
-          <div className={classes.recipeMetadata}>
-            {person.prepTime && (
-              <p className={classes.recipeTime}>{person.prepTime}</p>
-            )}
-            {person.difficulty && (
-              <span className={classes.recipeDifficulty}>
-                {person.prepTime && "• "}
-                {formatDifficulty(person.difficulty)}
-              </span>
-            )}
-          </div>
         </div>
 
         {showDeleteConfirm && (
