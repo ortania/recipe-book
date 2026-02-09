@@ -6,12 +6,15 @@ import { FaRegEdit } from "react-icons/fa";
 import { BsTrash3 } from "react-icons/bs";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { GiMeal } from "react-icons/gi";
-import { IoCopyOutline } from "react-icons/io5";
+import { FaNutritionix } from "react-icons/fa";
+import { IoCopyOutline, IoTimeOutline } from "react-icons/io5";
+import { TbChefHat, TbUsers } from "react-icons/tb";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
 import { CloseButton } from "../controls/close-button";
 import { AddButton } from "../controls/add-button";
 import { ExportImageButton } from "./export-image-button";
+import { RecipeChat } from "./recipe-chat";
 
 function RecipeDetailsFull({
   recipe,
@@ -130,8 +133,6 @@ function RecipeDetailsFull({
 
   return (
     <div className={classes.recipeCard}>
-      <CloseButton onClick={onClose} />
-
       {showCopyDialog && (
         <CopyRecipeDialog
           recipeName={recipe.name}
@@ -149,15 +150,20 @@ function RecipeDetailsFull({
         />
       )}
 
-      {recipe.image_src && (
-        <div className={classes.imageContainer}>
+      <div className={classes.imageContainer}>
+        {recipe.image_src && (
           <img
             src={recipe.image_src}
             alt={recipe.name}
             className={classes.recipeImage}
           />
-        </div>
-      )}
+        )}
+        <CloseButton
+          onClick={onClose}
+          type="circle"
+          className={classes.imageCloseButton}
+        />
+      </div>
 
       <div className={classes.actionBar}>
         {onEdit && (
@@ -169,7 +175,7 @@ function RecipeDetailsFull({
             className={classes.actionButton}
             title="Edit"
           >
-            <FaRegEdit />
+            <FaRegEdit size={18} />
             <span>{t("recipes", "edit")}</span>
           </button>
         )}
@@ -179,7 +185,7 @@ function RecipeDetailsFull({
             className={`${classes.actionButton} ${classes.actionDelete}`}
             title="Delete"
           >
-            <BsTrash3 />
+            <BsTrash3 size={18} />
             <span>{t("recipes", "delete")}</span>
           </button>
         )}
@@ -189,7 +195,7 @@ function RecipeDetailsFull({
             className={classes.actionButton}
             title={t("recipes", "copy")}
           >
-            <IoCopyOutline />
+            <IoCopyOutline size={18} />
             <span>{t("recipes", "copy")}</span>
           </button>
         )}
@@ -229,29 +235,40 @@ function RecipeDetailsFull({
         )}
 
         <div className={classes.recipeInfo}>
-          {recipe.prepTime && (
+          {recipe.difficulty && recipe.difficulty !== "Unknown" && (
             <span className={classes.infoItem}>
-              {t("recipes", "prepTime")} {recipe.prepTime}
-            </span>
-          )}
-          {recipe.prepTime && recipe.cookTime && (
-            <span className={classes.infoDot}>•</span>
-          )}
-          {recipe.cookTime && (
-            <span className={classes.infoItem}>
-              {t("recipes", "cookTime")} {recipe.cookTime}
-            </span>
-          )}
-          {(recipe.prepTime || recipe.cookTime) &&
-            recipe.difficulty !== "Unknown" && (
-              <span className={classes.infoDot}>•</span>
-            )}
-          {recipe.difficulty && (
-            <span className={classes.infoItem}>
+              <TbChefHat className={classes.infoIcon} />
               {formatDifficulty(recipe.difficulty)}
             </span>
           )}
+          {recipe.difficulty &&
+            recipe.difficulty !== "Unknown" &&
+            (recipe.prepTime || recipe.cookTime) && (
+              <span className={classes.infoDot}>•</span>
+            )}
+          {(recipe.prepTime || recipe.cookTime) && (
+            <span className={classes.infoItem}>
+              <IoTimeOutline className={classes.infoIcon} />
+              {recipe.prepTime || recipe.cookTime}
+            </span>
+          )}
         </div>
+
+        {(recipe.prepTime || recipe.cookTime) && (
+          <div className={classes.prepTimeBar}>
+            {recipe.prepTime && (
+              <span>
+                {t("recipes", "prepTime")}: {recipe.prepTime}
+              </span>
+            )}
+            {recipe.prepTime && recipe.cookTime && <span> - </span>}
+            {recipe.cookTime && (
+              <span>
+                {t("recipes", "cookTime")}: {recipe.cookTime}
+              </span>
+            )}
+          </div>
+        )}
 
         {recipe.categories && recipe.categories.length > 0 && (
           <div className={classes.categoryTags}>
@@ -279,6 +296,31 @@ function RecipeDetailsFull({
           </div>
         )}
 
+        {recipe.servings && (
+          <div className={classes.servingSelector}>
+            <div className={classes.servingControls}>
+              <AddButton
+                type="circle"
+                sign="+"
+                className={classes.servingButton}
+                onClick={() => setServings(servings + 1)}
+              />
+              <span>{servings}</span>
+
+              <AddButton
+                type="circle"
+                sign="-"
+                className={classes.servingButton}
+                onClick={() => setServings(Math.max(1, servings - 1))}
+              />
+            </div>
+            <span className={classes.servingLabel}>
+              <TbUsers className={classes.servingLabelIcon} />
+              {t("recipes", "servings")} ({servings})
+            </span>
+          </div>
+        )}
+
         {recipe.nutrition &&
           Object.entries(recipe.nutrition).some(
             ([k, v]) => v && k !== "note",
@@ -290,7 +332,7 @@ function RecipeDetailsFull({
                 title={t("recipeDetails", "nutritionTitle")}
               >
                 <div className={classes.nutritionTitleWrapper}>
-                  <GiMeal className={classes.nutritionIcon} />
+                  <FaNutritionix className={classes.nutritionIcon} />
                   <span>{t("recipes", "nutrition")}</span>
                 </div>
                 <span className={classes.expandIcon}>
@@ -353,51 +395,13 @@ function RecipeDetailsFull({
             </div>
           )}
 
-        {recipe.notes && (
-          <div className={classes.notesSection}>
-            <button
-              className={classes.notesHeader}
-              onClick={() => setNotesExpanded(!notesExpanded)}
-            >
-              <div className={classes.notesTitleWrapper}>
-                <span className={classes.notesIcon}>📝</span>
-                <h3 className={classes.notesTitle}>{t("recipes", "notes")}</h3>
-              </div>
-              <span className={classes.expandIcon}>
-                {notesExpanded ? <MdExpandLess /> : <MdExpandMore />}
-              </span>
-            </button>
-            {notesExpanded && (
-              <div className={classes.notesContent}>
-                <p className={classes.notesText}>{recipe.notes}</p>
-              </div>
-            )}
-          </div>
-        )}
-
-        {recipe.servings && (
-          <div className={classes.servingSelector}>
-            <div className={classes.servingControls}>
-              <AddButton
-                type="circle"
-                sign="+"
-                className={classes.servingButton}
-                onClick={() => setServings(servings + 1)}
-              />
-              <span>{servings}</span>
-
-              <AddButton
-                type="circle"
-                sign="-"
-                className={classes.servingButton}
-                onClick={() => setServings(Math.max(1, servings - 1))}
-              />
-            </div>
-            <span className={classes.servingLabel}>
-              {t("recipes", "servings")} {servings}
-            </span>
-          </div>
-        )}
+        <button
+          className={classes.cookingModeButton}
+          onClick={onEnterCookingMode}
+        >
+          <TbChefHat className={classes.cookingModeIcon} />
+          {t("recipes", "cookingMode")}
+        </button>
 
         <div className={classes.tabs}>
           <button
@@ -412,12 +416,19 @@ function RecipeDetailsFull({
           >
             {t("recipes", "instructions")}
           </button>
+          {recipe.notes && (
+            <button
+              className={`${classes.tab} ${activeTab === "tips" ? classes.activeTab : ""}`}
+              onClick={() => setActiveTab("tips")}
+            >
+              {t("recipes", "notes")}
+            </button>
+          )}
           <button
-            className={classes.tab}
-            onClick={onEnterCookingMode}
-            style={{ marginLeft: "auto" }}
+            className={`${classes.tab} ${activeTab === "chat" ? classes.activeTab : ""}`}
+            onClick={() => setActiveTab("chat")}
           >
-            👨‍🍳 {t("recipes", "cookingMode")}
+            {t("recipeChat", "tabLabel")}
           </button>
         </div>
 
@@ -476,6 +487,16 @@ function RecipeDetailsFull({
                 <p>No instructions provided</p>
               )}
             </ol>
+          )}
+
+          {activeTab === "tips" && recipe.notes && (
+            <div className={classes.notesContent}>
+              <p className={classes.notesText}>{recipe.notes}</p>
+            </div>
+          )}
+
+          {activeTab === "chat" && (
+            <RecipeChat recipe={recipe} servings={servings} />
           )}
         </div>
       </div>

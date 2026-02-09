@@ -1674,6 +1674,52 @@ const translations = {
       mixed: "Stop Voice Chat",
     },
   },
+
+  // ===================== RECIPE CHAT =====================
+  recipeChat: {
+    placeholder: {
+      he: "שאל על המתכון...",
+      en: "Ask about this recipe...",
+      ru: "Спросите о рецепте...",
+      de: "Fragen zum Rezept...",
+      mixed: "שאל על המתכון...",
+    },
+    emptyMessage: {
+      he: "שאל אותי כל שאלה על המתכון הזה - החלפות, טיפים, התאמות...",
+      en: "Ask me anything about this recipe - substitutions, tips, adjustments...",
+      ru: "Спросите меня о рецепте - замены, советы, корректировки...",
+      de: "Fragen Sie mich zum Rezept - Ersatz, Tipps, Anpassungen...",
+      mixed: "שאל אותי כל שאלה על המתכון הזה - החלפות, טיפים, התאמות...",
+    },
+    suggestSubstitute: {
+      he: "במה אפשר להחליף ביצים?",
+      en: "What can I substitute for eggs?",
+      ru: "Чем заменить яйца?",
+      de: "Was kann ich anstelle von Eiern verwenden?",
+      mixed: "במה אפשר להחליף ביצים?",
+    },
+    suggestHealthier: {
+      he: "איך להפוך את המתכון לבריא יותר?",
+      en: "How to make this recipe healthier?",
+      ru: "Как сделать рецепт полезнее?",
+      de: "Wie mache ich das Rezept gesünder?",
+      mixed: "איך להפוך את המתכון לבריא יותר?",
+    },
+    suggestDouble: {
+      he: "מה לשים לב כשמכפילים את המתכון?",
+      en: "What to watch when doubling the recipe?",
+      ru: "На что обратить внимание при удвоении?",
+      de: "Worauf achten beim Verdoppeln?",
+      mixed: "מה לשים לב כשמכפילים את המתכון?",
+    },
+    tabLabel: {
+      he: "צ'אט",
+      en: "Chat",
+      ru: "Чат",
+      de: "Chat",
+      mixed: "Chat",
+    },
+  },
 };
 
 export const LANGUAGES = [

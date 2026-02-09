@@ -1,5 +1,10 @@
 /* Recipe Details - Modern Design */
 
+.recipeModal {
+  padding: 0 !important;
+  border-radius: 20px;
+}
+
 .recipeCard {
   background: white;
   border-radius: 20px;
@@ -93,7 +98,6 @@
   transform: translateY(-1px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
-
 
 .imageContainer {
   width: 100%;

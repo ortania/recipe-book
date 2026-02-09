@@ -484,7 +484,12 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose}>
+    <Modal
+      isOpen={true}
+      onClose={onClose}
+      maxWidth="550px"
+      className={classes.recipeModal}
+    >
       {!cookingMode ? (
         <RecipeDetailsFull
           recipe={translatedRecipe}

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { generateRecipeImage } from "../generateRecipeImage";
 import classes from "./export-image-button.module.css";
 import { useLanguage } from "../../../context";
+import { FiCamera } from "react-icons/fi";
 
 function ExportImageButton({ recipe }) {
   const { t } = useLanguage();
@@ -29,7 +30,7 @@ function ExportImageButton({ recipe }) {
       {isGenerating ? (
         <span className={classes.spinner} />
       ) : (
-        <span className={classes.icon}>📸</span>
+        <FiCamera size={18} />
       )}
       <span className={classes.label}>
         {isGenerating

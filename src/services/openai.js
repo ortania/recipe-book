@@ -153,9 +153,25 @@ export const sendChatMessage = async (
   language = "he",
 ) => {
   const langName = LANG_NAMES[language] || "Hebrew";
+
+  let contextBlock = "";
+  if (recipeContext) {
+    const { name, ingredients, instructions, notes, servings } = recipeContext;
+    contextBlock = `\n\nYou are currently helping with the recipe "${name}" (${servings || ""} servings).
+
+Ingredients:
+${(ingredients || []).map((ing, i) => `${i + 1}. ${ing}`).join("\n")}
+
+Instructions:
+${(instructions || []).map((inst, i) => `${i + 1}. ${inst}`).join("\n")}
+${notes ? `\nNotes: ${notes}` : ""}
+
+Help the user with questions about THIS recipe - substitutions, adjustments, technique tips, etc. Keep answers concise and practical.`;
+  }
+
   const systemMessage = {
     role: "system",
-    content: `You are a helpful cooking assistant. You help users with recipe questions, ingredient substitutions, cooking techniques, and adjusting recipe quantities. Always be friendly, concise, and practical in your responses. Always respond in ${langName}.`,
+    content: `You are a helpful cooking assistant. You help users with recipe questions, ingredient substitutions, cooking techniques, and adjusting recipe quantities. Always be friendly, concise, and practical in your responses. Always respond in ${langName}.${contextBlock}`,
   };
 
   // Limit to last 5 messages to prevent token limit errors
