@@ -240,18 +240,26 @@ function RecipesView({
           </div>
         </div>
 
-        {showGreeting && (
-          <div className={classes.headerTitle}>
-            <Greeting />
-          </div>
-        )}
+        <div style={{ display: showChat ? "block" : "none" }}>
+          <ChatWindow />
+        </div>
 
-        <div className={classes.emptyState}>
-          <IoBookOutline className={classes.emptyIcon} />
-          <p className={classes.emptyText}>{t("recipesView", "emptyTitle")}</p>
-          <button className={classes.emptyButton} onClick={onAddPerson}>
-            {t("recipesView", "addNewRecipe")}
-          </button>
+        <div style={{ display: showChat ? "none" : "block" }}>
+          {showGreeting && (
+            <div className={classes.headerTitle}>
+              <Greeting />
+            </div>
+          )}
+
+          <div className={classes.emptyState}>
+            <IoBookOutline className={classes.emptyIcon} />
+            <p className={classes.emptyText}>
+              {t("recipesView", "emptyTitle")}
+            </p>
+            <button className={classes.emptyButton} onClick={onAddPerson}>
+              {t("recipesView", "addNewRecipe")}
+            </button>
+          </div>
         </div>
       </div>
     );
@@ -282,339 +290,350 @@ function RecipesView({
         </div>
       </div>
 
-      {showGreeting && (
-        <div className={classes.headerTitle}>
-          <Greeting />
-        </div>
-      )}
-
-      {!isAllSelected && selectedCategoryObjects.length > 0 && (
-        <div className={classes.filterChips}>
-          <span className={classes.filterChipsLabel}>
-            {t("categories", "filteredBy")}
-          </span>
-          {selectedCategoryObjects.map((cat) => (
-            <button
-              key={cat.id}
-              className={classes.filterChip}
-              style={{ borderColor: cat.color, color: cat.color }}
-              onClick={() => toggleCategory(cat.id)}
-            >
-              {getTranslatedGroup(cat)} ✕
-            </button>
-          ))}
-          <button
-            className={classes.clearChips}
-            onClick={clearCategorySelection}
-          >
-            {t("categories", "clearAllFilters")}
-          </button>
-        </div>
-      )}
-
-      <div className={classes.searchHeader}>
-        <SearchBox
-          searchTerm={searchTerm}
-          onSearchChange={setSearchTerm}
-          placeholder={t("common", "search")}
-        />
-        <div className={classes.headerControls}>
-          <div className={classes.dropdownContainer} ref={filterRef}>
-            <button
-              className={classes.filterButton}
-              onClick={() => setShowFilterMenu(!showFilterMenu)}
-            >
-              <CiFilter /> {t("recipesView", "filter")} <IoChevronDown />
-            </button>
-            {showFilterMenu && (
-              <div
-                className={classes.dropdownMenu}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <div className={classes.filterSection}>
-                  <label className={classes.filterLabel}>
-                    {t("common", "search")}:
-                  </label>
-                  <div className={classes.inputWrapper}>
-                    <input
-                      type="text"
-                      className={classes.keywordInput}
-                      placeholder="קמח, גבינה, עגבניות (הפרד בפסיק)"
-                      value={keywordFilter}
-                      onChange={(e) => setKeywordFilter(e.target.value)}
-                      onClick={(e) => e.stopPropagation()}
-                      autoComplete="off"
-                      style={{
-                        color: "#000",
-                        backgroundColor: "#fff",
-                        fontSize: "1rem",
-                        direction: "rtl",
-                        textAlign: "right",
-                        position: "relative",
-                        zIndex: 1,
-                      }}
-                    />
-                    {keywordFilter && (
-                      <button
-                        className={classes.clearKeyword}
-                        onClick={() => setKeywordFilter("")}
-                      >
-                        ✕
-                      </button>
-                    )}
-                  </div>
-                </div>
-                <div className={classes.filterDivider}></div>
-                <div className={classes.filterSection}>
-                  <label className={classes.filterLabel}>
-                    {t("recipes", "prepTime")}:
-                  </label>
-                  <button
-                    className={selectedPrepTime === "all" ? classes.active : ""}
-                    onClick={() => setSelectedPrepTime("all")}
-                  >
-                    {t("categories", "all")}
-                  </button>
-                  <button
-                    className={
-                      selectedPrepTime === "quick" ? classes.active : ""
-                    }
-                    onClick={() => setSelectedPrepTime("quick")}
-                  >
-                    ≤15 {t("recipes", "minutes")}
-                  </button>
-                  <button
-                    className={
-                      selectedPrepTime === "medium" ? classes.active : ""
-                    }
-                    onClick={() => setSelectedPrepTime("medium")}
-                  >
-                    15-30 {t("recipes", "minutes")}
-                  </button>
-                  <button
-                    className={
-                      selectedPrepTime === "long" ? classes.active : ""
-                    }
-                    onClick={() => setSelectedPrepTime("long")}
-                  >
-                    30+ {t("recipes", "minutes")}
-                  </button>
-                </div>
-                <div className={classes.filterDivider}></div>
-                <div className={classes.filterSection}>
-                  <label className={classes.filterLabel}>
-                    {t("recipes", "difficulty")}:
-                  </label>
-                  <button
-                    className={
-                      selectedDifficulty === "all" ? classes.active : ""
-                    }
-                    onClick={() => setSelectedDifficulty("all")}
-                  >
-                    {t("categories", "all")}
-                  </button>
-                  <button
-                    className={
-                      selectedDifficulty === "VeryEasy" ? classes.active : ""
-                    }
-                    onClick={() => setSelectedDifficulty("VeryEasy")}
-                  >
-                    {t("difficulty", "VeryEasy")}
-                  </button>
-                  <button
-                    className={
-                      selectedDifficulty === "Easy" ? classes.active : ""
-                    }
-                    onClick={() => setSelectedDifficulty("Easy")}
-                  >
-                    {t("difficulty", "Easy")}
-                  </button>
-                  <button
-                    className={
-                      selectedDifficulty === "Medium" ? classes.active : ""
-                    }
-                    onClick={() => setSelectedDifficulty("Medium")}
-                  >
-                    {t("difficulty", "Medium")}
-                  </button>
-                  <button
-                    className={
-                      selectedDifficulty === "Hard" ? classes.active : ""
-                    }
-                    onClick={() => setSelectedDifficulty("Hard")}
-                  >
-                    {t("difficulty", "Hard")}
-                  </button>
-                </div>
-              </div>
-            )}
-          </div>
-
-          <div className={classes.dropdownContainer} ref={sortRef}>
-            <button
-              className={classes.sortingButton}
-              onClick={() => setShowSortMenu(!showSortMenu)}
-            >
-              {t("recipesView", "sorting")} <IoChevronDown />
-            </button>
-            {showSortMenu && (
-              <div className={classes.dropdownMenu}>
-                <button
-                  className={sortField === "name" ? classes.active : ""}
-                  onClick={() => {
-                    handleSort("name");
-                    setShowSortMenu(false);
-                  }}
-                >
-                  {t("recipesView", "sortByName")}{" "}
-                  {sortField === "name" &&
-                    (sortDirection === "asc" ? "↑" : "↓")}
-                </button>
-                <button
-                  className={sortField === "prepTime" ? classes.active : ""}
-                  onClick={() => {
-                    handleSort("prepTime");
-                    setShowSortMenu(false);
-                  }}
-                >
-                  {t("recipesView", "sortByPrepTime")}{" "}
-                  {sortField === "prepTime" &&
-                    (sortDirection === "asc" ? "↑" : "↓")}
-                </button>
-                <button
-                  className={sortField === "difficulty" ? classes.active : ""}
-                  onClick={() => {
-                    handleSort("difficulty");
-                    setShowSortMenu(false);
-                  }}
-                >
-                  {t("recipesView", "sortByDifficulty")}{" "}
-                  {sortField === "difficulty" &&
-                    (sortDirection === "asc" ? "↑" : "↓")}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {editingPerson && (
-        <EditRecipe
-          person={editingPerson}
-          onSave={handleSaveEdit}
-          onCancel={() => setEditingPerson(null)}
-          groups={groups}
-        />
-      )}
-
-      {filteredAndSortedPersons.length === 0 ? (
-        <div className={classes.noResults}>{t("recipesView", "noResults")}</div>
-      ) : selectedGroup === "all" ? (
-        <div>
-          {groups
-            .filter((group) => group.id !== "all" && group.id !== "general")
-            .map((group) => {
-              const groupRecipes = filteredAndSortedPersons.filter(
-                (person) =>
-                  person.categories && person.categories.includes(group.id),
-              );
-              if (groupRecipes.length === 0) return null;
-              const displayRecipes = groupRecipes.slice(0, 8);
-              return (
-                <div key={group.id} className={classes.categorySection}>
-                  <div className={classes.sectionHeader}>
-                    <h2 className={classes.sectionTitle}>
-                      {getTranslatedGroup(group)}
-                    </h2>
-                    {groupRecipes.length > 8 && (
-                      <button
-                        className={classes.seeMore}
-                        onClick={() => onSelectGroup && onSelectGroup(group.id)}
-                      >
-                        {t("categories", "seeMore")}
-                      </button>
-                    )}
-                  </div>
-                  <div className={classes.recipeGrid}>
-                    {displayRecipes.map((person) => (
-                      <RecipeInfo
-                        key={person.id}
-                        person={person}
-                        groups={groups}
-                        onEdit={() => setEditingPerson(person)}
-                        onDelete={onDeletePerson}
-                        onToggleFavorite={handleToggleFavorite}
-                      />
-                    ))}
-                  </div>
-                </div>
-              );
-            })}
-          {/* Show uncategorized recipes */}
-          {(() => {
-            const uncategorizedRecipes = filteredAndSortedPersons.filter(
-              (person) => !person.categories || person.categories.length === 0,
-            );
-            if (uncategorizedRecipes.length === 0) return null;
-            const displayRecipes = uncategorizedRecipes.slice(0, 8);
-            return (
-              <div key="general" className={classes.categorySection}>
-                <div className={classes.sectionHeader}>
-                  <h2 className={classes.sectionTitle}>
-                    {t("categories", "general")}
-                  </h2>
-                  {uncategorizedRecipes.length > 8 && (
-                    <span className={classes.recipeCount}>
-                      {uncategorizedRecipes.length} recipes
-                    </span>
-                  )}
-                </div>
-                <div className={classes.recipeGrid}>
-                  {displayRecipes.map((person) => (
-                    <RecipeInfo
-                      key={person.id}
-                      person={person}
-                      groups={groups}
-                      onEdit={() => setEditingPerson(person)}
-                      onDelete={onDeletePerson}
-                      onToggleFavorite={handleToggleFavorite}
-                    />
-                  ))}
-                </div>
-              </div>
-            );
-          })()}
-        </div>
+      {showChat ? (
+        <ChatWindow />
       ) : (
-        <div className={classes.recipeGrid}>
-          {filteredAndSortedPersons.map((person) => (
-            <RecipeInfo
-              key={person.id}
-              person={person}
-              groups={groups}
-              onEdit={() => setEditingPerson(person)}
-              onDelete={onDeletePerson}
-              onToggleFavorite={handleToggleFavorite}
+        <div>
+          {showGreeting && (
+            <div className={classes.headerTitle}>
+              <Greeting />
+            </div>
+          )}
+
+          {!isAllSelected && selectedCategoryObjects.length > 0 && (
+            <div className={classes.filterChips}>
+              {/* <span className={classes.filterChipsLabel}>
+            {t("categories", "filteredBy")}
+          </span> */}
+              {selectedCategoryObjects.map((cat) => (
+                <button
+                  key={cat.id}
+                  className={classes.filterChip}
+                  style={{ borderColor: cat.color, color: cat.color }}
+                  onClick={() => toggleCategory(cat.id)}
+                >
+                  {getTranslatedGroup(cat)} ✕
+                </button>
+              ))}
+              <button
+                className={classes.clearChips}
+                onClick={clearCategorySelection}
+              >
+                {t("categories", "clearAllFilters")}
+              </button>
+            </div>
+          )}
+
+          <div className={classes.searchHeader}>
+            <SearchBox
+              searchTerm={searchTerm}
+              onSearchChange={setSearchTerm}
+              placeholder={t("common", "search")}
             />
-          ))}
-        </div>
-      )}
+            <div className={classes.headerControls}>
+              <div className={classes.dropdownContainer} ref={filterRef}>
+                <button
+                  className={classes.filterButton}
+                  onClick={() => setShowFilterMenu(!showFilterMenu)}
+                >
+                  <CiFilter /> {t("recipesView", "filter")} <IoChevronDown />
+                </button>
+                {showFilterMenu && (
+                  <div
+                    className={classes.dropdownMenu}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <div className={classes.filterSection}>
+                      <label className={classes.filterLabel}>
+                        {t("common", "search")}:
+                      </label>
+                      <div className={classes.inputWrapper}>
+                        <input
+                          type="text"
+                          className={classes.keywordInput}
+                          placeholder="קמח, גבינה, עגבניות (הפרד בפסיק)"
+                          value={keywordFilter}
+                          onChange={(e) => setKeywordFilter(e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          autoComplete="off"
+                          style={{
+                            color: "#000",
+                            backgroundColor: "#fff",
+                            fontSize: "1rem",
+                            direction: "rtl",
+                            textAlign: "right",
+                            position: "relative",
+                            zIndex: 1,
+                          }}
+                        />
+                        {keywordFilter && (
+                          <button
+                            className={classes.clearKeyword}
+                            onClick={() => setKeywordFilter("")}
+                          >
+                            ✕
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                    <div className={classes.filterDivider}></div>
+                    <div className={classes.filterSection}>
+                      <label className={classes.filterLabel}>
+                        {t("recipes", "prepTime")}:
+                      </label>
+                      <button
+                        className={
+                          selectedPrepTime === "all" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedPrepTime("all")}
+                      >
+                        {t("categories", "all")}
+                      </button>
+                      <button
+                        className={
+                          selectedPrepTime === "quick" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedPrepTime("quick")}
+                      >
+                        ≤15 {t("recipes", "minutes")}
+                      </button>
+                      <button
+                        className={
+                          selectedPrepTime === "medium" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedPrepTime("medium")}
+                      >
+                        15-30 {t("recipes", "minutes")}
+                      </button>
+                      <button
+                        className={
+                          selectedPrepTime === "long" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedPrepTime("long")}
+                      >
+                        30+ {t("recipes", "minutes")}
+                      </button>
+                    </div>
+                    <div className={classes.filterDivider}></div>
+                    <div className={classes.filterSection}>
+                      <label className={classes.filterLabel}>
+                        {t("recipes", "difficulty")}:
+                      </label>
+                      <button
+                        className={
+                          selectedDifficulty === "all" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedDifficulty("all")}
+                      >
+                        {t("categories", "all")}
+                      </button>
+                      <button
+                        className={
+                          selectedDifficulty === "VeryEasy"
+                            ? classes.active
+                            : ""
+                        }
+                        onClick={() => setSelectedDifficulty("VeryEasy")}
+                      >
+                        {t("difficulty", "VeryEasy")}
+                      </button>
+                      <button
+                        className={
+                          selectedDifficulty === "Easy" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedDifficulty("Easy")}
+                      >
+                        {t("difficulty", "Easy")}
+                      </button>
+                      <button
+                        className={
+                          selectedDifficulty === "Medium" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedDifficulty("Medium")}
+                      >
+                        {t("difficulty", "Medium")}
+                      </button>
+                      <button
+                        className={
+                          selectedDifficulty === "Hard" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedDifficulty("Hard")}
+                      >
+                        {t("difficulty", "Hard")}
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
 
-      {hasMoreRecipes && !showChat && (
-        <div className={classes.loadMoreContainer}>
-          <button className={classes.loadMoreButton} onClick={loadMoreRecipes}>
-            {t("recipesView", "loadMore")}
-          </button>
-        </div>
-      )}
+              <div className={classes.dropdownContainer} ref={sortRef}>
+                <button
+                  className={classes.sortingButton}
+                  onClick={() => setShowSortMenu(!showSortMenu)}
+                >
+                  {t("recipesView", "sorting")} <IoChevronDown />
+                </button>
+                {showSortMenu && (
+                  <div className={classes.dropdownMenu}>
+                    <button
+                      className={sortField === "name" ? classes.active : ""}
+                      onClick={() => {
+                        handleSort("name");
+                        setShowSortMenu(false);
+                      }}
+                    >
+                      {t("recipesView", "sortByName")}{" "}
+                      {sortField === "name" &&
+                        (sortDirection === "asc" ? "↑" : "↓")}
+                    </button>
+                    <button
+                      className={sortField === "prepTime" ? classes.active : ""}
+                      onClick={() => {
+                        handleSort("prepTime");
+                        setShowSortMenu(false);
+                      }}
+                    >
+                      {t("recipesView", "sortByPrepTime")}{" "}
+                      {sortField === "prepTime" &&
+                        (sortDirection === "asc" ? "↑" : "↓")}
+                    </button>
+                    <button
+                      className={
+                        sortField === "difficulty" ? classes.active : ""
+                      }
+                      onClick={() => {
+                        handleSort("difficulty");
+                        setShowSortMenu(false);
+                      }}
+                    >
+                      {t("recipesView", "sortByDifficulty")}{" "}
+                      {sortField === "difficulty" &&
+                        (sortDirection === "asc" ? "↑" : "↓")}
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
 
-      {showChat && (
-        <ChatWindow
-          onClose={() => {
-            setShowChat(false);
-            setActiveView("recipes");
-          }}
-        />
+          {editingPerson && (
+            <EditRecipe
+              person={editingPerson}
+              onSave={handleSaveEdit}
+              onCancel={() => setEditingPerson(null)}
+              groups={groups}
+            />
+          )}
+
+          {filteredAndSortedPersons.length === 0 ? (
+            <div className={classes.noResults}>
+              {t("recipesView", "noResults")}
+            </div>
+          ) : selectedGroup === "all" ? (
+            <div>
+              {groups
+                .filter((group) => group.id !== "all" && group.id !== "general")
+                .map((group) => {
+                  const groupRecipes = filteredAndSortedPersons.filter(
+                    (person) =>
+                      person.categories && person.categories.includes(group.id),
+                  );
+                  if (groupRecipes.length === 0) return null;
+                  const displayRecipes = groupRecipes.slice(0, 8);
+                  return (
+                    <div key={group.id} className={classes.categorySection}>
+                      <div className={classes.sectionHeader}>
+                        <h2 className={classes.sectionTitle}>
+                          {getTranslatedGroup(group)}
+                        </h2>
+                        {groupRecipes.length > 8 && (
+                          <button
+                            className={classes.seeMore}
+                            onClick={() =>
+                              onSelectGroup && onSelectGroup(group.id)
+                            }
+                          >
+                            {t("categories", "seeMore")}
+                          </button>
+                        )}
+                      </div>
+                      <div className={classes.recipeGrid}>
+                        {displayRecipes.map((person) => (
+                          <RecipeInfo
+                            key={person.id}
+                            person={person}
+                            groups={groups}
+                            onEdit={() => setEditingPerson(person)}
+                            onDelete={onDeletePerson}
+                            onToggleFavorite={handleToggleFavorite}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              {/* Show uncategorized recipes */}
+              {(() => {
+                const uncategorizedRecipes = filteredAndSortedPersons.filter(
+                  (person) =>
+                    !person.categories || person.categories.length === 0,
+                );
+                if (uncategorizedRecipes.length === 0) return null;
+                const displayRecipes = uncategorizedRecipes.slice(0, 8);
+                return (
+                  <div key="general" className={classes.categorySection}>
+                    <div className={classes.sectionHeader}>
+                      <h2 className={classes.sectionTitle}>
+                        {t("categories", "general")}
+                      </h2>
+                      {uncategorizedRecipes.length > 8 && (
+                        <span className={classes.recipeCount}>
+                          {uncategorizedRecipes.length} recipes
+                        </span>
+                      )}
+                    </div>
+                    <div className={classes.recipeGrid}>
+                      {displayRecipes.map((person) => (
+                        <RecipeInfo
+                          key={person.id}
+                          person={person}
+                          groups={groups}
+                          onEdit={() => setEditingPerson(person)}
+                          onDelete={onDeletePerson}
+                          onToggleFavorite={handleToggleFavorite}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          ) : (
+            <div className={classes.recipeGrid}>
+              {filteredAndSortedPersons.map((person) => (
+                <RecipeInfo
+                  key={person.id}
+                  person={person}
+                  groups={groups}
+                  onEdit={() => setEditingPerson(person)}
+                  onDelete={onDeletePerson}
+                  onToggleFavorite={handleToggleFavorite}
+                />
+              ))}
+            </div>
+          )}
+
+          {hasMoreRecipes && (
+            <div className={classes.loadMoreContainer}>
+              <button
+                className={classes.loadMoreButton}
+                onClick={loadMoreRecipes}
+              >
+                {t("recipesView", "loadMore")}
+              </button>
+            </div>
+          )}
+        </div>
       )}
     </div>
   );

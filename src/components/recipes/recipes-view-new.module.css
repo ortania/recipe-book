@@ -134,6 +134,7 @@
     height: 3rem;
     background: hsl(210, 36%, 96%);
     z-index: 10000;
+    pointer-events: none;
   }
 
   .viewToggle {
@@ -201,7 +202,7 @@
   background: none;
   border: none;
   color: #999;
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.3em 0.5em;
   transition: color 0.15s ease;
@@ -458,6 +459,11 @@
   .sectionTitle {
     font-size: var(--large-font);
   }
+}
+
+.filterChips {
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
 /* Empty state for new users */

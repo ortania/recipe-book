@@ -7,7 +7,7 @@
   background: #f2f2f2;
   display: flex;
   flex-direction: column;
-  padding: 1.5rem;
+  padding: 2rem 1rem;
   box-shadow: none;
   border-inline-end: 1px solid #d1d1d1;
   z-index: 1000;
@@ -54,6 +54,7 @@
   text-decoration: none;
   font-size: var(--basic-font);
   padding: 0.65rem 1rem;
+  padding-right: 0;
   transition: all 0.15s ease;
   position: relative;
   font-weight: 400;
@@ -144,6 +145,7 @@
   border: none;
   /* border-inline-start: 3px solid transparent; */
   padding: 0.5rem 1rem;
+  padding-right: 0;
   margin: 0.2rem 0;
   font-size: var(--basic-font);
   font-weight: 400;

@@ -1,17 +1,16 @@
 import { useState, useRef, useEffect } from "react";
-import { FaPaperPlane, FaTimes, FaTrash, FaImage } from "react-icons/fa";
-import { PiTrash } from "react-icons/pi";
-import { CiSearch } from "react-icons/ci";
+import { FaImage } from "react-icons/fa";
 import {
   sendChatMessage,
   analyzeImageForNutrition,
 } from "../../services/openai";
-import { useLanguage } from "../../context";
-import { CloseButton } from "../controls/close-button";
+import { useLanguage, useRecipeBook } from "../../context";
+import { Greeting } from "../greeting";
 import classes from "./chat-window.module.css";
 
-function ChatWindow({ onClose, recipeContext = null }) {
+function ChatWindow({ recipeContext = null }) {
   const { t, language } = useLanguage();
+  const { currentUser } = useRecipeBook();
   const [messages, setMessages] = useState(() => {
     const savedMessages = localStorage.getItem("chatMessages");
     return savedMessages ? JSON.parse(savedMessages) : [];
@@ -35,31 +34,9 @@ function ChatWindow({ onClose, recipeContext = null }) {
     localStorage.setItem("chatMessages", JSON.stringify(messagesForStorage));
   }, [messages]);
 
-  useEffect(() => {
-    const scrollY = window.scrollY;
-
-    const previousBodyOverflow = document.body.style.overflow;
-    const previousBodyPosition = document.body.style.position;
-    const previousBodyTop = document.body.style.top;
-    const previousBodyWidth = document.body.style.width;
-
-    const previousHtmlOverflow = document.documentElement.style.overflow;
-
-    document.documentElement.style.overflow = "hidden";
-    document.body.style.overflow = "hidden";
-    document.body.style.position = "fixed";
-    document.body.style.top = `-${scrollY}px`;
-    document.body.style.width = "100%";
-
-    return () => {
-      document.documentElement.style.overflow = previousHtmlOverflow;
-      document.body.style.overflow = previousBodyOverflow;
-      document.body.style.position = previousBodyPosition;
-      document.body.style.top = previousBodyTop;
-      document.body.style.width = previousBodyWidth;
-      window.scrollTo(0, scrollY);
-    };
-  }, []);
+  const userInitial = currentUser?.displayName
+    ? currentUser.displayName.charAt(0).toUpperCase()
+    : "C";
 
   const clearChat = () => {
     setMessages([]);
@@ -146,110 +123,109 @@ function ChatWindow({ onClose, recipeContext = null }) {
   };
 
   return (
-    <div className={classes.chatOverlay} onClick={onClose}>
-      <div className={classes.chatWindow} onClick={(e) => e.stopPropagation()}>
-        <div className={classes.chatHeader}>
-          <h3>
-            <CiSearch className={classes.searchIcon} />
-            <span>{t("chat", "cookingAssistant")}</span>
-          </h3>
-          <div className={classes.headerButtons}>
-            <button
-              className={classes.clearButton}
-              onClick={clearChat}
-              title="Clear chat history"
-            >
-              {/* <FaTrash /> */}
-              {<PiTrash />}
-            </button>
-            <CloseButton
-              onClick={onClose}
-            />
+    <div className={classes.chatContainer}>
+      <div className={classes.greeting}>
+        <Greeting />
+      </div>
+
+      <div className={classes.messagesArea}>
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={`${classes.message} ${
+              message.role === "user"
+                ? classes.userMessage
+                : classes.assistantMessage
+            }`}
+          >
+            <div className={classes.bubble}>
+              {message.image && (
+                <img
+                  src={message.image}
+                  alt="Uploaded food"
+                  className={classes.chatImage}
+                />
+              )}
+              {message.content}
+            </div>
+            {message.role === "user" && (
+              <div className={classes.avatar}>{userInitial}</div>
+            )}
           </div>
-        </div>
-
-        <div className={classes.messagesContainer}>
-          {messages.length > 0 && (
-            <>
-              <div className={classes.conversationsHeader}>
-                <h4>{t("chat", "conversations")}</h4>
-              </div>
-              <div className={classes.separator}></div>
-              <div className={classes.chatLogLabel}>{t("nav", "chatLog")}</div>
-            </>
-          )}
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`${classes.message} ${
-                message.role === "user"
-                  ? classes.userMessage
-                  : classes.assistantMessage
-              }`}
-            >
-              <div className={classes.messageContent}>
-                {message.image && (
-                  <img
-                    src={message.image}
-                    alt="Uploaded food"
-                    className={classes.chatImage}
-                  />
-                )}
-                {message.content}
+        ))}
+        {isLoading && (
+          <div className={`${classes.message} ${classes.assistantMessage}`}>
+            <div className={classes.bubble}>
+              <div className={classes.typing}>
+                <span></span>
+                <span></span>
+                <span></span>
               </div>
             </div>
-          ))}
-          {isLoading && (
-            <div className={`${classes.message} ${classes.assistantMessage}`}>
-              <div className={classes.messageContent}>
-                <div className={classes.typing}>
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </div>
-              </div>
-            </div>
-          )}
-          {error && <div className={classes.errorMessage}>{error}</div>}
-          <div ref={messagesEndRef} />
-        </div>
+          </div>
+        )}
+        {error && <div className={classes.errorMessage}>{error}</div>}
+        <div ref={messagesEndRef} />
+      </div>
 
-        <form className={classes.inputContainer} onSubmit={handleSubmit}>
-          <div className={classes.inputRow}>
-            <input
-              type="file"
-              accept="image/*"
-              ref={fileInputRef}
-              onChange={handleImageSelect}
-              style={{ display: "none" }}
-            />
+      <form className={classes.inputForm} onSubmit={handleSubmit}>
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          onChange={handleImageSelect}
+          style={{ display: "none" }}
+        />
+        <div className={classes.inputWrap}>
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={t("chat", "placeholder")}
+            className={classes.input}
+            disabled={isLoading}
+          />
+          <div className={classes.inputActions}>
             <button
               type="button"
-              className={classes.imageUploadButton}
+              className={classes.imageBtn}
               onClick={() => fileInputRef.current?.click()}
               disabled={isLoading}
-              title="Upload food image for nutritional analysis"
+              title="Upload food image"
             >
               <FaImage />
             </button>
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={t("chat", "placeholder")}
-              className={classes.input}
-              disabled={isLoading}
-            />
             <button
               type="submit"
-              className={classes.sendButton}
+              className={classes.sendBtn}
               disabled={isLoading || !input.trim()}
             >
-              <FaPaperPlane />
+              <svg
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M22 2L11 13"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M22 2L15 22L11 13L2 9L22 2Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
             </button>
           </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   );
 }

@@ -78,12 +78,7 @@ function Categories() {
         />
       )}
 
-      {showChat && (
-        <ChatWindow
-          onClose={() => setShowChat(false)}
-          recipeContext={filteredRecipes}
-        />
-      )}
+      {showChat && <ChatWindow recipeContext={filteredRecipes} />}
 
       <UpButton onClick={scrollToTop} title="Scroll to top">
         <PiArrowFatLineUp />
