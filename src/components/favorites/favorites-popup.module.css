@@ -63,18 +63,3 @@
   padding: 2rem 0;
 }
 
-.closeButton {
-  margin-top: 1rem;
-  padding: 0.5em 1em;
-  background-color: #f0f0f0;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: var(--basic-font);
-  align-self: center;
-  color: #000;
-}
-
-.closeButton:hover {
-  background-color: #e0e0e0;
-}

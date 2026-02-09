@@ -71,9 +71,7 @@ function Recipes() {
         <AddButton
           onClick={() => setShowAddPerson(true)}
           title="Add New Recipe"
-        >
-          +
-        </AddButton>
+        />
       </div>
 
       {showAddPerson && (

@@ -1,6 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 import { FaPaperPlane, FaTimes, FaTrash, FaImage } from "react-icons/fa";
-import { IoClose } from "react-icons/io5";
 import { PiTrash } from "react-icons/pi";
 import { CiSearch } from "react-icons/ci";
 import {
@@ -8,6 +7,7 @@ import {
   analyzeImageForNutrition,
 } from "../../services/openai";
 import { useLanguage } from "../../context";
+import { CloseButton } from "../controls/close-button";
 import classes from "./chat-window.module.css";
 
 function ChatWindow({ onClose, recipeContext = null }) {
@@ -162,10 +162,9 @@ function ChatWindow({ onClose, recipeContext = null }) {
               {/* <FaTrash /> */}
               {<PiTrash />}
             </button>
-            <button className={classes.closeButton} onClick={onClose}>
-              {/* <FaTimes /> */}
-              {<IoClose />}
-            </button>
+            <CloseButton
+              onClick={onClose}
+            />
           </div>
         </div>
 

@@ -1,17 +1,25 @@
-import React from "react";
 import classes from "./add-button.module.css";
-import { Button } from "../button";
+import { PiPlusLight, PiMinusLight } from "react-icons/pi";
 
-const AddButton = ({ onClick, children, disabled, className, title }) => {
+const AddButton = ({
+  onClick,
+  type = "plain",
+  disabled,
+  className,
+  title,
+  sign,
+  children,
+}) => {
   return (
-    <Button
-      className={`${classes.addButton} ${className || ""}`}
+    <button
+      className={`${classes.addButton} ${classes[type]} ${typeof children === "string" ? classes.withText : ""} ${className || ""}`}
       onClick={onClick}
       disabled={disabled}
       title={title}
     >
+      {sign === "-" ? <PiMinusLight /> : sign === "+" ? <PiPlusLight /> : null}
       {children}
-    </Button>
+    </button>
   );
 };
 

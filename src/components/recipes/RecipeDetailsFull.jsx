@@ -9,6 +9,8 @@ import { GiMeal } from "react-icons/gi";
 import { IoCopyOutline } from "react-icons/io5";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
+import { CloseButton } from "../controls/close-button";
+import { AddButton } from "../controls/add-button";
 import { ExportImageButton } from "./export-image-button";
 
 function RecipeDetailsFull({
@@ -128,9 +130,7 @@ function RecipeDetailsFull({
 
   return (
     <div className={classes.recipeCard}>
-      <button onClick={onClose} className={classes.closeButton}>
-        ✕
-      </button>
+      <CloseButton onClick={onClose} />
 
       {showCopyDialog && (
         <CopyRecipeDialog
@@ -378,19 +378,20 @@ function RecipeDetailsFull({
         {recipe.servings && (
           <div className={classes.servingSelector}>
             <div className={classes.servingControls}>
-              <button
+              <AddButton
+                type="circle"
+                sign="+"
                 className={classes.servingButton}
                 onClick={() => setServings(servings + 1)}
-              >
-                +
-              </button>
+              />
               <span>{servings}</span>
-              <button
+
+              <AddButton
+                type="circle"
+                sign="-"
                 className={classes.servingButton}
                 onClick={() => setServings(Math.max(1, servings - 1))}
-              >
-                -
-              </button>
+              />
             </div>
             <span className={classes.servingLabel}>
               {t("recipes", "servings")} {servings}

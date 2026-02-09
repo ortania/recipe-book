@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { FaRegEdit, FaGripVertical } from "react-icons/fa";
 import { BsTrash3 } from "react-icons/bs";
-import { IoAddOutline, IoArrowUp, IoArrowDown } from "react-icons/io5";
+import { IoArrowUp, IoArrowDown } from "react-icons/io5";
 import { Modal } from "../modal";
 import { Button } from "../controls/button";
+import { CloseButton } from "../controls/close-button";
+import { AddButton } from "../controls/add-button";
 import { AddCategory } from "../forms/add-category";
 import { EditCategory } from "../forms/edit-category";
 import { ConfirmDialog } from "../forms/confirm-dialog";
@@ -117,21 +119,19 @@ function CategoriesManagement({
           <h2 className={classes.title}>
             {t("categories", "categoryManagement")}{" "}
           </h2>
-          <button onClick={onClose} className={classes.closeButton}>
-            ✕
-          </button>
+          <CloseButton onClick={onClose} />
         </div>
 
         <div className={classes.content}>
           <div className={classes.addSection}>
-            <Button
-              variant="success"
+            <AddButton
+              sign="+"
               onClick={() => setShowAddCategory(true)}
               className={classes.addButton}
+              title={t("categories", "addNewCategory")}
             >
-              <IoAddOutline className={classes.addIcon} />
               {t("categories", "addNewCategory")}
-            </Button>
+            </AddButton>
           </div>
 
           <div className={classes.categoriesList}>

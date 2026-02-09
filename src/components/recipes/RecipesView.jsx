@@ -1,8 +1,9 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { FaFilter, FaPlus, FaStar } from "react-icons/fa";
+import { FaFilter } from "react-icons/fa";
+import { PiStar } from "react-icons/pi";
 import { CiFilter } from "react-icons/ci";
 import { IoMdStarOutline } from "react-icons/io";
-import { IoChevronDown, IoAddOutline } from "react-icons/io5";
+import { IoChevronDown } from "react-icons/io5";
 import { IoBookOutline } from "react-icons/io5";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
@@ -20,6 +21,7 @@ import ChatWindow from "../chat/ChatWindow";
 
 import { Greeting } from "../greeting";
 import { search } from "./utils";
+import { AddButton } from "../controls";
 
 function RecipesView({
   persons,
@@ -233,20 +235,21 @@ function RecipesView({
           <ViewToggle activeView={activeView} onViewChange={handleViewChange} />
         </div>
         <div className={classes.iconButtons}>
-          <button
-            className={classes.iconButton}
+          <AddButton
+            type="circle"
+            // className={classes.iconButton}
             onClick={onShowFavorites}
             title="Favorites"
           >
-            <IoMdStarOutline />
-          </button>
-          <button
-            className={classes.iconButton}
+            <PiStar />
+          </AddButton>
+          <AddButton
+            type="circle"
+            sign="+"
+            // className={classes.iconButton}
             onClick={onAddPerson}
             title="Add New Recipe"
-          >
-            <IoAddOutline />
-          </button>
+          />
         </div>
       </div>
 

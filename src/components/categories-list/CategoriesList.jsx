@@ -10,7 +10,6 @@ import { IoIosArrowUp, IoIosArrowDown } from "react-icons/io";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { BsTrash3 } from "react-icons/bs";
 import { MdSettings } from "react-icons/md";
-import { IoAddOutline } from "react-icons/io5";
 import { Button } from "../controls/button";
 import { useRecipeBook, useLanguage } from "../../context";
 import { CategoriesManagement } from "../categories-management";

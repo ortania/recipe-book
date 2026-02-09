@@ -4,6 +4,7 @@ import { RecipesView } from "../recipes/RecipesView";
 import { Button } from "../controls/button";
 import { useLanguage } from "../../context";
 import classes from "./favorites-popup.module.css";
+import { CloseButton } from "../controls";
 
 function FavoritesPopup({
   persons,
@@ -37,13 +38,11 @@ function FavoritesPopup({
           />
         )}
 
-        <Button
-          className={classes.closeButton}
+        <CloseButton
           onClick={onClose}
-          variant="primary"
         >
           {t("common", "close")}
-        </Button>
+        </CloseButton>
       </div>
     </Modal>
   );

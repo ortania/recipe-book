@@ -9,6 +9,8 @@ import { VscDebugRestart } from "react-icons/vsc";
 import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
 import { FaStop } from "react-icons/fa";
 import { CookingVoiceChat } from "../cooking-voice-chat";
+import { CloseButton } from "../controls/close-button";
+import { AddButton } from "../controls/add-button";
 import { useLanguage } from "../../context";
 import classes from "./recipe-details-cooking.module.css";
 
@@ -275,9 +277,7 @@ function RecipeDetailsCookingMode({
               ?
             </button>
           )}
-          <button onClick={onClose} className={classes.closeButton}>
-            ✕
-          </button>
+          <CloseButton onClick={onClose} />
         </div>
       </div>
 
@@ -285,19 +285,19 @@ function RecipeDetailsCookingMode({
         {recipe.servings && (
           <div className={classes.servingSelector}>
             <div className={classes.servingControls}>
-              <button
+              <AddButton
+                type="circle"
+                sign="+"
                 className={classes.servingButtonCooking}
                 onClick={() => setServings(servings + 1)}
-              >
-                <span>+</span>
-              </button>
+              />
               <span>{servings}</span>
-              <button
+              <AddButton
+                type="circle"
+                sign="-"
                 className={classes.servingButtonCooking}
                 onClick={() => setServings(Math.max(1, servings - 1))}
-              >
-                <span>-</span>
-              </button>
+              />
             </div>
             <span className={classes.servingLabelCooking}>
               Serving {servings}
@@ -475,12 +475,11 @@ function RecipeDetailsCookingMode({
                   >
                     <div className={classes.infoModalHeader}>
                       <h3>{t("cookingMode", "howToUse")}</h3>
-                      <button
-                        className={classes.infoModalClose}
+                      <CloseButton
                         onClick={() => setShowInfo(false)}
-                      >
-                        ✕
-                      </button>
+                        type="plain"
+                        className={classes.infoModalClose}
+                      />
                     </div>
                     <div className={classes.infoModalBody}>
                       <div className={classes.infoSection}>
@@ -537,7 +536,9 @@ function RecipeDetailsCookingMode({
                     </div>
 
                     <div className={classes.timerControls}>
-                      <button
+                      <AddButton
+                        sign="-"
+                        type="circle"
                         onClick={(e) => {
                           e.stopPropagation();
                           const currentValue = parseInt(customTimerInput) || 0;
@@ -547,9 +548,7 @@ function RecipeDetailsCookingMode({
                         }}
                         className={classes.timerButton}
                         disabled={isTimerRunning}
-                      >
-                        −
-                      </button>
+                      />
 
                       <div className={classes.timerDisplay}>
                         {isTimerRunning ? (
@@ -575,7 +574,9 @@ function RecipeDetailsCookingMode({
                         )}
                       </div>
 
-                      <button
+                      <AddButton
+                        sign="+"
+                        type="circle"
                         onClick={(e) => {
                           e.stopPropagation();
                           const currentValue = parseInt(customTimerInput) || 0;
@@ -583,9 +584,7 @@ function RecipeDetailsCookingMode({
                         }}
                         className={classes.timerButton}
                         disabled={isTimerRunning}
-                      >
-                        +
-                      </button>
+                      />
                     </div>
 
                     {!isTimerRunning ? (

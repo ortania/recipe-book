@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { IoClose } from "react-icons/io5";
 import { applyFontScale } from "../../utils/applyFontScale";
 import { useLanguage } from "../../context";
+import { CloseButton } from "../../components/controls/close-button";
 import { LANGUAGES } from "../../utils/translations";
 import classes from "./settings.module.css";
 
@@ -33,13 +33,10 @@ function Settings() {
     <div className={classes.settingsPage}>
       <div className={classes.header}>
         <h1 className={classes.title}>{t("settings", "title")}</h1>
-        <button
-          className={classes.closeButton}
+        <CloseButton
           onClick={() => navigate(-1)}
           title={t("common", "close")}
-        >
-          <IoClose />
-        </button>
+        />
       </div>
 
       <div className={classes.section}>

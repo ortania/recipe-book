@@ -17,6 +17,7 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import { FiHome } from "react-icons/fi";
 import { MdOutlineChat } from "react-icons/md";
 import { useRecipeBook, useLanguage } from "../../context";
+import { CloseButton } from "../controls/close-button";
 import classes from "./navigation.module.css";
 
 const iconMap = {
@@ -192,12 +193,11 @@ function Navigation({ onLogout, links }) {
           >
             <div className={classes.chatPopupHeader}>
               <h3>{t("nav", "chatHistory")}</h3>
-              <button
+              <CloseButton
                 onClick={() => setSelectedChat(null)}
+                type="plain"
                 className={classes.closePopup}
-              >
-                ✕
-              </button>
+              />
             </div>
             <div className={classes.chatPopupContent}>
               <div className={classes.chatQuestion}>

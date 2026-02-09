@@ -14,7 +14,6 @@ import {
   ChatWindow,
   MigrationHelper,
 } from "../../components";
-import { FaPlus, FaStar } from "react-icons/fa";
 import { PiArrowFatLineUp } from "react-icons/pi";
 import { EditCategory } from "../../components/forms/edit-category";
 import { useRecipeBook, useLanguage } from "../../context";

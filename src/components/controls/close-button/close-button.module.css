@@ -1,0 +1,36 @@
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.plain {
+  background: none;
+  color: #555;
+  font-size: 2.5rem;
+}
+
+.plain:hover {
+  color: #333;
+}
+
+.circle {
+  background: #f3f4f6;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  font-size: 2.5rem;
+  color: #555;
+  border: 1px solid #d1d5db;
+}
+
+.closeButton:hover {
+  /* background: #e5e7eb; */
+  color: #333;
+  transform: scale(1.1);
+}
