@@ -50,7 +50,13 @@ function RecipesView({
   const [showChat, setShowChat] = useState(false);
   const filterRef = useRef(null);
   const sortRef = useRef(null);
-  const { hasMoreRecipes, loadMoreRecipes } = useRecipeBook();
+  const {
+    hasMoreRecipes,
+    loadMoreRecipes,
+    selectedCategories,
+    toggleCategory,
+    clearCategorySelection,
+  } = useRecipeBook();
 
   const handleViewChange = (view) => {
     setActiveView(view);
@@ -86,14 +92,6 @@ function RecipesView({
   // search, filter and sort
   const filteredAndSortedPersons = useMemo(() => {
     let filtered = localPersons;
-
-    // Filter by currently selected category from categories list
-    if (selectedGroup !== "all") {
-      filtered = filtered.filter(
-        (person) =>
-          person.categories && person.categories.includes(selectedGroup),
-      );
-    }
 
     // Filter by keyword in ingredients (supports multiple keywords separated by comma)
     if (keywordFilter.trim()) {
@@ -150,7 +148,6 @@ function RecipesView({
     searchTerm,
     sortField,
     sortDirection,
-    selectedGroup,
     keywordFilter,
     selectedPrepTime,
     selectedDifficulty,
@@ -209,15 +206,46 @@ function RecipesView({
     groups,
     "name",
   );
-  const selectedGroupData = groups.find((g) => g.id === selectedGroup);
-  const groupTitle = selectedGroupData
-    ? getTranslatedGroup(selectedGroupData)
-    : t("categories", "all");
+  const isAllSelected = selectedCategories.includes("all");
+  const selectedCategoryObjects = isAllSelected
+    ? []
+    : selectedCategories
+        .map((id) => groups.find((g) => g.id === id))
+        .filter(Boolean);
 
   if (!persons || persons.length === 0) {
     return (
       <div className={classes.recipesContainer}>
-        {showGreeting && <Greeting />}
+        <div className={classes.viewToggleWrapper}>
+          <div className={classes.viewToggle}>
+            <ViewToggle
+              activeView={activeView}
+              onViewChange={handleViewChange}
+            />
+          </div>
+          <div className={classes.iconButtons}>
+            <AddButton
+              type="circle"
+              onClick={onShowFavorites}
+              title="Favorites"
+            >
+              <PiStar />
+            </AddButton>
+            <AddButton
+              type="circle"
+              sign="+"
+              onClick={onAddPerson}
+              title="Add New Recipe"
+            />
+          </div>
+        </div>
+
+        {showGreeting && (
+          <div className={classes.headerTitle}>
+            <Greeting />
+          </div>
+        )}
+
         <div className={classes.emptyState}>
           <IoBookOutline className={classes.emptyIcon} />
           <p className={classes.emptyText}>{t("recipesView", "emptyTitle")}</p>
@@ -254,17 +282,35 @@ function RecipesView({
         </div>
       </div>
 
-      <div className={classes.headerTitle}>
-        <div>
-          <h2>{groupTitle}</h2>
-          {selectedGroup !== "all" && selectedGroupData?.description && (
-            <span className={classes.groupDescription}>
-              - {selectedGroupData.description}
-            </span>
-          )}
+      {showGreeting && (
+        <div className={classes.headerTitle}>
+          <Greeting />
         </div>
-        {showGreeting && <Greeting />}
-      </div>
+      )}
+
+      {!isAllSelected && selectedCategoryObjects.length > 0 && (
+        <div className={classes.filterChips}>
+          <span className={classes.filterChipsLabel}>
+            {t("categories", "filteredBy")}
+          </span>
+          {selectedCategoryObjects.map((cat) => (
+            <button
+              key={cat.id}
+              className={classes.filterChip}
+              style={{ borderColor: cat.color, color: cat.color }}
+              onClick={() => toggleCategory(cat.id)}
+            >
+              {getTranslatedGroup(cat)} ✕
+            </button>
+          ))}
+          <button
+            className={classes.clearChips}
+            onClick={clearCategorySelection}
+          >
+            {t("categories", "clearAllFilters")}
+          </button>
+        </div>
+      )}
 
       <div className={classes.searchHeader}>
         <SearchBox

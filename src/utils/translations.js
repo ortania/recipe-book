@@ -772,6 +772,41 @@ const translations = {
       de: "Allgemein",
       mixed: "General",
     },
+    add: {
+      he: "הוסף",
+      en: "Add",
+      ru: "Добавить",
+      de: "Hinzufügen",
+      mixed: "Add",
+    },
+    manage: {
+      he: "ניהול",
+      en: "Manage",
+      ru: "Управление",
+      de: "Verwalten",
+      mixed: "Manage",
+    },
+    filteredBy: {
+      he: "סינון לפי:",
+      en: "Filtered by:",
+      ru: "Фильтр по:",
+      de: "Gefiltert nach:",
+      mixed: "Filtered by:",
+    },
+    clearAllFilters: {
+      he: "נקה הכל",
+      en: "Clear all",
+      ru: "Очистить все",
+      de: "Alle löschen",
+      mixed: "Clear all",
+    },
+    allRecipes: {
+      he: "כל המתכונים",
+      en: "All Recipes",
+      ru: "Все рецепты",
+      de: "Alle Rezepte",
+      mixed: "All Recipes",
+    },
     // Known default category name translations (by English name)
     cat_salads: {
       he: "סלטים",

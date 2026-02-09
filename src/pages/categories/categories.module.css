@@ -1,21 +1,6 @@
-.groupsContainer {
-  display: flex;
-  /* direction: ltr; */
-  padding: 1rem 3rem;
-  /* background: linear-gradient(
-    135deg,
-    rgba(33, 150, 243, 0.05),
-    rgba(33, 150, 243, 0.1)
-  ); */
-  position: relative;
-  min-height: 100vh;
-  overflow: visible;
-  box-sizing: border-box;
-}
-
 .groupContent {
-  flex: 2.5;
-  padding: 0 0 0 2rem;
+  flex: 1;
+  padding: 0;
   overflow: visible;
   box-sizing: border-box;
 }
@@ -155,24 +140,8 @@
 }
 
 @media (max-width: 700px) {
-  .groupsContainer {
-    flex-direction: column;
-    padding: 1rem;
-    min-height: 100vh;
-  }
-
   .groupContent {
-    padding: 0rem;
-  }
-
-  .actions {
-    bottom: 1.5rem;
-    right: 1.5rem;
-  }
-
-  .actions button {
-    width: 3rem;
-    height: 3rem;
+    padding: 0;
   }
 }
 

@@ -48,6 +48,27 @@ export const RecipeBookProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
   const [lastRecipeDoc, setLastRecipeDoc] = useState(null);
   const [hasMoreRecipes, setHasMoreRecipes] = useState(false);
+  const [selectedCategories, setSelectedCategories] = useState(["all"]);
+
+  const toggleCategory = (categoryId) => {
+    setSelectedCategories((prev) => {
+      if (categoryId === "all") return ["all"];
+      const withoutAll = prev.filter((id) => id !== "all");
+      if (withoutAll.includes(categoryId)) {
+        const result = withoutAll.filter((id) => id !== categoryId);
+        return result.length === 0 ? ["all"] : result;
+      }
+      return [...withoutAll, categoryId];
+    });
+  };
+
+  const selectCategory = (categoryId) => {
+    setSelectedCategories([categoryId]);
+  };
+
+  const clearCategorySelection = () => {
+    setSelectedCategories(["all"]);
+  };
 
   // Listen to auth state changes
   useEffect(() => {
@@ -425,6 +446,11 @@ export const RecipeBookProvider = ({ children }) => {
     categoriesLoaded,
     currentUser,
     hasMoreRecipes,
+    selectedCategories,
+    toggleCategory,
+    selectCategory,
+    clearCategorySelection,
+    setSelectedCategories,
     setRecipes,
     setRecipesLoaded,
     addCategory,
