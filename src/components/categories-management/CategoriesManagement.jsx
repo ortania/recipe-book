@@ -30,9 +30,9 @@ function CategoriesManagement({
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [draggedIndex, setDraggedIndex] = useState(null);
 
-  // Filter out the virtual "All" and "Other" categories - they're not editable
+  // Filter out the virtual "All" and "General" categories - they're not editable
   const editableCategories = categories.filter(
-    (c) => c.id !== "all" && c.id !== "other",
+    (c) => c.id !== "all" && c.id !== "general",
   );
 
   const handleDragStart = (e, index) => {

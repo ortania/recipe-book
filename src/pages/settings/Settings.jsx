@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { IoClose } from "react-icons/io5";
 import { applyFontScale } from "../../utils/applyFontScale";
 import { useLanguage } from "../../context";
 import { LANGUAGES } from "../../utils/translations";
@@ -11,6 +13,7 @@ const STEP = 0.1;
 
 function Settings() {
   const { language, setLanguage, t } = useLanguage();
+  const navigate = useNavigate();
 
   const [scale, setScale] = useState(() => {
     const saved = localStorage.getItem("fontScale");
@@ -28,7 +31,16 @@ function Settings() {
 
   return (
     <div className={classes.settingsPage}>
-      <h1 className={classes.title}>{t("settings", "title")}</h1>
+      <div className={classes.header}>
+        <h1 className={classes.title}>{t("settings", "title")}</h1>
+        <button
+          className={classes.closeButton}
+          onClick={() => navigate(-1)}
+          title={t("common", "close")}
+        >
+          <IoClose />
+        </button>
+      </div>
 
       <div className={classes.section}>
         <div className={classes.sectionTitle}>

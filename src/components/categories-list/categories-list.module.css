@@ -335,7 +335,8 @@
     padding: 0.5rem;
     cursor: pointer;
     font-size: 2rem;
-    color: #667eea;
+    /* color: #667eea; */
+    color: black;
     transition: all 0.2s ease;
     width: 30px;
     height: 30px;

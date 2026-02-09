@@ -52,7 +52,7 @@ function Categories() {
     if (groupId === "all") {
       return recipes;
     }
-    if (groupId === "other") {
+    if (groupId === "general") {
       return recipes.filter(
         (recipe) => !recipe.categories || recipe.categories.length === 0,
       );

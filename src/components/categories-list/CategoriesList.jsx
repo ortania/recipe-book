@@ -29,7 +29,10 @@ function CategoriesList({
   const { reorderCategories, addCategory, editCategory, deleteCategory } =
     useRecipeBook();
   const { t } = useLanguage();
-  const { getTranslated } = useTranslatedList(groups, "name");
+  const { getTranslated, getTranslatedDesc } = useTranslatedList(
+    groups,
+    "name",
+  );
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
 
@@ -78,7 +81,7 @@ function CategoriesList({
             </span>
             {isMobileOpen ? <IoIosArrowUp /> : <IoIosArrowDown />}
           </button>
-          <button
+          {/* <button
             className={classes.manageButton}
             onClick={(e) => {
               e.stopPropagation();
@@ -87,7 +90,7 @@ function CategoriesList({
             title={t("categories", "categoryManagement")}
           >
             <MdSettings />
-          </button>
+          </button> */}
         </div>
         <div
           className={`${classes.categoriesContent} ${isMobileOpen ? classes.open : ""}`}
@@ -109,7 +112,7 @@ function CategoriesList({
                     selectedGroup === group.id ? classes.activeGroup : ""
                   }`}
                   onClick={() => handleCategorySelect(group.id)}
-                  title={group.description || group.name}
+                  title={getTranslatedDesc(group) || getTranslated(group)}
                   style={{
                     borderColor: group.color,
                     backgroundColor:

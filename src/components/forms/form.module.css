@@ -15,7 +15,7 @@
   color: var(--clr-blue-3);
   margin: 0 0 1rem;
   text-align: center;
-  font-size: 1.5rem;
+  font-size: var(--basic-font);
 }
 
 .form input {

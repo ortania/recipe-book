@@ -33,7 +33,7 @@ function useTranslatedList(items, key = "name") {
         const id = item.id;
         const name = item[key];
         const desc = item.description;
-        if (!name || id === "all" || id === "other") continue;
+        if (!name || id === "all" || id === "general") continue;
 
         if (!CATEGORY_KEY_MAP[id]) {
           const translated = await translateText(name, language);
@@ -75,8 +75,8 @@ function useTranslatedList(items, key = "name") {
     if (id === "all") {
       return translations.categories?.all?.[language] || originalName;
     }
-    if (id === "other") {
-      return translations.categories?.other?.[language] || originalName;
+    if (id === "general") {
+      return translations.categories?.general?.[language] || originalName;
     }
 
     // Known default categories — use static translations
@@ -96,11 +96,36 @@ function useTranslatedList(items, key = "name") {
     return originalName;
   };
 
+  const DESC_KEY_MAP = {
+    all: "desc_all",
+    general: "desc_general",
+    salads: "desc_salads",
+    main: "desc_mainDishes",
+    "side-dishes": "desc_sideDishes",
+    desserts: "desc_desserts",
+    bread: "desc_bread",
+    veganism: "desc_veganism",
+    healthy: "desc_healthy",
+    kids: "desc_kids",
+    try: "desc_try",
+  };
+
   const getTranslatedDesc = (item) => {
     if (!item || typeof item === "string") return "";
     const id = item.id;
     const originalDesc = item.description || "";
     if (!originalDesc) return originalDesc;
+
+    // Known categories — use static translations
+    const descKey = DESC_KEY_MAP[id];
+    if (descKey) {
+      const entry = translations.categories?.[descKey];
+      if (entry && entry[language]) {
+        return entry[language];
+      }
+    }
+
+    // User-created categories — use API translation
     if (descTranslations[id]) return descTranslations[id];
     return originalDesc;
   };

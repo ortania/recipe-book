@@ -44,14 +44,17 @@
 .headerTitle {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 0.5rem;
   margin-top: 3rem;
   margin-bottom: 1.5rem;
-  padding-left: 1.5rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+
 }
 
 .headerTitle h2 {
-  font-size: 1.8rem;
+  font-size: var(--large-font);
   font-weight: 600;
   color: inherit;
   margin: 0;
@@ -367,42 +370,18 @@
 }
 
 .sectionTitle {
-  font-size: 1.5rem;
+  font-size: var(--large-font);
   font-weight: 700;
   color: #1a1a1a;
   margin: 0;
+  padding-left: 1rem;
+  padding-right: 1rem;
 }
 
-.seeMore {
-  background: none;
-  border: none;
-  color: #333;
-  font-size: var(--basic-font);
-  cursor: pointer;
-  transition: color 0.2s ease;
+.sectionTitle h2 {
+    font-size: var(--large-font);
 }
 
-.seeMore:hover {
-  color: #333;
-}
-
-.categorySection {
-  margin-bottom: 3rem;
-}
-
-.sectionHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.sectionTitle {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: #333;
-  margin: 0;
-}
 
 .seeMore {
   background: none;
@@ -419,6 +398,20 @@
   text-decoration: underline;
 }
 
+.categorySection {
+  margin-bottom: 3rem;
+}
+
+.sectionHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+
+
+
 .recipeGrid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
@@ -429,7 +422,7 @@
   text-align: center;
   padding: 3rem;
   color: #333;
-  font-size: 1.1rem;
+  font-size: var(--basic-font);
 }
 
 @media (max-width: 768px) {
@@ -443,7 +436,7 @@
   }
 
   .sectionTitle {
-    font-size: 1.3rem;
+    font-size: var(--large-font);
   }
 }
 
@@ -464,7 +457,7 @@
 }
 
 .emptyText {
-  font-size: 1.1rem;
+  font-size: var(--basic-font);
   color: #666;
   margin: 0;
 }
@@ -472,7 +465,7 @@
 .emptyButton {
   margin-top: 0.5rem;
   padding: 0.85em 2.5em;
-  font-size: 1rem;
+  font-size: var(--basic-font);
   font-weight: 600;
   color: #fff;
   background: #222;

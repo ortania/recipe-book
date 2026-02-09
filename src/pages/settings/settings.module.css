@@ -4,11 +4,38 @@
   margin: 0 auto;
 }
 
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+}
+
 .title {
   font-size: var(--very-large-font);
   color: var(--clr-blue-3);
   font-weight: 600;
-  margin-bottom: 2rem;
+  margin: 0;
+}
+
+.closeButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: 1px solid #d1d5db;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: var(--large-font);
+  color: #555;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.closeButton:hover {
+  background: #f3f4f6;
+  color: #333;
 }
 
 .section {
@@ -168,7 +195,7 @@
   border-radius: 8px;
   background: #fff;
   color: #555;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.2s ease;
   margin-top: 0.5rem;
@@ -181,6 +208,17 @@
 @media (max-width: 768px) {
   .settingsPage {
     padding: 1rem;
+  }
+
+  .header {
+    margin: 4rem 0;
+  }
+
+  .closeButton {
+    width: 3.5rem;
+    height: 3.5rem;
+    font-size: var(--very-large-font);
+    min-width: 3.5rem;
   }
 
   .section {

@@ -20,7 +20,7 @@
 }
 
 .title {
-  font-size: 1.8rem;
+  font-size: var(--large-font);
   font-weight: 700;
   margin: 0;
   color: #1e293b;
@@ -274,10 +274,11 @@
 
   .header {
     padding: 1rem 1.5rem;
+
   }
 
   .title {
-    font-size: 1.5rem;
+    font-size: var(--large-font);
   }
 
   .categoriesList {

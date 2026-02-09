@@ -1,5 +1,4 @@
 import { createContext, useContext, useState, useEffect } from "react";
-import { categories as initialCategories } from "../app/data/data";
 import {
   transformRecipe,
   handleAddRecipe,
@@ -11,7 +10,6 @@ import {
 import { fetchRecipes, RECIPES_PER_PAGE } from "../firebase/recipeService";
 import {
   fetchCategories,
-  initializeCategories,
   addCategory as addCategoryToFirestore,
   updateCategory as updateCategoryInFirestore,
   deleteCategory as deleteCategoryFromFirestore,
@@ -94,13 +92,12 @@ export const RecipeBookProvider = ({ children }) => {
 
       // Load categories
       let categoriesFromFirestore = await fetchCategories(userId);
-      if (categoriesFromFirestore.length === 0) {
-        console.log("📦 No categories found, initializing...");
-        categoriesFromFirestore = await initializeCategories(
-          initialCategories,
-          userId,
-        );
-      }
+      console.log(
+        "📋 Categories from Firestore:",
+        categoriesFromFirestore.length,
+        categoriesFromFirestore.map((c) => c.id),
+      );
+      // New users start with no categories — they can add their own
       // Always ensure "All" virtual category is first
       const allCategory = {
         id: "all",
@@ -109,8 +106,8 @@ export const RecipeBookProvider = ({ children }) => {
         color: "#607D8B",
       };
       const otherCategory = {
-        id: "other",
-        name: "Other",
+        id: "general",
+        name: "General",
         description: "Uncategorized recipes",
         color: "#9E9E9E",
       };
@@ -148,7 +145,7 @@ export const RecipeBookProvider = ({ children }) => {
         currentUser.uid,
       );
       setCategories((prev) => {
-        const otherIndex = prev.findIndex((c) => c.id === "other");
+        const otherIndex = prev.findIndex((c) => c.id === "general");
         if (otherIndex !== -1) {
           const updated = [...prev];
           updated.splice(otherIndex, 0, newCategory);
@@ -319,9 +316,9 @@ export const RecipeBookProvider = ({ children }) => {
       // Update state immediately for responsive UI
       setCategories(newCategories);
 
-      // Save to Firebase - filter out the virtual "All" and "Other" categories
+      // Save to Firebase - filter out the virtual "All" and "General" categories
       const categoriesToSave = newCategories.filter(
-        (c) => c.id !== "all" && c.id !== "other",
+        (c) => c.id !== "all" && c.id !== "general",
       );
       await reorderCategoriesInFirestore(categoriesToSave);
     } catch (error) {

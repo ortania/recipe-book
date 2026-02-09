@@ -18,6 +18,7 @@ import { ViewToggleButton } from "../controls/view-toggle-button";
 import ViewToggle from "../controls/view-toggle";
 import ChatWindow from "../chat/ChatWindow";
 
+import { Greeting } from "../greeting";
 import { search } from "./utils";
 
 function RecipesView({
@@ -213,6 +214,7 @@ function RecipesView({
   if (!persons || persons.length === 0) {
     return (
       <div className={classes.recipesContainer}>
+        <Greeting />
         <div className={classes.emptyState}>
           <IoBookOutline className={classes.emptyIcon} />
           <p className={classes.emptyText}>{t("recipesView", "emptyTitle")}</p>
@@ -249,12 +251,15 @@ function RecipesView({
       </div>
 
       <div className={classes.headerTitle}>
-        <h2>{groupTitle}</h2>
-        {selectedGroup !== "all" && selectedGroupData?.description && (
-          <span className={classes.groupDescription}>
-            - {selectedGroupData.description}
-          </span>
-        )}
+        <div>
+          <h2>{groupTitle}</h2>
+          {selectedGroup !== "all" && selectedGroupData?.description && (
+            <span className={classes.groupDescription}>
+              - {selectedGroupData.description}
+            </span>
+          )}
+        </div>
+        <Greeting />
       </div>
 
       <div className={classes.searchHeader}>
@@ -457,7 +462,7 @@ function RecipesView({
       ) : selectedGroup === "all" ? (
         <div>
           {groups
-            .filter((group) => group.id !== "all" && group.id !== "other")
+            .filter((group) => group.id !== "all" && group.id !== "general")
             .map((group) => {
               const groupRecipes = filteredAndSortedPersons.filter(
                 (person) =>
@@ -503,10 +508,10 @@ function RecipesView({
             if (uncategorizedRecipes.length === 0) return null;
             const displayRecipes = uncategorizedRecipes.slice(0, 8);
             return (
-              <div key="other" className={classes.categorySection}>
+              <div key="general" className={classes.categorySection}>
                 <div className={classes.sectionHeader}>
                   <h2 className={classes.sectionTitle}>
-                    {t("categories", "other")}
+                    {t("categories", "general")}
                   </h2>
                   {uncategorizedRecipes.length > 8 && (
                     <span className={classes.recipeCount}>
