@@ -10,13 +10,13 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FiHome } from "react-icons/fi";
-import { MdOutlineChat } from "react-icons/md";
+import { MdRestaurant } from "react-icons/md";
 import { PiPlusLight } from "react-icons/pi";
-import { MdSettings } from "react-icons/md";
 import { useRecipeBook, useLanguage } from "../../context";
 import { CategoriesManagement } from "../categories-management";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { CloseButton } from "../controls/close-button";
+import { getCategoryIcon } from "../../utils/categoryIcons";
 import classes from "./navigation.module.css";
 
 const iconMap = {
@@ -203,9 +203,28 @@ function Navigation({ onLogout, links }) {
                       color: isSelected ? group.color : undefined,
                     }}
                   >
-                    {group.id === "all"
-                      ? t("categories", "allRecipes")
-                      : getTranslated(group)}
+                    <span className={classes.categoryLabel}>
+                      {(() => {
+                        const IconComp =
+                          group.id === "all"
+                            ? MdRestaurant
+                            : getCategoryIcon(group.icon);
+                        return (
+                          <span
+                            className={classes.categoryIconWrap}
+                            style={{
+                              backgroundColor: `${group.color}22`,
+                              color: group.color,
+                            }}
+                          >
+                            <IconComp />
+                          </span>
+                        );
+                      })()}
+                      {group.id === "all"
+                        ? t("categories", "allRecipes")
+                        : getTranslated(group)}
+                    </span>
                     {isSelected && group.id !== "all" && (
                       <span
                         className={classes.categoryDot}
@@ -229,7 +248,39 @@ function Navigation({ onLogout, links }) {
                   onClick={() => setShowManagement(true)}
                   title={t("categories", "manage")}
                 >
-                  <MdSettings /> {t("categories", "manage")}
+                  <svg
+                    width="12"
+                    height="12"
+                    viewBox="0 0 12 12"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <path
+                      d="M10 3.5H5.5"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M7 8.5H2.5"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M8.5 10C9.32843 10 10 9.32843 10 8.5C10 7.67157 9.32843 7 8.5 7C7.67157 7 7 7.67157 7 8.5C7 9.32843 7.67157 10 8.5 10Z"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M3.5 5C4.32843 5 5 4.32843 5 3.5C5 2.67157 4.32843 2 3.5 2C2.67157 2 2 2.67157 2 3.5C2 4.32843 2.67157 5 3.5 5Z"
+                      stroke="currentColor"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>{" "}
+                  {t("categories", "manage")}
                 </button>
               </div>
             </div>
@@ -243,7 +294,60 @@ function Navigation({ onLogout, links }) {
             onClick={() => setChatLogOpen(!chatLogOpen)}
           >
             <span>
-              <MdOutlineChat className={classes.sectionIcon} />
+              <svg
+                width="24"
+                height="20"
+                viewBox="0 0 24 20"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                className={classes.chatIcon}
+              >
+                <path
+                  d="M20 12.2V13.9C20 17.05 18.2 18.4 15.5 18.4H6.5C3.8 18.4 2 17.05 2 13.9V8.5C2 5.35 3.8 4 6.5 4H9.2C9.07 4.38 9 4.8 9 5.25V9.15002C9 10.12 9.32 10.94 9.89 11.51C10.46 12.08 11.28 12.4 12.25 12.4V13.79C12.25 14.3 12.83 14.61 13.26 14.33L16.15 12.4H18.75C19.2 12.4 19.62 12.33 20 12.2Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeMiterlimit="10"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M22 5.25V9.15002C22 10.64 21.24 11.76 20 12.2C19.62 12.33 19.2 12.4 18.75 12.4H16.15L13.26 14.33C12.83 14.61 12.25 14.3 12.25 13.79V12.4C11.28 12.4 10.46 12.08 9.89 11.51C9.32 10.94 9 10.12 9 9.15002V5.25C9 4.8 9.07 4.38 9.2 4C9.64 2.76 10.76 2 12.25 2H18.75C20.7 2 22 3.3 22 5.25Z"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeMiterlimit="10"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M11 18.4004V22.0004"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeMiterlimit="10"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M18.4961 7.25H18.5051"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M15.6953 7.25H15.7043"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M12.8945 7.25H12.9035"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
               {t("nav", "chatLog")}
             </span>
             {chatLogOpen ? (

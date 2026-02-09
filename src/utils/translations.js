@@ -780,7 +780,7 @@ const translations = {
       mixed: "Add",
     },
     manage: {
-      he: "ניהול",
+      he: "ניהול קטגוריות",
       en: "Manage",
       ru: "Управление",
       de: "Verwalten",
@@ -806,6 +806,20 @@ const translations = {
       ru: "Все рецепты",
       de: "Alle Rezepte",
       mixed: "All Recipes",
+    },
+    chooseIcon: {
+      he: "בחר אייקון",
+      en: "Choose an Icon",
+      ru: "Выберите иконку",
+      de: "Symbol wählen",
+      mixed: "Choose an Icon",
+    },
+    done: {
+      he: "סיום",
+      en: "Done",
+      ru: "Готово",
+      de: "Fertig",
+      mixed: "Done",
     },
     // Known default category name translations (by English name)
     cat_salads: {
