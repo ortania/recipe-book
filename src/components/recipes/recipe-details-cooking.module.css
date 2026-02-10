@@ -381,10 +381,15 @@
 .voiceBar {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.75rem;
   padding: 0.5rem 1.5rem;
   width: 100%;
   box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: inherit;
 }
 
 .servingIcon {
@@ -825,6 +830,14 @@
     z-index: 10006;
     padding: 1rem;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+
+  .voiceBar {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: var(--clr-grey-10);
+    padding: 0.5rem 1rem;
   }
 
   .recipeContent {

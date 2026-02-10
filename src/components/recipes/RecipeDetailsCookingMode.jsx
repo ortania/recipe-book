@@ -237,34 +237,37 @@ function RecipeDetailsCookingMode({
               ?
             </button>
           )}
+          <CookingVoiceChat
+            recipe={recipe}
+            ingredients={ingredientsArray}
+            instructions={instructionsArray}
+            currentStep={currentStep}
+            servings={servings}
+            activeTab={activeTab}
+            onNextStep={() => handleNextStepRef.current()}
+            onPrevStep={() => handlePrevStepRef.current()}
+            onGotoStep={(step) => {
+              setCurrentStep(step);
+              setShowCompletion(false);
+            }}
+            onStartTimer={(minutes) => startTimer(minutes)}
+            onStopTimer={() => {
+              setIsTimerRunning(false);
+              setTotalSeconds(0);
+              setCustomTimerInput("");
+            }}
+            onSwitchTab={(tab) => {
+              setActiveTab(tab);
+              setCurrentStep(0);
+              setShowCompletion(false);
+            }}
+            isTimerRunning={isTimerRunning}
+          />
         </div>
         <h3 className={classes.headerTitle}>{t("recipes", "cookingMode")}</h3>
         <div className={classes.headerRight}>
           <CloseButton onClick={onClose} />
         </div>
-      </div>
-
-      <div className={classes.voiceBar}>
-        <CookingVoiceChat
-          recipe={recipe}
-          ingredients={ingredientsArray}
-          instructions={instructionsArray}
-          currentStep={currentStep}
-          servings={servings}
-          onNextStep={() => handleNextStepRef.current()}
-          onPrevStep={() => handlePrevStepRef.current()}
-          onGotoStep={(step) => {
-            setCurrentStep(step);
-            setShowCompletion(false);
-          }}
-          onStartTimer={(minutes) => startTimer(minutes)}
-          onStopTimer={() => {
-            setIsTimerRunning(false);
-            setTotalSeconds(0);
-            setCustomTimerInput("");
-          }}
-          isTimerRunning={isTimerRunning}
-        />
       </div>
 
       <div className={classes.recipeContent}>
@@ -478,7 +481,9 @@ function RecipeDetailsCookingMode({
                           </div>
                         </div>
                         <div className={classes.infoItem}>
-                          <span className={classes.infoEmoji}>🎤</span>
+                          <span className={classes.infoEmoji}>
+                            <PiMicrophoneThin />
+                          </span>
                           <div>
                             <strong>{t("cookingMode", "chatTitle")}</strong>
                             <p>{t("cookingMode", "chatText")}</p>

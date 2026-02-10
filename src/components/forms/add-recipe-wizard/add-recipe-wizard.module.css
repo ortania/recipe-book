@@ -73,6 +73,11 @@
   border-color: #e4d0f7;
 }
 
+.methodCardPhoto {
+  background: linear-gradient(135deg, #fff3e0 0%, #fff8f0 100%);
+  border-color: #ffd9b3;
+}
+
 .methodCardManual {
   background: linear-gradient(135deg, #e8fff0 0%, #f0fff5 100%);
   border-color: #c8f0d8;
@@ -98,8 +103,48 @@
   background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%);
 }
 
+.methodIconPhoto {
+  background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
+}
+
 .methodIconManual {
   background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+}
+
+.photoUploadArea {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  padding: 3rem 2rem;
+  border: 2px dashed #f39c12;
+  border-radius: 16px;
+  background: linear-gradient(135deg, #fff9f0 0%, #fff3e0 100%);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 1.5rem;
+}
+
+.photoUploadArea:hover {
+  border-color: #e67e22;
+  background: linear-gradient(135deg, #fff3e0 0%, #ffe8cc 100%);
+}
+
+.photoUploadIcon {
+  font-size: 3rem;
+  color: #f39c12;
+}
+
+.photoUploadText {
+  font-size: var(--basic-font);
+  color: #666;
+  font-weight: 500;
+}
+
+.tipBoxGreen {
+  background: #f0fff4;
+  border-color: #c6f6d5;
 }
 
 .methodCardContent {
@@ -967,7 +1012,7 @@
   }
 
   .stepLabel {
-   font-size: var(--small-font);
+    font-size: var(--small-font);
   }
 
   .stepCircle {

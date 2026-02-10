@@ -1,6 +1,6 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
-import { sendCookingChatMessage } from "../../services/openai";
+import { sendCookingChatMessage, speakWithOpenAI } from "../../services/openai";
 import { useLanguage } from "../../context";
 import classes from "./cooking-voice-chat.module.css";
 
@@ -12,85 +12,80 @@ const SPEECH_LANG_MAP = {
   mixed: "he-IL",
 };
 
-const STATUS_TEXT = {
-  thinking: {
-    he: "חושב...",
-    en: "Thinking...",
-    ru: "Думаю...",
-    de: "Denke nach...",
-    mixed: "חושב...",
-  },
-  speaking: {
-    he: "מדבר...",
-    en: "Speaking...",
-    ru: "Говорю...",
-    de: "Spreche...",
-    mixed: "מדבר...",
-  },
-  listening: {
-    he: "מקשיב...",
-    en: "Listening...",
-    ru: "Слушаю...",
-    de: "Höre zu...",
-    mixed: "מקשיב...",
-  },
-  notUnderstood: {
-    he: "לא הבנתי, נסה שוב",
-    en: "Didn't catch that, try again",
-    ru: "Не понял, попробуйте ещё",
-    de: "Nicht verstanden, nochmal",
-    mixed: "לא הבנתי, נסה שוב",
-  },
-  error: {
-    he: "שגיאה בתקשורת",
-    en: "Communication error",
-    ru: "Ошибка связи",
-    de: "Kommunikationsfehler",
-    mixed: "שגיאה בתקשורת",
-  },
-  errorSpeak: {
-    he: "סליחה, הייתה שגיאה",
-    en: "Sorry, there was an error",
-    ru: "Извините, произошла ошибка",
-    de: "Entschuldigung, ein Fehler ist aufgetreten",
-    mixed: "סליחה, הייתה שגיאה",
-  },
-  fallback: {
-    he: "לא הצלחתי להבין",
-    en: "I didn't understand",
-    ru: "Не удалось понять",
-    de: "Konnte nicht verstehen",
-    mixed: "לא הצלחתי להבין",
-  },
-  stopChat: {
-    he: "עצור צ'אט",
-    en: "Stop Chat",
-    ru: "Стоп",
-    de: "Chat stoppen",
-    mixed: "Stop Chat",
-  },
-  voiceChat: {
-    he: "צ'אט קולי",
-    en: "Voice Chat",
-    ru: "Голосовой чат",
-    de: "Sprachchat",
-    mixed: "Voice Chat",
-  },
-  notSupported: {
-    he: "זיהוי קולי לא נתמך בדפדפן זה",
-    en: "Speech recognition not supported in this browser",
-    ru: "Распознавание речи не поддерживается",
-    de: "Spracherkennung nicht unterstützt",
-    mixed: "זיהוי קולי לא נתמך בדפדפן זה",
-  },
-  micAccess: {
-    he: "יש לאפשר גישה למיקרופון",
-    en: "Please allow microphone access",
-    ru: "Разрешите доступ к микрофону",
-    de: "Bitte Mikrofonzugriff erlauben",
-    mixed: "יש לאפשר גישה למיקרופון",
-  },
-};
+const HE_ONES = [
+  "",
+  "אחת",
+  "שתיים",
+  "שלוש",
+  "ארבע",
+  "חמש",
+  "שש",
+  "שבע",
+  "שמונה",
+  "תשע",
+];
+const HE_TENS = [
+  "",
+  "עשר",
+  "עשרים",
+  "שלושים",
+  "ארבעים",
+  "חמישים",
+  "שישים",
+  "שבעים",
+  "שמונים",
+  "תשעים",
+];
+const HE_TEENS = [
+  "עשר",
+  "אחת עשרה",
+  "שתים עשרה",
+  "שלוש עשרה",
+  "ארבע עשרה",
+  "חמש עשרה",
+  "שש עשרה",
+  "שבע עשרה",
+  "שמונה עשרה",
+  "תשע עשרה",
+];
+
+function numberToHebrew(n) {
+  if (n === 0) return "אפס";
+  if (n < 0) return "מינוס " + numberToHebrew(-n);
+  const num = Math.round(n);
+  if (num >= 1000) return String(num);
+  let result = "";
+  if (num >= 100) {
+    const h = Math.floor(num / 100);
+    result += h === 1 ? "מאה" : h === 2 ? "מאתיים" : HE_ONES[h] + " מאות";
+    const rem = num % 100;
+    if (rem > 0) result += " " + numberToHebrew(rem);
+    return result;
+  }
+  if (num >= 20) {
+    result = HE_TENS[Math.floor(num / 10)];
+    const rem = num % 10;
+    if (rem > 0) result += " ו" + HE_ONES[rem];
+    return result;
+  }
+  if (num >= 10) return HE_TEENS[num - 10];
+  return HE_ONES[num];
+}
+
+function digitsToHebrew(text) {
+  return text.replace(/\d+(\.\d+)?/g, (match) => {
+    const num = parseFloat(match);
+    if (match.includes(".")) {
+      const [whole, frac] = match.split(".");
+      return (
+        numberToHebrew(parseInt(whole)) +
+        " נקודה " +
+        numberToHebrew(parseInt(frac))
+      );
+    }
+    return numberToHebrew(num);
+  });
+}
 
 function CookingVoiceChat({
   recipe,
@@ -98,17 +93,18 @@ function CookingVoiceChat({
   instructions,
   currentStep,
   servings,
+  activeTab,
   onNextStep,
   onPrevStep,
   onGotoStep,
   onStartTimer,
   onStopTimer,
+  onSwitchTab,
   isTimerRunning,
 }) {
   const { language } = useLanguage();
   const lang = language || "he";
   const speechLang = SPEECH_LANG_MAP[lang] || "he-IL";
-  const st = (key) => STATUS_TEXT[key]?.[lang] || STATUS_TEXT[key]?.he || key;
 
   const [isActive, setIsActive] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -119,85 +115,90 @@ function CookingVoiceChat({
   const recognitionRef = useRef(null);
   const isActiveRef = useRef(false);
   const isProcessingRef = useRef(false);
+  const audioRef = useRef(null);
 
-  // Refs for latest prop values so processVoiceInput always reads current state
-  const currentStepRef = useRef(currentStep);
-  const servingsRef = useRef(servings);
-  const ingredientsRef = useRef(ingredients);
-  const instructionsRef = useRef(instructions);
-  const isTimerRunningRef = useRef(isTimerRunning);
+  // Single ref holding ALL current values - updated synchronously every render
+  const $ = useRef({});
+  $.current = {
+    recipe,
+    ingredients,
+    instructions,
+    currentStep,
+    servings,
+    activeTab,
+    isTimerRunning,
+    lang,
+    speechLang,
+    onNextStep,
+    onPrevStep,
+    onGotoStep,
+    onStartTimer,
+    onStopTimer,
+    onSwitchTab,
+  };
 
-  // Keep refs in sync with props
-  useEffect(() => {
-    currentStepRef.current = currentStep;
-  }, [currentStep]);
-  useEffect(() => {
-    servingsRef.current = servings;
-  }, [servings]);
-  useEffect(() => {
-    ingredientsRef.current = ingredients;
-  }, [ingredients]);
-  useEffect(() => {
-    instructionsRef.current = instructions;
-  }, [instructions]);
-  useEffect(() => {
-    isTimerRunningRef.current = isTimerRunning;
-  }, [isTimerRunning]);
-
-  const speak = useCallback((text) => {
-    return new Promise((resolve) => {
-      if (!window.speechSynthesis) {
-        resolve();
-        return;
+  // ---- Helper: speak text aloud using OpenAI TTS ----
+  async function speakText(text) {
+    if (!text) return;
+    setIsSpeaking(true);
+    try {
+      const audioUrl = await speakWithOpenAI(text);
+      if (audioUrl && isActiveRef.current) {
+        await new Promise((resolve) => {
+          const audio = new Audio(audioUrl);
+          audioRef.current = audio;
+          audio.onended = () => {
+            audioRef.current = null;
+            URL.revokeObjectURL(audioUrl);
+            resolve();
+          };
+          audio.onerror = () => {
+            audioRef.current = null;
+            URL.revokeObjectURL(audioUrl);
+            resolve();
+          };
+          audio.play().catch(() => {
+            audioRef.current = null;
+            resolve();
+          });
+        });
       }
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = speechLang;
-      utterance.rate = 1.1;
-      utterance.onstart = () => setIsSpeaking(true);
-      utterance.onend = () => {
-        setIsSpeaking(false);
-        resolve();
-      };
-      utterance.onerror = () => {
-        setIsSpeaking(false);
-        resolve();
-      };
-      window.speechSynthesis.speak(utterance);
-    });
-  }, []);
+    } catch (e) {
+      console.error("OpenAI TTS error:", e);
+    }
+    setIsSpeaking(false);
+  }
 
-  const handleAction = useCallback(
-    (action) => {
-      if (!action) return;
-      switch (action.type) {
-        case "next":
-          onNextStep();
-          break;
-        case "prev":
-          onPrevStep();
-          break;
-        case "goto":
-          if (action.step && action.step > 0) {
-            onGotoStep(action.step - 1);
-          }
-          break;
-        case "timer":
-          if (action.minutes && action.minutes > 0) {
-            onStartTimer(action.minutes);
-          }
-          break;
-        case "stop_timer":
-          onStopTimer();
-          break;
-        default:
-          break;
-      }
-    },
-    [onNextStep, onPrevStep, onGotoStep, onStartTimer, onStopTimer],
-  );
+  // ---- Helper: execute an action from AI response ----
+  function doAction(action) {
+    if (!action) return;
+    const p = $.current;
+    switch (action.type) {
+      case "next":
+        p.onNextStep?.();
+        break;
+      case "prev":
+        p.onPrevStep?.();
+        break;
+      case "goto":
+        if (action.step > 0) p.onGotoStep?.(action.step - 1);
+        break;
+      case "timer":
+        if (action.minutes > 0) p.onStartTimer?.(action.minutes);
+        break;
+      case "stop_timer":
+        p.onStopTimer?.();
+        break;
+      case "switch_tab":
+        if (action.tab) p.onSwitchTab?.(action.tab);
+        break;
+      default:
+        break;
+    }
+  }
 
-  const stopRecognitionTemporarily = useCallback(() => {
+  // ---- Helper: kill current recognition ----
+  function killRecognition() {
     if (recognitionRef.current) {
       try {
         recognitionRef.current.onend = null;
@@ -205,224 +206,205 @@ function CookingVoiceChat({
         recognitionRef.current.onerror = null;
         recognitionRef.current.stop();
       } catch (e) {
-        // already stopped
+        /* already stopped */
       }
       recognitionRef.current = null;
     }
-  }, []);
+  }
 
-  const processVoiceInput = useCallback(
-    async (text) => {
-      isProcessingRef.current = true;
-      setIsProcessing(true);
-      setStatusText(st("thinking"));
+  // ---- Process voice input via OpenAI ----
+  // Stored in a ref so startListening's onresult always calls the latest version
+  const processRef = useRef(null);
+  processRef.current = async function processInput(text) {
+    isProcessingRef.current = true;
+    setIsProcessing(true);
+    setStatusText("חושב...");
+    killRecognition();
 
-      // Stop recognition completely before processing
-      stopRecognitionTemporarily();
+    try {
+      const p = $.current;
+      const recipeData = {
+        recipeName: p.recipe.name,
+        ingredients: p.ingredients,
+        instructions: p.instructions,
+        activeTab: p.activeTab || "instructions",
+        currentStep: p.currentStep,
+        servings: p.servings,
+        isTimerRunning: p.isTimerRunning,
+      };
 
-      try {
-        const recipeData = {
-          recipeName: recipe.name,
-          ingredients: ingredientsRef.current,
-          instructions: instructionsRef.current,
-          activeTab: "instructions",
-          currentStep: currentStepRef.current,
-          servings: servingsRef.current,
-          isTimerRunning: isTimerRunningRef.current,
-        };
+      const response = await sendCookingChatMessage(text, recipeData, p.lang);
+      const responseText = response.text || "לא הצלחתי להבין";
 
-        const response = await sendCookingChatMessage(text, recipeData, lang);
-        const responseText = response.text || st("fallback");
-
-        setLastResponse(responseText);
-        setStatusText(st("speaking"));
-
-        if (response.action) {
-          handleAction(response.action);
-        }
-
-        await speak(responseText);
-      } catch (error) {
-        console.error("Voice chat error:", error);
-        setLastResponse(st("error"));
-        await speak(st("errorSpeak"));
-      } finally {
-        setIsProcessing(false);
-        isProcessingRef.current = false;
-        setStatusText("");
-        // Restart listening after a delay so mic doesn't pick up TTS tail
-        if (isActiveRef.current) {
-          setTimeout(() => {
-            if (isActiveRef.current && !isProcessingRef.current) {
-              startListeningInternal();
-            }
-          }, 800);
-        }
+      setLastResponse(responseText);
+      setStatusText("מדבר...");
+      if (response.action) doAction(response.action);
+      await speakText(responseText);
+    } catch (error) {
+      console.error("Voice chat error:", error);
+      setLastResponse("שגיאה בתקשורת");
+      await speakText("סליחה, הייתה שגיאה");
+    } finally {
+      setIsProcessing(false);
+      isProcessingRef.current = false;
+      setStatusText("");
+      if (isActiveRef.current) {
+        setTimeout(() => {
+          if (isActiveRef.current && !isProcessingRef.current) {
+            listenRef.current?.();
+          }
+        }, 2000);
       }
-    },
-    [recipe.name, handleAction, speak, stopRecognitionTemporarily],
-  );
+    }
+  };
 
-  const startListeningInternal = useCallback(() => {
+  // ---- Start listening for speech ----
+  // Stored in a ref so processInput's restart always calls the latest version
+  const listenRef = useRef(null);
+  listenRef.current = function startListening() {
     if (isProcessingRef.current) return;
 
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert(st("notSupported"));
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      alert("זיהוי קולי לא נתמך בדפדפן זה");
       return;
     }
 
-    // Clean up any existing instance
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.onend = null;
-        recognitionRef.current.stop();
-      } catch (e) {
-        /* ignore */
-      }
-    }
+    killRecognition();
 
-    const recognition = new SpeechRecognition();
-    recognition.continuous = true;
-    recognition.interimResults = false;
-    recognition.lang = speechLang;
+    const recognition = new SR();
+    recognition.continuous = false;
+    recognition.interimResults = true;
+    recognition.lang = $.current.speechLang;
     recognition.maxAlternatives = 1;
 
+    let lastText = "";
+    let debounceTimer = null;
+    let processed = false;
+
     recognition.onstart = () => {
-      setStatusText(st("listening"));
+      setStatusText("מקשיב...");
     };
 
     recognition.onresult = (event) => {
+      if (processed) return;
       const last = event.results.length - 1;
-      if (!event.results[last].isFinal) return;
-
       const text = event.results[last][0].transcript.trim();
-      const confidence = event.results[last][0].confidence;
+      if (!text) return;
 
-      console.log("🎤 Voice chat heard:", text, "confidence:", confidence);
-
-      if (confidence < 0.4 || !text) {
-        setStatusText(st("notUnderstood"));
+      // If final, process immediately
+      if (event.results[last].isFinal) {
+        processed = true;
+        if (debounceTimer) clearTimeout(debounceTimer);
+        try {
+          recognition.onend = null;
+          recognition.stop();
+        } catch (e) {
+          /* */
+        }
+        recognitionRef.current = null;
+        setStatusText(`"${text}"`);
+        processRef.current?.(text);
         return;
       }
 
-      // Stop recognition before processing to avoid picking up TTS
-      try {
-        recognition.onend = null;
-        recognition.stop();
-      } catch (e) {
-        /* ignore */
-      }
-      recognitionRef.current = null;
-
-      setStatusText(`"${text}"`);
-      processVoiceInput(text);
+      // Interim: show text and debounce - process after 1.5s of no new results
+      lastText = text;
+      setStatusText(`"${text}"...`);
+      if (debounceTimer) clearTimeout(debounceTimer);
+      debounceTimer = setTimeout(() => {
+        if (processed) return;
+        processed = true;
+        if (lastText && isActiveRef.current && !isProcessingRef.current) {
+          try {
+            recognition.onend = null;
+            recognition.stop();
+          } catch (e) {
+            /* */
+          }
+          recognitionRef.current = null;
+          setStatusText(`"${lastText}"`);
+          processRef.current?.(lastText);
+        }
+      }, 1500);
     };
 
     recognition.onend = () => {
-      // Continuous mode ended unexpectedly - restart if still active
       if (isActiveRef.current && !isProcessingRef.current) {
-        console.log("Recognition ended unexpectedly, restarting...");
         setTimeout(() => {
           if (isActiveRef.current && !isProcessingRef.current) {
-            startListeningInternal();
+            listenRef.current?.();
           }
         }, 300);
       }
     };
 
     recognition.onerror = (event) => {
-      console.error("Voice chat recognition error:", event.error);
+      console.error("Voice chat error:", event.error);
       if (event.error === "not-allowed") {
-        alert(st("micAccess"));
+        alert("יש לאפשר גישה למיקרופון");
         setIsActive(false);
         isActiveRef.current = false;
         return;
       }
-      if (event.error === "no-speech") {
-        // In continuous mode this can happen - just keep going
-        return;
-      }
-      // For aborted errors during intentional stop, do nothing
+      if (event.error === "no-speech") return;
       if (event.error === "aborted") return;
-      // For other errors, onend will handle restart
     };
 
     recognitionRef.current = recognition;
-
     try {
       recognition.start();
     } catch (e) {
       console.error("Failed to start recognition:", e);
-      // Retry after a delay
       setTimeout(() => {
         if (isActiveRef.current && !isProcessingRef.current) {
-          startListeningInternal();
+          listenRef.current?.();
         }
       }, 1000);
     }
-  }, [processVoiceInput]);
+  };
 
-  const stopListening = useCallback(() => {
-    window.speechSynthesis?.cancel();
-    setIsSpeaking(false);
-    if (recognitionRef.current) {
-      try {
-        recognitionRef.current.onend = null;
-        recognitionRef.current.stop();
-      } catch (e) {
-        console.log("Stop recognition:", e);
-      }
-      recognitionRef.current = null;
-    }
-    setStatusText("");
-    setLastResponse("");
-  }, []);
-
-  const toggleVoiceChat = useCallback(() => {
-    if (isActive) {
+  // ---- Toggle voice chat on/off ----
+  function toggleVoiceChat() {
+    if (isActiveRef.current) {
       isActiveRef.current = false;
       isProcessingRef.current = false;
       setIsActive(false);
-      stopListening();
+      if (audioRef.current) {
+        audioRef.current.pause();
+        audioRef.current = null;
+      }
+      setIsSpeaking(false);
+      killRecognition();
+      setStatusText("");
+      setLastResponse("");
     } else {
       isActiveRef.current = true;
       setIsActive(true);
-      startListeningInternal();
+      listenRef.current?.();
     }
-  }, [isActive, startListeningInternal, stopListening]);
+  }
 
+  // Cleanup on unmount
   useEffect(() => {
     return () => {
       isActiveRef.current = false;
       window.speechSynthesis?.cancel();
-      if (recognitionRef.current) {
-        try {
-          recognitionRef.current.onend = null;
-          recognitionRef.current.stop();
-        } catch (e) {
-          // ignore
-        }
-      }
+      killRecognition();
     };
   }, []);
 
   return (
-    <div className={classes.voiceChatContainer}>
+    <>
       <button
         onClick={(e) => {
           e.stopPropagation();
           toggleVoiceChat();
         }}
-        className={`${classes.voiceChatButton} ${isActive ? classes.active : ""} ${isSpeaking ? classes.speaking : ""}`}
+        className={`${classes.voiceChatIcon} ${isActive ? classes.active : ""} ${isSpeaking ? classes.speaking : ""}`}
+        title={isActive ? "עצור צ'אט קולי" : "צ'אט קולי"}
       >
-        <span className={classes.buttonIcon}>
-          {isActive ? <PiMicrophoneThin /> : <PiMicrophoneSlashThin />}
-        </span>
-        <span className={classes.buttonLabel}>
-          {isActive ? st("stopChat") : st("voiceChat")}
-        </span>
+        {isActive ? <PiMicrophoneThin /> : <PiMicrophoneSlashThin />}
       </button>
 
       {isActive && (
@@ -443,7 +425,7 @@ function CookingVoiceChat({
           )}
         </div>
       )}
-    </div>
+    </>
   );
 }
 

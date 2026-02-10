@@ -1,5 +1,26 @@
 const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
 const API_URL = "https://api.openai.com/v1/chat/completions";
+const TTS_API_URL = "https://api.openai.com/v1/audio/speech";
+
+export const speakWithOpenAI = async (text, voice = "nova") => {
+  if (!OPENAI_API_KEY || !text) return null;
+  const response = await fetch(TTS_API_URL, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      model: "tts-1",
+      input: text,
+      voice: voice,
+      response_format: "mp3",
+    }),
+  });
+  if (!response.ok) return null;
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
+};
 
 const callOpenAI = async (requestBody) => {
   if (!OPENAI_API_KEY) {
@@ -57,6 +78,60 @@ export const analyzeImageForNutrition = async (base64Image) => {
   });
 };
 
+export const extractRecipeFromImage = async (base64Image, language = "he") => {
+  const result = await callOpenAI({
+    model: "gpt-4o",
+    messages: [
+      {
+        role: "system",
+        content: `You are a recipe extraction expert. When shown an image of a recipe (from a book, website screenshot, handwritten note, etc.), extract all recipe information from it.
+You MUST respond with valid JSON in this exact format:
+{
+  "name": "recipe name",
+  "ingredients": ["ingredient 1 with quantity", "ingredient 2 with quantity"],
+  "instructions": ["step 1", "step 2"],
+  "prepTime": "15 min" or "",
+  "cookTime": "30 min" or "",
+  "servings": "4" or "",
+  "notes": "" 
+}
+- Extract ALL ingredients with their exact quantities.
+- Extract ALL instructions as separate steps.
+- If you cannot read or identify a recipe in the image, return: {"error": "Could not extract recipe from image"}
+- Keep the original language of the recipe as-is. Do not translate.`,
+      },
+      {
+        role: "user",
+        content: [
+          {
+            type: "text",
+            text: "Please extract the recipe from this image.",
+          },
+          {
+            type: "image_url",
+            image_url: {
+              url: base64Image,
+              detail: "high",
+            },
+          },
+        ],
+      },
+    ],
+    temperature: 0.2,
+    max_tokens: 2000,
+  });
+
+  try {
+    const cleaned = result
+      .replace(/```json\n?/g, "")
+      .replace(/```\n?/g, "")
+      .trim();
+    return JSON.parse(cleaned);
+  } catch {
+    return { error: result };
+  }
+};
+
 const LANG_NAMES = {
   he: "Hebrew",
   en: "English",
@@ -82,14 +157,19 @@ export const sendCookingChatMessage = async (
 
   const langName = LANG_NAMES[language] || "Hebrew";
 
-  const currentItemText = instructions[currentStep] || "";
+  const currentItemText =
+    activeTab === "ingredients"
+      ? ingredients[currentStep] || ""
+      : instructions[currentStep] || "";
+
+  const tabLabel = activeTab === "ingredients" ? "Ingredients" : "Instructions";
 
   const systemMessage = {
     role: "system",
     content: `You are a voice cooking assistant helping a user cook "${recipeName}" (${servings} servings).
 
-Current instruction step: ${currentStep + 1} of ${instructions.length}
-Current instruction: "${currentItemText}"
+The user is currently viewing the ${tabLabel} tab.
+${activeTab === "ingredients" ? `Current ingredient: ${currentStep + 1} of ${ingredients.length} - "${currentItemText}"` : `Current instruction step: ${currentStep + 1} of ${instructions.length} - "${currentItemText}"`}
 Timer status: ${isTimerRunning ? "running" : "not running"}
 
 All ingredients (with quantities):
@@ -105,6 +185,7 @@ RULES:
 - If the user asks to go to next step, previous step, or a specific step, include the action in your response.
 - Always respond in ${langName}.
 - Keep answers SHORT - this will be read aloud.
+- CRITICAL: Write ALL numbers as Hebrew words, NEVER use digits. Examples: "שתיים" not "2", "מאה" not "100", "חצי" not "0.5", "שלוש כפות" not "3 כפות". This is required for text-to-speech.
 - You MUST respond with valid JSON in this exact format:
 {"text": "your spoken response here", "action": null}
 
@@ -114,6 +195,8 @@ Possible actions:
 - {"type": "goto", "step": 3} - go to specific step (1-indexed)
 - {"type": "timer", "minutes": 5} - start a cooking timer for X minutes
 - {"type": "stop_timer"} - stop the currently running timer
+- {"type": "switch_tab", "tab": "ingredients"} - switch to ingredients tab
+- {"type": "switch_tab", "tab": "instructions"} - switch to instructions tab
 - null - no navigation action
 
 Examples:
@@ -123,10 +206,15 @@ User: "מה צריך לשלב הזה?" → {"text": "לשלב הזה צריך 20
 User: "תחזור שלב" → {"text": "חוזרים לשלב הקודם", "action": {"type": "prev"}}
 User: "תלך לשלב 3" → {"text": "עוברים לשלב 3", "action": {"type": "goto", "step": 3}}
 User: "שלב 5" → {"text": "עוברים לשלב 5", "action": {"type": "goto", "step": 5}}
+User: "תעבור למרכיבים" → {"text": "עוברים למרכיבים", "action": {"type": "switch_tab", "tab": "ingredients"}}
+User: "תעבור להוראות" → {"text": "עוברים להוראות", "action": {"type": "switch_tab", "tab": "instructions"}}
 User: "תקפוץ לשלב 2" → {"text": "קופצים לשלב 2", "action": {"type": "goto", "step": 2}}
 User: "תפעיל טיימר ל-10 דקות" → {"text": "מפעיל טיימר ל-10 דקות", "action": {"type": "timer", "minutes": 10}}
 User: "תכוון טיימר לחצי שעה" → {"text": "מפעיל טיימר ל-30 דקות", "action": {"type": "timer", "minutes": 30}}
-User: "תעצור את הטיימר" → {"text": "עוצר את הטיימר", "action": {"type": "stop_timer"}}`,
+User: "תעצור את הטיימר" → {"text": "עוצר את הטיימר", "action": {"type": "stop_timer"}}
+User: "תעבור למרכיבים" → {"text": "עוברים למרכיבים", "action": {"type": "switch_tab", "tab": "ingredients"}}
+User: "תעבור להוראות" → {"text": "עוברים להוראות הכנה", "action": {"type": "switch_tab", "tab": "instructions"}}
+User: "תתחיל לבשל" → {"text": "עוברים להוראות הכנה", "action": {"type": "switch_tab", "tab": "instructions"}}`,
   };
 
   const result = await callOpenAI({

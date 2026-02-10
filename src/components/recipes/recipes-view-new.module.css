@@ -267,11 +267,13 @@
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   min-width: 150px;
-  max-height: 70vh;
+  max-height: 60vh;
   overflow-y: auto;
   overflow-x: hidden;
   z-index: 100;
   -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
 }
 
 .dropdownMenu button {
@@ -307,7 +309,7 @@
 
 .filterLabel {
   display: block;
-  font-size: var(--very-small-font);
+  font-size: var(--small-font);
   font-weight: 600;
   color: #333;
   margin-bottom: 0.5rem;
@@ -458,6 +460,11 @@
 
   .sectionTitle {
     font-size: var(--large-font);
+  }
+
+  .headerControls {
+    width: 100%;
+    justify-content: center;
   }
 }
 

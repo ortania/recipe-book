@@ -5,6 +5,7 @@ import {
   parseRecipeFromUrl,
   parseRecipeFromText,
 } from "../../../app/recipeParser";
+import { extractRecipeFromImage } from "../../../services/openai";
 import {
   FiLink,
   FiChevronLeft,
@@ -64,7 +65,7 @@ function AddRecipeWizard({
   initialScreen = "method",
 }) {
   const { t } = useLanguage();
-  const [screen, setScreen] = useState(initialScreen); // method | url | text | manual
+  const [screen, setScreen] = useState(initialScreen); // method | url | text | photo | manual
   const [manualStep, setManualStep] = useState(0);
   const [recipe, setRecipe] = useState({
     ...INITIAL_RECIPE,
@@ -80,6 +81,7 @@ function AddRecipeWizard({
   const [visitedSteps, setVisitedSteps] = useState(new Set([0]));
   const [showPreview, setShowPreview] = useState(false);
   const fileInputRef = useRef(null);
+  const photoInputRef = useRef(null);
   const ingredientsListRef = useRef(null);
   const instructionsListRef = useRef(null);
 
@@ -202,6 +204,49 @@ function AddRecipeWizard({
       setImportError(t("addWizard", "parseFailed"));
     } finally {
       setIsImporting(false);
+    }
+  };
+
+  const handleImportFromPhoto = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    setIsImporting(true);
+    setImportError("");
+    try {
+      const base64 = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      });
+      const parsed = await extractRecipeFromImage(base64);
+      if (parsed.error) {
+        setImportError(parsed.error);
+        return;
+      }
+      setRecipe((prev) => ({
+        ...prev,
+        name: parsed.name || prev.name,
+        ingredients:
+          Array.isArray(parsed.ingredients) && parsed.ingredients.length > 0
+            ? parsed.ingredients
+            : prev.ingredients,
+        instructions:
+          Array.isArray(parsed.instructions) && parsed.instructions.length > 0
+            ? parsed.instructions
+            : prev.instructions,
+        prepTime: parsed.prepTime || prev.prepTime,
+        cookTime: parsed.cookTime || prev.cookTime,
+        servings: parsed.servings || prev.servings,
+        notes: parsed.notes || prev.notes,
+      }));
+      setScreen("manual");
+      setManualStep(0);
+    } catch (err) {
+      setImportError(t("addWizard", "photoFailed"));
+    } finally {
+      setIsImporting(false);
+      if (photoInputRef.current) photoInputRef.current.value = "";
     }
   };
 
@@ -412,7 +457,7 @@ function AddRecipeWizard({
 
       <div className={classes.formGroup}>
         <label className={classes.formGroupLabel}>
-          {t("recipes", "recipeName")} 
+          {t("recipes", "recipeName")}
         </label>
         <input
           type="text"
@@ -1035,6 +1080,24 @@ function AddRecipeWizard({
         </div>
 
         <div
+          className={`${classes.methodCard} ${classes.methodCardPhoto}`}
+          onClick={() => setScreen("photo")}
+        >
+          <div className={`${classes.methodIcon} ${classes.methodIconPhoto}`}>
+            <FiCamera />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "fromPhoto")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "fromPhotoDesc")}
+            </p>
+          </div>
+          <span className={classes.methodCardArrow}>›</span>
+        </div>
+
+        <div
           className={`${classes.methodCard} ${classes.methodCardManual}`}
           onClick={() => {
             setScreen("manual");
@@ -1159,6 +1222,59 @@ function AddRecipeWizard({
     </div>
   );
 
+  const renderPhotoScreen = () => (
+    <div className={classes.wizardContainer}>
+      <button
+        type="button"
+        className={classes.backLink}
+        onClick={() => {
+          setScreen("method");
+          setImportError("");
+        }}
+      >
+        <FiChevronLeft /> {t("addWizard", "backToMethod")}
+      </button>
+
+      <h2 className={classes.screenTitle}>
+        {t("addWizard", "fromPhotoTitle")}
+      </h2>
+      <p className={classes.screenSubtitle}>
+        {t("addWizard", "fromPhotoSubtitle")}
+      </p>
+
+      <div
+        className={classes.photoUploadArea}
+        onClick={() => photoInputRef.current?.click()}
+      >
+        <FiCamera className={classes.photoUploadIcon} />
+        <span className={classes.photoUploadText}>
+          {isImporting
+            ? t("addWizard", "analyzingPhoto")
+            : t("addWizard", "selectPhoto")}
+        </span>
+      </div>
+
+      <input
+        ref={photoInputRef}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        style={{ display: "none" }}
+        onChange={handleImportFromPhoto}
+      />
+
+      <div className={`${classes.tipBox} ${classes.tipBoxGreen}`}>
+        <span className={classes.tipIcon}>📸</span>
+        <span>
+          <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
+          {t("addWizard", "photoTip")}
+        </span>
+      </div>
+
+      {importError && <p className={classes.errorText}>{importError}</p>}
+    </div>
+  );
+
   const renderManualScreen = () => (
     <div className={classes.wizardContainer}>
       <button
@@ -1205,6 +1321,8 @@ function AddRecipeWizard({
         return renderUrlScreen();
       case "text":
         return renderTextScreen();
+      case "photo":
+        return renderPhotoScreen();
       case "manual":
         return renderManualScreen();
       default:

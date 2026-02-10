@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { FiLink } from "react-icons/fi";
+import { FiLink, FiCamera } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
 import { useLanguage } from "../../../context";
@@ -92,6 +92,15 @@ function AddRecipeDropdown({ onSelect, buttonType = "circle", children }) {
               <BsClipboardData />
             </span>
             {t("addWizard", "fromText")}
+          </button>
+          <button
+            className={classes.dropdownItem}
+            onClick={() => handleClick("photo")}
+          >
+            <span className={classes.dropdownIcon}>
+              <FiCamera />
+            </span>
+            {t("addWizard", "fromPhoto")}
           </button>
           <button
             className={classes.dropdownItem}
