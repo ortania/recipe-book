@@ -7,3 +7,4 @@ export * from "./search";
 export * from "./sort-controls";
 export * from "./up-button";
 export * from "./view-toggle-button";
+export * from "./add-recipe-dropdown";

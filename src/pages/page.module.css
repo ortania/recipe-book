@@ -4,12 +4,9 @@
   font-weight: 600;
 }
 
-
-
 .actions {
   position: fixed;
   bottom: 2rem;
-  right: 2rem;
+  inset-inline-start: 2rem;
   z-index: 10;
 }
-

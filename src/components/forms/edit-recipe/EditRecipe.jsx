@@ -1,12 +1,66 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Modal } from "../../modal";
-import { Button } from "../../controls/button";
-import { FaGripVertical } from "react-icons/fa";
+import {
+  FiX,
+  FiStar,
+  FiCamera,
+  FiMenu,
+  FiSave,
+  FiTrash2,
+} from "react-icons/fi";
+import {
+  BsFileText,
+  BsListUl,
+  BsListOl,
+  BsImage,
+  BsTags,
+  BsBarChart,
+} from "react-icons/bs";
 import { useLanguage } from "../../../context";
-import classes from "../form.module.css";
+import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
+import classes from "./edit-recipe.module.css";
+
+const TABS = [
+  { id: "basic", icon: BsFileText, labelKey: "basicInfo" },
+  { id: "ingredients", icon: BsListUl, labelKey: "ingredients" },
+  { id: "instructions", icon: BsListOl, labelKey: "instructions" },
+  { id: "image", icon: BsImage, labelKey: "imageCategories" },
+  { id: "categories", icon: BsTags, labelKey: "categories" },
+  { id: "nutrition", icon: BsBarChart, labelKey: "nutrition" },
+];
 
 function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const { t } = useLanguage();
+  const [activeTab, setActiveTab] = useState("basic");
+  const fileInputRef = useRef(null);
+  const ingredientsListRef = useRef(null);
+  const instructionsListRef = useRef(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [dragIndex, setDragIndex] = useState(null);
+  const [dragField, setDragField] = useState(null);
+
+  const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
+    setEditedPerson((prev) => {
+      const items = [...prev[field]];
+      const [moved] = items.splice(fromIndex, 1);
+      items.splice(toIndex, 0, moved);
+      return { ...prev, [field]: items };
+    });
+  }, []);
+
+  const { handleTouchStart, handleTouchMove, handleTouchEnd } =
+    useTouchDragDrop(handleTouchReorder);
+
+  useEffect(() => {
+    const onMove = (e) => handleTouchMove(e);
+    const onEnd = (e) => handleTouchEnd(e);
+    document.addEventListener("touchmove", onMove, { passive: false });
+    document.addEventListener("touchend", onEnd);
+    return () => {
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onEnd);
+    };
+  }, [handleTouchMove, handleTouchEnd]);
   const [editedPerson, setEditedPerson] = useState({
     name: person.name,
     image_src: person.image_src || "",
@@ -19,7 +73,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     prepTime: person.prepTime || "",
     cookTime: person.cookTime || "",
     servings: person.servings || "",
-    difficulty: person.difficulty || "Easy",
+    difficulty: person.difficulty || "Unknown",
     sourceUrl: person.sourceUrl || "",
     categories: person.categories || [],
     isFavorite: person.isFavorite || false,
@@ -48,10 +102,6 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     note: "",
     ...person.nutrition,
   });
-  const [draggedIngredientIndex, setDraggedIngredientIndex] = useState(null);
-  const [draggedInstructionIndex, setDraggedInstructionIndex] = useState(null);
-  const [uploadingImage, setUploadingImage] = useState(false);
-
   const scaleNutritionValue = (text, ratio) => {
     if (!text || typeof text !== "string") return text;
     return text.replace(/(\d+\.?\d*)/g, (match) => {
@@ -108,7 +158,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       prepTime: person.prepTime || "",
       cookTime: person.cookTime || "",
       servings: person.servings || "",
-      difficulty: person.difficulty || "Easy",
+      difficulty: person.difficulty || "Unknown",
       sourceUrl: person.sourceUrl || "",
       categories: person.categories || [],
       isFavorite: person.isFavorite || false,
@@ -257,70 +307,61 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     }));
   };
 
-  const handleIngredientDragStart = (index) => {
-    setDraggedIngredientIndex(index);
-  };
-
-  const handleIngredientDragOver = (e, index) => {
-    e.preventDefault();
-  };
-
-  const handleIngredientDrop = (e, dropIndex) => {
-    e.preventDefault();
-    if (draggedIngredientIndex === null || draggedIngredientIndex === dropIndex)
-      return;
-
-    const newIngredients = [...editedPerson.ingredients];
-    const draggedItem = newIngredients[draggedIngredientIndex];
-    newIngredients.splice(draggedIngredientIndex, 1);
-    newIngredients.splice(dropIndex, 0, draggedItem);
-
+  const toggleCategory = (catId) => {
     setEditedPerson((prev) => ({
       ...prev,
-      ingredients: newIngredients,
+      categories: prev.categories.includes(catId)
+        ? prev.categories.filter((c) => c !== catId)
+        : [...prev.categories, catId],
     }));
-    setDraggedIngredientIndex(null);
   };
 
-  const handleInstructionDragStart = (index) => {
-    setDraggedInstructionIndex(index);
-  };
-
-  const handleInstructionDragOver = (e, index) => {
-    e.preventDefault();
-  };
-
-  const handleInstructionDrop = (e, dropIndex) => {
-    e.preventDefault();
-    if (
-      draggedInstructionIndex === null ||
-      draggedInstructionIndex === dropIndex
-    )
-      return;
-
-    const newInstructions = [...editedPerson.instructions];
-    const draggedItem = newInstructions[draggedInstructionIndex];
-    newInstructions.splice(draggedInstructionIndex, 1);
-    newInstructions.splice(dropIndex, 0, draggedItem);
-
+  const updateNutrition = (field, value) => {
     setEditedPerson((prev) => ({
       ...prev,
-      instructions: newInstructions,
+      nutrition: { ...prev.nutrition, [field]: value },
     }));
-    setDraggedInstructionIndex(null);
   };
 
-  const handleSubmit = (e) => {
+  const handleDragStart = (index, field) => {
+    setDragIndex(index);
+    setDragField(field);
+  };
+
+  const handleDragOver = (e) => {
     e.preventDefault();
-    console.log("📝 EDIT FORM - editedPerson.rating:", editedPerson.rating);
-    console.log(
-      "📝 EDIT FORM - editedPerson.image_src length:",
-      editedPerson.image_src?.length,
-    );
-    console.log(
-      "📝 EDIT FORM - image_src starts with:",
-      editedPerson.image_src?.substring(0, 50),
-    );
+  };
+
+  const handleDrop = (dropIndex, field) => {
+    if (dragIndex === null || dragField !== field || dragIndex === dropIndex)
+      return;
+    setEditedPerson((prev) => {
+      const items = [...prev[field]];
+      const draggedItem = items[dragIndex];
+      items.splice(dragIndex, 1);
+      items.splice(dropIndex, 0, draggedItem);
+      return { ...prev, [field]: items };
+    });
+    setDragIndex(null);
+    setDragField(null);
+  };
+
+  const handleDragEnd = () => {
+    setDragIndex(null);
+    setDragField(null);
+  };
+
+  const handleMoveItem = (index, direction, field) => {
+    setEditedPerson((prev) => {
+      const items = [...prev[field]];
+      const newIndex = index + direction;
+      if (newIndex < 0 || newIndex >= items.length) return prev;
+      [items[index], items[newIndex]] = [items[newIndex], items[index]];
+      return { ...prev, [field]: items };
+    });
+  };
+
+  const handleSubmit = () => {
     const updatedPerson = {
       ...person,
       name: editedPerson.name,
@@ -342,187 +383,96 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       rating: editedPerson.rating || 0,
       nutrition: editedPerson.nutrition,
     };
-    console.log("📝 EDIT FORM - updatedPerson.rating:", updatedPerson.rating);
-    console.log(
-      "📝 EDIT FORM - updatedPerson.image_src length:",
-      updatedPerson.image_src?.length,
-    );
-    console.log("📝 EDIT FORM - Full updated person:", updatedPerson);
     onSave(updatedPerson);
   };
 
-  return (
-    <Modal onClose={onCancel}>
-      <form className={classes.form} onSubmit={handleSubmit}>
-        <h2 className={classes.formTitle}>{t("recipes", "editRecipe")}</h2>
+  const renderBasicTab = () => (
+    <>
+      <h3 className={classes.sectionTitle}>{t("addWizard", "basicInfo")}</h3>
+
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "flex-end",
+          marginBottom: "1rem",
+        }}
+      >
+        <button
+          type="button"
+          className={`${classes.favoriteBtn} ${editedPerson.isFavorite ? classes.favoriteBtnActive : ""}`}
+          onClick={toggleFavorite}
+        >
+          <FiStar
+            size={22}
+            fill={editedPerson.isFavorite ? "#ffc107" : "none"}
+          />{" "}
+          {t("recipes", "addToFavorites")}
+        </button>
+      </div>
+
+      <div className={classes.formGroup}>
+        <label className={classes.formLabel}>
+          {t("recipes", "recipeName")} *
+        </label>
         <input
           type="text"
-          placeholder={t("recipes", "recipeName")}
-          name="name"
+          className={classes.formInput}
           value={editedPerson.name}
-          onChange={handleChange}
-          required
+          onChange={(e) =>
+            setEditedPerson((prev) => ({ ...prev, name: e.target.value }))
+          }
         />
+      </div>
 
-        <div className={classes.imageSection}>
-          <label className={classes.imageLabel}>
-            🖼️ {t("recipes", "imageUrl")}
-          </label>
-          <input
-            type="text"
-            placeholder="Enter image URL"
-            name="image_src"
-            value={editedPerson.image_src}
-            onChange={handleChange}
-          />
-          {editedPerson.image_src && (
-            <img
-              src={editedPerson.image_src}
-              alt="Preview"
-              className={classes.imagePreview}
-              onError={(e) => {
-                e.target.style.display = "none";
-              }}
-            />
-          )}
-        </div>
-        <div className={classes.listSection}>
-          <div className={classes.listHeader}>
-            <h3>📝 {t("recipes", "ingredients")}</h3>
-            <Button onClick={addIngredient} title={t("recipes", "add")}>
-              {t("recipes", "add")}
-            </Button>
-          </div>
-          <div className={classes.itemsList}>
-            {editedPerson.ingredients.map((ingredient, index) => (
-              <div
-                key={index}
-                className={`${classes.itemRow} ${draggedIngredientIndex === index ? classes.dragging : ""}`}
-                onDragOver={(e) => handleIngredientDragOver(e, index)}
-                onDrop={(e) => handleIngredientDrop(e, index)}
+      <div className={classes.formRowThree}>
+        <div className={classes.formGroup}>
+          <label className={classes.formLabel}>{t("recipes", "rating")}</label>
+          <div className={classes.starRating}>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <button
+                key={star}
+                type="button"
+                className={`${classes.starBtn} ${star <= (editedPerson.rating || 0) ? classes.starBtnActive : ""}`}
+                onClick={() =>
+                  setEditedPerson((prev) => ({
+                    ...prev,
+                    rating: star === prev.rating ? 0 : star,
+                  }))
+                }
               >
-                <span
-                  className={classes.dragHandle}
-                  draggable
-                  onDragStart={() => handleIngredientDragStart(index)}
-                >
-                  <FaGripVertical />
-                </span>
-                <input
-                  type="text"
-                  placeholder={`Ingredient ${index + 1}`}
-                  value={ingredient}
-                  onChange={(e) =>
-                    handleIngredientChange(index, e.target.value)
-                  }
-                  className={classes.itemInput}
+                <FiStar
+                  size={20}
+                  fill={star <= (editedPerson.rating || 0) ? "#ffc107" : "none"}
                 />
-                <Button
-                  onClick={() => removeIngredient(index)}
-                  variant="danger"
-                  title="Remove"
-                >
-                  ✕
-                </Button>
-              </div>
+              </button>
             ))}
           </div>
         </div>
-
-        <div className={classes.listSection}>
-          <div className={classes.listHeader}>
-            <h3>👨‍🍳 {t("recipes", "instructions")}</h3>
-            <Button onClick={addInstruction} title={t("recipes", "add")}>
-              {t("recipes", "add")}
-            </Button>
-          </div>
-          <div className={classes.itemsList}>
-            {editedPerson.instructions.map((instruction, index) => (
-              <div
-                key={index}
-                className={`${classes.itemRow} ${draggedInstructionIndex === index ? classes.dragging : ""}`}
-                onDragOver={(e) => handleInstructionDragOver(e, index)}
-                onDrop={(e) => handleInstructionDrop(e, index)}
-              >
-                <span
-                  className={classes.dragHandle}
-                  draggable
-                  onDragStart={() => handleInstructionDragStart(index)}
-                >
-                  <FaGripVertical />
-                </span>
-                <textarea
-                  placeholder={`Step ${index + 1}`}
-                  value={instruction}
-                  onChange={(e) =>
-                    handleInstructionChange(index, e.target.value)
-                  }
-                  className={classes.itemTextarea}
-                  rows="2"
-                />
-                <Button
-                  onClick={() => removeInstruction(index)}
-                  variant="danger"
-                  title="Remove"
-                >
-                  ✕
-                </Button>
-              </div>
-            ))}
-          </div>
-        </div>
-        <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>
-            ⏱️ {t("recipes", "prepTime")}
-          </label>
-          <input
-            type="text"
-            placeholder="e.g., 15 min"
-            name="prepTime"
-            value={editedPerson.prepTime}
-            onChange={handleChange}
-            className={classes.difficultySelect}
-          />
-        </div>
-
-        <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>
-            🔥 {t("recipes", "cookTime")}
-          </label>
-          <input
-            type="text"
-            placeholder="e.g., 30 min"
-            name="cookTime"
-            value={editedPerson.cookTime}
-            onChange={handleChange}
-            className={classes.difficultySelect}
-          />
-        </div>
-
-        <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>
+        <div className={classes.formGroup}>
+          <label className={classes.formLabel}>
             {t("recipes", "servings")}
           </label>
           <input
             type="number"
-            placeholder="Number of servings"
-            name="servings"
+            className={classes.formInput}
             value={editedPerson.servings}
             onChange={handleServingsChange}
             min="1"
-            className={classes.difficultySelect}
           />
         </div>
-
-        <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>
+        <div className={classes.formGroup}>
+          <label className={classes.formLabel}>
             {t("recipes", "difficulty")}
           </label>
           <select
-            name="difficulty"
+            className={classes.formSelect}
             value={editedPerson.difficulty}
-            onChange={handleChange}
-            className={classes.difficultySelect}
+            onChange={(e) =>
+              setEditedPerson((prev) => ({
+                ...prev,
+                difficulty: e.target.value,
+              }))
+            }
           >
             <option value="Unknown">{t("difficulty", "Unknown")}</option>
             <option value="VeryEasy">{t("difficulty", "VeryEasy")}</option>
@@ -531,298 +481,415 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             <option value="Hard">{t("difficulty", "Hard")}</option>
           </select>
         </div>
+      </div>
 
-        <div className={classes.fieldSection}>
-          <label className={classes.fieldLabel}>
-            {t("recipes", "sourceUrl")}
+      <div className={classes.formRow}>
+        <div className={classes.formGroup}>
+          <label className={classes.formLabel}>
+            {t("recipes", "cookTime")} ({t("addWizard", "min")})
           </label>
           <input
-            type="url"
-            placeholder="Source URL (where recipe is from)"
-            name="sourceUrl"
-            value={editedPerson.sourceUrl}
-            onChange={handleChange}
+            type="text"
+            className={classes.formInput}
+            value={editedPerson.cookTime}
+            onChange={(e) =>
+              setEditedPerson((prev) => ({
+                ...prev,
+                cookTime: e.target.value,
+              }))
+            }
           />
         </div>
-
-        <div className={classes.fieldSection}>
-          <label className={classes.fieldLabel}>
-            {t("recipes", "imageOptional")}
+        <div className={classes.formGroup}>
+          <label className={classes.formLabel}>
+            {t("recipes", "prepTime")} ({t("addWizard", "min")})
           </label>
           <input
-            type="url"
-            placeholder="Image URL (optional)"
-            name="image_src"
-            value={editedPerson.image_src}
-            onChange={handleChange}
+            type="text"
+            className={classes.formInput}
+            value={editedPerson.prepTime}
+            onChange={(e) =>
+              setEditedPerson((prev) => ({
+                ...prev,
+                prepTime: e.target.value,
+              }))
+            }
           />
+        </div>
+      </div>
+
+      <div className={classes.formGroup}>
+        <label className={classes.formLabel}>{t("recipes", "notes")}</label>
+        <textarea
+          className={classes.formTextarea}
+          value={editedPerson.notes}
+          onChange={(e) =>
+            setEditedPerson((prev) => ({ ...prev, notes: e.target.value }))
+          }
+        />
+      </div>
+
+      <div className={classes.formGroup}>
+        <label className={classes.formLabel}>{t("recipes", "sourceUrl")}</label>
+        <input
+          type="url"
+          className={classes.formInput}
+          placeholder="https://..."
+          value={editedPerson.sourceUrl}
+          onChange={(e) =>
+            setEditedPerson((prev) => ({
+              ...prev,
+              sourceUrl: e.target.value,
+            }))
+          }
+        />
+      </div>
+    </>
+  );
+
+  const renderIngredientsTab = () => (
+    <>
+      <h3 className={classes.sectionTitle}>{t("recipes", "ingredients")}</h3>
+      <div className={classes.dynamicList} ref={ingredientsListRef}>
+        {editedPerson.ingredients.map((ing, i) => (
           <div
-            style={{
-              marginTop: "0.5rem",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-            }}
+            key={i}
+            data-drag-item
+            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""}`}
+            draggable
+            onDragStart={() => handleDragStart(i, "ingredients")}
+            onDragOver={handleDragOver}
+            onDrop={() => handleDrop(i, "ingredients")}
+            onDragEnd={handleDragEnd}
           >
-            <span style={{ fontSize: "0.9rem", color: "#666" }}>
-              {t("recipes", "uploadFromComputer")}
+            <span
+              className={classes.dragHandle}
+              onTouchStart={(e) =>
+                handleTouchStart(e, i, "ingredients", ingredientsListRef)
+              }
+            >
+              <FiMenu size={16} />
             </span>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              style={{ fontSize: "0.9rem" }}
-              disabled={uploadingImage}
-            />
-            {uploadingImage && (
-              <span style={{ fontSize: "0.9rem", color: "#666" }}>
-                {t("recipes", "uploading")}
-              </span>
-            )}
-          </div>
-        </div>
-
-        <div className={classes.fieldSection}>
-          <label className={classes.fieldLabel}>{t("recipes", "notes")}</label>
-          <textarea
-            placeholder="Notes (optional - personal comments, tips, modifications)"
-            name="notes"
-            value={editedPerson.notes}
-            onChange={handleChange}
-            className={classes.textarea}
-            rows="3"
-          />
-        </div>
-
-        <div className={classes.nutritionSection}>
-          <label className={classes.fieldLabel}>
-            🥗 {t("recipes", "nutrition")}
-          </label>
-          <div className={classes.nutritionGrid}>
-            <div className={classes.nutritionField}>
-              <label>🔥 {t("recipes", "calories")}</label>
-              <input
-                type="text"
-                placeholder='לדוגמה: כ~150 קק"ל'
-                value={editedPerson.nutrition.calories}
-                onChange={(e) =>
-                  setEditedPerson({
-                    ...editedPerson,
-                    nutrition: {
-                      ...editedPerson.nutrition,
-                      calories: e.target.value,
-                    },
-                  })
-                }
-              />
-            </div>
-            <div className={classes.nutritionField}>
-              <label>🍗 {t("recipes", "protein")}</label>
-              <input
-                type="text"
-                placeholder="לדוגמה: כ~2.5 גרם"
-                value={editedPerson.nutrition.protein}
-                onChange={(e) =>
-                  setEditedPerson({
-                    ...editedPerson,
-                    nutrition: {
-                      ...editedPerson.nutrition,
-                      protein: e.target.value,
-                    },
-                  })
-                }
-              />
-            </div>
-            <div className={classes.nutritionField}>
-              <label>🥑 {t("recipes", "fat")}</label>
-              <input
-                type="text"
-                placeholder="לדוגמה: כ~9-10 גרם"
-                value={editedPerson.nutrition.fat}
-                onChange={(e) =>
-                  setEditedPerson({
-                    ...editedPerson,
-                    nutrition: {
-                      ...editedPerson.nutrition,
-                      fat: e.target.value,
-                    },
-                  })
-                }
-              />
-            </div>
-            <div className={classes.nutritionField}>
-              <label>🍞 {t("recipes", "carbs")}</label>
-              <input
-                type="text"
-                placeholder="לדוגמה: כ~14-15 גרם"
-                value={editedPerson.nutrition.carbs}
-                onChange={(e) =>
-                  setEditedPerson({
-                    ...editedPerson,
-                    nutrition: {
-                      ...editedPerson.nutrition,
-                      carbs: e.target.value,
-                    },
-                  })
-                }
-              />
-            </div>
-            <div className={classes.nutritionField}>
-              <label>🍬 {t("recipes", "sugars")}</label>
-              <input
-                type="text"
-                placeholder="לדוגמה: כ~11-12 גרם"
-                value={editedPerson.nutrition.sugars}
-                onChange={(e) =>
-                  setEditedPerson({
-                    ...editedPerson,
-                    nutrition: {
-                      ...editedPerson.nutrition,
-                      sugars: e.target.value,
-                    },
-                  })
-                }
-              />
-            </div>
-            <div className={classes.nutritionField}>
-              <label>🥬 {t("recipes", "fiber")}</label>
-              <input
-                type="text"
-                placeholder="לדוגמה: כ~0.5-1 גרם"
-                value={editedPerson.nutrition.fiber}
-                onChange={(e) =>
-                  setEditedPerson({
-                    ...editedPerson,
-                    nutrition: {
-                      ...editedPerson.nutrition,
-                      fiber: e.target.value,
-                    },
-                  })
-                }
-              />
-            </div>
-          </div>
-          <div className={classes.nutritionNoteField}>
-            <label>📝 {t("recipes", "note")}</label>
+            <span className={classes.dynamicItemNumber}>{i + 1}</span>
             <input
               type="text"
-              placeholder="לדוגמה: בלי אגוזים/צימוקים"
-              value={editedPerson.nutrition.note}
-              onChange={(e) =>
-                setEditedPerson({
-                  ...editedPerson,
-                  nutrition: {
-                    ...editedPerson.nutrition,
-                    note: e.target.value,
-                  },
-                })
-              }
+              className={classes.dynamicItemInput}
+              value={ing}
+              onChange={(e) => handleIngredientChange(i, e.target.value)}
             />
-          </div>
-        </div>
-
-        <div className={classes.difficultySection}>
-          <label className={classes.difficultyLabel}>
-            {t("recipes", "rating")}
-          </label>
-          <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                onClick={() =>
-                  setEditedPerson({ ...editedPerson, rating: star })
-                }
-                style={{
-                  background: "none",
-                  border: "none",
-                  fontSize: "2rem",
-                  cursor: "pointer",
-                  color:
-                    star <= (editedPerson.rating || 0) ? "#ffc107" : "#e0e0e0",
-                  transition: "color 0.2s",
-                }}
-                onMouseEnter={(e) => (e.target.style.color = "#ffc107")}
-                onMouseLeave={(e) =>
-                  (e.target.style.color =
-                    star <= (editedPerson.rating || 0) ? "#ffc107" : "#e0e0e0")
-                }
-              >
-                ★
-              </button>
-            ))}
-            {editedPerson.rating > 0 && (
+            {editedPerson.ingredients.length > 1 && (
               <button
                 type="button"
-                onClick={() => setEditedPerson({ ...editedPerson, rating: 0 })}
-                style={{
-                  background: "none",
-                  border: "none",
-                  fontSize: "0.9rem",
-                  cursor: "pointer",
-                  color: "#666",
-                  textDecoration: "underline",
-                }}
+                className={classes.removeItemBtn}
+                onClick={() => removeIngredient(i)}
               >
-                {t("recipes", "clear")}
+                <FiTrash2 size={16} />
               </button>
             )}
           </div>
-        </div>
-
-        <select
-          multiple
-          value={editedPerson.categories}
-          onChange={(e) => {
-            const selectedCategories = Array.from(
-              e.target.selectedOptions,
-              (option) => option.value,
-            );
-            setEditedPerson({
-              ...editedPerson,
-              categories: selectedCategories,
-            });
-          }}
-          className={classes.select}
+        ))}
+        <button
+          type="button"
+          className={classes.addItemBtn}
+          onClick={addIngredient}
         >
-          {groups
-            .filter((group) => group.id !== "all")
-            .map((group) => (
-              <option key={group.id} value={group.id}>
-                {group.name}
-              </option>
-            ))}
-        </select>
+          + {t("addWizard", "addIngredient")}
+        </button>
+      </div>
+    </>
+  );
 
-        <div className={classes.favoriteToggle}>
-          <label className={classes.favoriteLabel}>
-            <input
-              type="checkbox"
-              checked={editedPerson.isFavorite}
-              onChange={toggleFavorite}
-              className={classes.favoriteCheckbox}
-            />
-            <span className={classes.favoriteText}>
-              {editedPerson.isFavorite
-                ? t("recipes", "favorite")
-                : t("recipes", "addToFavorites")}
-            </span>
-          </label>
-        </div>
-
-        <div className={classes.formButtons}>
-          <button
-            type="button"
-            onClick={onCancel}
-            className={classes.cancelBtn}
+  const renderInstructionsTab = () => (
+    <>
+      <h3 className={classes.sectionTitle}>{t("recipes", "instructions")}</h3>
+      <div className={classes.dynamicList} ref={instructionsListRef}>
+        {editedPerson.instructions.map((inst, i) => (
+          <div
+            key={i}
+            data-drag-item
+            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "instructions" ? classes.dragging : ""}`}
+            draggable
+            onDragStart={() => handleDragStart(i, "instructions")}
+            onDragOver={handleDragOver}
+            onDrop={() => handleDrop(i, "instructions")}
+            onDragEnd={handleDragEnd}
           >
-            {t("recipes", "cancel")}
-          </button>
-          <button type="submit" className={classes.submitBtn}>
-            {t("recipes", "saveChanges")}
-          </button>
+            <span
+              className={classes.dragHandle}
+              onTouchStart={(e) =>
+                handleTouchStart(e, i, "instructions", instructionsListRef)
+              }
+            >
+              <FiMenu size={16} />
+            </span>
+            <span className={classes.dynamicItemNumber}>{i + 1}</span>
+            <textarea
+              className={classes.dynamicItemTextarea}
+              value={inst}
+              onChange={(e) => handleInstructionChange(i, e.target.value)}
+            />
+            {editedPerson.instructions.length > 1 && (
+              <button
+                type="button"
+                className={classes.removeItemBtn}
+                onClick={() => removeInstruction(i)}
+              >
+                <FiTrash2 size={16} />
+              </button>
+            )}
+          </div>
+        ))}
+        <button
+          type="button"
+          className={classes.addItemBtn}
+          onClick={addInstruction}
+        >
+          + {t("addWizard", "addStep")}
+        </button>
+      </div>
+    </>
+  );
+
+  const renderImageTab = () => (
+    <>
+      <h3 className={classes.sectionTitle}>{t("addWizard", "recipeImage")}</h3>
+      <input
+        type="file"
+        accept="image/*"
+        ref={fileInputRef}
+        onChange={handleImageUpload}
+        style={{ display: "none" }}
+      />
+      <div
+        className={classes.imageUploadArea}
+        onClick={() => fileInputRef.current?.click()}
+      >
+        {editedPerson.image_src ? (
+          <>
+            <img
+              src={editedPerson.image_src}
+              alt="Preview"
+              className={classes.imagePreview}
+            />
+            <button
+              type="button"
+              className={classes.imageRemoveBtn}
+              onClick={(e) => {
+                e.stopPropagation();
+                setEditedPerson((prev) => ({ ...prev, image_src: "" }));
+              }}
+            >
+              ✕
+            </button>
+          </>
+        ) : (
+          <>
+            <FiCamera className={classes.imageUploadIcon} />
+            <span className={classes.imageUploadText}>
+              {uploadingImage
+                ? t("recipes", "uploading")
+                : t("addWizard", "uploadImage")}
+            </span>
+          </>
+        )}
+      </div>
+    </>
+  );
+
+  const renderCategoriesTab = () => (
+    <>
+      <h3 className={classes.sectionTitle}>{t("addWizard", "categories")}</h3>
+
+      <div className={classes.categorySection}>
+        <p className={classes.categorySubtitle}>
+          {t("addWizard", "selectedCategories")}
+        </p>
+        <div className={classes.categoryChips}>
+          {groups
+            .filter(
+              (g) => g.id !== "all" && editedPerson.categories.includes(g.id),
+            )
+            .map((group) => (
+              <button
+                key={group.id}
+                type="button"
+                className={`${classes.categoryChip} ${classes.categoryChipActive}`}
+                onClick={() => toggleCategory(group.id)}
+              >
+                ✕ {group.name}
+              </button>
+            ))}
         </div>
-      </form>
+      </div>
+
+      <div className={classes.categorySection}>
+        <p className={classes.categorySubtitle}>
+          {t("addWizard", "availableCategories")}
+        </p>
+        <div className={classes.categoryChips}>
+          {groups
+            .filter(
+              (g) => g.id !== "all" && !editedPerson.categories.includes(g.id),
+            )
+            .map((group) => (
+              <button
+                key={group.id}
+                type="button"
+                className={classes.categoryChip}
+                onClick={() => toggleCategory(group.id)}
+              >
+                + {group.name}
+              </button>
+            ))}
+        </div>
+      </div>
+    </>
+  );
+
+  const renderNutritionTab = () => (
+    <>
+      <h3 className={classes.sectionTitle}>
+        {t("addWizard", "nutritionValues")}
+      </h3>
+      <div className={classes.nutritionGrid}>
+        {[
+          { key: "calories", label: t("recipes", "calories") },
+          { key: "protein", label: t("recipes", "protein") },
+          { key: "fat", label: t("recipes", "fat") },
+          { key: "carbs", label: t("recipes", "carbs") },
+          { key: "sugars", label: t("recipes", "sugars") },
+          { key: "fiber", label: t("recipes", "fiber") },
+        ].map(({ key, label }) => (
+          <div key={key} className={classes.formGroup}>
+            <label className={classes.formLabel}>{label}</label>
+            <input
+              type="text"
+              className={classes.formInput}
+              value={editedPerson.nutrition[key]}
+              onChange={(e) => updateNutrition(key, e.target.value)}
+            />
+          </div>
+        ))}
+      </div>
+      <div className={classes.formGroup}>
+        <label className={classes.formLabel}>{t("recipes", "note")}</label>
+        <input
+          type="text"
+          className={classes.formInput}
+          value={editedPerson.nutrition.note}
+          onChange={(e) => updateNutrition("note", e.target.value)}
+        />
+      </div>
+    </>
+  );
+
+  const renderDeleteTab = () => (
+    <div className={classes.deleteSection}>
+      <h3 className={classes.sectionTitle}>{t("confirm", "deleteRecipe")}</h3>
+      <p style={{ color: "#888", marginBottom: "1.5rem" }}>
+        {t("confirm", "deleteRecipeMsg")} {t("confirm", "cannotUndo")}
+      </p>
+    </div>
+  );
+
+  const renderActiveTab = () => {
+    switch (activeTab) {
+      case "basic":
+        return renderBasicTab();
+      case "ingredients":
+        return renderIngredientsTab();
+      case "instructions":
+        return renderInstructionsTab();
+      case "image":
+        return renderImageTab();
+      case "categories":
+        return renderCategoriesTab();
+      case "nutrition":
+        return renderNutritionTab();
+      case "delete":
+        return renderDeleteTab();
+      default:
+        return renderBasicTab();
+    }
+  };
+
+  return (
+    <Modal onClose={onCancel}>
+      <div className={classes.editContainer}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            flex: 1,
+            minHeight: 0,
+          }}
+        >
+          <div className={classes.editHeader}>
+            <div className={classes.editHeaderInfo}>
+              <button
+                type="button"
+                className={classes.editCloseBtn}
+                onClick={onCancel}
+              >
+                <FiX />
+              </button>
+              <div className={classes.editTitleGroup}>
+                <h2>{t("recipes", "editRecipe")}</h2>
+                <p>{editedPerson.name}</p>
+              </div>
+            </div>
+            <div className={classes.editHeaderActions}>
+              <button
+                type="button"
+                className={classes.cancelBtn}
+                onClick={onCancel}
+              >
+                {t("recipes", "cancel")}
+              </button>
+              <button
+                type="button"
+                className={classes.saveBtn}
+                onClick={handleSubmit}
+              >
+                <FiSave size={16} /> {t("recipes", "saveChanges")}
+              </button>
+            </div>
+          </div>
+
+          <div className={classes.editBody}>
+            <div className={classes.sidebar}>
+              {TABS.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    className={`${classes.sidebarTab} ${activeTab === tab.id ? classes.sidebarTabActive : ""}`}
+                    onClick={() => setActiveTab(tab.id)}
+                  >
+                    <span className={classes.sidebarTabIcon}>
+                      <Icon />
+                    </span>
+                    {t("addWizard", tab.labelKey)}
+                  </button>
+                );
+              })}
+              <button
+                type="button"
+                className={`${classes.sidebarTab} ${classes.sidebarTabDelete} ${activeTab === "delete" ? classes.sidebarTabActive : ""}`}
+                onClick={() => setActiveTab("delete")}
+              >
+                <span className={classes.sidebarTabIcon}>
+                  <FiTrash2 />
+                </span>
+                {t("confirm", "deleteRecipe")}
+              </button>
+            </div>
+
+            <div className={classes.contentArea}>{renderActiveTab()}</div>
+          </div>
+        </div>
+      </div>
     </Modal>
   );
 }

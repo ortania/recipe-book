@@ -2,7 +2,7 @@ import { useState, useMemo } from "react";
 
 import {
   RecipesView,
-  AddRecipe,
+  AddRecipeWizard,
   UpButton,
   FavoritesPopup,
   ConfirmDialog,
@@ -28,6 +28,7 @@ function Categories() {
   const { t } = useLanguage();
 
   const [showAddPerson, setShowAddPerson] = useState(false);
+  const [addMethod, setAddMethod] = useState("method");
   const [showFavorites, setShowFavorites] = useState(false);
   const [showChat, setShowChat] = useState(false);
 
@@ -47,12 +48,12 @@ function Categories() {
   return (
     <div className={classes.groupContent} dir="auto">
       {showAddPerson && (
-        <AddRecipe
+        <AddRecipeWizard
           onAddPerson={addRecipe}
           onCancel={() => setShowAddPerson(false)}
-          onEditPerson={editRecipe}
           defaultGroup={defaultGroup}
           groups={categories}
+          initialScreen={addMethod}
         />
       )}
 
@@ -61,7 +62,10 @@ function Categories() {
         groups={categories}
         onEditPerson={editRecipe}
         onDeletePerson={deleteRecipe}
-        onAddPerson={() => setShowAddPerson(true)}
+        onAddPerson={(method) => {
+          setAddMethod(method || "method");
+          setShowAddPerson(true);
+        }}
         onShowFavorites={() => setShowFavorites(true)}
         selectedGroup={isAllSelected ? "all" : selectedCategories}
         showGreeting

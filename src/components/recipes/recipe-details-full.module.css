@@ -570,7 +570,12 @@
 /* ===== Mobile Responsive ===== */
 @media (max-width: 600px) {
   .recipeCard {
-    border-radius: 12px;
+    border-radius: 0;
+    max-width: 100%;
+    width: 100%;
+    min-height: 100%;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .closeButton {

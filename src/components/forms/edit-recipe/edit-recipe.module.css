@@ -1,0 +1,663 @@
+/* Edit Recipe - Sidebar Tab Layout */
+
+.editContainer {
+  display: flex;
+  width: 100%;
+  min-height: 0;
+}
+
+/* ========== Header ========== */
+.editHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #f0f0f0;
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 10;
+}
+
+.editHeaderInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.editCloseBtn {
+  background: none;
+  border: none;
+  font-size: 1.8rem;
+  color: #666;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+}
+
+.editCloseBtn:hover {
+  color: #333;
+}
+
+.editTitleGroup h2 {
+  font-size: var(--large-font);
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+.editTitleGroup p {
+  font-size: var(--small-font);
+  color: #888;
+  margin: 0;
+}
+
+.editHeaderActions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.cancelBtn {
+  background: none;
+  border: none;
+  font-size: var(--basic-font);
+  color: #666;
+  cursor: pointer;
+  padding: 0.5em 1em;
+  transition: color 0.2s;
+}
+
+.cancelBtn:hover {
+  color: #333;
+}
+
+.saveBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.6em 1.4em;
+  background: #222;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.saveBtn:hover {
+  background: #444;
+}
+
+/* ========== Body Layout ========== */
+.editBody {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
+
+/* ========== Sidebar ========== */
+.sidebar {
+  width: 120px;
+  min-width: 120px;
+  background: #f8f9fa;
+  border-left: 1px solid #f0f0f0;
+  padding: 1rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  overflow-y: auto;
+}
+
+.sidebarTab {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.75rem 0.5rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: #888;
+  font-size: var(--small-font);
+  font-weight: 500;
+  transition: all 0.2s;
+  border-right: 3px solid transparent;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.sidebarTab:hover {
+  color: #333;
+  background: #f0f0f0;
+}
+
+.sidebarTabActive {
+  color: #1a9c5a;
+  background: white;
+  border-right-color: #1a9c5a;
+  font-weight: 600;
+}
+
+.sidebarTabIcon {
+  font-size: 1.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebarTabDelete {
+  color: #e53935;
+  margin-top: auto;
+}
+
+.sidebarTabDelete:hover {
+  background: #fef2f2;
+}
+
+/* ========== Content Area ========== */
+.contentArea {
+  flex: 1;
+  padding: 1.5rem 2rem;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.sectionTitle {
+  font-size: var(--large-font);
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0 0 1.5rem 0;
+}
+
+/* ========== Form Elements ========== */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+}
+
+.formLabel {
+  font-size: var(--small-font);
+  font-weight: 600;
+  color: #555;
+}
+
+.formInput {
+  padding: 0.8rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: var(--basic-font);
+  outline: none;
+  transition: border-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.formInput::placeholder {
+  color: #bbb;
+  font-style: italic;
+}
+
+.formInput:focus {
+  border-color: #1a9c5a;
+}
+
+.formTextarea {
+  padding: 0.8rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: var(--basic-font);
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  min-height: 80px;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.formTextarea::placeholder {
+  color: #bbb;
+  font-style: italic;
+}
+
+.formTextarea:focus {
+  border-color: #1a9c5a;
+}
+
+.formSelect {
+  padding: 0.8rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: var(--basic-font);
+  outline: none;
+  background: white;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.formRowThree {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+/* ========== Favorite Toggle ========== */
+.favoriteBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #ccc;
+  transition: color 0.2s;
+  padding: 0;
+  display: flex;
+  align-items: center;
+}
+
+.favoriteBtnActive {
+  color: #ffc107;
+}
+
+/* ========== Star Rating ========== */
+.starRating {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.starBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.5rem;
+  color: #e0e0e0;
+  padding: 0.1rem;
+  transition: color 0.2s;
+  display: flex;
+}
+
+.starBtnActive {
+  color: #ffc107;
+}
+
+/* ========== Dynamic Lists ========== */
+.dynamicList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.dynamicItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+}
+
+.dynamicItem.dragging {
+  opacity: 0.4;
+}
+
+.dynamicItemNumber {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1a9c5a;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--small-font);
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+.dynamicItemInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: var(--basic-font);
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.dynamicItemInput::placeholder {
+  color: #bbb;
+  font-style: italic;
+}
+
+.dynamicItemInput:focus {
+  border-color: #1a9c5a;
+}
+
+.dynamicItemTextarea {
+  flex: 1;
+  min-width: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  font-size: var(--basic-font);
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  min-height: 80px;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+
+.dynamicItemTextarea::placeholder {
+  color: #bbb;
+  font-style: italic;
+}
+
+.dynamicItemTextarea:focus {
+  border-color: #1a9c5a;
+}
+
+.removeItemBtn {
+  background: none;
+  border: none;
+  color: #e53935;
+  cursor: pointer;
+  font-size: 1.2rem;
+  padding: 0.3rem;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+  opacity: 0.5;
+}
+
+.removeItemBtn:hover {
+  opacity: 1;
+}
+
+.addItemBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  border: 2px dashed #d0d0d0;
+  border-radius: 12px;
+  background: none;
+  color: #888;
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-top: 0.5rem;
+}
+
+.addItemBtn:hover {
+  border-color: #1a9c5a;
+  color: #1a9c5a;
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #bbb;
+  cursor: grab;
+  padding: 0.2em;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.dragHandle:hover {
+  color: #666;
+}
+
+/* ========== Image Section ========== */
+.imageUploadArea {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 2px dashed #d0d0d0;
+  border-radius: 16px;
+  padding: 2rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 200px;
+  overflow: hidden;
+}
+
+.imageUploadArea:hover {
+  border-color: #1a9c5a;
+}
+
+.imagePreview {
+  width: 100%;
+  max-height: 300px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.imageUploadIcon {
+  font-size: 2.5rem;
+  color: #bbb;
+  margin-bottom: 0.5rem;
+}
+
+.imageUploadText {
+  font-size: var(--basic-font);
+  color: #888;
+}
+
+.imageRemoveBtn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  font-size: 0.9rem;
+}
+
+/* ========== Categories ========== */
+.categorySection {
+  margin-bottom: 1.25rem;
+}
+
+.categorySubtitle {
+  font-size: var(--small-font);
+  font-weight: 600;
+  color: #555;
+  margin: 0 0 0.5rem 0;
+}
+
+.categoryChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.categoryChip {
+  padding: 0.5em 1em;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  background: white;
+  font-size: var(--small-font);
+  cursor: pointer;
+  transition: all 0.2s;
+  color: #555;
+}
+
+.categoryChip:hover {
+  border-color: #1a9c5a;
+}
+
+.categoryChipActive {
+  background: #1a9c5a;
+  border-color: #1a9c5a;
+  color: white;
+}
+
+/* ========== Nutrition ========== */
+.nutritionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* ========== Delete Section ========== */
+.deleteSection {
+  text-align: center;
+  padding: 2rem;
+}
+
+.deleteBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.8em 2em;
+  background: #fef2f2;
+  border: 2px solid #e53935;
+  border-radius: 12px;
+  color: #e53935;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.deleteBtn:hover {
+  background: #e53935;
+  color: white;
+}
+
+/* Move buttons (for mobile touch reorder) */
+.moveButtons {
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.moveBtn {
+  background: none;
+  border: 1px solid #e0e0e0;
+  color: #888;
+  cursor: pointer;
+  padding: 0.15em 0.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  border-radius: 4px;
+}
+
+.moveBtn:first-child {
+  border-radius: 6px 6px 0 0;
+}
+
+.moveBtn:last-child {
+  border-radius: 0 0 6px 6px;
+  border-top: none;
+}
+
+.moveBtn:not(:disabled):hover {
+  background: #f0f0f0;
+  color: #333;
+}
+
+.moveBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 600px) {
+  .editContainer {
+    flex-direction: column;
+  }
+
+  .editBody {
+    flex-direction: row;
+  }
+
+  .sidebar {
+    width: 90px;
+    min-width: 90px;
+    padding: 0.5rem 0;
+  }
+
+  .sidebarTab {
+    padding: 0.6rem 0.3rem;
+    font-size: 0.7rem;
+  }
+
+  .sidebarTabIcon {
+    font-size: 1.4rem;
+  }
+
+  .dynamicItemTextarea {
+    min-height: 70px;
+  }
+
+  .editCloseBtn {
+    font-size: 2rem;
+    padding: 0.5rem;
+  }
+
+  .contentArea {
+    padding: 1rem;
+  }
+
+  .formRow,
+  .formRowThree {
+    grid-template-columns: 1fr;
+  }
+
+  .nutritionGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .editHeaderActions {
+    gap: 0.5rem;
+  }
+
+  .saveBtn {
+    padding: 0.5em 1em;
+    font-size: var(--small-font);
+  }
+
+  .dynamicItem {
+    gap: 0.3rem;
+  }
+
+  .dragHandle {
+    touch-action: none;
+    padding: 0.4em;
+  }
+}

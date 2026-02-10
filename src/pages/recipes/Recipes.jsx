@@ -4,11 +4,11 @@ import classes from "./recipes.module.css";
 import pageClasses from "../page.module.css";
 import {
   RecipesView,
-  AddRecipe,
+  AddRecipeWizard,
   UpButton,
   FavoritesButton,
   Button,
-  AddButton,
+  AddRecipeDropdown,
   FavoritesPopup,
   ConfirmDialog,
 } from "../../components";
@@ -28,6 +28,7 @@ function Recipes() {
   const { t } = useLanguage();
 
   const [showAddPerson, setShowAddPerson] = useState(false);
+  const [addMethod, setAddMethod] = useState("method");
   const [showFavorites, setShowFavorites] = useState(false);
   const [showConfirmClear, setShowConfirmClear] = useState(false);
 
@@ -68,18 +69,20 @@ function Recipes() {
       </div>
 
       <div className={pageClasses.actions}>
-        <AddButton
-          onClick={() => setShowAddPerson(true)}
-          title="Add New Recipe"
+        <AddRecipeDropdown
+          onSelect={(method) => {
+            setAddMethod(method || "method");
+            setShowAddPerson(true);
+          }}
         />
       </div>
 
       {showAddPerson && (
-        <AddRecipe
+        <AddRecipeWizard
           onAddPerson={addRecipe}
           onCancel={() => setShowAddPerson(false)}
-          onEditPerson={editRecipe}
           groups={categories}
+          initialScreen={addMethod}
         />
       )}
 

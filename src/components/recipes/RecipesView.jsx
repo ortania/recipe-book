@@ -21,7 +21,7 @@ import ChatWindow from "../chat/ChatWindow";
 
 import { Greeting } from "../greeting";
 import { search } from "./utils";
-import { AddButton } from "../controls";
+import { AddButton, AddRecipeDropdown } from "../controls";
 
 function RecipesView({
   persons,
@@ -231,12 +231,7 @@ function RecipesView({
             >
               <PiStar />
             </AddButton>
-            <AddButton
-              type="circle"
-              sign="+"
-              onClick={onAddPerson}
-              title="Add New Recipe"
-            />
+            <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
           </div>
         </div>
 
@@ -256,9 +251,11 @@ function RecipesView({
             <p className={classes.emptyText}>
               {t("recipesView", "emptyTitle")}
             </p>
-            <button className={classes.emptyButton} onClick={onAddPerson}>
-              {t("recipesView", "addNewRecipe")}
-            </button>
+            <AddRecipeDropdown onSelect={(method) => onAddPerson(method)}>
+              <span className={classes.emptyButton}>
+                {t("recipesView", "addNewRecipe")}
+              </span>
+            </AddRecipeDropdown>
           </div>
         </div>
       </div>
@@ -280,13 +277,7 @@ function RecipesView({
           >
             <PiStar />
           </AddButton>
-          <AddButton
-            type="circle"
-            sign="+"
-            // className={classes.iconButton}
-            onClick={onAddPerson}
-            title="Add New Recipe"
-          />
+          <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
         </div>
       </div>
 
@@ -351,7 +342,7 @@ function RecipesView({
                         <input
                           type="text"
                           className={classes.keywordInput}
-                          placeholder="קמח, גבינה, עגבניות (הפרד בפסיק)"
+                          placeholder={t("recipesView", "keywordPlaceholder")}
                           value={keywordFilter}
                           onChange={(e) => setKeywordFilter(e.target.value)}
                           onClick={(e) => e.stopPropagation()}

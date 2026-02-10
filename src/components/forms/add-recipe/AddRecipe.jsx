@@ -336,18 +336,28 @@ function AddRecipe({
       setNewPerson({
         ...newPerson,
         name: parsedRecipe.name || newPerson.name,
-        ingredients: parsedRecipe.ingredients
-          ? parsedRecipe.ingredients
-              .split(",")
-              .map((i) => i.trim())
-              .filter((i) => i)
-          : newPerson.ingredients,
-        instructions: parsedRecipe.instructions
-          ? parsedRecipe.instructions
-              .split(".")
-              .map((i) => i.trim())
-              .filter((i) => i)
-          : newPerson.instructions,
+        ingredients:
+          Array.isArray(parsedRecipe.ingredients) &&
+          parsedRecipe.ingredients.length > 0
+            ? parsedRecipe.ingredients
+            : typeof parsedRecipe.ingredients === "string" &&
+                parsedRecipe.ingredients
+              ? parsedRecipe.ingredients
+                  .split(",")
+                  .map((i) => i.trim())
+                  .filter((i) => i)
+              : newPerson.ingredients,
+        instructions:
+          Array.isArray(parsedRecipe.instructions) &&
+          parsedRecipe.instructions.length > 0
+            ? parsedRecipe.instructions
+            : typeof parsedRecipe.instructions === "string" &&
+                parsedRecipe.instructions
+              ? parsedRecipe.instructions
+                  .split(".")
+                  .map((i) => i.trim())
+                  .filter((i) => i)
+              : newPerson.instructions,
         prepTime: parsedRecipe.prepTime || newPerson.prepTime,
         cookTime: parsedRecipe.cookTime || newPerson.cookTime,
         servings: parsedRecipe.servings || newPerson.servings,

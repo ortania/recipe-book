@@ -1,14 +1,75 @@
+const fetchWithProxy = async (url) => {
+  const proxies = [
+    (u) => `https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,
+    (u) => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  ];
+
+  for (const makeProxy of proxies) {
+    try {
+      const proxyUrl = makeProxy(url);
+      const response = await fetch(proxyUrl);
+      if (!response.ok) continue;
+      const contentType = response.headers.get("content-type") || "";
+      if (contentType.includes("json")) {
+        const data = await response.json();
+        const html = data.contents || data;
+        if (typeof html === "string" && html.length > 200) return html;
+      } else {
+        const html = await response.text();
+        if (html.length > 200) return html;
+      }
+    } catch (e) {
+      continue;
+    }
+  }
+  throw new Error("All proxies failed to fetch the URL.");
+};
+
+const extractOgImage = (doc) => {
+  const ogImage =
+    doc.querySelector('meta[property="og:image"]') ||
+    doc.querySelector('meta[name="og:image"]');
+  if (ogImage) return ogImage.getAttribute("content");
+  const twitterImage =
+    doc.querySelector('meta[name="twitter:image"]') ||
+    doc.querySelector('meta[property="twitter:image"]');
+  if (twitterImage) return twitterImage.getAttribute("content");
+  return "";
+};
+
+const isBotBlocked = (html) => {
+  const lower = html.toLowerCase();
+  const blockedPhrases = [
+    "you are a bot",
+    "are you a bot",
+    "think that you are a bot",
+    "cannot process your request",
+    "access denied",
+    "incident id",
+    "request blocked",
+    "captcha",
+    "cf-browser-verification",
+    "challenge-platform",
+    "just a moment",
+    "checking your browser",
+    "ddos protection",
+    "security check",
+    "blocked by",
+    "pardon our interruption",
+  ];
+  const matchCount = blockedPhrases.filter((p) => lower.includes(p)).length;
+  return matchCount >= 2;
+};
+
 export const parseRecipeFromUrl = async (url) => {
   try {
-    const proxyUrl = `https://api.allorigins.win/get?url=${encodeURIComponent(url)}`;
-    const response = await fetch(proxyUrl);
+    const html = await fetchWithProxy(url);
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch recipe: ${response.status}`);
+    if (isBotBlocked(html)) {
+      throw new Error(
+        "BLOCKED: This website blocks automated access. Please copy the recipe text from the website and paste it in the Text tab.",
+      );
     }
-
-    const data = await response.json();
-    const html = data.contents;
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(html, "text/html");
@@ -20,15 +81,17 @@ export const parseRecipeFromUrl = async (url) => {
       prepTime: "",
       cookTime: "",
       servings: "",
-      image_src: "https://source.unsplash.com/400x300/?food,recipe",
+      image_src: "",
     };
 
+    // --- Try JSON-LD structured data first ---
     const jsonLdScripts = doc.querySelectorAll(
       'script[type="application/ld+json"]',
     );
     for (const script of jsonLdScripts) {
       try {
-        const data = JSON.parse(script.textContent);
+        let data = JSON.parse(script.textContent);
+        if (Array.isArray(data)) data = data[0];
         const recipeData =
           data["@type"] === "Recipe"
             ? data
@@ -51,6 +114,15 @@ export const parseRecipeFromUrl = async (url) => {
                 .map((step) => {
                   if (typeof step === "string") return step;
                   if (step.text) return step.text;
+                  if (
+                    step.itemListElement &&
+                    Array.isArray(step.itemListElement)
+                  ) {
+                    return step.itemListElement
+                      .map((s) => s.text || s.name || "")
+                      .filter(Boolean)
+                      .join(". ");
+                  }
                   if (step.name) return step.name;
                   return "";
                 })
@@ -81,10 +153,17 @@ export const parseRecipeFromUrl = async (url) => {
               Array.isArray(recipeData.image) &&
               recipeData.image.length > 0
             ) {
-              recipe.image_src = recipeData.image[0];
+              recipe.image_src =
+                typeof recipeData.image[0] === "string"
+                  ? recipeData.image[0]
+                  : recipeData.image[0].url || "";
             } else if (recipeData.image.url) {
               recipe.image_src = recipeData.image.url;
             }
+          }
+
+          if (!recipe.image_src) {
+            recipe.image_src = extractOgImage(doc);
           }
 
           return recipe;
@@ -94,11 +173,17 @@ export const parseRecipeFromUrl = async (url) => {
       }
     }
 
+    // --- Fallback: scrape from HTML ---
     if (!recipe.name) {
       const h1 = doc.querySelector("h1");
       if (h1) recipe.name = h1.textContent.trim();
     }
 
+    if (!recipe.image_src) {
+      recipe.image_src = extractOgImage(doc);
+    }
+
+    // --- Ingredients selectors (including Hebrew sites) ---
     if (!recipe.ingredients) {
       const ingredientSelectors = [
         ".ingredients li",
@@ -106,6 +191,11 @@ export const parseRecipeFromUrl = async (url) => {
         "[class*='ingredient'] li",
         "ul[class*='ingredient'] li",
         ".recipe-ingredients li",
+        "[class*='Ingredient'] li",
+        "[class*='recipeIngredient'] li",
+        "[data-testid*='ingredient'] li",
+        "[class*='recipe_ingredient'] li",
+        "[class*='recipe-ingredient'] li",
       ];
 
       for (const selector of ingredientSelectors) {
@@ -120,6 +210,7 @@ export const parseRecipeFromUrl = async (url) => {
       }
     }
 
+    // --- Instructions selectors ---
     if (!recipe.instructions) {
       const instructionSelectors = [
         ".instructions li",
@@ -131,6 +222,10 @@ export const parseRecipeFromUrl = async (url) => {
         ".recipe-steps li",
         ".method li",
         ".preparation li",
+        "[class*='Instruction'] li",
+        "[class*='recipeInstruction'] li",
+        "[class*='recipe_instruction'] li",
+        "[class*='recipe-instruction'] li",
         "ol li",
         ".instructions p",
         ".directions p",
@@ -146,31 +241,64 @@ export const parseRecipeFromUrl = async (url) => {
             .filter(
               (text) =>
                 text.length > 10 &&
-                !text.toLowerCase().includes("advertisement"),
+                !text.toLowerCase().includes("advertisement") &&
+                !text.includes("פרסומת"),
             )
             .join(". ");
           if (recipe.instructions && recipe.instructions.length > 50) break;
         }
       }
+    }
 
-      if (!recipe.instructions || recipe.instructions.length < 50) {
-        const allParagraphs = doc.querySelectorAll("p");
-        const instructionParagraphs = Array.from(allParagraphs)
-          .map((p) => p.textContent.trim())
-          .filter(
-            (text) =>
-              text.length > 30 &&
-              text.length < 500 &&
-              (text.match(/\d+\./g) ||
-                text.toLowerCase().includes("bake") ||
-                text.toLowerCase().includes("cook") ||
-                text.toLowerCase().includes("mix") ||
-                text.toLowerCase().includes("heat") ||
-                text.toLowerCase().includes("add")),
-          );
+    // --- Paragraph fallback with Hebrew cooking words ---
+    if (!recipe.instructions || recipe.instructions.length < 50) {
+      const allParagraphs = doc.querySelectorAll("p");
+      const instructionParagraphs = Array.from(allParagraphs)
+        .map((p) => p.textContent.trim())
+        .filter(
+          (text) =>
+            text.length > 30 &&
+            text.length < 500 &&
+            !text.includes("פרסומת") &&
+            !text.includes("מודעה") &&
+            (text.match(/\d+\./g) ||
+              text.toLowerCase().includes("bake") ||
+              text.toLowerCase().includes("cook") ||
+              text.toLowerCase().includes("mix") ||
+              text.toLowerCase().includes("heat") ||
+              text.toLowerCase().includes("add") ||
+              text.includes("מערבבים") ||
+              text.includes("מוסיפים") ||
+              text.includes("אופים") ||
+              text.includes("מחממים") ||
+              text.includes("יוצקים") ||
+              text.includes("מכינים") ||
+              text.includes("טוחנים") ||
+              text.includes("מעבירים") ||
+              text.includes("מניחים") ||
+              text.includes("מורחים") ||
+              text.includes("קוצצים") ||
+              text.includes("חותכים")),
+        );
 
-        if (instructionParagraphs.length > 0) {
-          recipe.instructions = instructionParagraphs.join(". ");
+      if (instructionParagraphs.length > 0) {
+        recipe.instructions = instructionParagraphs.join(". ");
+      }
+    }
+
+    // --- Full-page text fallback for Hebrew sites (like mako) ---
+    if (!recipe.ingredients || !recipe.instructions) {
+      const bodyText = doc.body
+        ? doc.body.innerText || doc.body.textContent
+        : "";
+      if (bodyText) {
+        const textResult = parseRecipeFromText(bodyText);
+        if (!recipe.name && textResult.name) recipe.name = textResult.name;
+        if (!recipe.ingredients && textResult.ingredients.length > 0) {
+          recipe.ingredients = textResult.ingredients.join(", ");
+        }
+        if (!recipe.instructions && textResult.instructions.length > 0) {
+          recipe.instructions = textResult.instructions.join(". ");
         }
       }
     }
@@ -193,8 +321,8 @@ export const parseRecipeFromUrl = async (url) => {
 export const parseRecipeFromText = (text) => {
   const recipe = {
     name: "",
-    ingredients: "",
-    instructions: "",
+    ingredients: [],
+    instructions: [],
     prepTime: "",
     cookTime: "",
     servings: "",
@@ -225,6 +353,10 @@ export const parseRecipeFromText = (text) => {
       !lower.includes("rating") &&
       !lower.includes("review") &&
       !lower.includes("comment") &&
+      !line.includes("פרסומת") &&
+      !line.includes("מודעה") &&
+      !line.includes("הירשם") &&
+      !line.includes("שתף") &&
       line.length > 2 &&
       line.length < 300
     );
@@ -242,7 +374,13 @@ export const parseRecipeFromText = (text) => {
 
   recipe.name = titleCandidates[0] || lines[0] || "Untitled Recipe";
 
-  const ingredientsKeywords = ["ingredients", "מרכיבים", "חומרים"];
+  const ingredientsKeywords = [
+    "ingredients",
+    "מרכיבים",
+    "המרכיבים",
+    "חומרים",
+    "רכיבים",
+  ];
   const instructionsKeywords = [
     "instructions",
     "directions",
@@ -251,7 +389,11 @@ export const parseRecipeFromText = (text) => {
     "steps",
     "הוראות",
     "אופן הכנה",
+    "אופן ההכנה",
+    "הכנה",
     "שלבים",
+    "שלבי הכנה",
+    "להכנת",
   ];
   const timeKeywords = [
     "prep time",
@@ -306,43 +448,39 @@ export const parseRecipeFromText = (text) => {
     }
 
     if (currentSection === "ingredients" && ingredientsStart > 0) {
-      if (instructionsStart === -1 || i < instructionsStart) {
-        if (lines[i].match(/^[\d\-•\*]/) || lines[i].length > 5) {
-          recipe.ingredients +=
-            (recipe.ingredients ? ", " : "") +
-            lines[i].replace(/^[\d\-•\*\.]\s*/, "");
-        }
+      if (lines[i].match(/^[\d\-•\*]/) || lines[i].length > 5) {
+        recipe.ingredients.push(lines[i].replace(/^[\d\-•\*\.]\s*/, ""));
       }
-    }
-
-    if (
-      currentSection === "instructions" &&
-      instructionsStart > 0 &&
-      i >= instructionsStart
-    ) {
-      if (lines[i].length > 10) {
-        recipe.instructions +=
-          (recipe.instructions ? ". " : "") +
-          lines[i].replace(/^[\d\-•\*\.]\s*/, "");
+    } else if (currentSection === "instructions" && instructionsStart > 0) {
+      if (lines[i].length > 3) {
+        recipe.instructions.push(lines[i].replace(/^[\d\-•\*\.]\s*/, ""));
       }
     }
   }
 
-  if (!recipe.ingredients) {
-    const possibleIngredients = lines
+  if (recipe.ingredients.length === 0 && recipe.instructions.length === 0) {
+    const contentLines = lines.slice(1);
+    const midpoint = Math.ceil(contentLines.length / 2);
+    recipe.ingredients = contentLines
+      .slice(0, midpoint)
+      .filter(
+        (line) =>
+          line.match(/^[\d\-•\*]/) || (line.length > 3 && line.length < 100),
+      );
+    recipe.instructions = contentLines
+      .slice(midpoint)
+      .filter((line) => line.length > 10);
+  } else if (recipe.ingredients.length === 0) {
+    recipe.ingredients = lines
       .slice(1, Math.min(15, lines.length))
       .filter(
         (line) =>
           line.match(/^[\d\-•\*]/) || (line.length > 5 && line.length < 100),
       );
-    recipe.ingredients = possibleIngredients.join(", ");
-  }
-
-  if (!recipe.instructions) {
-    const possibleInstructions = lines
+  } else if (recipe.instructions.length === 0) {
+    recipe.instructions = lines
       .slice(Math.max(1, lines.length - 20))
       .filter((line) => line.length > 20);
-    recipe.instructions = possibleInstructions.join(". ");
   }
 
   return recipe;

@@ -8,6 +8,7 @@ import React, {
 import { VscDebugRestart } from "react-icons/vsc";
 import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
 import { FaStop } from "react-icons/fa";
+import { TbUsers } from "react-icons/tb";
 import { CookingVoiceChat } from "../cooking-voice-chat";
 import { CloseButton } from "../controls/close-button";
 import { AddButton } from "../controls/add-button";
@@ -223,48 +224,7 @@ function RecipeDetailsCookingMode({
       )} */}
 
       <div className={classes.headerButtonsCooking}>
-        {/* Voice Recognition Indicator */}
-        <button
-          onClick={onToggleVoice}
-          className={classes.voiceToggleButton}
-          style={{
-            background: voiceEnabled ? "#e9edf2" : "#e9edf2",
-          }}
-        >
-          <span>
-            <PiMicrophoneThin />
-          </span>
-          <span>
-            {voiceEnabled
-              ? t("voiceChat", "stopChat")
-              : t("voiceChat", "startChat")}
-          </span>
-        </button>
-        {activeTab === "instructions" && (
-          <div className={classes.cooking}>
-            <CookingVoiceChat
-              recipe={recipe}
-              ingredients={ingredientsArray}
-              instructions={instructionsArray}
-              currentStep={currentStep}
-              servings={servings}
-              onNextStep={() => handleNextStepRef.current()}
-              onPrevStep={() => handlePrevStepRef.current()}
-              onGotoStep={(step) => {
-                setCurrentStep(step);
-                setShowCompletion(false);
-              }}
-              onStartTimer={(minutes) => startTimer(minutes)}
-              onStopTimer={() => {
-                setIsTimerRunning(false);
-                setTotalSeconds(0);
-                setCustomTimerInput("");
-              }}
-              isTimerRunning={isTimerRunning}
-            />
-          </div>
-        )}
-        <div className={classes.headerRight}>
+        <div className={classes.headerLeft}>
           {!(showCompletion && activeTab === "instructions") && (
             <button
               className={classes.infoButton}
@@ -277,8 +237,34 @@ function RecipeDetailsCookingMode({
               ?
             </button>
           )}
+        </div>
+        <h3 className={classes.headerTitle}>{t("recipes", "cookingMode")}</h3>
+        <div className={classes.headerRight}>
           <CloseButton onClick={onClose} />
         </div>
+      </div>
+
+      <div className={classes.voiceBar}>
+        <CookingVoiceChat
+          recipe={recipe}
+          ingredients={ingredientsArray}
+          instructions={instructionsArray}
+          currentStep={currentStep}
+          servings={servings}
+          onNextStep={() => handleNextStepRef.current()}
+          onPrevStep={() => handlePrevStepRef.current()}
+          onGotoStep={(step) => {
+            setCurrentStep(step);
+            setShowCompletion(false);
+          }}
+          onStartTimer={(minutes) => startTimer(minutes)}
+          onStopTimer={() => {
+            setIsTimerRunning(false);
+            setTotalSeconds(0);
+            setCustomTimerInput("");
+          }}
+          isTimerRunning={isTimerRunning}
+        />
       </div>
 
       <div className={classes.recipeContent}>
@@ -300,7 +286,8 @@ function RecipeDetailsCookingMode({
               />
             </div>
             <span className={classes.servingLabelCooking}>
-              Serving {servings}
+              <TbUsers className={classes.servingIcon} />
+              {t("recipes", "servings")}
             </span>
           </div>
         )}
@@ -484,39 +471,22 @@ function RecipeDetailsCookingMode({
                     <div className={classes.infoModalBody}>
                       <div className={classes.infoSection}>
                         <div className={classes.infoItem}>
-                          <span className={classes.infoEmoji}>⚠️</span>
+                          <span className={classes.infoEmoji}>⏱️</span>
                           <div>
-                            <strong>
-                              {t("cookingMode", "micWarningTitle")}
-                            </strong>
-                            <p>{t("cookingMode", "micWarningText")}</p>
-                          </div>
-                        </div>
-                        <div className={classes.infoItem}>
-                          <span className={classes.infoEmoji}>👆</span>
-                          <div>
-                            <strong>
-                              {t("cookingMode", "tapScreenTitle")}
-                            </strong>
-                            <p>{t("cookingMode", "tapScreenText")}</p>
-                          </div>
-                        </div>
-                        <div className={classes.infoItem}>
-                          <span className={classes.infoEmoji}>⌨️</span>
-                          <div>
-                            <strong>{t("cookingMode", "keyboardTitle")}</strong>
-                            <p>{t("cookingMode", "keyboardText")}</p>
+                            <strong>{t("cookingMode", "timerTitle")}</strong>
+                            <p>{t("cookingMode", "timerText")}</p>
                           </div>
                         </div>
                         <div className={classes.infoItem}>
                           <span className={classes.infoEmoji}>🎤</span>
                           <div>
-                            <strong>{t("cookingMode", "voiceTitle")}</strong>
-                            <p>{t("cookingMode", "voiceText")}</p>
+                            <strong>{t("cookingMode", "chatTitle")}</strong>
+                            <p>{t("cookingMode", "chatText")}</p>
                             <ul className={classes.voiceCommands}>
-                              <li>{t("cookingMode", "voiceNext")}</li>
-                              <li>{t("cookingMode", "voicePrevious")}</li>
-                              <li>{t("cookingMode", "voiceStart")}</li>
+                              <li>{t("cookingMode", "chatFeature1")}</li>
+                              <li>{t("cookingMode", "chatFeature2")}</li>
+                              <li>{t("cookingMode", "chatFeature3")}</li>
+                              <li>{t("cookingMode", "chatFeature4")}</li>
                             </ul>
                           </div>
                         </div>
