@@ -2063,7 +2063,7 @@ const translations = {
       mixed: "הוסף מרכיב",
     },
     instructionsSubtitle: {
-      he: "פרט את שלבי ההכנה בסדר",
+      he: "פרט את שלבי ההכנה לפי סדר",
       en: "List the preparation steps in order",
       ru: "Перечислите шаги приготовления по порядку",
       de: "Zubereitungsschritte der Reihe nach auflisten",

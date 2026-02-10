@@ -402,47 +402,16 @@ function AddRecipeWizard({
             .replace("{total}", 6)}
         </span>
       </div>
-      <div className={classes.progressBar}>
-        <div
-          className={classes.progressFill}
-          style={{ width: `${((manualStep + 1) / 6) * 100}%` }}
-        />
-      </div>
-      <div className={classes.stepCircles}>
-        {STEP_LABELS.map((label, i) => (
+      <div className={classes.segmentedBar}>
+        {STEP_LABELS.map((_, i) => (
           <div
             key={i}
-            className={classes.stepItem}
+            className={`${classes.segment} ${
+              i <= manualStep ? classes.segmentActive : ""
+            } ${i === manualStep ? classes.segmentCurrent : ""}`}
             onClick={() => visitedSteps.has(i) && handleStepClick(i)}
             style={{ cursor: visitedSteps.has(i) ? "pointer" : "default" }}
-          >
-            <div
-              className={`${classes.stepCircle} ${
-                i === manualStep
-                  ? classes.stepCircleActive
-                  : visitedSteps.has(i)
-                    ? classes.stepCircleCompleted
-                    : ""
-              }`}
-            >
-              {visitedSteps.has(i) && i !== manualStep ? (
-                <FiCheck size={14} />
-              ) : (
-                i + 1
-              )}
-            </div>
-            <span
-              className={`${classes.stepLabel} ${
-                i === manualStep
-                  ? classes.stepLabelActive
-                  : visitedSteps.has(i)
-                    ? classes.stepLabelVisited
-                    : ""
-              }`}
-            >
-              {t("addWizard", label)}
-            </span>
-          </div>
+          />
         ))}
       </div>
     </div>
@@ -584,22 +553,24 @@ function AddRecipeWizard({
             >
               <FiMenu size={16} />
             </span>
-            <input
-              type="text"
-              className={classes.dynamicItemInput}
-              placeholder={`${t("addWizard", "ingredient")} ${i + 1}`}
-              value={ing}
-              onChange={(e) => handleIngredientChange(i, e.target.value)}
-            />
-            {recipe.ingredients.length > 1 && (
-              <button
-                type="button"
-                className={classes.removeItemBtn}
-                onClick={() => handleRemoveIngredient(i)}
-              >
-                <FiX />
-              </button>
-            )}
+            <div className={classes.inputBox}>
+              <input
+                type="text"
+                className={classes.dynamicItemInput}
+                placeholder={`${t("addWizard", "ingredient")} ${i + 1}`}
+                value={ing}
+                onChange={(e) => handleIngredientChange(i, e.target.value)}
+              />
+              {recipe.ingredients.length > 1 && (
+                <button
+                  type="button"
+                  className={classes.removeItemBtn}
+                  onClick={() => handleRemoveIngredient(i)}
+                >
+                  <FiX />
+                </button>
+              )}
+            </div>
           </div>
         ))}
         <button
@@ -643,22 +614,36 @@ function AddRecipeWizard({
             >
               <FiMenu size={16} />
             </span>
-            <span className={classes.dynamicItemNumber}>{i + 1}</span>
-            <textarea
-              className={classes.dynamicItemTextarea}
-              placeholder={`${t("addWizard", "step")} ${i + 1}...`}
-              value={inst}
-              onChange={(e) => handleInstructionChange(i, e.target.value)}
-            />
-            {recipe.instructions.length > 1 && (
-              <button
-                type="button"
-                className={classes.removeItemBtn}
-                onClick={() => handleRemoveInstruction(i)}
-              >
-                <FiX />
-              </button>
-            )}
+            <div className={classes.instructionBox}>
+              {recipe.instructions.length > 1 && (
+                <button
+                  type="button"
+                  className={classes.instructionRemoveBtn}
+                  onClick={() => handleRemoveInstruction(i)}
+                >
+                  <FiX />
+                </button>
+              )}
+              <div className={classes.instructionContent}>
+                <span className={classes.dynamicItemNumber}>{i + 1}.</span>
+                <textarea
+                  className={classes.dynamicItemTextarea}
+                  placeholder={`${t("addWizard", "step")} ${i + 1}...`}
+                  value={inst}
+                  onChange={(e) => handleInstructionChange(i, e.target.value)}
+                  onInput={(e) => {
+                    e.target.style.height = "auto";
+                    e.target.style.height = e.target.scrollHeight + "px";
+                  }}
+                  ref={(el) => {
+                    if (el) {
+                      el.style.height = "auto";
+                      el.style.height = el.scrollHeight + "px";
+                    }
+                  }}
+                />
+              </div>
+            </div>
           </div>
         ))}
         <button
@@ -1039,6 +1024,13 @@ function AddRecipeWizard({
   // ========== Screens ==========
   const renderMethodSelection = () => (
     <div className={classes.wizardContainer}>
+      <button
+        type="button"
+        className={classes.methodCloseBtn}
+        onClick={onCancel}
+      >
+        <FiX size={22} />
+      </button>
       <h1 className={classes.methodTitle}>{t("addWizard", "title")}</h1>
       <p className={classes.methodSubtitle}>{t("addWizard", "subtitle")}</p>
 

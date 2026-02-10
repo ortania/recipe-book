@@ -13,6 +13,7 @@
 
 .voiceChatIcon.active {
   color: #6366f1;
+  color: green;
 }
 
 .voiceChatIcon.speaking {

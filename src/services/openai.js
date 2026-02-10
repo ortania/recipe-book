@@ -132,6 +132,49 @@ You MUST respond with valid JSON in this exact format:
   }
 };
 
+export const extractRecipeFromText = async (text) => {
+  const truncated = text.slice(0, 8000);
+  const result = await callOpenAI({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: `You are a recipe extraction expert. Given raw text from a webpage, extract the recipe information.
+You MUST respond with valid JSON in this exact format:
+{
+  "name": "recipe name",
+  "ingredients": ["ingredient 1 with quantity", "ingredient 2 with quantity"],
+  "instructions": ["step 1", "step 2"],
+  "prepTime": "15" or "",
+  "cookTime": "30" or "",
+  "servings": "4" or ""
+}
+- Extract ALL ingredients with their exact quantities as separate array items.
+- Extract ALL instructions as separate steps in order.
+- prepTime and cookTime should be numbers in minutes only (no units).
+- Keep the original language of the recipe. Do not translate.
+- If you cannot find a recipe in the text, return: {"error": "No recipe found"}`,
+      },
+      {
+        role: "user",
+        content: `Extract the recipe from this webpage text:\n\n${truncated}`,
+      },
+    ],
+    temperature: 0.1,
+    max_tokens: 2000,
+  });
+
+  try {
+    const cleaned = result
+      .replace(/```json\n?/g, "")
+      .replace(/```\n?/g, "")
+      .trim();
+    return JSON.parse(cleaned);
+  } catch {
+    return { error: result };
+  }
+};
+
 const LANG_NAMES = {
   he: "Hebrew",
   en: "English",

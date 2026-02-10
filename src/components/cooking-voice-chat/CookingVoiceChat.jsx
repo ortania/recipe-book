@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
+import { FaMicrophone } from "react-icons/fa6";
+import { FaMicrophoneSlash } from "react-icons/fa";
 import { sendCookingChatMessage, speakWithOpenAI } from "../../services/openai";
 import { useLanguage } from "../../context";
 import classes from "./cooking-voice-chat.module.css";
@@ -404,7 +406,8 @@ function CookingVoiceChat({
         className={`${classes.voiceChatIcon} ${isActive ? classes.active : ""} ${isSpeaking ? classes.speaking : ""}`}
         title={isActive ? "עצור צ'אט קולי" : "צ'אט קולי"}
       >
-        {isActive ? <PiMicrophoneThin /> : <PiMicrophoneSlashThin />}
+        {isActive ? <FaMicrophone /> : <FaMicrophoneSlash />}
+        {/* {isActive ? <PiMicrophoneThin /> : <PiMicrophoneSlashThin />} */}
       </button>
 
       {isActive && (

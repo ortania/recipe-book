@@ -173,133 +173,34 @@ export const parseRecipeFromUrl = async (url) => {
       }
     }
 
-    // --- Fallback: scrape from HTML ---
-    if (!recipe.name) {
-      const h1 = doc.querySelector("h1");
-      if (h1) recipe.name = h1.textContent.trim();
-    }
-
+    // --- Fallback: use OpenAI to extract from page text ---
     if (!recipe.image_src) {
       recipe.image_src = extractOgImage(doc);
     }
 
-    // --- Ingredients selectors (including Hebrew sites) ---
-    if (!recipe.ingredients) {
-      const ingredientSelectors = [
-        ".ingredients li",
-        ".ingredient-list li",
-        "[class*='ingredient'] li",
-        "ul[class*='ingredient'] li",
-        ".recipe-ingredients li",
-        "[class*='Ingredient'] li",
-        "[class*='recipeIngredient'] li",
-        "[data-testid*='ingredient'] li",
-        "[class*='recipe_ingredient'] li",
-        "[class*='recipe-ingredient'] li",
-      ];
+    const bodyText = doc.body ? doc.body.innerText || doc.body.textContent : "";
 
-      for (const selector of ingredientSelectors) {
-        const items = doc.querySelectorAll(selector);
-        if (items.length > 0) {
-          recipe.ingredients = Array.from(items)
-            .map((item) => item.textContent.trim())
-            .filter((text) => text.length > 2)
-            .join(", ");
-          if (recipe.ingredients) break;
+    if (bodyText && bodyText.length > 100) {
+      try {
+        const { extractRecipeFromText: aiExtract } =
+          await import("../services/openai");
+        const aiResult = await aiExtract(bodyText);
+
+        if (aiResult && !aiResult.error) {
+          recipe.name = aiResult.name || "";
+          if (Array.isArray(aiResult.ingredients)) {
+            recipe.ingredients = aiResult.ingredients.join(", ");
+          }
+          if (Array.isArray(aiResult.instructions)) {
+            recipe.instructions = aiResult.instructions.join(". ");
+          }
+          recipe.prepTime = aiResult.prepTime || "";
+          recipe.cookTime = aiResult.cookTime || "";
+          recipe.servings = aiResult.servings || "";
+          return recipe;
         }
-      }
-    }
-
-    // --- Instructions selectors ---
-    if (!recipe.instructions) {
-      const instructionSelectors = [
-        ".instructions li",
-        ".directions li",
-        ".recipe-directions li",
-        "[class*='instruction'] li",
-        "[class*='direction'] li",
-        ".steps li",
-        ".recipe-steps li",
-        ".method li",
-        ".preparation li",
-        "[class*='Instruction'] li",
-        "[class*='recipeInstruction'] li",
-        "[class*='recipe_instruction'] li",
-        "[class*='recipe-instruction'] li",
-        "ol li",
-        ".instructions p",
-        ".directions p",
-        "[class*='instruction'] p",
-        "[class*='direction'] p",
-      ];
-
-      for (const selector of instructionSelectors) {
-        const items = doc.querySelectorAll(selector);
-        if (items.length > 0) {
-          recipe.instructions = Array.from(items)
-            .map((item) => item.textContent.trim())
-            .filter(
-              (text) =>
-                text.length > 10 &&
-                !text.toLowerCase().includes("advertisement") &&
-                !text.includes("פרסומת"),
-            )
-            .join(". ");
-          if (recipe.instructions && recipe.instructions.length > 50) break;
-        }
-      }
-    }
-
-    // --- Paragraph fallback with Hebrew cooking words ---
-    if (!recipe.instructions || recipe.instructions.length < 50) {
-      const allParagraphs = doc.querySelectorAll("p");
-      const instructionParagraphs = Array.from(allParagraphs)
-        .map((p) => p.textContent.trim())
-        .filter(
-          (text) =>
-            text.length > 30 &&
-            text.length < 500 &&
-            !text.includes("פרסומת") &&
-            !text.includes("מודעה") &&
-            (text.match(/\d+\./g) ||
-              text.toLowerCase().includes("bake") ||
-              text.toLowerCase().includes("cook") ||
-              text.toLowerCase().includes("mix") ||
-              text.toLowerCase().includes("heat") ||
-              text.toLowerCase().includes("add") ||
-              text.includes("מערבבים") ||
-              text.includes("מוסיפים") ||
-              text.includes("אופים") ||
-              text.includes("מחממים") ||
-              text.includes("יוצקים") ||
-              text.includes("מכינים") ||
-              text.includes("טוחנים") ||
-              text.includes("מעבירים") ||
-              text.includes("מניחים") ||
-              text.includes("מורחים") ||
-              text.includes("קוצצים") ||
-              text.includes("חותכים")),
-        );
-
-      if (instructionParagraphs.length > 0) {
-        recipe.instructions = instructionParagraphs.join(". ");
-      }
-    }
-
-    // --- Full-page text fallback for Hebrew sites (like mako) ---
-    if (!recipe.ingredients || !recipe.instructions) {
-      const bodyText = doc.body
-        ? doc.body.innerText || doc.body.textContent
-        : "";
-      if (bodyText) {
-        const textResult = parseRecipeFromText(bodyText);
-        if (!recipe.name && textResult.name) recipe.name = textResult.name;
-        if (!recipe.ingredients && textResult.ingredients.length > 0) {
-          recipe.ingredients = textResult.ingredients.join(", ");
-        }
-        if (!recipe.instructions && textResult.instructions.length > 0) {
-          recipe.instructions = textResult.instructions.join(". ");
-        }
+      } catch (aiError) {
+        console.error("OpenAI extraction failed:", aiError);
       }
     }
 

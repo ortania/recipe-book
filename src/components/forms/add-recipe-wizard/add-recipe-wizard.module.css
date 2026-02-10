@@ -3,6 +3,7 @@
 .wizardContainer {
   padding: 2rem;
   max-width: 100%;
+  position: relative;
 }
 
 /* Back link */
@@ -25,6 +26,29 @@
 }
 
 /* ========== Method Selection ========== */
+.methodCloseBtn {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: none;
+  /* border: 1px solid #e0e0e0; */
+  border: none;
+  /* border-radius: 50%; */
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #666;
+  transition: all 0.2s;
+}
+
+.methodCloseBtn:hover {
+  /* background: #f5f5f5; */
+  color: #333;
+}
+
 .methodTitle {
   font-size: var(--very-large-font);
   font-weight: 700;
@@ -216,7 +240,7 @@
   background: #f0f4ff;
   border-radius: 12px;
   margin-top: 1rem;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: #555;
 }
 
@@ -268,7 +292,7 @@
 
 .errorText {
   color: #e53935;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   margin-top: 0.5rem;
 }
 
@@ -311,78 +335,26 @@
   color: #888;
 }
 
-.progressBar {
-  width: 100%;
-  height: 6px;
-  background: #e0e0e0;
-  border-radius: 3px;
-  margin-bottom: 1.5rem;
-  overflow: hidden;
-}
-
-.progressFill {
-  height: 100%;
-  background: #1a9c5a;
-  border-radius: 3px;
-  transition: width 0.3s ease;
-}
-
-.stepCircles {
+.segmentedBar {
   display: flex;
-  justify-content: space-between;
+  gap: 0.5rem;
   margin-bottom: 2rem;
-  position: relative;
 }
 
-.stepItem {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.4rem;
+.segment {
   flex: 1;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  transition: background 0.3s ease;
 }
 
-.stepCircle {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--small-font);
-  font-weight: 700;
-  border: 2px solid #e0e0e0;
-  background: white;
-  color: #999;
-  transition: all 0.3s ease;
+.segmentActive {
+  background: #222;
 }
 
-.stepCircleActive {
-  border-color: #1a9c5a;
-  background: #1a9c5a;
-  color: white;
-}
-
-.stepCircleCompleted {
-  border-color: #1a9c5a;
-  background: #1a9c5a;
-  color: white;
-}
-
-.stepLabel {
-  font-size: var(--small-font);
-  color: #999;
-  text-align: center;
-  white-space: nowrap;
-}
-
-.stepLabelActive {
-  color: #1a9c5a;
-  font-weight: 600;
-}
-
-.stepLabelVisited {
-  color: #1a9c5a;
+.segmentCurrent {
+  background: #222;
 }
 
 /* ========== Step Content ========== */
@@ -398,7 +370,7 @@
 }
 
 .stepSectionSubtitle {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: #888;
   margin: 0 0 1.5rem 0;
 }
@@ -432,6 +404,7 @@
   transition: border-color 0.2s;
   width: 100%;
   box-sizing: border-box;
+  background: #f5f5f5;
 }
 
 .formInput::placeholder {
@@ -450,7 +423,7 @@
   border-radius: 12px;
   font-size: var(--basic-font);
   outline: none;
-  background: white;
+  background: #f5f5f5;
   cursor: pointer;
   width: 100%;
   box-sizing: border-box;
@@ -467,6 +440,7 @@
   min-height: 80px;
   width: 100%;
   box-sizing: border-box;
+  background: #f5f5f5;
 }
 
 .formTextarea::placeholder {
@@ -492,29 +466,39 @@
   gap: 0.5rem;
 }
 
-.dynamicItemNumber {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #1a9c5a;
-  color: white;
+.inputBox {
+  flex: 1;
+  min-width: 0;
   display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--small-font);
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background: #f5f5f5;
+  transition: border-color 0.2s;
+}
+
+.inputBox:focus-within {
+  border-color: #1a9c5a;
+}
+
+.dynamicItemNumber {
+  font-size: var(--basic-font);
   font-weight: 700;
+  color: #333;
   flex-shrink: 0;
+  line-height: 1.5;
 }
 
 .dynamicItemInput {
   flex: 1;
   min-width: 0;
-  padding: 0.8rem 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  padding: 0;
+  border: none;
   font-size: var(--basic-font);
   outline: none;
-  transition: border-color 0.2s;
+  background: transparent;
   box-sizing: border-box;
 }
 
@@ -524,23 +508,20 @@
   font-weight: 400;
 }
 
-.dynamicItemInput:focus {
-  border-color: #1a9c5a;
-}
-
 .dynamicItemTextarea {
   flex: 1;
   min-width: 0;
-  padding: 0.8rem 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  padding: 0;
+  border: none;
   font-size: var(--basic-font);
+  line-height: 1.5;
   outline: none;
-  resize: vertical;
+  resize: none;
   font-family: inherit;
-  min-height: 60px;
-  transition: border-color 0.2s;
+  min-height: 1.5em;
   box-sizing: border-box;
+  background: transparent;
+  overflow: hidden;
 }
 
 .dynamicItemTextarea::placeholder {
@@ -549,22 +530,59 @@
   font-weight: 400;
 }
 
-.dynamicItemTextarea:focus {
-  border-color: #1a9c5a;
-}
-
 .removeItemBtn {
   background: none;
   border: none;
-  color: #ccc;
+  color: gray;
   cursor: pointer;
-  font-size: 1.2rem;
-  padding: 0.3rem;
+  font-size: 1.5rem;
+  padding: 0;
   transition: color 0.2s;
   flex-shrink: 0;
+  align-self: center;
 }
 
 .removeItemBtn:hover {
+  color: #e53935;
+}
+
+.instructionBox {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  padding: 0.8rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background: #f5f5f5;
+  transition: border-color 0.2s;
+}
+
+.instructionBox:focus-within {
+  border-color: #1a9c5a;
+}
+
+.instructionContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.instructionRemoveBtn {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 0.75rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: gray;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0.2rem;
+  transition: color 0.2s;
+  z-index: 1;
+}
+
+.instructionRemoveBtn:hover {
   color: #e53935;
 }
 
@@ -1009,16 +1027,6 @@
 
   .formRow {
     grid-template-columns: 1fr;
-  }
-
-  .stepLabel {
-    font-size: var(--small-font);
-  }
-
-  .stepCircle {
-    width: 28px;
-    height: 28px;
-    font-size: 0.65rem;
   }
 
   .methodCard {
