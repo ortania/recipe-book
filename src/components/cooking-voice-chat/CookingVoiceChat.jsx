@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
 import { FaMicrophone } from "react-icons/fa6";
 import { FaMicrophoneSlash } from "react-icons/fa";
-import { sendCookingChatMessage, speakWithOpenAI } from "../../services/openai";
+import { sendCookingChatMessage } from "../../services/openai";
 import { useLanguage } from "../../context";
 import classes from "./cooking-voice-chat.module.css";
 
@@ -118,6 +118,8 @@ function CookingVoiceChat({
   const isActiveRef = useRef(false);
   const isProcessingRef = useRef(false);
   const audioRef = useRef(null);
+  const audioCtxRef = useRef(null);
+  const audioSourceRef = useRef(null);
 
   // Single ref holding ALL current values - updated synchronously every render
   const $ = useRef({});
@@ -139,28 +141,112 @@ function CookingVoiceChat({
     onSwitchTab,
   };
 
+  // ---- Helper: ensure AudioContext is created & resumed (call on user gesture) ----
+  function ensureAudioContext() {
+    if (!audioCtxRef.current) {
+      audioCtxRef.current = new (
+        window.AudioContext || window.webkitAudioContext
+      )();
+    }
+    if (audioCtxRef.current.state === "suspended") {
+      audioCtxRef.current.resume().catch(() => {});
+    }
+  }
+
   // ---- Helper: speak text aloud using OpenAI TTS ----
   async function speakText(text) {
     if (!text) return;
+    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    if (!apiKey) return;
     setIsSpeaking(true);
     try {
-      const audioUrl = await speakWithOpenAI(text);
-      if (audioUrl && isActiveRef.current) {
+      const response = await fetch("https://api.openai.com/v1/audio/speech", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "tts-1",
+          input: text,
+          voice: "nova",
+          response_format: "mp3",
+        }),
+      });
+      if (!response.ok || !isActiveRef.current) {
+        setIsSpeaking(false);
+        return;
+      }
+      const arrayBuffer = await response.arrayBuffer();
+      if (!isActiveRef.current) {
+        setIsSpeaking(false);
+        return;
+      }
+
+      const ctx = audioCtxRef.current;
+      if (ctx) {
+        try {
+          const audioBuffer = await ctx.decodeAudioData(arrayBuffer.slice(0));
+          await new Promise((resolve) => {
+            const source = ctx.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(ctx.destination);
+            audioSourceRef.current = source;
+            source.onended = () => {
+              audioSourceRef.current = null;
+              resolve();
+            };
+            source.start(0);
+          });
+        } catch (decodeErr) {
+          console.error(
+            "🔊 AudioContext decode failed, falling back:",
+            decodeErr,
+          );
+          // Fallback to Audio element with blob URL
+          const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+          const blobUrl = URL.createObjectURL(blob);
+          await new Promise((resolve) => {
+            const audio = new Audio(blobUrl);
+            audioRef.current = audio;
+            audio.onended = () => {
+              audioRef.current = null;
+              URL.revokeObjectURL(blobUrl);
+              resolve();
+            };
+            audio.onerror = () => {
+              audioRef.current = null;
+              URL.revokeObjectURL(blobUrl);
+              resolve();
+            };
+            audio.play().catch(() => {
+              audioRef.current = null;
+              URL.revokeObjectURL(blobUrl);
+              resolve();
+            });
+          });
+        }
+      } else {
+        // No AudioContext, use Audio element
+        const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+        const blobUrl = URL.createObjectURL(blob);
         await new Promise((resolve) => {
-          const audio = new Audio(audioUrl);
+          const audio = new Audio(blobUrl);
           audioRef.current = audio;
           audio.onended = () => {
             audioRef.current = null;
-            URL.revokeObjectURL(audioUrl);
+            URL.revokeObjectURL(blobUrl);
             resolve();
           };
           audio.onerror = () => {
             audioRef.current = null;
-            URL.revokeObjectURL(audioUrl);
+            URL.revokeObjectURL(blobUrl);
             resolve();
           };
-          audio.play().catch(() => {
+          audio.play().catch((err) => {
+            console.error("🔊 Audio play failed:", err);
             audioRef.current = null;
+            URL.revokeObjectURL(blobUrl);
             resolve();
           });
         });
@@ -255,7 +341,7 @@ function CookingVoiceChat({
           if (isActiveRef.current && !isProcessingRef.current) {
             listenRef.current?.();
           }
-        }, 2000);
+        }, 1500);
       }
     }
   };
@@ -285,6 +371,7 @@ function CookingVoiceChat({
     let processed = false;
 
     recognition.onstart = () => {
+      console.log("🎤 Recognition started");
       setStatusText("מקשיב...");
     };
 
@@ -342,27 +429,32 @@ function CookingVoiceChat({
     };
 
     recognition.onerror = (event) => {
-      console.error("Voice chat error:", event.error);
+      console.error("🎤 Voice chat error:", event.error);
       if (event.error === "not-allowed") {
         alert("יש לאפשר גישה למיקרופון");
         setIsActive(false);
         isActiveRef.current = false;
         return;
       }
-      if (event.error === "no-speech") return;
+      if (event.error === "no-speech") {
+        console.log("🎤 No speech detected, will restart");
+        return;
+      }
       if (event.error === "aborted") return;
     };
 
     recognitionRef.current = recognition;
     try {
       recognition.start();
+      console.log("🎤 Recognition.start() called successfully");
     } catch (e) {
-      console.error("Failed to start recognition:", e);
+      console.error("🎤 Failed to start recognition:", e);
+      recognitionRef.current = null;
       setTimeout(() => {
         if (isActiveRef.current && !isProcessingRef.current) {
           listenRef.current?.();
         }
-      }, 1000);
+      }, 500);
     }
   };
 
@@ -372,6 +464,14 @@ function CookingVoiceChat({
       isActiveRef.current = false;
       isProcessingRef.current = false;
       setIsActive(false);
+      if (audioSourceRef.current) {
+        try {
+          audioSourceRef.current.stop();
+        } catch (e) {
+          /* */
+        }
+        audioSourceRef.current = null;
+      }
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
@@ -383,6 +483,7 @@ function CookingVoiceChat({
     } else {
       isActiveRef.current = true;
       setIsActive(true);
+      ensureAudioContext();
       listenRef.current?.();
     }
   }
