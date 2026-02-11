@@ -49,6 +49,34 @@
   color: #333;
 }
 
+.screenTopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.wizardCloseBtn {
+  background: #f0f0f0;
+  border: none;
+  font-size: 1.3rem;
+  color: #555;
+  cursor: pointer;
+  padding: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  transition: all 0.2s;
+}
+
+.wizardCloseBtn:hover {
+  background: #e0e0e0;
+  color: #222;
+}
+
 .methodTitle {
   font-size: var(--very-large-font);
   font-weight: 700;
@@ -238,6 +266,22 @@
   border-color: #667eea;
 }
 
+.progressBarContainer {
+  width: 100%;
+  height: 6px;
+  background: #e0e0e0;
+  border-radius: 3px;
+  overflow: hidden;
+  margin: 1rem 0;
+}
+
+.progressBar {
+  height: 100%;
+  background: #222;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
 .tipBox {
   display: flex;
   align-items: center;
@@ -279,7 +323,10 @@
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  transition: all 0.2s ease;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+  box-shadow: none;
 }
 
 .continueBtn:not(:disabled) {
@@ -401,6 +448,13 @@
   color: #555;
 }
 
+.formGroupLabel span {
+  font-size: 3rem;
+  padding: 0 0.5rem;
+  position: relative;
+  top: 0.3em;
+}
+
 .formInput {
   padding: 0.8rem 1rem;
   border: 1px solid #e0e0e0;
@@ -506,6 +560,10 @@
   outline: none;
   background: transparent;
   box-sizing: border-box;
+  resize: none;
+  overflow: hidden;
+  font-family: inherit;
+  line-height: 1.5;
 }
 
 .dynamicItemInput::placeholder {
@@ -571,12 +629,13 @@
   display: flex;
   align-items: flex-start;
   gap: 0.5rem;
+  padding-inline-end: 1.5rem;
 }
 
 .instructionRemoveBtn {
   position: absolute;
   top: 50%;
-  inset-inline-end: 0.75rem;
+  inset-inline-end: 0.4rem;
   transform: translateY(-50%);
   background: none;
   border: none;
@@ -645,6 +704,43 @@
 .imageUploadText {
   font-size: var(--small-font);
   color: #888;
+}
+
+.imageUploadButtons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.imageOptionBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 2rem;
+  border: 2px dashed #e0e0e0;
+  border-radius: 16px;
+  background: #fafafa;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: var(--small-font);
+  color: #666;
+  flex: 1;
+}
+
+.imageOptionBtn:hover {
+  border-color: #1a9c5a;
+  background: #f0fff5;
+  color: #1a9c5a;
+}
+
+.imageOptionIcon {
+  font-size: 2rem;
+  color: #ccc;
+}
+
+.imageOptionBtn:hover .imageOptionIcon {
+  color: #1a9c5a;
 }
 
 .imagePreview {
@@ -1053,4 +1149,65 @@
     touch-action: none;
     padding: 0.4em;
   }
+}
+
+/* Calculate Nutrition */
+.nutritionActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.calculateNutritionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6em 1.4em;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+.calculateNutritionBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.calculateNutritionBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.calculateNutritionBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.calculateNutritionIcon {
+  font-size: 1.1em;
+}
+
+.nutritionMessage {
+  font-size: var(--basic-font);
+  text-align: center;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  background: #f0fdf4;
+  color: #166534;
+}
+
+.nutritionNote {
+  font-size: var(--small-font);
+  color: #888;
+  text-align: center;
+  margin: 0.25rem 0 0.75rem;
+  font-style: italic;
 }

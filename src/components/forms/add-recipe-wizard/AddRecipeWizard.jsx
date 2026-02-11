@@ -5,13 +5,17 @@ import {
   parseRecipeFromUrl,
   parseRecipeFromText,
 } from "../../../app/recipeParser";
-import { extractRecipeFromImage } from "../../../services/openai";
+import {
+  extractRecipeFromImage,
+  calculateNutrition,
+} from "../../../services/openai";
 import {
   FiLink,
   FiChevronLeft,
   FiChevronRight,
   FiCheck,
   FiCamera,
+  FiUpload,
   FiX,
   FiStar,
   FiMenu,
@@ -19,10 +23,11 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
-import { BsClipboardData } from "react-icons/bs";
+import { BsClipboardData, BsCalculator } from "react-icons/bs";
 import { MdOutlineEditNote } from "react-icons/md";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import classes from "./add-recipe-wizard.module.css";
+import { CloseButton } from "../../controls";
 
 const INITIAL_RECIPE = {
   name: "",
@@ -81,8 +86,14 @@ function AddRecipeWizard({
   const [dragField, setDragField] = useState(null);
   const [visitedSteps, setVisitedSteps] = useState(new Set([0]));
   const [showPreview, setShowPreview] = useState(false);
+  const [calculatingNutrition, setCalculatingNutrition] = useState(false);
+  const [nutritionMessage, setNutritionMessage] = useState("");
+  const [importProgress, setImportProgress] = useState(0);
+  const progressRef = useRef(null);
   const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
   const photoInputRef = useRef(null);
+  const photoFileInputRef = useRef(null);
   const ingredientsListRef = useRef(null);
   const instructionsListRef = useRef(null);
 
@@ -120,6 +131,44 @@ function AddRecipeWizard({
     }));
   };
 
+  const handleCalculateNutrition = async () => {
+    const filledIngredients = recipe.ingredients.filter((i) => i.trim());
+    if (filledIngredients.length === 0) {
+      setNutritionMessage(t("addWizard", "noIngredientsForNutrition"));
+      return;
+    }
+    setCalculatingNutrition(true);
+    setNutritionMessage("");
+    try {
+      const result = await calculateNutrition(
+        filledIngredients,
+        recipe.servings,
+      );
+      if (result && !result.error) {
+        setRecipe((prev) => ({
+          ...prev,
+          nutrition: {
+            ...prev.nutrition,
+            calories: result.calories || prev.nutrition.calories,
+            protein: result.protein || prev.nutrition.protein,
+            fat: result.fat || prev.nutrition.fat,
+            carbs: result.carbs || prev.nutrition.carbs,
+            sugars: result.sugars || prev.nutrition.sugars,
+            fiber: result.fiber || prev.nutrition.fiber,
+          },
+        }));
+        setNutritionMessage(t("addWizard", "nutritionCalculated"));
+      } else {
+        setNutritionMessage(t("addWizard", "nutritionError"));
+      }
+    } catch (err) {
+      console.error("Nutrition calculation failed:", err);
+      setNutritionMessage(t("addWizard", "nutritionError"));
+    } finally {
+      setCalculatingNutrition(false);
+    }
+  };
+
   // ========== Import handlers ==========
   const handleImportFromUrl = async () => {
     if (!recipeUrl.trim()) {
@@ -128,6 +177,16 @@ function AddRecipeWizard({
     }
     setIsImporting(true);
     setImportError("");
+    setImportProgress(0);
+    progressRef.current = setInterval(() => {
+      setImportProgress((prev) => {
+        if (prev >= 90) {
+          clearInterval(progressRef.current);
+          return 90;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 400);
     try {
       const parsed = await parseRecipeFromUrl(recipeUrl);
       setRecipe((prev) => ({
@@ -151,6 +210,8 @@ function AddRecipeWizard({
         image_src: parsed.image_src || prev.image_src,
         sourceUrl: recipeUrl,
       }));
+      setImportProgress(100);
+      clearInterval(progressRef.current);
       setScreen("manual");
       setManualStep(0);
     } catch (err) {
@@ -160,7 +221,9 @@ function AddRecipeWizard({
         setImportError(t("addWizard", "importFailed"));
       }
     } finally {
+      clearInterval(progressRef.current);
       setIsImporting(false);
+      setImportProgress(0);
     }
   };
 
@@ -428,6 +491,7 @@ function AddRecipeWizard({
       <div className={classes.formGroup}>
         <label className={classes.formGroupLabel}>
           {t("recipes", "recipeName")}
+          <span>*</span>
         </label>
         <input
           type="text"
@@ -555,12 +619,22 @@ function AddRecipeWizard({
               <FiMenu size={16} />
             </span>
             <div className={classes.inputBox}>
-              <input
-                type="text"
+              <textarea
                 className={classes.dynamicItemInput}
                 placeholder={`${t("addWizard", "ingredient")} ${i + 1}`}
                 value={ing}
+                rows={1}
                 onChange={(e) => handleIngredientChange(i, e.target.value)}
+                onInput={(e) => {
+                  e.target.style.height = "auto";
+                  e.target.style.height = e.target.scrollHeight + "px";
+                }}
+                ref={(el) => {
+                  if (el) {
+                    el.style.height = "auto";
+                    el.style.height = el.scrollHeight + "px";
+                  }
+                }}
               />
               {recipe.ingredients.length > 1 && (
                 <button
@@ -676,39 +750,49 @@ function AddRecipeWizard({
           onChange={handleImageUpload}
           style={{ display: "none" }}
         />
-        <div
-          className={classes.imageUploadArea}
-          onClick={() => fileInputRef.current?.click()}
-        >
-          {recipe.image_src ? (
-            <>
-              <img
-                src={recipe.image_src}
-                alt="Preview"
-                className={classes.imagePreview}
-              />
-              <button
-                type="button"
-                className={classes.imageRemoveBtn}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  updateRecipe("image_src", "");
-                }}
-              >
-                ✕
-              </button>
-            </>
-          ) : (
-            <>
-              <FiCamera className={classes.imageUploadIcon} />
-              <span className={classes.imageUploadText}>
-                {uploadingImage
-                  ? t("recipes", "uploading")
-                  : t("addWizard", "uploadImage")}
-              </span>
-            </>
-          )}
-        </div>
+        <input
+          type="file"
+          accept="image/*"
+          capture="environment"
+          ref={cameraInputRef}
+          onChange={handleImageUpload}
+          style={{ display: "none" }}
+        />
+        {recipe.image_src ? (
+          <div className={classes.imageUploadArea}>
+            <img
+              src={recipe.image_src}
+              alt="Preview"
+              className={classes.imagePreview}
+            />
+            <button
+              type="button"
+              className={classes.imageRemoveBtn}
+              onClick={() => updateRecipe("image_src", "")}
+            >
+              ✕
+            </button>
+          </div>
+        ) : (
+          <div className={classes.imageUploadButtons}>
+            <button
+              type="button"
+              className={classes.imageOptionBtn}
+              onClick={() => cameraInputRef.current?.click()}
+            >
+              <FiCamera className={classes.imageOptionIcon} />
+              <span>{t("addWizard", "takePhoto")}</span>
+            </button>
+            <button
+              type="button"
+              className={classes.imageOptionBtn}
+              onClick={() => fileInputRef.current?.click()}
+            >
+              <FiUpload className={classes.imageOptionIcon} />
+              <span>{t("addWizard", "fromFile")}</span>
+            </button>
+          </div>
+        )}
       </div>
 
       <div className={classes.formGroup}>
@@ -747,6 +831,30 @@ function AddRecipeWizard({
         {t("addWizard", "nutritionSubtitle")}
       </p>
 
+      <div className={classes.nutritionActions}>
+        <button
+          type="button"
+          className={classes.calculateNutritionBtn}
+          onClick={handleCalculateNutrition}
+          disabled={calculatingNutrition}
+        >
+          <BsCalculator className={classes.calculateNutritionIcon} />
+          <span>
+            {calculatingNutrition
+              ? t("addWizard", "calculatingNutrition")
+              : recipe.nutrition?.calories
+                ? t("addWizard", "updateNutrition")
+                : t("addWizard", "calculateNutrition")}
+          </span>
+        </button>
+        {nutritionMessage && (
+          <p className={classes.nutritionMessage}>{nutritionMessage}</p>
+        )}
+      </div>
+      <p className={classes.nutritionNote}>
+        {t("addWizard", "nutritionAutoUpdateNote")}
+      </p>
+
       <div className={classes.formRow}>
         <div className={classes.formGroup}>
           <label className={classes.formGroupLabel}>
@@ -762,7 +870,7 @@ function AddRecipeWizard({
         </div>
         <div className={classes.formGroup}>
           <label className={classes.formGroupLabel}>
-            {t("recipes", "calories")}
+            {t("recipes", "calories")} (kcal)
           </label>
           <input
             type="text"
@@ -972,7 +1080,10 @@ function AddRecipeWizard({
           onChange={() => updateRecipe("isFavorite", !recipe.isFavorite)}
         />
         <span className={classes.favoriteLabel}>
-          {t("recipes", "addToFavorites")}
+          {t(
+            "recipes",
+            recipe.isFavorite ? "removeFromFavorites" : "addToFavorites",
+          )}
         </span>
       </label>
     </div>
@@ -1009,16 +1120,19 @@ function AddRecipeWizard({
     } else {
       const nextStep = manualStep + 1;
       setManualStep(nextStep);
+      setNutritionMessage("");
       setVisitedSteps((prev) => new Set([...prev, nextStep]));
     }
   };
 
   const handlePrev = () => {
     setManualStep(manualStep - 1);
+    setNutritionMessage("");
   };
 
   const handleStepClick = (stepIndex) => {
     setManualStep(stepIndex);
+    setNutritionMessage("");
     setVisitedSteps((prev) => new Set([...prev, stepIndex]));
   };
 
@@ -1100,7 +1214,6 @@ function AddRecipeWizard({
           <div className={`${classes.methodIcon} ${classes.methodIconManual}`}>
             {/* <MdOutlineEditNote /> */}
             <PiPencilSimpleLineLight />
-
           </div>
           <div className={classes.methodCardContent}>
             <h3 className={classes.methodCardTitle}>
@@ -1118,16 +1231,25 @@ function AddRecipeWizard({
 
   const renderUrlScreen = () => (
     <div className={classes.wizardContainer}>
-      <button
-        type="button"
-        className={classes.backLink}
-        onClick={() => {
-          setScreen("method");
-          setImportError("");
-        }}
-      >
-        <FiChevronLeft /> {t("addWizard", "backToMethod")}
-      </button>
+      <div className={classes.screenTopBar}>
+        <button
+          type="button"
+          className={classes.backLink}
+          onClick={() => {
+            setScreen("method");
+            setImportError("");
+          }}
+        >
+          <FiChevronLeft /> {t("addWizard", "backToMethod")}
+        </button>
+        <CloseButton
+          // type="button"
+          // className={classes.wizardCloseBtn}
+          onClick={onCancel}
+        >
+          {/* <FiX /> */}
+        </CloseButton>
+      </div>
 
       <h2 className={classes.screenTitle}>{t("addWizard", "fromUrlTitle")}</h2>
       <p className={classes.screenSubtitle}>
@@ -1153,6 +1275,15 @@ function AddRecipeWizard({
         </span>
       </div>
 
+      {isImporting && (
+        <div className={classes.progressBarContainer}>
+          <div
+            className={classes.progressBar}
+            style={{ width: `${Math.min(importProgress, 100)}%` }}
+          />
+        </div>
+      )}
+
       {importError && <p className={classes.errorText}>{importError}</p>}
 
       <button
@@ -1168,16 +1299,25 @@ function AddRecipeWizard({
 
   const renderTextScreen = () => (
     <div className={classes.wizardContainer}>
-      <button
-        type="button"
-        className={classes.backLink}
-        onClick={() => {
-          setScreen("method");
-          setImportError("");
-        }}
-      >
-        <FiChevronLeft /> {t("addWizard", "backToMethod")}
-      </button>
+      <div className={classes.screenTopBar}>
+        <button
+          type="button"
+          className={classes.backLink}
+          onClick={() => {
+            setScreen("method");
+            setImportError("");
+          }}
+        >
+          <FiChevronLeft /> {t("addWizard", "backToMethod")}
+        </button>
+        <CloseButton
+          // type="button"
+          // className={classes.wizardCloseBtn}
+          onClick={onCancel}
+        >
+          {/* <FiX /> */}
+        </CloseButton>
+      </div>
 
       <h2 className={classes.screenTitle}>{t("addWizard", "fromTextTitle")}</h2>
       <p className={classes.screenSubtitle}>
@@ -1219,16 +1359,25 @@ function AddRecipeWizard({
 
   const renderPhotoScreen = () => (
     <div className={classes.wizardContainer}>
-      <button
-        type="button"
-        className={classes.backLink}
-        onClick={() => {
-          setScreen("method");
-          setImportError("");
-        }}
-      >
-        <FiChevronLeft /> {t("addWizard", "backToMethod")}
-      </button>
+      <div className={classes.screenTopBar}>
+        <button
+          type="button"
+          className={classes.backLink}
+          onClick={() => {
+            setScreen("method");
+            setImportError("");
+          }}
+        >
+          <FiChevronLeft /> {t("addWizard", "backToMethod")}
+        </button>
+        <CloseButton
+          // type="button"
+          // className={classes.wizardCloseBtn}
+          onClick={onCancel}
+        >
+          {/* <FiX /> */}
+        </CloseButton>
+      </div>
 
       <h2 className={classes.screenTitle}>
         {t("addWizard", "fromPhotoTitle")}
@@ -1236,18 +1385,6 @@ function AddRecipeWizard({
       <p className={classes.screenSubtitle}>
         {t("addWizard", "fromPhotoSubtitle")}
       </p>
-
-      <div
-        className={classes.photoUploadArea}
-        onClick={() => photoInputRef.current?.click()}
-      >
-        <FiCamera className={classes.photoUploadIcon} />
-        <span className={classes.photoUploadText}>
-          {isImporting
-            ? t("addWizard", "analyzingPhoto")
-            : t("addWizard", "selectPhoto")}
-        </span>
-      </div>
 
       <input
         ref={photoInputRef}
@@ -1257,6 +1394,41 @@ function AddRecipeWizard({
         style={{ display: "none" }}
         onChange={handleImportFromPhoto}
       />
+      <input
+        ref={photoFileInputRef}
+        type="file"
+        accept="image/*"
+        style={{ display: "none" }}
+        onChange={handleImportFromPhoto}
+      />
+
+      {isImporting ? (
+        <div className={classes.photoUploadArea}>
+          <FiCamera className={classes.photoUploadIcon} />
+          <span className={classes.photoUploadText}>
+            {t("addWizard", "analyzingPhoto")}
+          </span>
+        </div>
+      ) : (
+        <div className={classes.imageUploadButtons}>
+          <button
+            type="button"
+            className={classes.imageOptionBtn}
+            onClick={() => photoInputRef.current?.click()}
+          >
+            <FiCamera className={classes.imageOptionIcon} />
+            <span>{t("addWizard", "takePhoto")}</span>
+          </button>
+          <button
+            type="button"
+            className={classes.imageOptionBtn}
+            onClick={() => photoFileInputRef.current?.click()}
+          >
+            <FiUpload className={classes.imageOptionIcon} />
+            <span>{t("addWizard", "fromFile")}</span>
+          </button>
+        </div>
+      )}
 
       <div className={`${classes.tipBox} ${classes.tipBoxGreen}`}>
         <span className={classes.tipIcon}>📸</span>
@@ -1272,13 +1444,22 @@ function AddRecipeWizard({
 
   const renderManualScreen = () => (
     <div className={classes.wizardContainer}>
-      <button
-        type="button"
-        className={classes.backLink}
-        onClick={() => setScreen("method")}
-      >
-        <FiChevronLeft /> {t("addWizard", "backToMethod")}
-      </button>
+      <div className={classes.screenTopBar}>
+        <button
+          type="button"
+          className={classes.backLink}
+          onClick={() => setScreen("method")}
+        >
+          <FiChevronLeft /> {t("addWizard", "backToMethod")}
+        </button>
+        <CloseButton
+          // type="button"
+          // className={classes.wizardCloseBtn}
+          onClick={onCancel}
+        >
+          {/* <FiX /> */}
+        </CloseButton>
+      </div>
 
       {renderStepper()}
       {renderManualStep()}
@@ -1302,7 +1483,7 @@ function AddRecipeWizard({
           {manualStep === 5
             ? t("addWizard", "saveRecipe")
             : t("addWizard", "continue")}
-          <FiChevronRight />
+          {/* <FiChevronRight /> */}
         </button>
       </div>
     </div>

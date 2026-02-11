@@ -15,10 +15,13 @@ import {
   BsImage,
   BsTags,
   BsBarChart,
+  BsCalculator,
 } from "react-icons/bs";
 import { useLanguage } from "../../../context";
+import { calculateNutrition } from "../../../services/openai";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import classes from "./edit-recipe.module.css";
+import { CloseButton } from "../../controls";
 
 const TABS = [
   { id: "basic", icon: BsFileText, labelKey: "basicInfo" },
@@ -38,6 +41,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [dragIndex, setDragIndex] = useState(null);
   const [dragField, setDragField] = useState(null);
+  const [calculatingNutrition, setCalculatingNutrition] = useState(false);
+  const [nutritionMessage, setNutritionMessage] = useState("");
+  const [savedMessage, setSavedMessage] = useState("");
 
   const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
     setEditedPerson((prev) => {
@@ -91,8 +97,8 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     },
   });
 
-  const [originalServings] = useState(parseInt(person.servings) || 1);
-  const [originalNutrition] = useState({
+  const nutritionBaseServings = useRef(parseInt(person.servings) || 1);
+  const nutritionBaseValues = useRef({
     calories: "",
     protein: "",
     carbs: "",
@@ -115,8 +121,8 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     const newServings = e.target.value;
     const newServingsNum = parseInt(newServings);
 
-    if (newServingsNum > 0 && originalServings > 0) {
-      const ratio = originalServings / newServingsNum;
+    if (newServingsNum > 0 && nutritionBaseServings.current > 0) {
+      const ratio = nutritionBaseServings.current / newServingsNum;
       const scaledNutrition = {};
       for (const key of [
         "calories",
@@ -127,7 +133,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         "sugars",
       ]) {
         scaledNutrition[key] = scaleNutritionValue(
-          originalNutrition[key],
+          nutritionBaseValues.current[key],
           ratio,
         );
       }
@@ -323,6 +329,49 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     }));
   };
 
+  const handleCalculateNutrition = async () => {
+    const filledIngredients = editedPerson.ingredients.filter((i) => i.trim());
+    if (filledIngredients.length === 0) {
+      setNutritionMessage(t("addWizard", "noIngredientsForNutrition"));
+      return;
+    }
+    setCalculatingNutrition(true);
+    setNutritionMessage("");
+    try {
+      const result = await calculateNutrition(
+        filledIngredients,
+        editedPerson.servings,
+      );
+      if (result && !result.error) {
+        const newNutrition = {
+          calories: result.calories || "",
+          protein: result.protein || "",
+          fat: result.fat || "",
+          carbs: result.carbs || "",
+          sugars: result.sugars || "",
+          fiber: result.fiber || "",
+        };
+        setEditedPerson((prev) => ({
+          ...prev,
+          nutrition: { ...prev.nutrition, ...newNutrition },
+        }));
+        nutritionBaseValues.current = {
+          ...nutritionBaseValues.current,
+          ...newNutrition,
+        };
+        nutritionBaseServings.current = parseInt(editedPerson.servings) || 1;
+        setNutritionMessage(t("addWizard", "nutritionCalculated"));
+      } else {
+        setNutritionMessage(t("addWizard", "nutritionError"));
+      }
+    } catch (err) {
+      console.error("Nutrition calculation failed:", err);
+      setNutritionMessage(t("addWizard", "nutritionError"));
+    } finally {
+      setCalculatingNutrition(false);
+    }
+  };
+
   const handleDragStart = (index, field) => {
     setDragIndex(index);
     setDragField(field);
@@ -384,6 +433,8 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       nutrition: editedPerson.nutrition,
     };
     onSave(updatedPerson);
+    setSavedMessage(t("recipes", "saved"));
+    setTimeout(() => setSavedMessage(""), 4000);
   };
 
   const renderBasicTab = () => (
@@ -406,13 +457,21 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             size={22}
             fill={editedPerson.isFavorite ? "#ffc107" : "none"}
           />{" "}
-          {t("recipes", "addToFavorites")}
+          <span>
+            {t(
+              "recipes",
+              editedPerson.isFavorite
+                ? "removeFromFavorites"
+                : "addToFavorites",
+            )}
+          </span>
         </button>
       </div>
 
       <div className={classes.formGroup}>
         <label className={classes.formLabel}>
-          {t("recipes", "recipeName")} *
+          {t("recipes", "recipeName")}
+          <span>*</span>
         </label>
         <input
           type="text"
@@ -570,22 +629,34 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             >
               <FiMenu size={16} />
             </span>
-            <span className={classes.dynamicItemNumber}>{i + 1}</span>
-            <input
-              type="text"
-              className={classes.dynamicItemInput}
-              value={ing}
-              onChange={(e) => handleIngredientChange(i, e.target.value)}
-            />
-            {editedPerson.ingredients.length > 1 && (
-              <button
-                type="button"
-                className={classes.removeItemBtn}
-                onClick={() => removeIngredient(i)}
-              >
-                <FiTrash2 size={16} />
-              </button>
-            )}
+            <div className={classes.inputBox}>
+              <textarea
+                className={classes.dynamicItemInput}
+                placeholder={`${t("addWizard", "ingredient")} ${i + 1}`}
+                value={ing}
+                rows={1}
+                onChange={(e) => handleIngredientChange(i, e.target.value)}
+                onInput={(e) => {
+                  e.target.style.height = "auto";
+                  e.target.style.height = e.target.scrollHeight + "px";
+                }}
+                ref={(el) => {
+                  if (el) {
+                    el.style.height = "auto";
+                    el.style.height = el.scrollHeight + "px";
+                  }
+                }}
+              />
+              {editedPerson.ingredients.length > 1 && (
+                <button
+                  type="button"
+                  className={classes.removeItemBtn}
+                  onClick={() => removeIngredient(i)}
+                >
+                  <FiX size={16} />
+                </button>
+              )}
+            </div>
           </div>
         ))}
         <button
@@ -636,6 +707,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 <span className={classes.dynamicItemNumber}>{i + 1}.</span>
                 <textarea
                   className={classes.dynamicItemTextarea}
+                  placeholder={`${t("addWizard", "step")} ${i + 1}...`}
                   value={inst}
                   onChange={(e) => handleInstructionChange(i, e.target.value)}
                   onInput={(e) => {
@@ -765,14 +837,52 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       <h3 className={classes.sectionTitle}>
         {t("addWizard", "nutritionValues")}
       </h3>
+      <div className={classes.nutritionActions}>
+        <button
+          type="button"
+          className={classes.calculateNutritionBtn}
+          onClick={handleCalculateNutrition}
+          disabled={calculatingNutrition}
+        >
+          <BsCalculator className={classes.calculateNutritionIcon} />
+          <span>
+            {calculatingNutrition
+              ? t("addWizard", "calculatingNutrition")
+              : editedPerson.nutrition?.calories
+                ? t("addWizard", "updateNutrition")
+                : t("addWizard", "calculateNutrition")}
+          </span>
+        </button>
+        {nutritionMessage && (
+          <p className={classes.nutritionMessage}>{nutritionMessage}</p>
+        )}
+      </div>
+      <p className={classes.nutritionNote}>
+        {t("addWizard", "nutritionAutoUpdateNote")}
+      </p>
       <div className={classes.nutritionGrid}>
         {[
-          { key: "calories", label: t("recipes", "calories") },
-          { key: "protein", label: t("recipes", "protein") },
-          { key: "fat", label: t("recipes", "fat") },
-          { key: "carbs", label: t("recipes", "carbs") },
-          { key: "sugars", label: t("recipes", "sugars") },
-          { key: "fiber", label: t("recipes", "fiber") },
+          { key: "calories", label: `${t("recipes", "calories")} (kcal)` },
+          {
+            key: "protein",
+            label: `${t("recipes", "protein")} (${t("addWizard", "grams")})`,
+          },
+          {
+            key: "fat",
+            label: `${t("recipes", "fat")} (${t("addWizard", "grams")})`,
+          },
+          {
+            key: "carbs",
+            label: `${t("recipes", "carbs")} (${t("addWizard", "grams")})`,
+          },
+          {
+            key: "sugars",
+            label: `${t("recipes", "sugars")} (${t("addWizard", "grams")})`,
+          },
+          {
+            key: "fiber",
+            label: `${t("recipes", "fiber")} (${t("addWizard", "grams")})`,
+          },
         ].map(({ key, label }) => (
           <div key={key} className={classes.formGroup}>
             <label className={classes.formLabel}>{label}</label>
@@ -840,26 +950,22 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         >
           <div className={classes.editHeader}>
             <div className={classes.editHeaderInfo}>
-              <button
-                type="button"
+              <CloseButton
+                // type="button"
                 className={classes.editCloseBtn}
                 onClick={onCancel}
               >
-                <FiX />
-              </button>
+                {/* <FiX/> */}
+              </CloseButton>
               <div className={classes.editTitleGroup}>
                 <h2>{t("recipes", "editRecipe")}</h2>
                 <p>{editedPerson.name}</p>
               </div>
             </div>
             <div className={classes.editHeaderActions}>
-              <button
-                type="button"
-                className={classes.cancelBtn}
-                onClick={onCancel}
-              >
-                {t("recipes", "cancel")}
-              </button>
+              {savedMessage && (
+                <span className={classes.savedMessage}>{savedMessage}</span>
+              )}
               <button
                 type="button"
                 className={classes.saveBtn}
@@ -879,7 +985,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                     key={tab.id}
                     type="button"
                     className={`${classes.sidebarTab} ${activeTab === tab.id ? classes.sidebarTabActive : ""}`}
-                    onClick={() => setActiveTab(tab.id)}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setNutritionMessage("");
+                    }}
                   >
                     <span className={classes.sidebarTabIcon}>
                       <Icon />
@@ -891,7 +1000,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               <button
                 type="button"
                 className={`${classes.sidebarTab} ${classes.sidebarTabDelete} ${activeTab === "delete" ? classes.sidebarTabActive : ""}`}
-                onClick={() => setActiveTab("delete")}
+                onClick={() => {
+                  setActiveTab("delete");
+                  setNutritionMessage("");
+                }}
               >
                 <span className={classes.sidebarTabIcon}>
                   <FiTrash2 />

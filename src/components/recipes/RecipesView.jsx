@@ -165,7 +165,6 @@ function RecipesView({
   const handleSaveEdit = (updatedPerson) => {
     // Pass the updated person directly to the parent component
     onEditPerson(updatedPerson);
-    setEditingPerson(null);
 
     // Also update the local state to reflect changes immediately
     setLocalPersons((prev) =>
@@ -173,6 +172,9 @@ function RecipesView({
         person.id === updatedPerson.id ? updatedPerson : person,
       ),
     );
+
+    // Update editingPerson with saved data so further edits start from saved state
+    setEditingPerson(updatedPerson);
   };
 
   const handleToggleFavorite = (personId, isFavorite) => {

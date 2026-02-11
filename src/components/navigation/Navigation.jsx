@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   FaSignOutAlt,
   FaChevronDown,
@@ -10,7 +10,7 @@ import { IoSettingsOutline } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 import { RxHamburgerMenu } from "react-icons/rx";
 import { FiHome } from "react-icons/fi";
-import { MdRestaurant } from "react-icons/md";
+import { MdRestaurant, MdMenuBook } from "react-icons/md";
 import { PiPlusLight } from "react-icons/pi";
 import { useRecipeBook, useLanguage } from "../../context";
 import { CategoriesManagement } from "../categories-management";
@@ -21,18 +21,21 @@ import classes from "./navigation.module.css";
 
 const iconMap = {
   Home: FiHome,
+  Categories: MdMenuBook,
   Conversions: FaCalculator,
   Settings: IoSettingsOutline,
 };
 
 const navTranslationMap = {
   Home: "home",
+  Categories: "recipes",
   Conversions: "conversions",
   Settings: "settings",
 };
 
 function Navigation({ onLogout, links }) {
   const navigate = useNavigate();
+  const location = useLocation();
   const {
     logout,
     currentUser,
@@ -125,8 +128,7 @@ function Navigation({ onLogout, links }) {
     document.body.classList.remove("sidebar-open");
   };
 
-  // Filter out "Categories" from nav links since we show them inline
-  const filteredLinks = links.filter((el) => el.name !== "Categories");
+  const filteredLinks = links;
 
   const isAllSelected = selectedCategories.includes("all");
   const selectedCount = isAllSelected ? 0 : selectedCategories.length;
@@ -166,124 +168,130 @@ function Navigation({ onLogout, links }) {
             );
           })}
 
-          <div className={classes.separator}></div>
+          {location.pathname === "/categories" && (
+            <>
+              <div className={classes.separator}></div>
 
-          {/* Categories Section */}
-          <button
-            className={classes.sectionHeader}
-            onClick={() => setCategoriesOpen(!categoriesOpen)}
-          >
-            <span>
-              {t("nav", "categories").toUpperCase()}
-              {selectedCount > 0 && (
-                <span className={classes.sectionCount}>({selectedCount})</span>
-              )}
-            </span>
-            {categoriesOpen ? (
-              <FaChevronUp className={classes.chevron} />
-            ) : (
-              <FaChevronDown className={classes.chevron} />
-            )}
-          </button>
-
-          {categoriesOpen && (
-            <div className={classes.categoryList}>
-              {categories.map((group) => {
-                const isSelected = selectedCategories.includes(group.id);
-                return (
-                  <button
-                    key={group.id}
-                    className={`${classes.categoryItem} ${isSelected ? classes.categoryActive : ""}`}
-                    onClick={() => toggleCategory(group.id)}
-                    style={{
-                      borderColor: group.color,
-                      backgroundColor: isSelected
-                        ? `${group.color}22`
-                        : "transparent",
-                      color: isSelected ? group.color : undefined,
-                    }}
-                  >
-                    <span className={classes.categoryLabel}>
-                      {(() => {
-                        const IconComp =
-                          group.id === "all"
-                            ? MdRestaurant
-                            : getCategoryIcon(group.icon);
-                        return (
-                          <span
-                            className={classes.categoryIconWrap}
-                            style={{
-                              backgroundColor: `${group.color}22`,
-                              color: group.color,
-                            }}
-                          >
-                            <IconComp />
-                          </span>
-                        );
-                      })()}
-                      {group.id === "all"
-                        ? t("categories", "allRecipes")
-                        : getTranslated(group)}
+              {/* Categories Section */}
+              <button
+                className={classes.sectionHeader}
+                onClick={() => setCategoriesOpen(!categoriesOpen)}
+              >
+                <span>
+                  {t("nav", "categories").toUpperCase()}
+                  {selectedCount > 0 && (
+                    <span className={classes.sectionCount}>
+                      ({selectedCount})
                     </span>
-                    {isSelected && group.id !== "all" && (
-                      <span
-                        className={classes.categoryDot}
-                        style={{ background: group.color }}
-                      />
-                    )}
-                  </button>
-                );
-              })}
+                  )}
+                </span>
+                {categoriesOpen ? (
+                  <FaChevronUp className={classes.chevron} />
+                ) : (
+                  <FaChevronDown className={classes.chevron} />
+                )}
+              </button>
 
-              <div className={classes.categoryActions}>
-                {/* <button
+              {categoriesOpen && (
+                <div className={classes.categoryList}>
+                  {categories.map((group) => {
+                    const isSelected = selectedCategories.includes(group.id);
+                    return (
+                      <button
+                        key={group.id}
+                        className={`${classes.categoryItem} ${isSelected ? classes.categoryActive : ""}`}
+                        onClick={() => toggleCategory(group.id)}
+                        style={{
+                          borderColor: group.color,
+                          backgroundColor: isSelected
+                            ? `${group.color}22`
+                            : "transparent",
+                          color: isSelected ? group.color : undefined,
+                        }}
+                      >
+                        <span className={classes.categoryLabel}>
+                          {(() => {
+                            const IconComp =
+                              group.id === "all"
+                                ? MdRestaurant
+                                : getCategoryIcon(group.icon);
+                            return (
+                              <span
+                                className={classes.categoryIconWrap}
+                                style={{
+                                  backgroundColor: `${group.color}22`,
+                                  color: group.color,
+                                }}
+                              >
+                                <IconComp />
+                              </span>
+                            );
+                          })()}
+                          {group.id === "all"
+                            ? t("categories", "allRecipes")
+                            : getTranslated(group)}
+                        </span>
+                        {isSelected && group.id !== "all" && (
+                          <span
+                            className={classes.categoryDot}
+                            style={{ background: group.color }}
+                          />
+                        )}
+                      </button>
+                    );
+                  })}
+
+                  <div className={classes.categoryActions}>
+                    {/* <button
                   className={classes.categoryActionBtn}
                   onClick={() => setShowManagement(true)}
                   title={t("categories", "add")}
                 >
                   <PiPlusLight /> {t("categories", "add")}
                 </button> */}
-                <button
-                  className={classes.categoryActionBtn}
-                  onClick={() => setShowManagement(true)}
-                  title={t("categories", "manage")}
-                >
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 3.5H5.5"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M7 8.5H2.5"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M8.5 10C9.32843 10 10 9.32843 10 8.5C10 7.67157 9.32843 7 8.5 7C7.67157 7 7 7.67157 7 8.5C7 9.32843 7.67157 10 8.5 10Z"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M3.5 5C4.32843 5 5 4.32843 5 3.5C5 2.67157 4.32843 2 3.5 2C2.67157 2 2 2.67157 2 3.5C2 4.32843 2.67157 5 3.5 5Z"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>{" "}
-                  {t("categories", "manage")}
-                </button>
-              </div>
-            </div>
+                    <button
+                      className={classes.categoryActionBtn}
+                      onClick={() => setShowManagement(true)}
+                      title={t("categories", "manage")}
+                    >
+                      <svg
+                        width="12"
+                        height="12"
+                        viewBox="0 0 12 12"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M10 3.5H5.5"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M7 8.5H2.5"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M8.5 10C9.32843 10 10 9.32843 10 8.5C10 7.67157 9.32843 7 8.5 7C7.67157 7 7 7.67157 7 8.5C7 9.32843 7.67157 10 8.5 10Z"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M3.5 5C4.32843 5 5 4.32843 5 3.5C5 2.67157 4.32843 2 3.5 2C2.67157 2 2 2.67157 2 3.5C2 4.32843 2.67157 5 3.5 5Z"
+                          stroke="currentColor"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>{" "}
+                      {t("categories", "manage")}
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           <div className={classes.separator}></div>

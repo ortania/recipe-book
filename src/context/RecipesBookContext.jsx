@@ -349,20 +349,9 @@ export const RecipeBookProvider = ({ children }) => {
     }
   };
 
-  const login = async (userId) => {
-    try {
-      setIsLoading(true);
-      const userData = await getUserData(userId);
-      setCurrentUser({ uid: userId, ...userData });
-      setIsAdmin(true);
-      // Load data BEFORE setting isLoggedIn so redirect happens with data ready
-      await loadUserData(userId);
-      setIsLoggedIn(true);
-    } catch (error) {
-      console.error("Error during login:", error);
-    } finally {
-      setIsLoading(false);
-    }
+  const login = async () => {
+    // onAuthStateChange handles loading user data and setting isLoggedIn.
+    // This function just ensures we wait for that to complete.
   };
 
   const loadMoreRecipes = async () => {

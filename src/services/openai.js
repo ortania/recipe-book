@@ -175,6 +175,53 @@ You MUST respond with valid JSON in this exact format:
   }
 };
 
+export const calculateNutrition = async (ingredients, servings) => {
+  const ingredientsList = Array.isArray(ingredients)
+    ? ingredients.join("\n")
+    : ingredients;
+  const servingsText = servings ? `The recipe makes ${servings} servings.` : "";
+
+  const result = await callOpenAI({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: `You are a nutrition expert. Given a list of recipe ingredients, estimate the nutritional values PER SERVING.
+${servingsText}
+You MUST respond with valid JSON in this exact format:
+{
+  "calories": "250",
+  "protein": "10",
+  "fat": "8",
+  "carbs": "30",
+  "sugars": "12",
+  "fiber": "3"
+}
+- All values should be numbers as strings (grams, except calories which is kcal).
+- Provide realistic estimates based on common ingredient quantities.
+- If you cannot estimate, use empty string "".
+- Do NOT include units in the values, just the number.`,
+      },
+      {
+        role: "user",
+        content: `Calculate nutrition per serving for this recipe:\n\n${ingredientsList}`,
+      },
+    ],
+    temperature: 0.2,
+    max_tokens: 300,
+  });
+
+  try {
+    const cleaned = result
+      .replace(/```json\n?/g, "")
+      .replace(/```\n?/g, "")
+      .trim();
+    return JSON.parse(cleaned);
+  } catch {
+    return { error: result };
+  }
+};
+
 const LANG_NAMES = {
   he: "Hebrew",
   en: "English",

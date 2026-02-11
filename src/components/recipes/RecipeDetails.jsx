@@ -302,7 +302,7 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
     <Modal
       isOpen={true}
       onClose={onClose}
-      maxWidth="550px"
+      maxWidth="750px"
       className={classes.recipeModal}
     >
       {!cookingMode ? (

@@ -3,6 +3,26 @@ import { useLanguage } from "../context";
 import translations from "../utils/translations";
 import { translateText } from "../utils/translateContent";
 
+const COMMON_TRANSLATIONS = {
+  cakes: { he: "עוגות", ru: "Торты", de: "Kuchen" },
+  cookies: { he: "עוגיות", ru: "Печенье", de: "Kekse" },
+  cake: { he: "עוגה", ru: "Торт", de: "Kuchen" },
+  cookie: { he: "עוגייה", ru: "Печенье", de: "Keks" },
+  soups: { he: "מרקים", ru: "Супы", de: "Suppen" },
+  soup: { he: "מרק", ru: "Суп", de: "Suppe" },
+  drinks: { he: "משקאות", ru: "Напитки", de: "Getränke" },
+  snacks: { he: "חטיפים", ru: "Закуски", de: "Snacks" },
+  breakfast: { he: "ארוחת בוקר", ru: "Завтрак", de: "Frühstück" },
+  pasta: { he: "פסטה", ru: "Паста", de: "Pasta" },
+  fish: { he: "דגים", ru: "Рыба", de: "Fisch" },
+  meat: { he: "בשר", ru: "Мясо", de: "Fleisch" },
+  chicken: { he: "עוף", ru: "Курица", de: "Hähnchen" },
+  rice: { he: "אורז", ru: "Рис", de: "Reis" },
+  sauces: { he: "רטבים", ru: "Соусы", de: "Soßen" },
+  appetizers: { he: "מנות ראשונות", ru: "Закуски", de: "Vorspeisen" },
+  smoothies: { he: "שייקים", ru: "Смузи", de: "Smoothies" },
+};
+
 const CATEGORY_KEY_MAP = {
   salads: "cat_salads",
   main: "cat_mainDishes",
@@ -91,6 +111,16 @@ function useTranslatedList(items, key = "name") {
     // User-created categories — use API translation
     if (apiTranslations[id]) {
       return apiTranslations[id];
+    }
+
+    // Fallback: common English category names
+    const commonKey = originalName?.toLowerCase?.();
+    if (
+      commonKey &&
+      COMMON_TRANSLATIONS[commonKey] &&
+      COMMON_TRANSLATIONS[commonKey][language]
+    ) {
+      return COMMON_TRANSLATIONS[commonKey][language];
     }
 
     return originalName;

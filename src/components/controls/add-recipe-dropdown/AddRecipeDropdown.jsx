@@ -12,13 +12,16 @@ function AddRecipeDropdown({ onSelect, buttonType = "circle", children }) {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
   const timeoutRef = useRef(null);
+  const isTouchRef = useRef(false);
 
   const handleMouseEnter = () => {
+    if (isTouchRef.current) return;
     clearTimeout(timeoutRef.current);
     setOpen(true);
   };
 
   const handleMouseLeave = () => {
+    if (isTouchRef.current) return;
     timeoutRef.current = setTimeout(() => setOpen(false), 200);
   };
 
@@ -38,16 +41,29 @@ function AddRecipeDropdown({ onSelect, buttonType = "circle", children }) {
   }, []);
 
   useEffect(() => {
+    const markTouch = () => {
+      isTouchRef.current = true;
+    };
+    const markMouse = (e) => {
+      if (e.pointerType === "mouse") isTouchRef.current = false;
+    };
+    window.addEventListener("touchstart", markTouch, { passive: true });
+    window.addEventListener("pointerdown", markMouse);
+    return () => {
+      window.removeEventListener("touchstart", markTouch);
+      window.removeEventListener("pointerdown", markMouse);
+    };
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (e) => {
       if (wrapperRef.current && !wrapperRef.current.contains(e.target)) {
         setOpen(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    document.addEventListener("touchstart", handleClickOutside);
+    document.addEventListener("pointerdown", handleClickOutside);
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("pointerdown", handleClickOutside);
     };
   }, []);
 
