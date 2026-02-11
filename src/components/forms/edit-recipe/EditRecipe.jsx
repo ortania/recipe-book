@@ -24,7 +24,7 @@ const TABS = [
   { id: "basic", icon: BsFileText, labelKey: "basicInfo" },
   { id: "ingredients", icon: BsListUl, labelKey: "ingredients" },
   { id: "instructions", icon: BsListOl, labelKey: "instructions" },
-  { id: "image", icon: BsImage, labelKey: "imageCategories" },
+  { id: "image", icon: BsImage, labelKey: "recipeImage" },
   { id: "categories", icon: BsTags, labelKey: "categories" },
   { id: "nutrition", icon: BsBarChart, labelKey: "nutrition" },
 ];
@@ -622,21 +622,35 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             >
               <FiMenu size={16} />
             </span>
-            <span className={classes.dynamicItemNumber}>{i + 1}</span>
-            <textarea
-              className={classes.dynamicItemTextarea}
-              value={inst}
-              onChange={(e) => handleInstructionChange(i, e.target.value)}
-            />
-            {editedPerson.instructions.length > 1 && (
-              <button
-                type="button"
-                className={classes.removeItemBtn}
-                onClick={() => removeInstruction(i)}
-              >
-                <FiTrash2 size={16} />
-              </button>
-            )}
+            <div className={classes.instructionBox}>
+              {editedPerson.instructions.length > 1 && (
+                <button
+                  type="button"
+                  className={classes.instructionRemoveBtn}
+                  onClick={() => removeInstruction(i)}
+                >
+                  <FiX />
+                </button>
+              )}
+              <div className={classes.instructionContent}>
+                <span className={classes.dynamicItemNumber}>{i + 1}.</span>
+                <textarea
+                  className={classes.dynamicItemTextarea}
+                  value={inst}
+                  onChange={(e) => handleInstructionChange(i, e.target.value)}
+                  onInput={(e) => {
+                    e.target.style.height = "auto";
+                    e.target.style.height = e.target.scrollHeight + "px";
+                  }}
+                  ref={(el) => {
+                    if (el) {
+                      el.style.height = "auto";
+                      el.style.height = el.scrollHeight + "px";
+                    }
+                  }}
+                />
+              </div>
+            </div>
           </div>
         ))}
         <button

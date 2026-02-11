@@ -18,6 +18,7 @@ import {
   FiChevronUp,
   FiChevronDown,
 } from "react-icons/fi";
+import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { BsClipboardData } from "react-icons/bs";
 import { MdOutlineEditNote } from "react-icons/md";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
@@ -1097,7 +1098,9 @@ function AddRecipeWizard({
           }}
         >
           <div className={`${classes.methodIcon} ${classes.methodIconManual}`}>
-            <MdOutlineEditNote />
+            {/* <MdOutlineEditNote /> */}
+            <PiPencilSimpleLineLight />
+
           </div>
           <div className={classes.methodCardContent}>
             <h3 className={classes.methodCardTitle}>

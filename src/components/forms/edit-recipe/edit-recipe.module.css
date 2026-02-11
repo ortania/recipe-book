@@ -49,7 +49,7 @@
 }
 
 .editTitleGroup p {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: #888;
   margin: 0;
 }
@@ -123,7 +123,7 @@
   background: none;
   cursor: pointer;
   color: #888;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   font-weight: 500;
   transition: all 0.2s;
   border-right: 3px solid transparent;
@@ -144,7 +144,7 @@
 }
 
 .sidebarTabIcon {
-  font-size: 1.4rem;
+  font-size: var(--basic-font);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -197,6 +197,7 @@
   transition: border-color 0.2s;
   width: 100%;
   box-sizing: border-box;
+  background: #f5f5f5;
 }
 
 .formInput::placeholder {
@@ -219,6 +220,7 @@
   min-height: 80px;
   width: 100%;
   box-sizing: border-box;
+  background: #f5f5f5;
 }
 
 .formTextarea::placeholder {
@@ -240,6 +242,7 @@
   cursor: pointer;
   width: 100%;
   box-sizing: border-box;
+  background: #f5f5f5;
 }
 
 .formRow {
@@ -314,17 +317,11 @@
 }
 
 .dynamicItemNumber {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: #1a9c5a;
-  color: white;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   font-weight: 700;
+  color: #333;
   flex-shrink: 0;
+  line-height: 1.5;
 }
 
 .dynamicItemInput {
@@ -337,6 +334,7 @@
   outline: none;
   transition: border-color 0.2s;
   box-sizing: border-box;
+  background: #f5f5f5;
 }
 
 .dynamicItemInput::placeholder {
@@ -351,25 +349,22 @@
 .dynamicItemTextarea {
   flex: 1;
   min-width: 0;
-  padding: 0.8rem 1rem;
-  border: 1px solid #e0e0e0;
-  border-radius: 12px;
+  padding: 0;
+  border: none;
   font-size: var(--basic-font);
+  line-height: 1.5;
   outline: none;
-  resize: vertical;
+  resize: none;
   font-family: inherit;
-  min-height: 80px;
-  transition: border-color 0.2s;
+  min-height: 1.5em;
   box-sizing: border-box;
+  background: transparent;
+  overflow: hidden;
 }
 
 .dynamicItemTextarea::placeholder {
   color: #bbb;
   font-style: italic;
-}
-
-.dynamicItemTextarea:focus {
-  border-color: #1a9c5a;
 }
 
 .removeItemBtn {
@@ -386,6 +381,46 @@
 
 .removeItemBtn:hover {
   opacity: 1;
+}
+
+.instructionBox {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  padding: 0.8rem 1rem;
+  border: 1px solid #e0e0e0;
+  border-radius: 12px;
+  background: #f5f5f5;
+  transition: border-color 0.2s;
+}
+
+.instructionBox:focus-within {
+  border-color: #1a9c5a;
+}
+
+.instructionContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+.instructionRemoveBtn {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 0.75rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: gray;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0.2rem;
+  transition: color 0.2s;
+  z-index: 1;
+}
+
+.instructionRemoveBtn:hover {
+  color: #e53935;
 }
 
 .addItemBtn {
@@ -489,10 +524,10 @@
 }
 
 .categorySubtitle {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   font-weight: 600;
   color: #555;
-  margin: 0 0 0.5rem 0;
+  margin: 2rem 0 1rem 0;
 }
 
 .categoryChips {

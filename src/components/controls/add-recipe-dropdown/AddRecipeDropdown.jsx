@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from "react";
 import { FiLink, FiCamera } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
+import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { useLanguage } from "../../../context";
 import { AddButton } from "../add-button";
 import classes from "./add-recipe-dropdown.module.css";
@@ -107,7 +108,8 @@ function AddRecipeDropdown({ onSelect, buttonType = "circle", children }) {
             onClick={() => handleClick("manual")}
           >
             <span className={classes.dropdownIcon}>
-              <HiOutlinePencilSquare />
+              {/* <HiOutlinePencilSquare /> */}
+              {<PiPencilSimpleLineLight />}
             </span>
             {t("addWizard", "manual")}
           </button>

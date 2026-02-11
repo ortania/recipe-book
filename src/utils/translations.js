@@ -1887,11 +1887,12 @@ const translations = {
       mixed: "הזן קישור",
     },
     importFailed: {
-      he: "ייבוא נכשל. נסה שוב.",
-      en: "Import failed. Please try again.",
-      ru: "Ошибка импорта. Попробуйте снова.",
-      de: "Import fehlgeschlagen. Bitte erneut versuchen.",
-      mixed: "ייבוא נכשל. נסה שוב.",
+      he: 'לא הצלחנו לחלץ את המתכון מהקישור. נסה להעתיק את טקסט המתכון מהאתר ולהשתמש ב"הוספה מטקסט", או לצלם מסך ולהשתמש ב"הוספה מתמונה".',
+      en: 'Could not extract the recipe from this link. Try copying the recipe text from the website and use "Add from Text", or take a screenshot and use "Add from Photo".',
+      ru: 'Не удалось извлечь рецепт по ссылке. Попробуйте скопировать текст рецепта с сайта и использовать "Из текста", или сделайте скриншот и используйте "Из фото".',
+      de: 'Rezept konnte nicht aus dem Link extrahiert werden. Kopieren Sie den Rezepttext und nutzen Sie "Aus Text", oder machen Sie einen Screenshot und nutzen Sie "Aus Foto".',
+      mixed:
+        'לא הצלחנו לחלץ את המתכון מהקישור. נסה להעתיק את טקסט המתכון מהאתר ולהשתמש ב"הוספה מטקסט", או לצלם מסך ולהשתמש ב"הוספה מתמונה".',
     },
     importBlocked: {
       he: 'האתר חוסם גישה אוטומטית. העתק את טקסט המתכון מהאתר והדבק אותו בלשונית "הוספה מטקסט".',

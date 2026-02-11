@@ -36,10 +36,7 @@ async function translateText(text, targetLang, sourceLang = "auto") {
   if (!tl) return text;
   const sl = sourceLang === "auto" ? "auto" : LANG_MAP[sourceLang] || "auto";
   const q = encodeURIComponent(trimmed);
-  const urls = [
-    `/api/translate?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${q}`,
-    `https://lingva.ml/api/v1/${sl === "auto" ? "auto" : sl}/${tl}/${q}`,
-  ];
+  const urls = [`/api/translate?client=gtx&sl=${sl}&tl=${tl}&dt=t&q=${q}`];
 
   for (const url of urls) {
     try {
