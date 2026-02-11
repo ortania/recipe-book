@@ -1587,6 +1587,13 @@ const translations = {
 
   // ===================== COMMON =====================
   common: {
+    back: {
+      he: "חזרה",
+      en: "Back",
+      ru: "Назад",
+      de: "Zurück",
+      mixed: "Back",
+    },
     save: {
       he: "שמור",
       en: "Save",
@@ -2139,6 +2146,20 @@ const translations = {
       ru: "Категории",
       de: "Kategorien",
       mixed: "קטגוריות",
+    },
+    selectedCategories: {
+      he: "קטגוריות נבחרות",
+      en: "Selected Categories",
+      ru: "Выбранные категории",
+      de: "Ausgewählte Kategorien",
+      mixed: "קטגוריות נבחרות",
+    },
+    availableCategories: {
+      he: "קטגוריות זמינות",
+      en: "Available Categories",
+      ru: "Доступные категории",
+      de: "Verfügbare Kategorien",
+      mixed: "קטגוריות זמינות",
     },
     nutritionValues: {
       he: "ערכים תזונתיים",

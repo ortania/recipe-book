@@ -42,7 +42,7 @@ function useTranslatedRecipe(recipe) {
     return () => {
       cancelled = true;
     };
-  }, [recipe?.id, recipe?.name, language]);
+  }, [recipe, language]);
 
   return { translated, isTranslating };
 }

@@ -26,6 +26,7 @@ import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { BsClipboardData, BsCalculator } from "react-icons/bs";
 import { MdOutlineEditNote } from "react-icons/md";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
+import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./add-recipe-wizard.module.css";
 import { CloseButton } from "../../controls";
 
@@ -71,6 +72,10 @@ function AddRecipeWizard({
   initialScreen = "method",
 }) {
   const { t } = useLanguage();
+  const { getTranslated: getTranslatedGroup } = useTranslatedList(
+    groups,
+    "name",
+  );
   const [screen, setScreen] = useState(initialScreen); // method | url | text | photo | manual
   const [manualStep, setManualStep] = useState(0);
   const [recipe, setRecipe] = useState({
@@ -813,7 +818,7 @@ function AddRecipeWizard({
                 }`}
                 onClick={() => toggleCategory(group.id)}
               >
-                {group.name}
+                {getTranslatedGroup(group)}
               </button>
             ))}
         </div>

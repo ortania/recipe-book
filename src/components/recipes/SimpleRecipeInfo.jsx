@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import classes from "./simple-recipe-info.module.css";
 import { Button } from "../controls/button";
-import RecipeDetails from "./RecipeDetails";
 
 function SimpleRecipeInfo({
   person,
@@ -10,8 +10,8 @@ function SimpleRecipeInfo({
   onDelete,
   onToggleFavorite,
 }) {
+  const navigate = useNavigate();
   const [isFavorite, setIsFavorite] = useState(person.isFavorite || false);
-  const [showDetails, setShowDetails] = useState(false);
 
   // Update local state when person prop changes
   useEffect(() => {
@@ -54,7 +54,7 @@ function SimpleRecipeInfo({
 
         <div className={classes.actions}>
           <Button
-            onClick={() => setShowDetails(true)}
+            onClick={() => navigate(`/recipe/${person.id}`)}
             title="View recipe details"
           >
             View
@@ -72,14 +72,6 @@ function SimpleRecipeInfo({
           </Button>
         </div>
       </div>
-
-      {showDetails && (
-        <RecipeDetails
-          recipe={person}
-          onClose={() => setShowDetails(false)}
-          groups={groups}
-        />
-      )}
     </>
   );
 }

@@ -39,7 +39,7 @@
   border-radius: 20px;
   background: #f8f8f8;
   color: #555;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.2s ease;
 }
@@ -145,7 +145,8 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: #f5f5f5;
+  /* background: #f5f5f5; */
+  background: white;
   border-radius: 24px;
   padding: 0.3rem 0.3rem 0.3rem 1rem;
 }
@@ -154,7 +155,7 @@
   flex: 1;
   border: none;
   background: transparent;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   outline: none;
   color: #333;
   min-width: 0;

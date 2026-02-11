@@ -18,6 +18,7 @@ import {
 } from "../context";
 import ConversionTables from "../components/conversion-tables";
 import Settings from "../pages/settings/Settings";
+import RecipeDetailsPage from "../pages/recipe-details/RecipeDetailsPage";
 
 function App() {
   return (
@@ -69,6 +70,7 @@ function AppContent() {
           <Route path="/settings" element={<Settings />} />
           <Route path="/migrate" element={<MigratePage />} />
           <Route path="/repair" element={<Repair />} />
+          <Route path="/recipe/:id" element={<RecipeDetailsPage />} />
         </Route>
 
         {/* Redirect unknown routes */}

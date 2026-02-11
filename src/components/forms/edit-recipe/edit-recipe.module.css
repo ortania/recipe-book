@@ -43,8 +43,9 @@
 }
 
 .editCloseBtn:hover {
-  background: #e0e0e0;
-  color: #222;
+  /* background: #e0e0e0; */
+  /* color: #222; */
+  transform: scale(1.1);
 }
 
 .editTitleGroup h2 {
@@ -212,9 +213,9 @@
   color: #555;
 }
 
-.formLabel  span {
-  font-size: 3rem ;
-  padding: 0 0.0.5rem;
+.formLabel span {
+  font-size: 3rem;
+  padding: 0 0.5rem;
   position: relative;
   top: 0.3em;
 }
@@ -601,7 +602,7 @@
   border: 1px solid #e0e0e0;
   border-radius: 20px;
   background: white;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.2s;
   color: #555;
@@ -611,10 +612,18 @@
   border-color: #1a9c5a;
 }
 
+@media (hover: none) {
+  .categoryChip:hover {
+    border-color: #e0e0e0;
+  }
+}
+
 .categoryChipActive {
-  background: #1a9c5a;
-  border-color: #1a9c5a;
-  color: white;
+  /* background: #1a9c5a; */
+  /* border-color: #1a9c5a;
+  color: white; */
+  background: #e0e0e0;
+  color: black;
 }
 
 /* ========== Nutrition ========== */

@@ -1,10 +1,10 @@
 import classes from "./recipe-card-new.module.css";
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaHeart, FaRegHeart, FaEdit, FaTrash } from "react-icons/fa";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { BsTrash3 } from "react-icons/bs";
 import { Button } from "../controls/button";
-import RecipeDetails from "./RecipeDetails";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { formatDifficulty } from "./utils";
 import { useLanguage } from "../../context";
@@ -15,9 +15,9 @@ const DEFAULT_IMAGE =
 
 function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const translatedName = useTranslatedText(person.name);
   const [isFavorite, setIsFavorite] = useState(person.isFavorite || false);
-  const [showDetails, setShowDetails] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
 
@@ -82,16 +82,10 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
 
   return (
     <>
-      {showDetails && (
-        <RecipeDetails
-          recipe={person}
-          onClose={() => setShowDetails(false)}
-          onEdit={onEdit}
-          onDelete={onDelete}
-          groups={groups}
-        />
-      )}
-      <div className={classes.recipeCard} onClick={() => setShowDetails(true)}>
+      <div
+        className={classes.recipeCard}
+        onClick={() => navigate(`/recipe/${person.id}`)}
+      >
         <div className={classes.imageContainer}>
           <img
             src={getImageSrc()}

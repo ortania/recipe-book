@@ -20,6 +20,7 @@ import {
 import { useLanguage } from "../../../context";
 import { calculateNutrition } from "../../../services/openai";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
+import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./edit-recipe.module.css";
 import { CloseButton } from "../../controls";
 
@@ -34,6 +35,10 @@ const TABS = [
 
 function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const { t } = useLanguage();
+  const { getTranslated: getTranslatedGroup } = useTranslatedList(
+    groups,
+    "name",
+  );
   const [activeTab, setActiveTab] = useState("basic");
   const fileInputRef = useRef(null);
   const ingredientsListRef = useRef(null);
@@ -802,7 +807,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 className={`${classes.categoryChip} ${classes.categoryChipActive}`}
                 onClick={() => toggleCategory(group.id)}
               >
-                ✕ {group.name}
+                ✕ {getTranslatedGroup(group)}
               </button>
             ))}
         </div>
@@ -824,7 +829,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 className={classes.categoryChip}
                 onClick={() => toggleCategory(group.id)}
               >
-                + {group.name}
+                + {getTranslatedGroup(group)}
               </button>
             ))}
         </div>

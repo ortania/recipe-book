@@ -779,7 +779,7 @@
   border: 1px solid #e0e0e0;
   border-radius: 20px;
   background: white;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.2s ease;
   color: #555;
@@ -789,10 +789,18 @@
   border-color: #1a9c5a;
 }
 
+@media (hover: none) {
+  .categoryChip:hover {
+    border-color: #e0e0e0;
+  }
+}
+
 .categoryChipActive {
-  background: #1a9c5a;
-  border-color: #1a9c5a;
+  /* background: #1a9c5a; */
+  /* border-color: #1a9c5a; */
   color: white;
+  background: #e0e0e0;
+  color: black;
 }
 
 /* ========== Summary Screen ========== */

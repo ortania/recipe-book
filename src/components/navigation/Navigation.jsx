@@ -132,17 +132,22 @@ function Navigation({ onLogout, links }) {
 
   const isAllSelected = selectedCategories.includes("all");
   const selectedCount = isAllSelected ? 0 : selectedCategories.length;
+  const isRecipeDetailsPage = location.pathname.startsWith("/recipe/");
 
   return (
     <>
-      <button className={classes.hamburger} onClick={toggleSidebar}>
-        {isOpen ? <IoMdClose /> : <RxHamburgerMenu />}
-      </button>
+      {!isRecipeDetailsPage && (
+        <button className={classes.hamburger} onClick={toggleSidebar}>
+          {isOpen ? <IoMdClose /> : <RxHamburgerMenu />}
+        </button>
+      )}
 
-      <div className={classes.mobileLogo}>
-        <span className={classes.logo}>Cook</span>
-        <span className={classes.logoTail}>book</span>
-      </div>
+      {!isRecipeDetailsPage && (
+        <div className={classes.mobileLogo}>
+          <span className={classes.logo}>Cook</span>
+          <span className={classes.logoTail}>book</span>
+        </div>
+      )}
 
       <nav className={`${classes.nav} ${isOpen ? classes.open : ""}`}>
         <div className={classes.navScrollable}>

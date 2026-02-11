@@ -150,6 +150,11 @@ function RecipeDetailsFull({
         />
       )}
 
+      <CloseButton
+        onClick={onClose}
+        type="circle"
+        className={classes.imageCloseButton}
+      />
       <div className={classes.imageContainer}>
         {recipe.image_src && (
           <img
@@ -158,18 +163,12 @@ function RecipeDetailsFull({
             className={classes.recipeImage}
           />
         )}
-        <CloseButton
-          onClick={onClose}
-          type="circle"
-          className={classes.imageCloseButton}
-        />
       </div>
 
       <div className={classes.actionBar}>
         {onEdit && (
           <button
             onClick={() => {
-              onClose();
               onEdit(recipe);
             }}
             className={classes.actionButton}
@@ -203,20 +202,29 @@ function RecipeDetailsFull({
       </div>
 
       <div className={classes.recipeContent}>
-        <h2 className={classes.recipeName}>
-          {recipe.name}
-          {isTranslating && (
-            <span
-              style={{
-                fontSize: "0.8rem",
-                color: "#999",
-                marginInlineStart: "0.5rem",
-              }}
-            >
-              ⏳
-            </span>
-          )}
-        </h2>
+        <div className={classes.nameRow}>
+          <h2 className={classes.recipeName}>
+            {recipe.name}
+            {isTranslating && (
+              <span
+                style={{
+                  fontSize: "0.8rem",
+                  color: "#999",
+                  marginInlineStart: "0.5rem",
+                }}
+              >
+                ⏳
+              </span>
+            )}
+          </h2>
+          <button
+            className={classes.cookingModeBtn}
+            onClick={onEnterCookingMode}
+            title={t("recipes", "cookingMode")}
+          >
+            <TbChefHat />
+          </button>
+        </div>
 
         {recipe.rating > 0 && (
           <div className={classes.rating}>
@@ -272,11 +280,13 @@ function RecipeDetailsFull({
 
         {recipe.categories && recipe.categories.length > 0 && (
           <div className={classes.categoryTags}>
-            {recipe.categories.map((cat, idx) => (
-              <span key={idx} className={classes.categoryTag}>
-                {getCategoryName(cat)}
-              </span>
-            ))}
+            {recipe.categories
+              .filter((cat) => getCategoryName(cat))
+              .map((cat, idx) => (
+                <span key={idx} className={classes.categoryTag}>
+                  {getCategoryName(cat)}
+                </span>
+              ))}
           </div>
         )}
 
@@ -394,14 +404,6 @@ function RecipeDetailsFull({
               )}
             </div>
           )}
-
-        <button
-          className={classes.cookingModeButton}
-          onClick={onEnterCookingMode}
-        >
-          <TbChefHat className={classes.cookingModeIcon} />
-          {t("recipes", "cookingMode")}
-        </button>
 
         <div className={classes.tabs}>
           <button

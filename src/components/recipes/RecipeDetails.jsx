@@ -55,7 +55,7 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
 
   const getCategoryName = (categoryId) => {
     const category = groups.find((g) => g.id === categoryId);
-    return category ? getTranslatedGroup(category) : categoryId;
+    return category ? getTranslatedGroup(category) : null;
   };
 
   const ingredientsArray = Array.isArray(recipe.ingredients)
