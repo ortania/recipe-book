@@ -290,21 +290,11 @@ Possible actions:
 - null - no navigation action
 
 Examples:
-User: "מה השלב הבא?" → {"text": "השלב הבא הוא להוסיף 2 ביצים ו-100 גרם סוכר לתערובת", "action": {"type": "next"}}
-User: "כמה מלח צריך?" → {"text": "צריך כפית מלח", "action": null}
-User: "מה צריך לשלב הזה?" → {"text": "לשלב הזה צריך 200 גרם קמח, 2 ביצים וחצי כוס חלב", "action": null}
-User: "תחזור שלב" → {"text": "חוזרים לשלב הקודם", "action": {"type": "prev"}}
-User: "תלך לשלב 3" → {"text": "עוברים לשלב 3", "action": {"type": "goto", "step": 3}}
-User: "שלב 5" → {"text": "עוברים לשלב 5", "action": {"type": "goto", "step": 5}}
-User: "תעבור למרכיבים" → {"text": "עוברים למרכיבים", "action": {"type": "switch_tab", "tab": "ingredients"}}
-User: "תעבור להוראות" → {"text": "עוברים להוראות", "action": {"type": "switch_tab", "tab": "instructions"}}
-User: "תקפוץ לשלב 2" → {"text": "קופצים לשלב 2", "action": {"type": "goto", "step": 2}}
-User: "תפעיל טיימר ל-10 דקות" → {"text": "מפעיל טיימר ל-10 דקות", "action": {"type": "timer", "minutes": 10}}
-User: "תכוון טיימר לחצי שעה" → {"text": "מפעיל טיימר ל-30 דקות", "action": {"type": "timer", "minutes": 30}}
-User: "תעצור את הטיימר" → {"text": "עוצר את הטיימר", "action": {"type": "stop_timer"}}
-User: "תעבור למרכיבים" → {"text": "עוברים למרכיבים", "action": {"type": "switch_tab", "tab": "ingredients"}}
-User: "תעבור להוראות" → {"text": "עוברים להוראות הכנה", "action": {"type": "switch_tab", "tab": "instructions"}}
-User: "תתחיל לבשל" → {"text": "עוברים להוראות הכנה", "action": {"type": "switch_tab", "tab": "instructions"}}`,
+"מה השלב הבא?" → {"text": "השלב הבא הוא להוסיף שתי ביצים וחצי כוס חלב", "action": {"type": "next"}}
+"כמה מלח צריך?" → {"text": "צריך כפית מלח", "action": null}
+"תלך לשלב 3" → {"text": "עוברים לשלב שלוש", "action": {"type": "goto", "step": 3}}
+"תפעיל טיימר ל-10 דקות" → {"text": "מפעיל טיימר לעשר דקות", "action": {"type": "timer", "minutes": 10}}
+"תעבור להוראות" → {"text": "עוברים להוראות", "action": {"type": "switch_tab", "tab": "instructions"}}`,
   };
 
   const result = await callOpenAI({
@@ -319,9 +309,24 @@ User: "תתחיל לבשל" → {"text": "עוברים להוראות הכנה",
       .replace(/```json\n?/g, "")
       .replace(/```\n?/g, "")
       .trim();
-    return JSON.parse(cleaned);
+    const parsed = JSON.parse(cleaned);
+    return {
+      text: parsed.text || result,
+      action: parsed.action || null,
+    };
   } catch {
-    return { text: result, action: null };
+    // JSON parse failed - extract just the spoken text, strip JSON artifacts
+    const textMatch = result.match(/"text"\s*:\s*"([^"]+)"/);
+    if (textMatch) {
+      return { text: textMatch[1], action: null };
+    }
+    // Remove any JSON-like artifacts before returning
+    const cleanText = result
+      .replace(/[{}"]/g, "")
+      .replace(/\b(text|action|null|type)\b\s*:?\s*/gi, "")
+      .replace(/,\s*$/g, "")
+      .trim();
+    return { text: cleanText || "לא הצלחתי להבין", action: null };
   }
 };
 
