@@ -8,6 +8,7 @@ import {
 import {
   extractRecipeFromImage,
   calculateNutrition,
+  parseFreeSpeechRecipe,
 } from "../../../services/openai";
 import {
   FiLink,
@@ -24,6 +25,7 @@ import {
 } from "react-icons/fi";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { BsClipboardData, BsCalculator } from "react-icons/bs";
+import { FaMicrophone, FaStop } from "react-icons/fa6";
 import { MdOutlineEditNote } from "react-icons/md";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
@@ -76,7 +78,8 @@ function AddRecipeWizard({
     groups,
     "name",
   );
-  const [screen, setScreen] = useState(initialScreen); // method | url | text | photo | manual
+  const [screen, setScreen] = useState(initialScreen); // method | url | text | photo | manual | recording
+  const [cameFromRecording, setCameFromRecording] = useState(false);
   const [manualStep, setManualStep] = useState(0);
   const [recipe, setRecipe] = useState({
     ...INITIAL_RECIPE,
@@ -87,6 +90,12 @@ function AddRecipeWizard({
   const [isImporting, setIsImporting] = useState(false);
   const [importError, setImportError] = useState("");
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingText, setRecordingText] = useState("");
+  const recognitionRef = useRef(null);
+  const isRecordingRef = useRef(false);
+  const accumulatedTextRef = useRef("");
+  const recordingTextRef = useRef("");
   const [dragIndex, setDragIndex] = useState(null);
   const [dragField, setDragField] = useState(null);
   const [visitedSteps, setVisitedSteps] = useState(new Set([0]));
@@ -101,6 +110,12 @@ function AddRecipeWizard({
   const photoFileInputRef = useRef(null);
   const ingredientsListRef = useRef(null);
   const instructionsListRef = useRef(null);
+
+  const handleClose = useCallback(() => {
+    onCancel(
+      screen === "recording" || cameFromRecording ? "recording" : undefined,
+    );
+  }, [onCancel, screen, cameFromRecording]);
 
   const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
     setRecipe((prev) => {
@@ -230,6 +245,271 @@ function AddRecipeWizard({
       setIsImporting(false);
       setImportProgress(0);
     }
+  };
+
+  const killRecognition = () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.onend = null;
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.stop();
+      } catch (e) {
+        /* already stopped */
+      }
+      recognitionRef.current = null;
+    }
+  };
+
+  const startRecognitionSession = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+
+    killRecognition();
+
+    const recognition = new SR();
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    recognition.continuous = !isMobile;
+    recognition.interimResults = true;
+    recognition.lang = "he-IL";
+    recognition.maxAlternatives = 1;
+
+    let sessionFinal = "";
+
+    recognition.onresult = (event) => {
+      let finalText = "";
+      let interimText = "";
+      for (let i = 0; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          finalText += event.results[i][0].transcript + " ";
+        } else {
+          interimText += event.results[i][0].transcript;
+        }
+      }
+      sessionFinal = finalText;
+      const displayed = accumulatedTextRef.current + finalText + interimText;
+      recordingTextRef.current = displayed;
+      setRecordingText(displayed);
+    };
+
+    recognition.onend = () => {
+      if (sessionFinal) {
+        accumulatedTextRef.current += sessionFinal;
+        sessionFinal = "";
+      }
+      if (isRecordingRef.current) {
+        setTimeout(
+          () => {
+            if (isRecordingRef.current) {
+              startRecognitionSession();
+            }
+          },
+          isMobile ? 300 : 100,
+        );
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Recording error:", event.error);
+      if (event.error === "not-allowed") {
+        isRecordingRef.current = false;
+        setIsRecording(false);
+        setImportError(t("addWizard", "noSpeechSupport"));
+        return;
+      }
+      if (event.error === "no-speech" || event.error === "aborted") return;
+    };
+
+    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+    } catch (e) {
+      console.error("Failed to start recognition:", e);
+      recognitionRef.current = null;
+      setTimeout(() => {
+        if (isRecordingRef.current) {
+          startRecognitionSession();
+        }
+      }, 500);
+    }
+  };
+
+  const handleStartRecording = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      setImportError(t("addWizard", "noSpeechSupport"));
+      return;
+    }
+    accumulatedTextRef.current = accumulatedTextRef.current || "";
+    recordingTextRef.current = accumulatedTextRef.current;
+    isRecordingRef.current = true;
+    setIsRecording(true);
+    setImportError("");
+    startRecognitionSession();
+  };
+
+  const handleStopRecording = () => {
+    isRecordingRef.current = false;
+    killRecognition();
+    setIsRecording(false);
+    const text =
+      recordingTextRef.current?.trim() || accumulatedTextRef.current?.trim();
+    if (text) {
+      setRecipeText(text);
+      setRecordingText(text);
+      recordingTextRef.current = text;
+      accumulatedTextRef.current = text;
+    }
+  };
+
+  const matchDifficulty = (spoken) => {
+    if (!spoken) return null;
+    const low = spoken.trim().toLowerCase();
+    const map = {
+      "קל מאוד": "VeryEasy",
+      "very easy": "VeryEasy",
+      veryeasy: "VeryEasy",
+      קל: "Easy",
+      easy: "Easy",
+      בינוני: "Medium",
+      medium: "Medium",
+      קשה: "Hard",
+      hard: "Hard",
+    };
+    for (const [key, val] of Object.entries(map)) {
+      if (low.includes(key)) return val;
+    }
+    return null;
+  };
+
+  const matchCategories = (spoken) => {
+    if (!spoken || groups.length === 0) return [];
+    const low = spoken.trim().toLowerCase();
+    const matched = [];
+    for (const g of groups) {
+      if (g.id === "all") continue;
+      const gName = (g.name || "").toLowerCase();
+      if (gName && low.includes(gName)) matched.push(g.id);
+    }
+    return matched;
+  };
+
+  const doImportFromRecording = () => {
+    const text =
+      recordingText.trim() ||
+      recordingTextRef.current?.trim() ||
+      accumulatedTextRef.current?.trim();
+    if (!text) {
+      setImportError(t("addWizard", "noRecordingText"));
+      return;
+    }
+    setRecipeText(text);
+    setRecordingText(text);
+    setIsImporting(true);
+    setImportError("");
+    try {
+      const parsed = parseRecipeFromText(text);
+      const diff = matchDifficulty(parsed.difficulty);
+      const cats = matchCategories(parsed.category);
+      setRecipe((prev) => ({
+        ...prev,
+        name: parsed.name || prev.name,
+        ingredients:
+          Array.isArray(parsed.ingredients) && parsed.ingredients.length > 0
+            ? parsed.ingredients
+            : typeof parsed.ingredients === "string" && parsed.ingredients
+              ? parsed.ingredients
+                  .split(",")
+                  .map((i) => i.trim())
+                  .filter(Boolean)
+              : prev.ingredients,
+        instructions:
+          Array.isArray(parsed.instructions) && parsed.instructions.length > 0
+            ? parsed.instructions
+            : typeof parsed.instructions === "string" && parsed.instructions
+              ? parsed.instructions
+                  .split(".")
+                  .map((i) => i.trim())
+                  .filter(Boolean)
+              : prev.instructions,
+        prepTime: parsed.prepTime || prev.prepTime,
+        cookTime: parsed.cookTime || prev.cookTime,
+        servings: parsed.servings || prev.servings,
+        image_src: parsed.image_src || prev.image_src,
+        difficulty: diff || prev.difficulty,
+        categories:
+          cats.length > 0
+            ? [...new Set([...prev.categories, ...cats])]
+            : prev.categories,
+      }));
+      setCameFromRecording(true);
+      setScreen("manual");
+      setManualStep(0);
+    } catch (err) {
+      setImportError(t("addWizard", "parseFailed"));
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const doImportWithAI = async () => {
+    const text =
+      recordingText.trim() ||
+      recordingTextRef.current?.trim() ||
+      accumulatedTextRef.current?.trim();
+    if (!text) {
+      setImportError(t("addWizard", "noRecordingText"));
+      return;
+    }
+    setRecipeText(text);
+    setRecordingText(text);
+    setIsImporting(true);
+    setImportError("");
+    try {
+      const categoryNames = groups
+        .filter((g) => g.id !== "all")
+        .map((g) => g.name)
+        .filter(Boolean);
+      const parsed = await parseFreeSpeechRecipe(text, categoryNames);
+      if (parsed.error) {
+        setImportError(parsed.error);
+        return;
+      }
+      const diff = matchDifficulty(parsed.difficulty);
+      const cats = matchCategories(parsed.category);
+      setRecipe((prev) => ({
+        ...prev,
+        name: parsed.name || prev.name,
+        ingredients:
+          Array.isArray(parsed.ingredients) && parsed.ingredients.length > 0
+            ? parsed.ingredients
+            : prev.ingredients,
+        instructions:
+          Array.isArray(parsed.instructions) && parsed.instructions.length > 0
+            ? parsed.instructions
+            : prev.instructions,
+        prepTime: parsed.prepTime ? `${parsed.prepTime}min` : prev.prepTime,
+        cookTime: parsed.cookTime ? `${parsed.cookTime}min` : prev.cookTime,
+        servings: parsed.servings || prev.servings,
+        image_src: parsed.image_src || prev.image_src,
+        difficulty: diff || prev.difficulty,
+        categories:
+          cats.length > 0
+            ? [...new Set([...prev.categories, ...cats])]
+            : prev.categories,
+      }));
+      setCameFromRecording(true);
+      setScreen("manual");
+      setManualStep(0);
+    } catch (err) {
+      setImportError(err.message || t("addWizard", "parseFailed"));
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleImportFromRecording = () => {
+    doImportFromRecording();
   };
 
   const handleImportFromText = () => {
@@ -440,10 +720,33 @@ function AddRecipeWizard({
   };
 
   // ========== Submit ==========
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const filledIngredients = recipe.ingredients.filter(Boolean);
+    let nutrition = recipe.nutrition;
+    if (filledIngredients.length > 0) {
+      try {
+        const result = await calculateNutrition(
+          filledIngredients,
+          recipe.servings,
+        );
+        if (result && !result.error) {
+          nutrition = {
+            ...nutrition,
+            calories: result.calories || nutrition.calories,
+            protein: result.protein || nutrition.protein,
+            fat: result.fat || nutrition.fat,
+            carbs: result.carbs || nutrition.carbs,
+            sugars: result.sugars || nutrition.sugars,
+            fiber: result.fiber || nutrition.fiber,
+          };
+        }
+      } catch (err) {
+        console.error("Auto nutrition calculation failed:", err);
+      }
+    }
     onAddPerson({
       name: recipe.name,
-      ingredients: recipe.ingredients.filter(Boolean),
+      ingredients: filledIngredients,
       instructions: recipe.instructions.filter(Boolean),
       prepTime: recipe.prepTime,
       cookTime: recipe.cookTime,
@@ -455,7 +758,7 @@ function AddRecipeWizard({
       isFavorite: recipe.isFavorite,
       notes: recipe.notes,
       rating: recipe.rating || 0,
-      nutrition: recipe.nutrition,
+      nutrition,
     });
     onCancel();
   };
@@ -1147,7 +1450,7 @@ function AddRecipeWizard({
       <button
         type="button"
         className={classes.methodCloseBtn}
-        onClick={onCancel}
+        onClick={handleClose}
       >
         <FiX size={22} />
       </button>
@@ -1210,6 +1513,26 @@ function AddRecipeWizard({
         </div>
 
         <div
+          className={`${classes.methodCard} ${classes.methodCardRecording}`}
+          onClick={() => setScreen("recording")}
+        >
+          <div
+            className={`${classes.methodIcon} ${classes.methodIconRecording}`}
+          >
+            <FaMicrophone />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "fromRecording")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "fromRecordingDesc")}
+            </p>
+          </div>
+          <span className={classes.methodCardArrow}>›</span>
+        </div>
+
+        <div
           className={`${classes.methodCard} ${classes.methodCardManual}`}
           onClick={() => {
             setScreen("manual");
@@ -1250,7 +1573,7 @@ function AddRecipeWizard({
         <CloseButton
           // type="button"
           // className={classes.wizardCloseBtn}
-          onClick={onCancel}
+          onClick={handleClose}
         >
           {/* <FiX /> */}
         </CloseButton>
@@ -1318,7 +1641,7 @@ function AddRecipeWizard({
         <CloseButton
           // type="button"
           // className={classes.wizardCloseBtn}
-          onClick={onCancel}
+          onClick={handleClose}
         >
           {/* <FiX /> */}
         </CloseButton>
@@ -1362,6 +1685,143 @@ function AddRecipeWizard({
     </div>
   );
 
+  const renderRecordingScreen = () => (
+    <div className={classes.wizardContainer}>
+      <div className={classes.screenTopBar}>
+        <button
+          type="button"
+          className={classes.backLink}
+          onClick={() => {
+            handleStopRecording();
+            setRecordingText("");
+            setScreen("method");
+            setImportError("");
+          }}
+        >
+          <FiChevronLeft /> {t("addWizard", "backToMethod")}
+        </button>
+        <CloseButton onClick={handleClose} />
+      </div>
+
+      <h2 className={classes.screenTitle}>
+        {t("addWizard", "fromRecordingTitle")}
+      </h2>
+      <p className={classes.screenSubtitle}>
+        {t("addWizard", "fromRecordingSubtitle")}
+      </p>
+
+      <div className={classes.recordingArea}>
+        {!isRecording && (
+          <button
+            type="button"
+            className={classes.recordBtn}
+            onClick={handleStartRecording}
+          >
+            <FaMicrophone size={28} />
+            <span>
+              {recordingText.trim()
+                ? t("addWizard", "continueRecording")
+                : t("addWizard", "startRecording")}
+            </span>
+          </button>
+        )}
+
+        {isRecording && (
+          <>
+            <div className={classes.recordingPulse} />
+            <button
+              type="button"
+              className={classes.stopRecordBtn}
+              onClick={handleStopRecording}
+            >
+              <span className={classes.stopIcon} />
+              <span>{t("addWizard", "stopRecording")}</span>
+            </button>
+          </>
+        )}
+      </div>
+
+      {!isRecording && recordingText.trim() && (
+        <div className={classes.recordingPreview}>
+          <label className={classes.fieldLabel}>
+            {t("addWizard", "recordedText")}:
+          </label>
+          <textarea
+            className={classes.textArea}
+            value={recordingText}
+            onChange={(e) => setRecordingText(e.target.value)}
+            rows={6}
+          />
+        </div>
+      )}
+
+      <div className={`${classes.tipBox} ${classes.tipBoxPurple}`}>
+        <span className={classes.tipIcon}>🎙️</span>
+        <span>
+          <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
+          {t("addWizard", "recordingTip")
+            .split("\\n")
+            .map((line, i) => (
+              <span key={i}>
+                {i > 0 && <br />}
+                {line}
+              </span>
+            ))}
+        </span>
+      </div>
+
+      <div className={`${classes.tipBox} ${classes.tipBoxGreen}`}>
+        <span>{t("addWizard", "recordingExample")}</span>
+      </div>
+
+      <div className={`${classes.tipBox} ${classes.tipBoxBlue}`}>
+        <span>{t("addWizard", "freeSpeechNote")}</span>
+      </div>
+
+      {importError && <p className={classes.errorText}>{importError}</p>}
+
+      {!isRecording && recordingText.trim() && (
+        <div className={classes.recordingActions}>
+          <button
+            type="button"
+            className={classes.continueBtn}
+            onClick={handleImportFromRecording}
+            disabled={isImporting}
+          >
+            {isImporting
+              ? t("addWizard", "importing")
+              : t("addWizard", "parseAndImport")}
+            {!isImporting && <FiChevronRight />}
+          </button>
+          <button
+            type="button"
+            className={classes.aiParseBtn}
+            onClick={doImportWithAI}
+            disabled={isImporting}
+          >
+            {isImporting
+              ? t("addWizard", "importing")
+              : t("addWizard", "aiParse")}
+          </button>
+          <button
+            type="button"
+            className={classes.secondaryBtn}
+            onClick={() => {
+              setRecordingText("");
+              setImportError("");
+              accumulatedTextRef.current = "";
+              recordingTextRef.current = "";
+              setRecipeText("");
+              handleStartRecording();
+            }}
+          >
+            {t("addWizard", "reRecord")}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
   const renderPhotoScreen = () => (
     <div className={classes.wizardContainer}>
       <div className={classes.screenTopBar}>
@@ -1378,7 +1838,7 @@ function AddRecipeWizard({
         <CloseButton
           // type="button"
           // className={classes.wizardCloseBtn}
-          onClick={onCancel}
+          onClick={handleClose}
         >
           {/* <FiX /> */}
         </CloseButton>
@@ -1447,23 +1907,31 @@ function AddRecipeWizard({
     </div>
   );
 
+  const handleManualBack = () => {
+    if (cameFromRecording) {
+      setCameFromRecording(false);
+      setScreen("recording");
+    } else {
+      setScreen("method");
+    }
+  };
+
   const renderManualScreen = () => (
     <div className={classes.wizardContainer}>
       <div className={classes.screenTopBar}>
         <button
           type="button"
           className={classes.backLink}
-          onClick={() => setScreen("method")}
+          onClick={handleManualBack}
         >
-          <FiChevronLeft /> {t("addWizard", "backToMethod")}
+          <FiChevronLeft />{" "}
+          {cameFromRecording
+            ? t("addWizard", "backToRecording")
+            : t("addWizard", "backToMethod")}
         </button>
         <CloseButton
-          // type="button"
-          // className={classes.wizardCloseBtn}
-          onClick={onCancel}
-        >
-          {/* <FiX /> */}
-        </CloseButton>
+          onClick={cameFromRecording ? handleManualBack : handleClose}
+        ></CloseButton>
       </div>
 
       {renderStepper()}
@@ -1502,6 +1970,8 @@ function AddRecipeWizard({
         return renderUrlScreen();
       case "text":
         return renderTextScreen();
+      case "recording":
+        return renderRecordingScreen();
       case "photo":
         return renderPhotoScreen();
       case "manual":
@@ -1512,7 +1982,7 @@ function AddRecipeWizard({
   };
 
   return (
-    <Modal onClose={onCancel} maxWidth="550px">
+    <Modal onClose={handleClose} maxWidth="550px">
       {renderScreen()}
     </Modal>
   );

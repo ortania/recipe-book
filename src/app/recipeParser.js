@@ -342,17 +342,346 @@ export const parseRecipeFromUrl = async (url) => {
   }
 };
 
-export const parseRecipeFromText = (text) => {
-  const recipe = {
-    name: "",
-    ingredients: [],
-    instructions: [],
-    prepTime: "",
-    cookTime: "",
-    servings: "",
-    image_src: "https://source.unsplash.com/400x300/?food,recipe",
+/**
+ * Parse continuous speech text using per-item keywords.
+ * User says "שם" before the recipe name, "מרכיב" before EACH ingredient,
+ * "שלב" before EACH instruction step, "מנות" before servings count,
+ * "זמן הכנה" before prep time, "זמן בישול" before cook time.
+ */
+const parseSpeechText = (text, recipe) => {
+  const lower = text.toLowerCase();
+
+  const itemMarkers = [
+    { keyword: "שם המתכון", type: "name" },
+    { keyword: "שם מתכון", type: "name" },
+    { keyword: "recipe name", type: "name" },
+    { keyword: "שם", type: "name" },
+    { keyword: "name", type: "name" },
+    { keyword: "מרכיב", type: "ingredient" },
+    { keyword: "חומר", type: "ingredient" },
+    { keyword: "ingredient", type: "ingredient" },
+    { keyword: "הוראה", type: "step" },
+    { keyword: "הוראת הכנה", type: "step" },
+    { keyword: "שלב", type: "step" },
+    { keyword: "step", type: "step" },
+    { keyword: "כמות מנות", type: "servings" },
+    { keyword: "מספר מנות", type: "servings" },
+    { keyword: "מנות", type: "servings" },
+    { keyword: "servings", type: "servings" },
+    { keyword: "זמן הכנה", type: "prepTime" },
+    { keyword: "prep time", type: "prepTime" },
+    { keyword: "זמן בישול", type: "cookTime" },
+    { keyword: "cook time", type: "cookTime" },
+    { keyword: "רמת קושי", type: "difficulty" },
+    { keyword: "קושי", type: "difficulty" },
+    { keyword: "difficulty", type: "difficulty" },
+    { keyword: "קטגוריה", type: "category" },
+    { keyword: "שיוך", type: "category" },
+    { keyword: "category", type: "category" },
+  ];
+
+  // Helper: check if character at position is a word boundary (space, punctuation, start/end)
+  const isWordBoundary = (str, pos) => {
+    if (pos < 0 || pos >= str.length) return true;
+    const ch = str[pos];
+    return /[\s,.\-;:!?()[\]{}'"،]/.test(ch);
   };
 
+  // Find ALL occurrences of ALL markers in the text
+  const found = [];
+  for (const { keyword, type } of itemMarkers) {
+    let searchFrom = 0;
+    while (searchFrom < lower.length) {
+      const idx = lower.indexOf(keyword, searchFrom);
+      if (idx === -1) break;
+      const endIdx = idx + keyword.length;
+      // Only match if keyword is at a word boundary (not inside another word)
+      if (isWordBoundary(lower, idx - 1) && isWordBoundary(lower, endIdx)) {
+        if (!found.some((f) => f.idx === idx)) {
+          found.push({ type, idx, len: keyword.length });
+        }
+      }
+      searchFrom = idx + keyword.length;
+    }
+  }
+
+  // Remove overlapping matches — keep the longest match at each position
+  found.sort((a, b) => a.idx - b.idx || b.len - a.len);
+  const cleaned = [];
+  for (const f of found) {
+    const last = cleaned[cleaned.length - 1];
+    if (last && f.idx < last.idx + last.len) continue;
+    cleaned.push(f);
+  }
+
+  if (cleaned.length === 0) {
+    recipe.name = text.trim() || "Untitled Recipe";
+    return recipe;
+  }
+
+  // Text before the first marker = recipe name (if no explicit name marker)
+  const beforeFirst = text.substring(0, cleaned[0].idx).trim();
+  if (cleaned[0].type !== "name" && beforeFirst.length > 0) {
+    recipe.name = beforeFirst;
+  }
+
+  // Hebrew number words that likely start a new ingredient item
+  const hebrewNumbers =
+    /^(אחד|אחת|שניים|שתיים|שנים|שלוש|שלושה|ארבע|ארבעה|חמש|חמישה|שש|שישה|שבע|שבעה|שמונה|תשע|תשעה|עשר|עשרה|חצי|רבע)\b/;
+  // Hebrew verbs/infinitives that likely start a new instruction step
+  const stepStarters =
+    /^(לערבב|לבשל|לאפות|להוסיף|לשים|להכניס|לחמם|לקרר|להקציף|להפריד|לחתוך|לטגן|למזוג|לערום|לקפל|למרוח|לגרד|לסנן|ליצור|להגיש|לפזר|למלא|לכסות|לרדד|ללוש|לגלגל|לצקת|להמתין|לנקות|לשטוף|לקלף|לרסק|לטחון|למעוך)\b/;
+
+  // Split long ingredient content into separate items
+  const splitIngredients = (content) => {
+    const parts = content.split(/\s+/);
+    const items = [];
+    let current = [];
+    for (let j = 0; j < parts.length; j++) {
+      const word = parts[j];
+      // If this word looks like a step starter, stop collecting ingredients
+      if (stepStarters.test(word)) {
+        if (current.length > 0) items.push(current.join(" "));
+        // Collect the rest as a step
+        const rest = parts.slice(j).join(" ");
+        return { ingredients: items, trailingSteps: rest };
+      }
+      // If this word is a number (digit or Hebrew) and we already have content, start new item
+      if (
+        current.length > 0 &&
+        (/^\d/.test(word) || hebrewNumbers.test(word))
+      ) {
+        items.push(current.join(" "));
+        current = [word];
+      } else {
+        current.push(word);
+      }
+    }
+    if (current.length > 0) items.push(current.join(" "));
+    return { ingredients: items, trailingSteps: null };
+  };
+
+  // Split long step content into separate steps
+  const splitSteps = (content) => {
+    const parts = content.split(/\s+/);
+    const items = [];
+    let current = [];
+    for (const word of parts) {
+      if (current.length > 0 && stepStarters.test(word)) {
+        items.push(current.join(" "));
+        current = [word];
+      } else {
+        current.push(word);
+      }
+    }
+    if (current.length > 0) items.push(current.join(" "));
+    return items;
+  };
+
+  // Hebrew word → digit map for servings, prep/cook time
+  const hebrewWordToNum = {
+    אחד: "1",
+    אחת: "1",
+    שניים: "2",
+    שתיים: "2",
+    שנים: "2",
+    שלוש: "3",
+    שלושה: "3",
+    ארבע: "4",
+    ארבעה: "4",
+    חמש: "5",
+    חמישה: "5",
+    שש: "6",
+    שישה: "6",
+    שבע: "7",
+    שבעה: "7",
+    שמונה: "8",
+    תשע: "9",
+    תשעה: "9",
+    עשר: "10",
+    עשרה: "10",
+    חצי: "0.5",
+    רבע: "0.25",
+  };
+  const toDigit = (str) => {
+    const d = str.match(/\d+/);
+    if (d) return d[0];
+    const w = str.trim().split(/\s+/)[0];
+    return hebrewWordToNum[w] || null;
+  };
+
+  // Extract content after each marker until the next marker
+  for (let i = 0; i < cleaned.length; i++) {
+    const start = cleaned[i].idx + cleaned[i].len;
+    const end = i + 1 < cleaned.length ? cleaned[i + 1].idx : text.length;
+    const content = text.substring(start, end).trim();
+    if (!content) continue;
+
+    switch (cleaned[i].type) {
+      case "name":
+        recipe.name = content;
+        break;
+      case "ingredient": {
+        const { ingredients, trailingSteps } = splitIngredients(content);
+        ingredients.forEach((ing) => {
+          const trimmed = ing.trim();
+          if (trimmed) recipe.ingredients.push(trimmed);
+        });
+        if (trailingSteps) {
+          splitSteps(trailingSteps).forEach((step) => {
+            const trimmed = step.trim();
+            if (trimmed) recipe.instructions.push(trimmed);
+          });
+        }
+        break;
+      }
+      case "step": {
+        splitSteps(content).forEach((step) => {
+          const trimmed = step.trim();
+          if (trimmed) recipe.instructions.push(trimmed);
+        });
+        break;
+      }
+      case "servings": {
+        const num = toDigit(content);
+        if (num) recipe.servings = num;
+        break;
+      }
+      case "prepTime": {
+        const timeNum = toDigit(content);
+        if (timeNum) recipe.prepTime = `${timeNum}min`;
+        break;
+      }
+      case "cookTime": {
+        const cookNum = toDigit(content);
+        if (cookNum) recipe.cookTime = `${cookNum}min`;
+        break;
+      }
+      case "difficulty":
+        recipe.difficulty = content;
+        break;
+      case "category":
+        if (!recipe.category) {
+          recipe.category = content;
+        } else {
+          recipe.category += ", " + content;
+        }
+        break;
+    }
+  }
+
+  // ---- Fallback heuristics for when keywords are dropped by speech API ----
+  // If the name is suspiciously long (contains ingredient-like or step-like content),
+  // try to split it into name + ingredients + steps
+  const difficultyWords = {
+    קשה: "hard",
+    קל: "easy",
+    בינוני: "medium",
+    hard: "hard",
+    easy: "easy",
+    medium: "medium",
+  };
+  const hebrewNumberValues = {
+    אחד: "1",
+    אחת: "1",
+    שניים: "2",
+    שתיים: "2",
+    שנים: "2",
+    שלוש: "3",
+    שלושה: "3",
+    ארבע: "4",
+    ארבעה: "4",
+    חמש: "5",
+    חמישה: "5",
+    שש: "6",
+    שישה: "6",
+    שבע: "7",
+    שבעה: "7",
+    שמונה: "8",
+    תשע: "9",
+    תשעה: "9",
+    עשר: "10",
+    עשרה: "10",
+  };
+
+  // If name is very long and we have few ingredients, try to extract from name
+  if (
+    recipe.name &&
+    recipe.name.split(/\s+/).length > 5 &&
+    recipe.ingredients.length === 0
+  ) {
+    const words = recipe.name.split(/\s+/);
+    // Find first step-starter verb or number that indicates ingredient list started
+    let nameEnd = words.length;
+    for (let w = 2; w < words.length; w++) {
+      if (
+        /^\d/.test(words[w]) ||
+        hebrewNumbers.test(words[w]) ||
+        stepStarters.test(words[w])
+      ) {
+        nameEnd = w;
+        break;
+      }
+    }
+    if (nameEnd < words.length) {
+      const actualName = words.slice(0, nameEnd).join(" ");
+      const rest = words.slice(nameEnd).join(" ");
+      recipe.name = actualName;
+      const { ingredients, trailingSteps } = splitIngredients(rest);
+      ingredients.forEach((ing) => {
+        const trimmed = ing.trim();
+        if (trimmed) recipe.ingredients.push(trimmed);
+      });
+      if (trailingSteps) {
+        splitSteps(trailingSteps).forEach((step) => {
+          const trimmed = step.trim();
+          if (trimmed) recipe.instructions.push(trimmed);
+        });
+      }
+    }
+  }
+
+  // Extract difficulty from last items if not set
+  if (!recipe.difficulty) {
+    const allItems = [...recipe.ingredients, ...recipe.instructions];
+    for (let i = allItems.length - 1; i >= 0; i--) {
+      const w = allItems[i].trim().toLowerCase();
+      if (difficultyWords[w]) {
+        recipe.difficulty = difficultyWords[w];
+        // Remove from whichever list it was in
+        const ingIdx = recipe.ingredients.indexOf(allItems[i]);
+        if (ingIdx >= 0) recipe.ingredients.splice(ingIdx, 1);
+        const stepIdx = recipe.instructions.indexOf(allItems[i]);
+        if (stepIdx >= 0) recipe.instructions.splice(stepIdx, 1);
+        break;
+      }
+    }
+  }
+
+  // Extract servings from last items if not set (Hebrew number word alone)
+  if (!recipe.servings) {
+    const allItems = [...recipe.ingredients, ...recipe.instructions];
+    for (let i = allItems.length - 1; i >= 0; i--) {
+      const w = allItems[i].trim().toLowerCase();
+      if (hebrewNumberValues[w]) {
+        recipe.servings = hebrewNumberValues[w];
+        const ingIdx = recipe.ingredients.indexOf(allItems[i]);
+        if (ingIdx >= 0) recipe.ingredients.splice(ingIdx, 1);
+        const stepIdx = recipe.instructions.indexOf(allItems[i]);
+        if (stepIdx >= 0) recipe.instructions.splice(stepIdx, 1);
+        break;
+      }
+    }
+  }
+
+  if (!recipe.name) recipe.name = "Untitled Recipe";
+  return recipe;
+};
+
+/**
+ * Parse structured text (with newlines) — the original line-based parser.
+ */
+const parseStructuredText = (text, recipe) => {
   let lines = text
     .split("\n")
     .map((line) => line.trim())
@@ -508,6 +837,31 @@ export const parseRecipeFromText = (text) => {
   }
 
   return recipe;
+};
+
+/**
+ * Parse recipe from speech or text.
+ * For speech: splits a single continuous string into sections using keyword detection.
+ * For pasted text: uses newlines already present.
+ */
+export const parseRecipeFromText = (text) => {
+  const recipe = {
+    name: "",
+    ingredients: [],
+    instructions: [],
+    prepTime: "",
+    cookTime: "",
+    servings: "",
+    image_src: "https://source.unsplash.com/400x300/?food,recipe",
+  };
+
+  const isSpeech = !text.includes("\n");
+
+  if (isSpeech) {
+    return parseSpeechText(text, recipe);
+  }
+
+  return parseStructuredText(text, recipe);
 };
 
 const parseDuration = (duration) => {

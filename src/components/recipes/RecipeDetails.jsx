@@ -88,7 +88,8 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState(null);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
-  const { copyRecipeToUser, currentUser, categories } = useRecipeBook();
+  const { copyRecipeToUser, currentUser, categories, editRecipe } =
+    useRecipeBook();
 
   // Refs to store latest handler functions
   const handleNextStepRef = React.useRef();
@@ -313,6 +314,7 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
           onClose={onClose}
           onEdit={onEdit}
           onDelete={onDelete}
+          onSaveRecipe={editRecipe}
           getCategoryName={getCategoryName}
           onEnterCookingMode={handleCookingModeToggle}
           onCopyRecipe={copyRecipeToUser}

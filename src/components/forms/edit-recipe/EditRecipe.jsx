@@ -415,14 +415,37 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const filledIngredients = editedPerson.ingredients
+      .map((i) => i.trim())
+      .filter((i) => i);
+    let nutrition = editedPerson.nutrition;
+    if (filledIngredients.length > 0) {
+      try {
+        const result = await calculateNutrition(
+          filledIngredients,
+          editedPerson.servings,
+        );
+        if (result && !result.error) {
+          nutrition = {
+            ...nutrition,
+            calories: result.calories || nutrition.calories,
+            protein: result.protein || nutrition.protein,
+            fat: result.fat || nutrition.fat,
+            carbs: result.carbs || nutrition.carbs,
+            sugars: result.sugars || nutrition.sugars,
+            fiber: result.fiber || nutrition.fiber,
+          };
+        }
+      } catch (err) {
+        console.error("Auto nutrition calculation failed:", err);
+      }
+    }
     const updatedPerson = {
       ...person,
       name: editedPerson.name,
       image_src: editedPerson.image_src,
-      ingredients: editedPerson.ingredients
-        .map((i) => i.trim())
-        .filter((i) => i),
+      ingredients: filledIngredients,
       instructions: editedPerson.instructions
         .map((i) => i.trim())
         .filter((i) => i),
@@ -435,7 +458,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       isFavorite: editedPerson.isFavorite,
       notes: editedPerson.notes,
       rating: editedPerson.rating || 0,
-      nutrition: editedPerson.nutrition,
+      nutrition,
     };
     onSave(updatedPerson);
     setSavedMessage(t("recipes", "saved"));

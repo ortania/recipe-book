@@ -7,7 +7,13 @@ import { BsTrash3 } from "react-icons/bs";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { GiMeal } from "react-icons/gi";
 import { FaNutritionix } from "react-icons/fa";
-import { IoCopyOutline, IoTimeOutline } from "react-icons/io5";
+import {
+  IoCopyOutline,
+  IoShareSocialOutline,
+  IoTimeOutline,
+  IoPrintOutline,
+} from "react-icons/io5";
+import { HiOutlineDocumentDuplicate } from "react-icons/hi2";
 import { TbChefHat, TbUsers } from "react-icons/tb";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
@@ -23,6 +29,8 @@ function RecipeDetailsFull({
   onClose,
   onEdit,
   onDelete,
+  onDuplicate,
+  onSaveRecipe,
   getCategoryName,
   onEnterCookingMode,
   onCopyRecipe,
@@ -38,9 +46,32 @@ function RecipeDetailsFull({
   const [notesExpanded, setNotesExpanded] = useState(false);
   const [showNutrition, setShowNutrition] = useState(false);
   const [showCopyDialog, setShowCopyDialog] = useState(false);
+  const [chatMessages, setChatMessages] = useState([]);
+  const [chatAppliedFields, setChatAppliedFields] = useState({});
 
   const handleCopyClick = () => {
     setShowCopyDialog(true);
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: recipe.name,
+      text: `${recipe.name}\n\n${t("recipes", "ingredients")}:\n${(recipe.ingredients || []).join("\n")}\n\n${t("recipes", "instructions")}:\n${(recipe.instructions || []).join("\n")}`,
+    };
+    if (recipe.sourceUrl) {
+      shareData.url = recipe.sourceUrl;
+    }
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+      } else {
+        await navigator.clipboard.writeText(shareData.text);
+      }
+    } catch (err) {
+      if (err.name !== "AbortError") {
+        console.error("Share failed:", err);
+      }
+    }
   };
 
   const originalServings = recipe.servings || 4;
@@ -108,7 +139,7 @@ function RecipeDetailsFull({
 
   const scaleNutrition = (value) => {
     if (!value || servings === originalServings) return value;
-    const ratio = servings / originalServings;
+    const ratio = originalServings / servings;
     const numberRegex = /(\d+\.?\d*)/g;
     return value.replace(numberRegex, (match) => {
       const num = parseFloat(match);
@@ -188,17 +219,33 @@ function RecipeDetailsFull({
             <span>{t("recipes", "delete")}</span>
           </button>
         )}
-        {onCopyRecipe && (
+        {onDuplicate && (
           <button
-            onClick={handleCopyClick}
+            onClick={onDuplicate}
             className={classes.actionButton}
-            title={t("recipes", "copy")}
+            title={t("recipes", "duplicate")}
           >
-            <IoCopyOutline size={18} />
-            <span>{t("recipes", "copy")}</span>
+            <HiOutlineDocumentDuplicate size={18} />
+            <span>{t("recipes", "duplicate")}</span>
           </button>
         )}
+        <button
+          onClick={handleShare}
+          className={classes.actionButton}
+          title={t("recipes", "share")}
+        >
+          <IoShareSocialOutline size={18} />
+          <span>{t("recipes", "share")}</span>
+        </button>
         <ExportImageButton recipe={recipe} />
+        <button
+          onClick={() => window.print()}
+          className={classes.actionButton}
+          title={t("mealPlanner", "print")}
+        >
+          <IoPrintOutline size={18} />
+          <span>{t("mealPlanner", "print")}</span>
+        </button>
       </div>
 
       <div className={classes.recipeContent}>
@@ -498,7 +545,23 @@ function RecipeDetailsFull({
           )}
 
           {activeTab === "chat" && (
-            <RecipeChat recipe={recipe} servings={servings} />
+            <RecipeChat
+              recipe={recipe}
+              servings={servings}
+              messages={chatMessages}
+              onMessagesChange={setChatMessages}
+              appliedFields={chatAppliedFields}
+              onAppliedFieldsChange={setChatAppliedFields}
+              onUpdateRecipe={
+                onSaveRecipe
+                  ? (changes) => {
+                      const base = originalRecipe || recipe;
+                      const updated = { ...base, ...changes };
+                      onSaveRecipe(updated);
+                    }
+                  : undefined
+              }
+            />
           )}
         </div>
       </div>

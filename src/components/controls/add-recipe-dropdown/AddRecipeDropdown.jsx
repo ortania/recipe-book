@@ -3,6 +3,7 @@ import { FiLink, FiCamera } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
+import { FaMicrophone } from "react-icons/fa6";
 import { useLanguage } from "../../../context";
 import { AddButton } from "../add-button";
 import classes from "./add-recipe-dropdown.module.css";
@@ -87,47 +88,65 @@ function AddRecipeDropdown({ onSelect, buttonType = "circle", children }) {
           type={buttonType}
           sign="+"
           onClick={toggleOpen}
-          title="Add New Recipe"
+          title={t("recipesView", "addNewRecipe")}
         />
       )}
       {open && (
         <div className={classes.dropdown}>
           <button
             className={classes.dropdownItem}
+            onClick={() => handleClick("photo")}
+          >
+            <span className={classes.dropdownLabel}>
+              {t("addWizard", "fromPhoto")}
+            </span>
+            <span className={classes.dropdownIcon}>
+              <FiCamera />
+            </span>
+          </button>
+          <button
+            className={classes.dropdownItem}
             onClick={() => handleClick("url")}
           >
+            <span className={classes.dropdownLabel}>
+              {t("addWizard", "fromUrl")}
+            </span>
             <span className={classes.dropdownIcon}>
               <FiLink />
             </span>
-            {t("addWizard", "fromUrl")}
           </button>
           <button
             className={classes.dropdownItem}
             onClick={() => handleClick("text")}
           >
+            <span className={classes.dropdownLabel}>
+              {t("addWizard", "fromText")}
+            </span>
             <span className={classes.dropdownIcon}>
               <BsClipboardData />
             </span>
-            {t("addWizard", "fromText")}
           </button>
           <button
             className={classes.dropdownItem}
-            onClick={() => handleClick("photo")}
+            onClick={() => handleClick("recording")}
           >
-            <span className={classes.dropdownIcon}>
-              <FiCamera />
+            <span className={classes.dropdownLabel}>
+              {t("addWizard", "fromRecording")}
             </span>
-            {t("addWizard", "fromPhoto")}
+            <span className={classes.dropdownIcon}>
+              <FaMicrophone />
+            </span>
           </button>
           <button
             className={classes.dropdownItem}
             onClick={() => handleClick("manual")}
           >
-            <span className={classes.dropdownIcon}>
-              {/* <HiOutlinePencilSquare /> */}
-              {<PiPencilSimpleLineLight />}
+            <span className={classes.dropdownLabel}>
+              {t("addWizard", "manual")}
             </span>
-            {t("addWizard", "manual")}
+            <span className={classes.dropdownIcon}>
+              <PiPencilSimpleLineLight />
+            </span>
           </button>
         </div>
       )}

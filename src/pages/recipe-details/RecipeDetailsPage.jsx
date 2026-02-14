@@ -17,6 +17,7 @@ function RecipeDetailsPage() {
   const {
     recipes,
     categories,
+    addRecipe,
     editRecipe,
     deleteRecipe,
     copyRecipeToUser,
@@ -24,6 +25,21 @@ function RecipeDetailsPage() {
   } = useRecipeBook();
 
   const recipe = recipes.find((r) => r.id === id);
+
+  // Track recently viewed recipes
+  React.useEffect(() => {
+    if (!recipe || !recipe.id) return;
+    try {
+      const key = "recentlyViewedRecipes";
+      const stored = JSON.parse(localStorage.getItem(key) || "[]");
+      const filtered = stored.filter((rid) => rid !== recipe.id);
+      filtered.unshift(recipe.id);
+      localStorage.setItem(key, JSON.stringify(filtered.slice(0, 20)));
+    } catch (e) {
+      /* ignore */
+    }
+  }, [recipe?.id]);
+
   const { translated: translatedRecipe, isTranslating } =
     useTranslatedRecipe(recipe);
   const { getTranslated: getTranslatedGroup } = useTranslatedList(
@@ -125,6 +141,34 @@ function RecipeDetailsPage() {
     setEditingRecipe(null);
   };
 
+  const handleDuplicate = async () => {
+    if (!recipe) return;
+    const duplicated = {
+      name: `${recipe.name} (${t("recipes", "copy")})`,
+      ingredients: [...(recipe.ingredients || [])],
+      instructions: [...(recipe.instructions || [])],
+      prepTime: recipe.prepTime,
+      cookTime: recipe.cookTime,
+      servings: recipe.servings,
+      difficulty: recipe.difficulty,
+      sourceUrl: recipe.sourceUrl,
+      image_src: recipe.image_src,
+      categories: [...(recipe.categories || [])],
+      isFavorite: false,
+      notes: recipe.notes,
+      rating: recipe.rating || 0,
+      nutrition: recipe.nutrition ? { ...recipe.nutrition } : null,
+    };
+    try {
+      const added = await addRecipe(duplicated);
+      if (added && added.id) {
+        navigate(`/recipe/${added.id}`);
+      }
+    } catch (err) {
+      console.error("Failed to duplicate recipe:", err);
+    }
+  };
+
   const handleCookingModeToggle = () => {
     setCookingMode((prev) => !prev);
   };
@@ -177,6 +221,8 @@ function RecipeDetailsPage() {
         onClose={handleClose}
         onEdit={handleEdit}
         onDelete={handleDelete}
+        onDuplicate={handleDuplicate}
+        onSaveRecipe={editRecipe}
         getCategoryName={getCategoryName}
         onEnterCookingMode={handleCookingModeToggle}
         onCopyRecipe={copyRecipeToUser}

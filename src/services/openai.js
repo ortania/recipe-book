@@ -22,7 +22,7 @@ export const speakWithOpenAI = async (text, voice = "nova") => {
   return URL.createObjectURL(blob);
 };
 
-const callOpenAI = async (requestBody) => {
+export const callOpenAI = async (requestBody) => {
   if (!OPENAI_API_KEY) {
     throw new Error(
       "OpenAI API key is not configured. Please add VITE_OPENAI_API_KEY to your .env file.",
@@ -158,6 +158,57 @@ You MUST respond with valid JSON in this exact format:
       {
         role: "user",
         content: `Extract the recipe from this webpage text:\n\n${truncated}`,
+      },
+    ],
+    temperature: 0.1,
+    max_tokens: 2000,
+  });
+
+  try {
+    const cleaned = result
+      .replace(/```json\n?/g, "")
+      .replace(/```\n?/g, "")
+      .trim();
+    return JSON.parse(cleaned);
+  } catch {
+    return { error: result };
+  }
+};
+
+export const parseFreeSpeechRecipe = async (text, categoryNames = []) => {
+  const categoriesHint =
+    categoryNames.length > 0
+      ? `\n- Available categories: ${categoryNames.join(", ")}. Pick the BEST matching category from this list based on the recipe content. Return the exact category name from the list.`
+      : "";
+  const result = await callOpenAI({
+    model: "gpt-4o-mini",
+    messages: [
+      {
+        role: "system",
+        content: `You are a recipe extraction expert. The user dictated a recipe using free speech (no special keywords).
+Parse the spoken text and extract the recipe information.
+You MUST respond with valid JSON in this exact format:
+{
+  "name": "recipe name",
+  "ingredients": ["ingredient 1 with quantity", "ingredient 2 with quantity"],
+  "instructions": ["step 1", "step 2"],
+  "prepTime": "15" or "",
+  "cookTime": "30" or "",
+  "servings": "4" or "",
+  "difficulty": "Easy" or "Medium" or "Hard" or "VeryEasy" or "",
+  "category": "category name or empty string"
+}
+- Extract ALL ingredients with their exact quantities as separate array items.
+- Extract ALL instructions as separate steps in order.
+- prepTime and cookTime should be numbers in minutes only (no units).
+- Keep the original language of the recipe. Do not translate.
+- If difficulty is mentioned, map it to: VeryEasy, Easy, Medium, or Hard.
+- Even if difficulty is NOT explicitly mentioned, try to estimate it from the recipe complexity.${categoriesHint}
+- If you cannot find a recipe in the text, return: {"error": "No recipe found"}`,
+      },
+      {
+        role: "user",
+        content: `Parse this spoken recipe:\n\n${text}`,
       },
     ],
     temperature: 0.1,

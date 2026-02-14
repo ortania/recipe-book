@@ -16,13 +16,34 @@ export function search(persons, searchTerm, sortField, sortDirection) {
     .filter((person) => {
       if (!searchTerm) return true;
 
-      const searchLower = searchTerm.toLowerCase();
-      const nameMatch = person.name?.toLowerCase().includes(searchLower);
-      const ingredientsMatch = person.ingredients?.some((ing) =>
-        ing.toLowerCase().includes(searchLower),
-      );
+      const term = searchTerm.trim();
 
-      return nameMatch || ingredientsMatch;
+      // Exact phrase search: wrapped in quotes
+      if (term.startsWith('"') && term.endsWith('"') && term.length > 2) {
+        const phrase = term.slice(1, -1).toLowerCase();
+        const nameMatch = person.name?.toLowerCase().includes(phrase);
+        const ingredientsMatch = person.ingredients?.some((ing) =>
+          ing.toLowerCase().includes(phrase),
+        );
+        const instructionsMatch = person.instructions?.some((inst) =>
+          inst.toLowerCase().includes(phrase),
+        );
+        return nameMatch || ingredientsMatch || instructionsMatch;
+      }
+
+      // Multi-word AND search: all words must match somewhere
+      const words = term.toLowerCase().split(/\s+/).filter(Boolean);
+
+      return words.every((word) => {
+        const nameMatch = person.name?.toLowerCase().includes(word);
+        const ingredientsMatch = person.ingredients?.some((ing) =>
+          ing.toLowerCase().includes(word),
+        );
+        const instructionsMatch = person.instructions?.some((inst) =>
+          inst.toLowerCase().includes(word),
+        );
+        return nameMatch || ingredientsMatch || instructionsMatch;
+      });
     })
     .sort((a, b) => {
       let comparison = 0;
@@ -43,6 +64,10 @@ export function search(persons, searchTerm, sortField, sortDirection) {
         const aDifficulty = difficultyOrder[a.difficulty] || 0;
         const bDifficulty = difficultyOrder[b.difficulty] || 0;
         comparison = aDifficulty - bDifficulty;
+      } else if (sortField === "rating") {
+        const aRating = parseFloat(a.rating) || 0;
+        const bRating = parseFloat(b.rating) || 0;
+        comparison = aRating - bRating;
       }
       return sortDirection === "asc" ? comparison : -comparison;
     });

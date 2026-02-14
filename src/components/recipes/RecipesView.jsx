@@ -1,5 +1,7 @@
 import { useState, useEffect, useMemo, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { FaFilter } from "react-icons/fa";
+import { FaHistory } from "react-icons/fa";
 import { PiStar } from "react-icons/pi";
 import { CiFilter } from "react-icons/ci";
 import { IoMdStarOutline } from "react-icons/io";
@@ -35,6 +37,7 @@ function RecipesView({
   showGreeting = false,
 }) {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
@@ -43,13 +46,17 @@ function RecipesView({
   const [isSimpleView, setIsSimpleView] = useState(false);
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
-  const [keywordFilter, setKeywordFilter] = useState("");
+  const [selectedRating, setSelectedRating] = useState("all");
   const [selectedPrepTime, setSelectedPrepTime] = useState("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
+  const [selectedIngredientCount, setSelectedIngredientCount] = useState("all");
+  const [selectedStepCount, setSelectedStepCount] = useState("all");
   const [activeView, setActiveView] = useState("recipes");
   const [showChat, setShowChat] = useState(false);
   const filterRef = useRef(null);
   const sortRef = useRef(null);
+  const [filterMenuStyle, setFilterMenuStyle] = useState({});
+  const [sortMenuStyle, setSortMenuStyle] = useState({});
   const {
     hasMoreRecipes,
     loadMoreRecipes,
@@ -57,6 +64,21 @@ function RecipesView({
     toggleCategory,
     clearCategorySelection,
   } = useRecipeBook();
+
+  // Recently viewed recipes
+  const recentlyViewed = useMemo(() => {
+    try {
+      const stored = JSON.parse(
+        localStorage.getItem("recentlyViewedRecipes") || "[]",
+      );
+      return stored
+        .map((id) => localPersons.find((p) => p.id === id))
+        .filter(Boolean)
+        .slice(0, 8);
+    } catch {
+      return [];
+    }
+  }, [localPersons]);
 
   const handleViewChange = (view) => {
     setActiveView(view);
@@ -71,6 +93,48 @@ function RecipesView({
   useEffect(() => {
     setLocalPersons(persons);
   }, [persons]);
+
+  const calcDropdownPos = (ref) => {
+    if (!ref.current) return {};
+    const rect = ref.current.getBoundingClientRect();
+    const isRtl = document.documentElement.dir === "rtl";
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const menuWidth = 260;
+    const pad = 8;
+    const style = { top: rect.bottom + 4 };
+
+    if (isRtl) {
+      let right = vw - rect.right;
+      if (right < pad) right = pad;
+      if (right + menuWidth > vw - pad) right = vw - menuWidth - pad;
+      style.right = right;
+    } else {
+      let left = rect.left;
+      if (left < pad) left = pad;
+      if (left + menuWidth > vw - pad) left = vw - menuWidth - pad;
+      style.left = left;
+    }
+
+    const spaceBelow = vh - rect.bottom - 16;
+    style.maxHeight = Math.min(spaceBelow, vh * 0.7);
+
+    return style;
+  };
+
+  const toggleFilterMenu = () => {
+    setShowFilterMenu((prev) => {
+      if (!prev) setFilterMenuStyle(calcDropdownPos(filterRef));
+      return !prev;
+    });
+  };
+
+  const toggleSortMenu = () => {
+    setShowSortMenu((prev) => {
+      if (!prev) setSortMenuStyle(calcDropdownPos(sortRef));
+      return !prev;
+    });
+  };
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -93,21 +157,12 @@ function RecipesView({
   const filteredAndSortedPersons = useMemo(() => {
     let filtered = localPersons;
 
-    // Filter by keyword in ingredients (supports multiple keywords separated by comma)
-    if (keywordFilter.trim()) {
-      const keywords = keywordFilter
-        .toLowerCase()
-        .split(",")
-        .map((k) => k.trim())
-        .filter((k) => k.length > 0);
-
+    // Filter by rating
+    if (selectedRating !== "all") {
+      const minRating = parseFloat(selectedRating);
       filtered = filtered.filter((person) => {
-        const ingredients = Array.isArray(person.ingredients)
-          ? person.ingredients
-          : [];
-        const ingredientsText = ingredients.join(" ").toLowerCase();
-
-        return keywords.some((keyword) => ingredientsText.includes(keyword));
+        const rating = parseFloat(person.rating) || 0;
+        return rating >= minRating;
       });
     }
 
@@ -134,10 +189,47 @@ function RecipesView({
     if (selectedDifficulty !== "all") {
       filtered = filtered.filter((person) => {
         if (!person.difficulty) return false;
-        // Case-insensitive comparison
         return (
           person.difficulty.toLowerCase() === selectedDifficulty.toLowerCase()
         );
+      });
+    }
+
+    // Filter by ingredient count
+    if (selectedIngredientCount !== "all") {
+      filtered = filtered.filter((person) => {
+        const count = Array.isArray(person.ingredients)
+          ? person.ingredients.filter(Boolean).length
+          : 0;
+        switch (selectedIngredientCount) {
+          case "few":
+            return count <= 5;
+          case "medium":
+            return count > 5 && count <= 10;
+          case "many":
+            return count > 10;
+          default:
+            return true;
+        }
+      });
+    }
+
+    // Filter by step count
+    if (selectedStepCount !== "all") {
+      filtered = filtered.filter((person) => {
+        const count = Array.isArray(person.instructions)
+          ? person.instructions.filter(Boolean).length
+          : 0;
+        switch (selectedStepCount) {
+          case "few":
+            return count <= 3;
+          case "medium":
+            return count > 3 && count <= 7;
+          case "many":
+            return count > 7;
+          default:
+            return true;
+        }
       });
     }
 
@@ -148,9 +240,11 @@ function RecipesView({
     searchTerm,
     sortField,
     sortDirection,
-    keywordFilter,
+    selectedRating,
     selectedPrepTime,
     selectedDifficulty,
+    selectedIngredientCount,
+    selectedStepCount,
   ]);
 
   const handleSort = (field) => {
@@ -229,7 +323,7 @@ function RecipesView({
             <AddButton
               type="circle"
               onClick={onShowFavorites}
-              title="Favorites"
+              title={t("recipes", "favorite")}
             >
               <PiStar />
             </AddButton>
@@ -275,7 +369,7 @@ function RecipesView({
             type="circle"
             // className={classes.iconButton}
             onClick={onShowFavorites}
-            title="Favorites"
+            title={t("recipes", "favorite")}
           >
             <PiStar />
           </AddButton>
@@ -290,6 +384,39 @@ function RecipesView({
           {showGreeting && (
             <div className={classes.headerTitle}>
               <Greeting />
+            </div>
+          )}
+
+          {recentlyViewed.length > 0 && (
+            <div className={classes.recentlyViewedSection}>
+              <div className={classes.sectionHeader}>
+                <h2 className={classes.sectionTitle}>
+                  <FaHistory
+                    style={{ marginInlineEnd: "0.4rem", fontSize: "0.85em" }}
+                  />
+                  {t("recipesView", "recentlyViewed")}
+                </h2>
+              </div>
+              <div className={classes.recentlyViewedScroll}>
+                {recentlyViewed.map((person) => (
+                  <div
+                    key={person.id}
+                    className={classes.recentlyViewedCard}
+                    onClick={() => navigate(`/recipe/${person.id}`)}
+                  >
+                    {person.image_src && (
+                      <img
+                        src={person.image_src}
+                        alt={person.name}
+                        className={classes.recentlyViewedImage}
+                      />
+                    )}
+                    <span className={classes.recentlyViewedName}>
+                      {person.name}
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
@@ -322,52 +449,57 @@ function RecipesView({
               searchTerm={searchTerm}
               onSearchChange={setSearchTerm}
               placeholder={t("common", "search")}
+              examples={[
+                t("recipesView", "searchExample1"),
+                t("recipesView", "searchExample2"),
+                t("recipesView", "searchExample3"),
+                t("recipesView", "searchExample4"),
+              ]}
             />
             <div className={classes.headerControls}>
               <div className={classes.dropdownContainer} ref={filterRef}>
                 <button
                   className={classes.filterButton}
-                  onClick={() => setShowFilterMenu(!showFilterMenu)}
+                  onClick={toggleFilterMenu}
                 >
                   <CiFilter /> {t("recipesView", "filter")} <IoChevronDown />
                 </button>
                 {showFilterMenu && (
                   <div
                     className={classes.dropdownMenu}
+                    style={filterMenuStyle}
                     onClick={(e) => e.stopPropagation()}
                   >
                     <div className={classes.filterSection}>
                       <label className={classes.filterLabel}>
-                        {t("common", "search")}:
+                        {t("recipesView", "sortByRating")}:
                       </label>
-                      <div className={classes.inputWrapper}>
-                        <input
-                          type="text"
-                          className={classes.keywordInput}
-                          placeholder={t("recipesView", "keywordPlaceholder")}
-                          value={keywordFilter}
-                          onChange={(e) => setKeywordFilter(e.target.value)}
-                          onClick={(e) => e.stopPropagation()}
-                          autoComplete="off"
-                          style={{
-                            color: "#000",
-                            backgroundColor: "#fff",
-                            fontSize: "1rem",
-                            direction: "rtl",
-                            textAlign: "right",
-                            position: "relative",
-                            zIndex: 1,
-                          }}
-                        />
-                        {keywordFilter && (
-                          <button
-                            className={classes.clearKeyword}
-                            onClick={() => setKeywordFilter("")}
-                          >
-                            ✕
-                          </button>
-                        )}
-                      </div>
+                      <button
+                        className={
+                          selectedRating === "all" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedRating("all")}
+                      >
+                        {t("categories", "all")}
+                      </button>
+                      <button
+                        className={selectedRating === "3" ? classes.active : ""}
+                        onClick={() => setSelectedRating("3")}
+                      >
+                        ★3+
+                      </button>
+                      <button
+                        className={selectedRating === "4" ? classes.active : ""}
+                        onClick={() => setSelectedRating("4")}
+                      >
+                        ★4+
+                      </button>
+                      <button
+                        className={selectedRating === "5" ? classes.active : ""}
+                        onClick={() => setSelectedRating("5")}
+                      >
+                        ★5
+                      </button>
                     </div>
                     <div className={classes.filterDivider}></div>
                     <div className={classes.filterSection}>
@@ -455,6 +587,90 @@ function RecipesView({
                         {t("difficulty", "Hard")}
                       </button>
                     </div>
+                    <div className={classes.filterDivider}></div>
+                    <div className={classes.filterSection}>
+                      <label className={classes.filterLabel}>
+                        {t("recipesView", "ingredientCount")}:
+                      </label>
+                      <button
+                        className={
+                          selectedIngredientCount === "all"
+                            ? classes.active
+                            : ""
+                        }
+                        onClick={() => setSelectedIngredientCount("all")}
+                      >
+                        {t("categories", "all")}
+                      </button>
+                      <button
+                        className={
+                          selectedIngredientCount === "few"
+                            ? classes.active
+                            : ""
+                        }
+                        onClick={() => setSelectedIngredientCount("few")}
+                      >
+                        ≤5
+                      </button>
+                      <button
+                        className={
+                          selectedIngredientCount === "medium"
+                            ? classes.active
+                            : ""
+                        }
+                        onClick={() => setSelectedIngredientCount("medium")}
+                      >
+                        6-10
+                      </button>
+                      <button
+                        className={
+                          selectedIngredientCount === "many"
+                            ? classes.active
+                            : ""
+                        }
+                        onClick={() => setSelectedIngredientCount("many")}
+                      >
+                        10+
+                      </button>
+                    </div>
+                    <div className={classes.filterDivider}></div>
+                    <div className={classes.filterSection}>
+                      <label className={classes.filterLabel}>
+                        {t("recipesView", "stepCount")}:
+                      </label>
+                      <button
+                        className={
+                          selectedStepCount === "all" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedStepCount("all")}
+                      >
+                        {t("categories", "all")}
+                      </button>
+                      <button
+                        className={
+                          selectedStepCount === "few" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedStepCount("few")}
+                      >
+                        ≤3
+                      </button>
+                      <button
+                        className={
+                          selectedStepCount === "medium" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedStepCount("medium")}
+                      >
+                        4-7
+                      </button>
+                      <button
+                        className={
+                          selectedStepCount === "many" ? classes.active : ""
+                        }
+                        onClick={() => setSelectedStepCount("many")}
+                      >
+                        7+
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>
@@ -462,12 +678,12 @@ function RecipesView({
               <div className={classes.dropdownContainer} ref={sortRef}>
                 <button
                   className={classes.sortingButton}
-                  onClick={() => setShowSortMenu(!showSortMenu)}
+                  onClick={toggleSortMenu}
                 >
                   {t("recipesView", "sorting")} <IoChevronDown />
                 </button>
                 {showSortMenu && (
-                  <div className={classes.dropdownMenu}>
+                  <div className={classes.dropdownMenu} style={sortMenuStyle}>
                     <button
                       className={sortField === "name" ? classes.active : ""}
                       onClick={() => {
@@ -503,12 +719,22 @@ function RecipesView({
                       {sortField === "difficulty" &&
                         (sortDirection === "asc" ? "↑" : "↓")}
                     </button>
+                    <button
+                      className={sortField === "rating" ? classes.active : ""}
+                      onClick={() => {
+                        handleSort("rating");
+                        setShowSortMenu(false);
+                      }}
+                    >
+                      {t("recipesView", "sortByRating")}{" "}
+                      {sortField === "rating" &&
+                        (sortDirection === "asc" ? "↑" : "↓")}
+                    </button>
                   </div>
                 )}
               </div>
             </div>
           </div>
-
           {editingPerson && (
             <EditRecipe
               person={editingPerson}
@@ -517,6 +743,10 @@ function RecipesView({
               groups={groups}
             />
           )}
+
+          <div className={classes.recipeCount}>
+            {filteredAndSortedPersons.length} {t("recipesView", "recipesCount")}
+          </div>
 
           {filteredAndSortedPersons.length === 0 ? (
             <div className={classes.noResults}>

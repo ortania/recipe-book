@@ -1,0 +1,891 @@
+/* ===== Overlay ===== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  direction: rtl;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* ===== Scene Container ===== */
+.sceneContainer {
+  position: relative;
+  width: 94%;
+  max-width: 700px;
+  max-height: 92vh;
+  background: #fff;
+  border-radius: 20px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+}
+
+/* ===== Scene Header ===== */
+/* ===== Stepper Progress Bar ===== */
+.stepperBar {
+  padding: 0.8rem 1.2rem 0;
+  background: #fff;
+}
+
+.stepperHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.stepperCount {
+  font-size: 13px;
+  color: #888;
+}
+
+.segmentedBar {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0;
+}
+
+.segment {
+  flex: 1;
+  height: 4px;
+  background: #e0e0e0;
+  border-radius: 2px;
+  transition: background 0.3s ease;
+}
+
+.segmentActive {
+  background: #222;
+}
+
+.segmentCurrent {
+  background: #222;
+}
+
+.sceneHeader {
+  padding: 0.8rem 1.5rem 0.6rem;
+  text-align: center;
+  background: #fff;
+}
+
+.sceneTitle {
+  font-size: 22px;
+  color: #1a1a1a;
+  font-weight: 700;
+  margin: 0 0 0.3rem;
+  line-height: 1.3;
+}
+
+.sceneDescription {
+  font-size: 14px;
+  color: #888;
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 440px;
+}
+
+/* ===== Scene Body ===== */
+.sceneBody {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #f2f2f2;
+}
+
+.sceneInner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== Virtual Cursor ===== */
+.virtualCursor {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  z-index: 10;
+  pointer-events: none;
+  margin-left: -7px;
+  margin-top: -7px;
+}
+
+.cursorDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--clr-blue-3);
+  box-shadow: 0 0 8px rgba(0, 102, 204, 0.6);
+}
+
+/* ===== Ripple ===== */
+.ripple {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--clr-blue-3);
+  pointer-events: none;
+  z-index: 9;
+  transform: translate(-50%, -50%);
+}
+
+/* ===== Pulse ===== */
+.pulseTarget {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  margin-left: -16px;
+  margin-top: -16px;
+  border-radius: 50%;
+  border: 2px solid var(--clr-blue-3);
+  animation: pulseAnim 1.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 8;
+}
+
+@keyframes pulseAnim {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+/* ===== Tooltip ===== */
+.tooltip {
+  position: absolute;
+  background: rgba(0, 102, 204, 0.92);
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  color: #fff;
+  font-size: 14px;
+  max-width: 220px;
+  z-index: 11;
+  line-height: 1.4;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+/* ========================================================
+   Screen 1: Recipe Detail View (mirrors RecipeDetailsFull)
+   ======================================================== */
+.recipeCard {
+  width: 100%;
+  background: white;
+  overflow: hidden;
+}
+
+.imageContainer {
+  width: 100%;
+  height: 140px;
+  background: #f0f0f0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.recipeImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.actionBar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  background: rgb(242, 242, 242);
+  flex-wrap: wrap;
+}
+
+.actionButton {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.35em 0.8em;
+  border: 1px solid #e0e0e0;
+  border-radius: 20px;
+  background: white;
+  color: #555;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: default;
+}
+
+.actionDelete {
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.recipeContent {
+  padding: 1rem 1.2rem;
+  background: rgb(242, 242, 242);
+}
+
+.nameRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.3rem;
+}
+
+.recipeName {
+  font-size: 17px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.cookingModeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 50%;
+  border: none;
+  background: #9810fa;
+  color: white;
+  font-size: 1.3rem;
+  cursor: default;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(152, 16, 250, 0.3);
+}
+
+.rating {
+  display: flex;
+  justify-content: center;
+  gap: 0.2rem;
+  margin: 0.3rem 0;
+  font-size: 1rem;
+}
+
+.recipeInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 0.5rem;
+  color: #555;
+  font-size: 13px;
+  justify-content: center;
+}
+
+.infoItem {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+.infoIcon {
+  font-size: 1rem;
+  color: #888;
+}
+
+.infoDot {
+  color: #ccc;
+  font-weight: bold;
+}
+
+.tabs {
+  display: flex;
+  gap: 0;
+  width: 100%;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+}
+
+.tab {
+  flex: 1;
+  padding: 0.6rem;
+  background: none;
+  border: none;
+  border-bottom: 2px solid #d9d8d8;
+  font-size: 14px;
+  font-weight: 600;
+  color: #94a3b8;
+  cursor: default;
+  text-align: center;
+}
+
+.activeTab {
+  color: #10b981;
+  border-bottom-color: #10b981;
+}
+
+.ingredientsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.ingredientItem {
+  font-size: 14px;
+  color: #333;
+  padding: 0.3rem 0.5rem;
+  background: white;
+  border-radius: 6px;
+  line-height: 1.5;
+}
+
+/* ========================================================
+   Screen 2: Cooking Mode (mirrors RecipeDetailsCookingMode)
+   ======================================================== */
+.cookingCard {
+  width: 100%;
+  background: white;
+  display: flex;
+  flex-direction: column;
+}
+
+.cookingHeader {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1rem;
+  box-sizing: border-box;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+}
+
+.infoButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 1.5px solid #e0e0e0;
+  background: white;
+  color: #888;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: default;
+}
+
+.voiceChatIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: #374151;
+  font-size: 1.6rem;
+  cursor: default;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.voiceChatActive {
+  color: green;
+}
+
+.cookingHeaderTitle {
+  font-size: 17px;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f0f0f0;
+  color: #666;
+  font-size: 0.8rem;
+  cursor: default;
+}
+
+.servingSelector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.6rem 1.2rem;
+  background: #ffffff;
+}
+
+.servingControls {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.servingBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid #e0e0e0;
+  background: white;
+  color: #666;
+  font-size: 1rem;
+  cursor: default;
+}
+
+.servingCount {
+  font-size: 1.1rem;
+  min-width: 30px;
+  text-align: center;
+}
+
+.servingLabel {
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.cookingTabs {
+  display: flex;
+  gap: 0;
+  width: 100%;
+  background: white;
+}
+
+.cookingTab {
+  flex: 1;
+  padding: 0.6rem;
+  border-bottom: 2px solid #d9d8d8;
+  font-size: 14px;
+  font-weight: 600;
+  color: #94a3b8;
+  text-align: center;
+  cursor: default;
+}
+
+.cookingTabActive {
+  color: #10b981;
+  border-bottom-color: #10b981;
+}
+
+.stepContent {
+  padding: 1.5rem 1.2rem;
+  min-height: 60px;
+  cursor: default;
+}
+
+.stepText {
+  font-size: 15px;
+  color: #333;
+  line-height: 1.7;
+  text-align: center;
+  margin: 0;
+}
+
+.progressSection {
+  padding: 0 1.2rem 0.8rem;
+}
+
+.progressHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.stepInfo {
+  font-size: 13px;
+  color: #6b7280;
+}
+
+.progressBadge {
+  font-size: 13px;
+  font-weight: 600;
+  color: #10b981;
+  background: #ecfdf5;
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+}
+
+.progressTrack {
+  width: 100%;
+  height: 6px;
+  background: #e5e7eb;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 0.6rem;
+}
+
+.progressFill {
+  height: 100%;
+  background: #10b981;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
+
+.navRow {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.navBtnCooking {
+  font-size: 13px;
+  color: #6b7280;
+  background: #f3f4f6;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: default;
+}
+
+.navBtnCookingReset {
+  font-size: 13px;
+  color: #fff;
+  background: #10b981;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: default;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.navBtnCookingNext {
+  font-size: 13px;
+  color: #fff;
+  background: #10b981;
+  padding: 0.4rem 0.8rem;
+  border-radius: 6px;
+  cursor: default;
+}
+
+/* Status area (mirrors CookingVoiceChat) */
+.statusArea {
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  text-align: center;
+  margin: 0.5rem 1rem 1rem;
+  backdrop-filter: blur(8px);
+}
+
+.processingDots {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: #a5b4fc;
+  border-radius: 50%;
+  animation: bounce 1.4s ease-in-out infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.statusText {
+  font-size: 14px;
+  color: #d1d5db;
+}
+
+.responseText {
+  font-size: 14px;
+  color: #fff;
+  line-height: 1.4;
+  direction: rtl;
+}
+
+/* ===== Timer Section ===== */
+.timerSection {
+  padding: 0.5rem 1.2rem 0.6rem;
+  background: #e8f4fd;
+  border-radius: 8px;
+  margin: 0 1rem 0.6rem;
+}
+
+.timerRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.timerLabel {
+  font-size: 14px;
+  font-weight: 600;
+  color: #333;
+}
+
+.timerControls {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.timerDisplay {
+  font-size: 15px;
+  font-weight: 600;
+  min-width: 36px;
+  text-align: center;
+  background: white;
+  border: 1px solid #e0e0e0;
+  border-radius: 6px;
+  padding: 0.2rem 0.5rem;
+}
+
+.timerStart {
+  font-size: 13px;
+  color: #f59e0b;
+  background: #fef3c7;
+  padding: 0.3rem 0.7rem;
+  border-radius: 6px;
+  cursor: default;
+  font-weight: 600;
+}
+
+/* ===== Navigation Buttons ===== */
+.navButtons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1.2rem 1rem;
+  gap: 0.5rem;
+  background: #fff;
+  border-top: 1px solid #f0f0f0;
+}
+
+.navBtn {
+  padding: 0.5em 1.2em;
+  border-radius: 8px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-family: inherit;
+}
+
+.navBtnPrimary {
+  background: var(--clr-blue-3);
+  color: #fff;
+}
+
+.navBtnPrimary:hover {
+  opacity: 0.9;
+}
+
+.navBtnSecondary {
+  background: #f0f0f0;
+  color: var(--clr-grey-3);
+}
+
+.skipBtn {
+  background: none;
+  border: none;
+  color: #999;
+  font-size: 1.3rem;
+  cursor: pointer;
+  padding: 0.5em;
+  line-height: 1;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.skipBtn:hover {
+  color: #555;
+}
+
+/* ========================================================
+   Screen 0: Welcome / Features Grid
+   ======================================================== */
+.featuresGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 0.8rem;
+  padding: 0.8rem;
+  direction: rtl;
+}
+
+.featureCard {
+  background: #fff;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  animation: featureFadeIn 0.4s ease both;
+}
+
+@keyframes featureFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.featureIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  margin-bottom: 0.6rem;
+}
+
+.featureTitle {
+  font-size: 15px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 0.3rem;
+  line-height: 1.3;
+}
+
+.featureDesc {
+  font-size: var(--basic-font);
+  color: #6b7280;
+  line-height: 1.5;
+  margin: 0;
+}
+
+/* ===== Recipe Detail extras ===== */
+.categoryTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  justify-content: center;
+  margin-bottom: 0.5rem;
+}
+
+.categoryTag {
+  font-size: 12px;
+  background: #f3f4f6;
+  color: #555;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+}
+
+.sourceLink {
+  font-size: 12px;
+  color: #888;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  background: #f9fafb;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #e5e7eb;
+}
+
+.sourceLinkUrl {
+  color: #3b82f6;
+  text-decoration: underline;
+}
+
+.servingSelectorRecipe {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: flex-end;
+  margin-bottom: 0.5rem;
+}
+
+.servingLabelRecipe {
+  font-size: 13px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .sceneContainer {
+    width: 98%;
+    max-height: 85vh;
+    border-radius: 16px;
+  }
+
+  .sceneHeader {
+    padding: 0.6rem 1rem 0.4rem;
+  }
+
+  .sceneTitle {
+    font-size: 19px;
+  }
+
+  .sceneDescription {
+    font-size: 13px;
+  }
+
+  .tooltip {
+    font-size: 12px;
+    max-width: 180px;
+  }
+
+  .featuresGrid {
+    grid-template-columns: 1fr;
+    gap: 0.6rem;
+  }
+}

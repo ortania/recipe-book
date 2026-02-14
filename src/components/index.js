@@ -11,3 +11,4 @@ export * from "./modal";
 export * from "./navigation";
 export * from "./chat";
 export * from "./migration-helper";
+export * from "./product-tour";

@@ -8,7 +8,7 @@ function FavoritesButton({ onClick, children, disabled, className, title }) {
       className={`${classes.favoritesButton} ${className || ""}`}
       onClick={onClick}
       disabled={disabled}
-      title={title || "View favorite contacts"}
+      title={title}
     >
       {children || "★ Favorites"}
     </Button>

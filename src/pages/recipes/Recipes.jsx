@@ -52,7 +52,7 @@ function Recipes() {
         <div className={classes.headerButtons}>
           <FavoritesButton
             onClick={() => setShowFavorites(true)}
-            title="View favorite recipes"
+            title={t("recipes", "favorite")}
           >
             {t("recipes", "favorite")}
           </FavoritesButton>
@@ -61,7 +61,7 @@ function Recipes() {
             onClick={handleClearAllClick}
             disabled={recipes.length === 0}
             className={recipes.length === 0 ? classes.disabledButton : ""}
-            title="Remove all recipes"
+            title={t("recipes", "clearAll")}
           >
             {t("recipes", "clearAll")}
           </Button>
@@ -80,7 +80,10 @@ function Recipes() {
       {showAddPerson && (
         <AddRecipeWizard
           onAddPerson={addRecipe}
-          onCancel={() => setShowAddPerson(false)}
+          onCancel={(lastScreen) => {
+            setShowAddPerson(false);
+            if (lastScreen) setAddMethod(lastScreen);
+          }}
           groups={categories}
           initialScreen={addMethod}
         />
@@ -114,7 +117,7 @@ function Recipes() {
         onDeletePerson={deleteRecipe}
       />
 
-      <UpButton onClick={scrollToTop} title="Scroll to top">
+      <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>
         <PiArrowFatLineUp />
       </UpButton>
     </div>

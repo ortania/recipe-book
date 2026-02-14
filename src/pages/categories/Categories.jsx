@@ -1,4 +1,5 @@
 import { useState, useMemo } from "react";
+import { AnimatePresence } from "framer-motion";
 
 import {
   RecipesView,
@@ -7,6 +8,7 @@ import {
   FavoritesPopup,
   ConfirmDialog,
   ChatWindow,
+  ProductTour,
 } from "../../components";
 import { PiArrowFatLineUp } from "react-icons/pi";
 import { useRecipeBook, useLanguage } from "../../context";
@@ -31,6 +33,14 @@ function Categories() {
   const [addMethod, setAddMethod] = useState("method");
   const [showFavorites, setShowFavorites] = useState(false);
   const [showChat, setShowChat] = useState(false);
+  const [showTour, setShowTour] = useState(() => {
+    return !localStorage.getItem("tourCompleted");
+  });
+
+  const handleCloseTour = () => {
+    setShowTour(false);
+    localStorage.setItem("tourCompleted", "true");
+  };
 
   const isAllSelected = selectedCategories.includes("all");
 
@@ -47,10 +57,17 @@ function Categories() {
 
   return (
     <div className={classes.groupContent} dir="auto">
+      <AnimatePresence>
+        {showTour && <ProductTour onClose={handleCloseTour} />}
+      </AnimatePresence>
+
       {showAddPerson && (
         <AddRecipeWizard
           onAddPerson={addRecipe}
-          onCancel={() => setShowAddPerson(false)}
+          onCancel={(lastScreen) => {
+            setShowAddPerson(false);
+            if (lastScreen) setAddMethod(lastScreen);
+          }}
           defaultGroup={defaultGroup}
           groups={categories}
           initialScreen={addMethod}
@@ -84,7 +101,7 @@ function Categories() {
 
       {showChat && <ChatWindow recipeContext={filteredRecipes} />}
 
-      <UpButton onClick={scrollToTop} title="Scroll to top">
+      <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>
         <PiArrowFatLineUp />
       </UpButton>
     </div>

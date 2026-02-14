@@ -9,8 +9,16 @@ import {
 import { IoSettingsOutline } from "react-icons/io5";
 import { IoMdClose } from "react-icons/io";
 import { RxHamburgerMenu } from "react-icons/rx";
-import { FiHome } from "react-icons/fi";
+import {
+  FiHome,
+  FiHelpCircle,
+  FiCalendar,
+  FiShoppingCart,
+  FiGlobe,
+} from "react-icons/fi";
 import { MdRestaurant, MdMenuBook } from "react-icons/md";
+import { AnimatePresence } from "framer-motion";
+import { ProductTour } from "../product-tour";
 import { PiPlusLight } from "react-icons/pi";
 import { useRecipeBook, useLanguage } from "../../context";
 import { CategoriesManagement } from "../categories-management";
@@ -22,6 +30,9 @@ import classes from "./navigation.module.css";
 const iconMap = {
   Home: FiHome,
   Categories: MdMenuBook,
+  MealPlanner: FiCalendar,
+  ShoppingList: FiShoppingCart,
+  GlobalRecipes: FiGlobe,
   Conversions: FaCalculator,
   Settings: IoSettingsOutline,
 };
@@ -29,6 +40,9 @@ const iconMap = {
 const navTranslationMap = {
   Home: "home",
   Categories: "recipes",
+  MealPlanner: "mealPlanner",
+  ShoppingList: "shoppingList",
+  GlobalRecipes: "globalRecipes",
   Conversions: "conversions",
   Settings: "settings",
 };
@@ -57,6 +71,8 @@ function Navigation({ onLogout, links }) {
   const [categoriesOpen, setCategoriesOpen] = useState(true);
   const [chatLogOpen, setChatLogOpen] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
+  const [showTour, setShowTour] = useState(false);
+  const [categorySearch, setCategorySearch] = useState("");
 
   const getGroupContacts = (groupId) => {
     if (groupId === "all") return recipes;
@@ -199,52 +215,76 @@ function Navigation({ onLogout, links }) {
 
               {categoriesOpen && (
                 <div className={classes.categoryList}>
-                  {categories.map((group) => {
-                    const isSelected = selectedCategories.includes(group.id);
-                    return (
+                  <div className={classes.categorySearchWrap}>
+                    <input
+                      type="text"
+                      className={classes.categorySearchInput}
+                      placeholder={t("categories", "searchCategory")}
+                      value={categorySearch}
+                      onChange={(e) => setCategorySearch(e.target.value)}
+                    />
+                    {categorySearch && (
                       <button
-                        key={group.id}
-                        className={`${classes.categoryItem} ${isSelected ? classes.categoryActive : ""}`}
-                        onClick={() => toggleCategory(group.id)}
-                        style={{
-                          borderColor: group.color,
-                          backgroundColor: isSelected
-                            ? `${group.color}22`
-                            : "transparent",
-                          color: isSelected ? group.color : undefined,
-                        }}
+                        className={classes.categorySearchClear}
+                        onClick={() => setCategorySearch("")}
                       >
-                        <span className={classes.categoryLabel}>
-                          {(() => {
-                            const IconComp =
-                              group.id === "all"
-                                ? MdRestaurant
-                                : getCategoryIcon(group.icon);
-                            return (
-                              <span
-                                className={classes.categoryIconWrap}
-                                style={{
-                                  backgroundColor: `${group.color}22`,
-                                  color: group.color,
-                                }}
-                              >
-                                <IconComp />
-                              </span>
-                            );
-                          })()}
-                          {group.id === "all"
-                            ? t("categories", "allRecipes")
-                            : getTranslated(group)}
-                        </span>
-                        {isSelected && group.id !== "all" && (
-                          <span
-                            className={classes.categoryDot}
-                            style={{ background: group.color }}
-                          />
-                        )}
+                        ×
                       </button>
-                    );
-                  })}
+                    )}
+                  </div>
+                  {categories
+                    .filter((group) => {
+                      if (!categorySearch.trim()) return true;
+                      const term = categorySearch.trim().toLowerCase();
+                      const name =
+                        group.id === "all"
+                          ? t("categories", "allRecipes").toLowerCase()
+                          : (getTranslated(group) || "").toLowerCase();
+                      return name.includes(term);
+                    })
+                    .map((group) => {
+                      const isSelected = selectedCategories.includes(group.id);
+                      return (
+                        <button
+                          key={group.id}
+                          className={`${classes.categoryItem} ${isSelected ? classes.categoryActive : ""}`}
+                          onClick={() => toggleCategory(group.id)}
+                          style={{
+                            borderColor: group.color,
+                            backgroundColor: isSelected
+                              ? `${group.color}22`
+                              : "transparent",
+                            color: isSelected ? group.color : undefined,
+                          }}
+                        >
+                          <span className={classes.categoryLabel}>
+                            {(() => {
+                              const IconComp =
+                                group.id === "all"
+                                  ? MdRestaurant
+                                  : getCategoryIcon(group.icon);
+                              return (
+                                <span
+                                  className={classes.categoryIconWrap}
+                                  style={{
+                                    backgroundColor: `${group.color}22`,
+                                    color: group.color,
+                                  }}
+                                >
+                                  <IconComp />
+                                </span>
+                              );
+                            })()}
+                            {group.id === "all"
+                              ? t("categories", "allRecipes")
+                              : getTranslated(group)}
+                          </span>
+                          <span className={classes.categoryCount}>
+                            {getGroupContacts(group.id).length}
+                          </span>
+                        </button>
+                      );
+                    })}
 
                   <div className={classes.categoryActions}>
                     {/* <button
@@ -387,6 +427,16 @@ function Navigation({ onLogout, links }) {
 
         <div className={classes.navBottom}>
           <div className={classes.separator}></div>
+          <button
+            className={classes.navLink}
+            onClick={() => {
+              closeSidebar();
+              setShowTour(true);
+            }}
+          >
+            <FiHelpCircle className={classes.icon} />
+            {t("home", "showTutorial")}
+          </button>
           <NavLink
             to="/settings"
             onClick={closeSidebar}
@@ -425,6 +475,17 @@ function Navigation({ onLogout, links }) {
           getGroupContacts={getGroupContacts}
         />
       )}
+
+      <AnimatePresence>
+        {showTour && (
+          <ProductTour
+            onClose={() => {
+              setShowTour(false);
+              localStorage.setItem("tourCompleted", "true");
+            }}
+          />
+        )}
+      </AnimatePresence>
 
       {selectedChat && (
         <div

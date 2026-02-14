@@ -1,3 +1,4 @@
+import React, { Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -7,7 +8,7 @@ import {
 import classes from "./app.module.css";
 
 import { MainLayout, ProtectedLayout } from "./layout";
-import { Home, Login, Categories } from "../pages";
+import { Login, Categories } from "../pages";
 import Signup from "../pages/signup";
 import MigratePage from "../pages/migrate";
 import Repair from "../pages/repair/Repair";
@@ -19,6 +20,10 @@ import {
 import ConversionTables from "../components/conversion-tables";
 import Settings from "../pages/settings/Settings";
 import RecipeDetailsPage from "../pages/recipe-details/RecipeDetailsPage";
+import MealPlanner from "../pages/meal-planner";
+import ShoppingList from "../pages/shopping-list";
+
+const GlobalRecipes = React.lazy(() => import("../pages/global-recipes"));
 
 function App() {
   return (
@@ -64,19 +69,31 @@ function AppContent() {
 
         {/* Protected Routes (With Navigation, Header, Footer) */}
         <Route element={<ProtectedLayout />}>
-          <Route path="/home" element={<Home />} />
+          <Route path="/home" element={<Navigate to="/categories" />} />
           <Route path="/categories" element={<Categories />} />
           <Route path="/conversions" element={<ConversionTables />} />
           <Route path="/settings" element={<Settings />} />
           <Route path="/migrate" element={<MigratePage />} />
           <Route path="/repair" element={<Repair />} />
           <Route path="/recipe/:id" element={<RecipeDetailsPage />} />
+          <Route path="/meal-planner" element={<MealPlanner />} />
+          <Route path="/shopping-list" element={<ShoppingList />} />
+          <Route
+            path="/global-recipes"
+            element={
+              <Suspense
+                fallback={<div className={classes.loading}>Loading...</div>}
+              >
+                <GlobalRecipes />
+              </Suspense>
+            }
+          />
         </Route>
 
         {/* Redirect unknown routes */}
         <Route
           path="*"
-          element={<Navigate to={isLoggedIn ? "/home" : "/login"} />}
+          element={<Navigate to={isLoggedIn ? "/categories" : "/login"} />}
         />
       </Routes>
     </Router>
