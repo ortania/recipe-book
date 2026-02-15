@@ -227,42 +227,45 @@ function RecipeDetailsCookingMode({
         <div className={classes.headerLeft}>
           {!(showCompletion && activeTab === "instructions") && (
             <button
-              className={classes.infoButton}
+              className={classes.cookingHelpBtn}
               onClick={(e) => {
                 e.stopPropagation();
-                setShowInfo(true);
+                setShowInfo((prev) => !prev);
               }}
               title={t("cookingMode", "helpTitle")}
             >
               ?
             </button>
           )}
-          <CookingVoiceChat
-            recipe={recipe}
-            ingredients={ingredientsArray}
-            instructions={instructionsArray}
-            currentStep={currentStep}
-            servings={servings}
-            activeTab={activeTab}
-            onNextStep={() => handleNextStepRef.current()}
-            onPrevStep={() => handlePrevStepRef.current()}
-            onGotoStep={(step) => {
-              setCurrentStep(step);
-              setShowCompletion(false);
-            }}
-            onStartTimer={(minutes) => startTimer(minutes)}
-            onStopTimer={() => {
-              setIsTimerRunning(false);
-              setTotalSeconds(0);
-              setCustomTimerInput("");
-            }}
-            onSwitchTab={(tab) => {
-              setActiveTab(tab);
-              setCurrentStep(0);
-              setShowCompletion(false);
-            }}
-            isTimerRunning={isTimerRunning}
-          />
+          <div className={classes.micWrapper}>
+            {showInfo && <div className={classes.micArrow} />}
+            <CookingVoiceChat
+              recipe={recipe}
+              ingredients={ingredientsArray}
+              instructions={instructionsArray}
+              currentStep={currentStep}
+              servings={servings}
+              activeTab={activeTab}
+              onNextStep={() => handleNextStepRef.current()}
+              onPrevStep={() => handlePrevStepRef.current()}
+              onGotoStep={(step) => {
+                setCurrentStep(step);
+                setShowCompletion(false);
+              }}
+              onStartTimer={(minutes) => startTimer(minutes)}
+              onStopTimer={() => {
+                setIsTimerRunning(false);
+                setTotalSeconds(0);
+                setCustomTimerInput("");
+              }}
+              onSwitchTab={(tab) => {
+                setActiveTab(tab);
+                setCurrentStep(0);
+                setShowCompletion(false);
+              }}
+              isTimerRunning={isTimerRunning}
+            />
+          </div>
         </div>
         <h3 className={classes.headerTitle}>{t("recipes", "cookingMode")}</h3>
         <div className={classes.headerRight}>
@@ -453,50 +456,34 @@ function RecipeDetailsCookingMode({
                 </button>
               </div>
 
-              {/* Info Modal */}
+              {/* Info Help Card */}
               {showInfo && (
-                <div
-                  className={classes.infoModalOverlay}
-                  onClick={() => setShowInfo(false)}
-                >
-                  <div
-                    className={classes.infoModal}
-                    onClick={(e) => e.stopPropagation()}
+                <div className={classes.helpDropdown}>
+                  <button
+                    className={classes.helpClose}
+                    onClick={() => setShowInfo(false)}
                   >
-                    <div className={classes.infoModalHeader}>
-                      <h3>{t("cookingMode", "howToUse")}</h3>
-                      <CloseButton
-                        onClick={() => setShowInfo(false)}
-                        type="plain"
-                        className={classes.infoModalClose}
-                      />
-                    </div>
-                    <div className={classes.infoModalBody}>
-                      <div className={classes.infoSection}>
-                        <div className={classes.infoItem}>
-                          <span className={classes.infoEmoji}>⏱️</span>
-                          <div>
-                            <strong>{t("cookingMode", "timerTitle")}</strong>
-                            <p>{t("cookingMode", "timerText")}</p>
-                          </div>
-                        </div>
-                        <div className={classes.infoItem}>
-                          <span className={classes.infoEmoji}>
-                            <PiMicrophoneThin />
-                          </span>
-                          <div>
-                            <strong>{t("cookingMode", "chatTitle")}</strong>
-                            <p>{t("cookingMode", "chatText")}</p>
-                            <ul className={classes.voiceCommands}>
-                              <li>{t("cookingMode", "chatFeature1")}</li>
-                              <li>{t("cookingMode", "chatFeature2")}</li>
-                              <li>{t("cookingMode", "chatFeature3")}</li>
-                              <li>{t("cookingMode", "chatFeature4")}</li>
-                            </ul>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
+                    ✕
+                  </button>
+                  <div className={classes.helpContent}>
+                    <strong>{t("cookingMode", "howToUse")}</strong>
+                    <ul>
+                      <li>{t("cookingMode", "navTabs")}</li>
+                      <li>{t("cookingMode", "navSteps")}</li>
+                      <li>
+                        ⏱️ {t("cookingMode", "timerTitle")} —{" "}
+                        {t("cookingMode", "timerText")}
+                      </li>
+                      <li>
+                        <PiMicrophoneThin style={{ verticalAlign: "middle" }} />{" "}
+                        {t("cookingMode", "chatTitle")} —{" "}
+                        {t("cookingMode", "chatText")}
+                      </li>
+                      <li>{t("cookingMode", "chatFeature1")}</li>
+                      <li>{t("cookingMode", "chatFeature2")}</li>
+                      <li>{t("cookingMode", "chatFeature3")}</li>
+                      <li>{t("cookingMode", "chatFeature4")}</li>
+                    </ul>
                   </div>
                 </div>
               )}

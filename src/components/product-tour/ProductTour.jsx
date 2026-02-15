@@ -150,14 +150,14 @@ function OnboardingScene({ screenKey, t }) {
     minHeight: 260,
   };
   const titleStyle = {
-    fontSize: "1.5rem",
+    fontSize: "1.9rem",
     fontWeight: 700,
     color: "var(--text-primary)",
     margin: 0,
     textAlign: "center",
   };
   const subtitleStyle = {
-    fontSize: "0.95rem",
+    fontSize: "1.7rem",
     color: "var(--text-secondary)",
     margin: 0,
     textAlign: "center",
@@ -166,7 +166,7 @@ function OnboardingScene({ screenKey, t }) {
     whiteSpace: "pre-line",
   };
   const bulletStyle = {
-    fontSize: "0.95rem",
+    fontSize: "1.7rem",
     color: "var(--text-primary)",
     padding: "0.4rem 0.8rem",
     background: "var(--bg-tertiary)",
@@ -174,7 +174,7 @@ function OnboardingScene({ screenKey, t }) {
     textAlign: "center",
   };
   const tipBoxStyle = {
-    marginTop: "0.5rem",
+    marginTop: "1rem",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -214,7 +214,7 @@ function OnboardingScene({ screenKey, t }) {
         <div style={tipBoxStyle}>
           <span
             style={{
-              fontSize: "0.85rem",
+              fontSize: "1.5rem",
               fontWeight: 700,
               color: "var(--clr-blue-3)",
             }}
@@ -223,7 +223,7 @@ function OnboardingScene({ screenKey, t }) {
           </span>
           <span
             style={{
-              fontSize: "0.85rem",
+              fontSize: "1.5rem",
               color: "var(--text-secondary)",
               textAlign: "center",
             }}

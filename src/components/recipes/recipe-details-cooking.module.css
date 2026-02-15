@@ -173,8 +173,8 @@
 }
 
 .servingButtonCooking {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 50%;
   border: 2px solid var(--border-color);
   background: var(--bg-card);
@@ -182,7 +182,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: 1.2rem;
+  font-size: var(--large-font);
   color: var(--text-secondary);
   transition: all 0.2s ease;
 }
@@ -393,161 +393,141 @@
 }
 
 .servingIcon {
-  font-size: 1.3rem;
+  font-size: 1.6rem;
   vertical-align: middle;
   margin-inline-end: 0.3rem;
+  color: #2e7d32;
 }
 
-.infoButton {
-  background: var(--bg-card);
-  border: 2px solid var(--border-color);
-  border-radius: 50%;
-  width: 36px;
-  height: 36px;
+.cookingHelpBtn {
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
-  font-size: 1.2rem;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  border: 2px solid #9810fa;
+  background: transparent;
+  color: #9810fa;
+  font-size: 0.9rem;
   font-weight: 700;
-  color: var(--clr-blue-3);
-  transition: all 0.2s ease;
-}
-
-.infoButton:hover {
-  background: var(--bg-hover);
-  border-color: var(--clr-blue-3);
-  transform: scale(1.05);
-}
-
-.infoModalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.7);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 10200;
-  animation: fadeIn 0.2s ease;
-}
-
-.infoModal {
-  background: var(--bg-card);
-  border-radius: 16px;
-  width: 90%;
-  max-width: 500px;
-  max-height: 80vh;
-  overflow: hidden;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-  animation: slideUp 0.3s ease;
-}
-
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.infoModalHeader {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-  background: linear-gradient(135deg, #0369a1 0%, #0284c7 100%);
-}
-
-.infoModalHeader h3 {
-  margin: 0;
-  font-size: var(--large-font);
-  font-weight: 600;
-  color: white;
-}
-
-.infoModalClose {
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  border-radius: 50%;
-  width: 32px;
-  height: 32px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   cursor: pointer;
-  font-size: 1.2rem;
-  color: white;
   transition: all 0.2s ease;
-}
-
-.infoModalClose:hover {
-  background: rgba(255, 255, 255, 0.3);
-  transform: scale(1.1);
-}
-
-.infoModalBody {
-  padding: 2rem;
-  overflow-y: auto;
-  max-height: calc(80vh - 80px);
-}
-
-.infoSection {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-.infoItem {
-  display: flex;
-  gap: 1rem;
-  align-items: flex-start;
-  padding: 1rem;
-  background: var(--bg-tertiary);
-  /* border-radius: 12px; */
-  border-right: 4px solid #0369a1;
-}
-
-.infoEmoji {
-  font-size: 2rem;
   flex-shrink: 0;
 }
 
-.infoItem strong {
-  display: block;
-  font-size: var(--large-font);
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
+.cookingHelpBtn:hover {
+  background: #9810fa;
+  color: white;
+  transform: scale(1.1);
 }
 
-.infoItem p {
-  margin: 0;
-  color: var(--text-secondary);
+.micWrapper {
+  position: relative;
+}
+
+.micArrow {
+  position: absolute;
+  top: -0.8rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 10px solid #9810fa;
+  animation: micArrowBounce 1s ease-in-out infinite;
+  z-index: 10;
+}
+
+@keyframes micArrowBounce {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-6px);
+  }
+}
+
+/* Help Dropdown - purple themed bottom card */
+.helpDropdown {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  border: 2px solid #9810fa;
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+  width: calc(100vw - 2rem);
+  max-width: 400px;
+  max-height: 60vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 28px rgba(152, 16, 250, 0.18);
+  z-index: 10200;
+  animation: helpSlideUp 0.25s ease;
+  direction: rtl;
+  text-align: right;
+}
+
+@keyframes helpSlideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.helpClose {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.2em;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.helpClose:hover {
+  color: var(--text-primary);
+}
+
+.helpContent {
+  font-size: var(--basic-font);
+  color: var(--text-primary);
   line-height: 1.6;
 }
 
-.voiceCommands {
-  list-style: none;
-  padding: 0;
-  margin: 0.75rem 0 0 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+.helpContent strong {
+  display: block;
+  font-size: var(--basic-font);
+  color: #9810fa;
+  margin-bottom: 0.3rem;
 }
 
-.voiceCommands li {
-  padding: 0.5rem 0.75rem;
-  background: var(--bg-card);
-  border-radius: 6px;
-  color: var(--text-primary);
-  font-size: 0.95rem;
-  border-right: 2px solid #10b981;
+.helpContent ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.helpContent li {
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-tertiary);
+  border-right: 3px solid #9810fa;
+  font-size: var(--basic-font);
+  line-height: 1.5;
 }
 
 .timerContent {
@@ -561,21 +541,8 @@
 }
 
 @media (max-width: 768px) {
-  .infoModal {
-    width: 95%;
+  .helpDropdown {
     max-width: 95%;
-  }
-
-  .infoModalBody {
-    padding: 1.5rem;
-  }
-
-  .infoItem {
-    padding: 0.75rem;
-  }
-
-  .infoEmoji {
-    font-size: 1.5rem;
   }
 }
 

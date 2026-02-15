@@ -162,14 +162,14 @@
 }
 
 .ideasTitle {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0 0 0.3rem;
 }
 
 .ideasSubtitle {
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   color: var(--text-muted);
   margin: 0 0 1.2rem;
 }
@@ -186,7 +186,7 @@
   border: 1px solid var(--border-color);
   border-radius: 20px;
   padding: 0.4em 1em;
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.15s;

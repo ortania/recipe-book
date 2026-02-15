@@ -1532,12 +1532,12 @@ const translations = {
       mixed: "Cooking Timer",
     },
     timerText: {
-      he: "הגדר טיימר בדקות בלשונית הוראות הכנה. לחץ + או - לשינוי הזמן ולחץ התחל להפעלה",
-      en: "Set a timer in minutes in the instructions tab. Press + or - to change the time and press Start to begin",
-      ru: "Установите таймер в минутах на вкладке инструкций. Нажмите + или - для изменения времени и нажмите Старт",
-      de: "Stellen Sie einen Timer in Minuten auf der Registerkarte Anweisungen ein. Drücken Sie + oder - und dann Start",
+      he: "מופיע רק בלשונית הוראות הכנה. הגדר טיימר בדקות, לחץ + או - לשינוי הזמן ולחץ התחל להפעלה",
+      en: "Only available in the instructions tab. Set a timer in minutes, press + or - to change the time and press Start to begin",
+      ru: "Доступен только на вкладке инструкций. Установите таймер в минутах, нажмите + или - для изменения времени и нажмите Старт",
+      de: "Nur auf der Registerkarte Anweisungen verfügbar. Stellen Sie einen Timer in Minuten ein, drücken Sie + oder - und dann Start",
       mixed:
-        "Set a timer in minutes in the instructions tab. Press + or - to change the time and press Start to begin",
+        "Only available in the instructions tab. Set a timer in minutes, press + or - to change the time and press Start to begin",
     },
     chatTitle: {
       he: "צ'אט קולי",
@@ -1581,6 +1581,22 @@ const translations = {
       ru: "Получать объяснения для каждого шага готовки",
       de: "Erklärungen für jeden Kochschritt erhalten",
       mixed: "Get explanations for each cooking step",
+    },
+    navTabs: {
+      he: 'לחצו על "מרכיבים" או "הוראות" כדי לעבור בין תצוגת המרכיבים להוראות ההכנה',
+      en: 'Press "Ingredients" or "Instructions" to switch between viewing ingredients and preparation steps',
+      ru: 'Нажмите "Ингредиенты" или "Инструкции" для переключения между просмотром ингредиентов и шагов приготовления',
+      de: 'Klicken Sie auf "Zutaten" oder "Anweisungen", um zwischen Zutaten und Zubereitungsschritten zu wechseln',
+      mixed:
+        'Press "Ingredients" or "Instructions" to switch between viewing ingredients and preparation steps',
+    },
+    navSteps: {
+      he: 'השתמשו בכפתורי "הבא" ו"הקודם" כדי להתקדם בין השלבים, או גררו את מחוון ההתקדמות',
+      en: 'Use the "Next" and "Previous" buttons to move between steps, or drag the progress slider',
+      ru: 'Используйте кнопки "Далее" и "Назад" для перехода между шагами или перетащите ползунок прогресса',
+      de: 'Verwenden Sie die Tasten "Weiter" und "Zurück", um zwischen Schritten zu wechseln, oder ziehen Sie den Fortschrittsregler',
+      mixed:
+        'Use the "Next" and "Previous" buttons to move between steps, or drag the progress slider',
     },
     helpGuideTitle: {
       he: "בישול ללא ידיים 👨‍🍳",
