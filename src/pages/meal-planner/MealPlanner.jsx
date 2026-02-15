@@ -10,6 +10,7 @@ import {
 import { useRecipeBook, useLanguage } from "../../context";
 import { useMealPlanner } from "../../hooks/useMealPlanner";
 import useTranslatedList from "../../hooks/useTranslatedList";
+import { SearchBox } from "../../components/controls/search";
 import classes from "./meal-planner.module.css";
 
 const DAY_COLORS = [
@@ -389,12 +390,13 @@ function MealPickerWrapper({
               </button>
             </div>
             <div className={classes.pickerSearch}>
-              <input
-                className={classes.pickerSearchInput}
+              <SearchBox
+                searchTerm={search}
+                onSearchChange={setSearch}
                 placeholder={t("mealPlanner", "searchRecipes")}
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                size="small"
                 autoFocus
+                className={classes.pickerSearchBox}
               />
             </div>
             <div className={classes.pickerList}>
@@ -418,6 +420,7 @@ function MealPickerWrapper({
                           className={classes.pickerItemImage}
                           src={recipe.image_src}
                           alt=""
+                          loading="lazy"
                         />
                       ) : (
                         <span className={classes.pickerItemEmoji}>🍽️</span>

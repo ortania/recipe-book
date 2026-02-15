@@ -1,6 +1,6 @@
 .greeting {
   font-size: var(--very-large-font);
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   padding: 0.5rem 0;
 }

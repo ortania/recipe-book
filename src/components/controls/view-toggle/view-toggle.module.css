@@ -1,6 +1,6 @@
 .toggleContainer {
   display: inline-flex;
-  background: white;
+  background: var(--bg-card);
   border-radius: 50px;
   /* padding: 4px; */
   gap: 4px;
@@ -19,7 +19,7 @@
   border-radius: 50px;
   font-size: var(--basic-font);
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -30,8 +30,8 @@
 }
 
 .toggleButton.active {
-  background: #e8eaed;
-  color: #202124;
+  background: var(--bg-hover);
+  color: var(--text-primary);
   box-shadow: none;
 }
 

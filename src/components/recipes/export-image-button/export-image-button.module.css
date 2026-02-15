@@ -3,10 +3,10 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.5em 1em;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 20px;
-  background: white;
-  color: #555;
+  background: var(--bg-card);
+  color: var(--text-secondary);
   font-size: var(--basic-font);
   font-weight: 500;
   cursor: pointer;
@@ -15,9 +15,9 @@
 }
 
 .exportButton:hover {
-  background: #f5f5f5;
-  border-color: #ccc;
-  color: #333;
+  background: var(--bg-hover);
+  border-color: var(--border-color);
+  color: var(--text-primary);
 }
 
 .exportButton:active {
@@ -43,8 +43,8 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid #ccc;
-  border-top-color: #0066cc;
+  border: 2px solid var(--border-color);
+  border-top-color: var(--clr-blue-3);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }

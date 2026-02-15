@@ -1,5 +1,5 @@
 .container {
-  max-width: 600px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -10,81 +10,41 @@
 }
 
 .searchContainer {
-  position: relative;
   max-width: 400px;
   margin: 1.5rem auto 0;
 }
 
-.searchInput {
-  width: 100%;
-  padding: 0.75rem 2.5rem 0.75rem 1rem;
-  border: 2px solid #e9ecef;
-  border-radius: 8px;
-  font-size: 1.3rem;
-  transition: all 0.2s ease;
-  text-align: right;
-}
-
-.searchInput:focus {
-  outline: none;
-  border-color: #667eea;
-  box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-}
-
-.searchIcon {
-  position: absolute;
-  left: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  color: #999;
-  font-size: var(--basic-font);
-}
-
-.clearSearch {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: #999;
-  font-size: 1.2rem;
-  cursor: pointer;
-  padding: 0.25rem 0.5rem;
-  transition: color 0.2s ease;
-}
-
-.clearSearch:hover {
-  color: #333;
+.searchBoxWrap {
+  flex: 1;
 }
 
 .noResults {
   text-align: center;
   padding: 3rem 2rem;
-  color: #999;
+  color: var(--text-muted);
   font-size: 1.1rem;
 }
 
 .header h1 {
   font-size: 2rem;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
 }
 
 .subtitle {
-  color: #666;
+  color: var(--text-secondary);
   font-size: 1.1rem;
   margin-bottom: 0.75rem;
 }
 
 .intro {
-  color: #555;
+  color: var(--text-secondary);
   font-size: var(--basic-font);
   line-height: 1.6;
   max-width: 500px;
   margin: 0 auto;
   padding: 1rem;
-  background: #f8f9fa;
+  background: var(--bg-tertiary);
   border-radius: 8px;
   border-right: 4px solid #667eea;
 }
@@ -102,14 +62,14 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.75rem 1.25rem;
-  background: white;
-  border: 2px solid #e9ecef;
+  background: var(--bg-card);
+  border: 2px solid var(--border-color);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
   font-size: var(--basic-font);
   font-weight: 500;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .tab:hover {
@@ -138,15 +98,15 @@
 }
 
 .content {
-  background: white;
+  background: var(--bg-card);
   border-radius: 12px;
   padding: 1.5rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: var(--shadow-md);
 }
 
 .simpleList {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 0.5rem;
 }
 
@@ -155,19 +115,18 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: #f8f9fa;
+  background: var(--bg-tertiary);
   border-radius: 8px;
   transition: all 0.2s ease;
 }
 
 .listItem:hover {
-  background: #e9ecef;
-  transform: translateX(-4px);
+  background: var(--bg-hover);
 }
 
 .itemName {
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
   flex: 1;
 }
 
@@ -200,43 +159,43 @@
   grid-template-columns: 1fr 1fr 2fr;
   gap: 1rem;
   padding: 1rem;
-  background: #f8f9fa;
+  background: var(--bg-tertiary);
   border-radius: 8px;
   transition: all 0.2s ease;
   text-align: center;
 }
 
 .tableRow:hover {
-  background: #e9ecef;
-  transform: translateX(-4px);
+  background: var(--bg-hover);
 }
 
 .note {
   margin-top: 1.5rem;
   padding: 1rem;
   background: #fff3cd;
-  border-right: 4px solid #ffc107;
+  border-inline-start: 4px solid #ffc107;
   border-radius: 8px;
   color: #856404;
   line-height: 1.6;
+  grid-column: 1 / -1;
 }
 
 .faqList {
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1rem;
 }
 
 .faqItem {
   padding: 1.5rem;
-  background: #f8f9fa;
+  background: var(--bg-tertiary);
   border-radius: 8px;
-  border-right: 4px solid #667eea;
+  border-inline-start: 4px solid #667eea;
 }
 
 .question {
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   font-size: 1.05rem;
   margin-bottom: 0.75rem;
 }
@@ -284,6 +243,14 @@
     gap: 0.5rem;
     padding: 0.75rem;
     font-size: var(--very-small-font);
+  }
+
+  .simpleList {
+    grid-template-columns: 1fr;
+  }
+
+  .faqList {
+    grid-template-columns: 1fr;
   }
 
   .listItem {

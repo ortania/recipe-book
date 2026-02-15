@@ -5,6 +5,7 @@ import {
   fetchShoppingChecked,
   saveShoppingChecked,
 } from "../firebase/mealPlanService";
+import { buildShoppingList } from "../utils/ingredientUtils";
 
 const DAYS = [
   "sunday",
@@ -132,71 +133,14 @@ export function useMealPlanner(recipes = [], userId = null) {
 
   // Build shopping list from plan
   const shoppingList = (() => {
-    const ingredientMap = {};
+    const allIds = [];
     DAYS.forEach((day) => {
       MEALS.forEach((meal) => {
         const ids = plan[day]?.[meal] || [];
-        ids.forEach((id) => {
-          const recipe = recipes.find((r) => r.id === id);
-          if (!recipe || !recipe.ingredients) return;
-          const ingredients = Array.isArray(recipe.ingredients)
-            ? recipe.ingredients
-            : typeof recipe.ingredients === "string"
-              ? recipe.ingredients
-                  .split(",")
-                  .map((s) => s.trim())
-                  .filter(Boolean)
-              : [];
-          const junkPatterns =
-            /related\s*articles|advertisement|sponsored|click\s*here|read\s*more|sign\s*up|subscribe|newsletter|copyright|©|http|www\.|ראה בקישור|לחצ[וי] כאן|see link|see recipe/i;
-          const nonIngredientWords =
-            /^(יבשים|רטובים|לקישוט|להגשה|לציפוי|אופציונלי|optional|for garnish|for serving|for decoration|מים|water)$/i;
-          const normalizeKey = (s) =>
-            s
-              .replace(/^[\d\s½¼¾⅓⅔.,/\-]+/, "")
-              .replace(/\s+/g, " ")
-              .trim()
-              .toLowerCase();
-          const extractQty = (s) => {
-            const m = s.match(/^([\d½¼¾⅓⅔.,/]+)/);
-            if (!m) return 1;
-            const v = m[1].replace(",", ".");
-            const fracs = {
-              "½": 0.5,
-              "¼": 0.25,
-              "¾": 0.75,
-              "⅓": 0.33,
-              "⅔": 0.67,
-            };
-            if (fracs[v]) return fracs[v];
-            const num = parseFloat(v);
-            return isNaN(num) ? 1 : num;
-          };
-          ingredients.forEach((ing) => {
-            const raw = ing.trim();
-            if (!raw || raw.length < 2 || raw.length > 150) return;
-            if (junkPatterns.test(raw)) return;
-            const key = normalizeKey(raw) || raw.toLowerCase();
-            if (!key || nonIngredientWords.test(key)) return;
-            const qty = extractQty(raw);
-            if (ingredientMap[key]) {
-              ingredientMap[key].count += 1;
-              ingredientMap[key].totalQty += qty;
-            } else {
-              ingredientMap[key] = {
-                name: key,
-                count: 1,
-                totalQty: qty,
-                display: raw,
-              };
-            }
-          });
-        });
+        allIds.push(...ids);
       });
     });
-    return Object.values(ingredientMap).sort((a, b) =>
-      a.name.localeCompare(b.name),
-    );
+    return buildShoppingList(allIds, recipes);
   })();
 
   // Get recipe objects for a day

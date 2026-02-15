@@ -8,7 +8,7 @@
   left: 0;
   width: 100%;
   z-index: 101;
-  background: white;
+  background: var(--bg-card);
 }
 
 h1 {

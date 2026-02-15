@@ -52,7 +52,7 @@
   width: 30px;
   height: 30px;
   border-radius: 50%;
-  background: #b8a9c9;
+  background: var(--clr-blue-3);
   color: white;
   display: flex;
   align-items: center;
@@ -75,14 +75,14 @@
 }
 
 .userMessage .bubble {
-  background: #e8e8e8;
-  color: #333;
+  background: var(--bubble-user);
+  color: var(--bubble-user-text);
   border-bottom-right-radius: 4px;
 }
 
 .assistantMessage .bubble {
-  background: white;
-  color: #333;
+  background: var(--bubble-assistant);
+  color: var(--bubble-assistant-text);
   border-bottom-left-radius: 4px;
 }
 
@@ -105,7 +105,7 @@
   width: 7px;
   height: 7px;
   border-radius: 50%;
-  background: #999;
+  background: var(--text-muted);
   animation: typing 1.4s infinite;
 }
 
@@ -128,6 +128,82 @@
   }
 }
 
+/* Toolbar with clear button */
+.chatToolbar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.25rem 0;
+  flex-shrink: 0;
+}
+
+.clearBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0.3em 0.7em;
+  font-size: var(--very-small-font);
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.clearBtn:hover {
+  color: #c62828;
+  border-color: #c62828;
+}
+
+/* Idea suggestion chips */
+.ideasSection {
+  text-align: center;
+  padding: 1.5rem 0.5rem;
+}
+
+.ideasTitle {
+  font-size: var(--small-font);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.3rem;
+}
+
+.ideasSubtitle {
+  font-size: var(--very-small-font);
+  color: var(--text-muted);
+  margin: 0 0 1.2rem;
+}
+
+.ideaChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.ideaChip {
+  background: var(--bg-chip);
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+  padding: 0.4em 1em;
+  font-size: var(--very-small-font);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+
+.ideaChip:hover:not(:disabled) {
+  background: var(--bg-chip-hover);
+  border-color: #9810fa;
+  color: #9810fa;
+}
+
+.ideaChip:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .errorMessage {
   background: #ffebee;
   color: #c62828;
@@ -142,22 +218,22 @@
   padding: 1rem 0 1.5rem;
   position: sticky;
   bottom: 0;
-  background: rgb(242, 242, 242);
+  background: var(--bg-primary);
   z-index: 10;
 }
 
 .inputWrap {
   display: flex;
   align-items: center;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 24px;
   padding: 0.4rem 0.5rem 0.4rem 1rem;
-  background: white;
+  background: var(--bg-input);
   transition: border-color 0.2s ease;
 }
 
 .inputWrap:focus-within {
-  border-color: #aaa;
+  border-color: var(--border-color);
 }
 
 .input {
@@ -183,7 +259,7 @@
 .sendBtn {
   background: transparent;
   border: none;
-  color: #999;
+  color: var(--text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -196,13 +272,13 @@
 }
 
 .imageBtn:hover:not(:disabled) {
-  color: #555;
-  background: #f0f0f0;
+  color: var(--text-primary);
+  background: var(--bg-hover);
 }
 
 .sendBtn:hover:not(:disabled) {
-  color: #555;
-  background: #f0f0f0;
+  color: var(--text-primary);
+  background: var(--bg-hover);
 }
 
 .imageBtn:disabled,

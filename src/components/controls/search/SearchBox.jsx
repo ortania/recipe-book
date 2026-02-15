@@ -1,6 +1,4 @@
 import { useState, useEffect } from "react";
-import { FaSearch } from "react-icons/fa";
-
 import { IoSearch } from "react-icons/io5";
 import classes from "./search-box.module.css";
 
@@ -9,6 +7,9 @@ function SearchBox({
   onSearchChange,
   placeholder = "Search...",
   examples = [],
+  size = "medium",
+  className = "",
+  autoFocus = false,
 }) {
   const [currentExample, setCurrentExample] = useState(0);
 
@@ -23,8 +24,10 @@ function SearchBox({
   const displayPlaceholder =
     !searchTerm && examples.length ? examples[currentExample] : placeholder;
 
+  const sizeClass = size !== "medium" ? classes[size] || "" : "";
+
   return (
-    <div className={classes.searchBox}>
+    <div className={`${classes.searchBox} ${sizeClass} ${className}`.trim()}>
       <IoSearch className={classes.searchIcon} />
       <input
         type="text"
@@ -32,6 +35,7 @@ function SearchBox({
         value={searchTerm}
         onChange={(e) => onSearchChange(e.target.value)}
         className={classes.searchInput}
+        autoFocus={autoFocus}
       />
       {searchTerm && (
         <button

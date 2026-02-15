@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { signupUser } from "../../firebase/authService";
 import { useLanguage } from "../../context";
 import FormInput from "../login/FormInput";
+import { Onboarding } from "../onboarding";
 import classes from "../login/login.module.css";
 
 function Signup() {
@@ -14,6 +15,7 @@ function Signup() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(false);
 
   const navigate = useNavigate();
 
@@ -59,6 +61,10 @@ function Signup() {
       setIsLoading(false);
     }
   };
+
+  if (!onboardingDone) {
+    return <Onboarding onFinish={() => navigate("/login")} />;
+  }
 
   return (
     <div className={classes.loginContainer}>
@@ -114,7 +120,7 @@ function Signup() {
 
         <p className={classes.signupLink}>
           {t("auth", "hasAccount")}{" "}
-          <span onClick={() => navigate("/")} className={classes.link}>
+          <span onClick={() => navigate("/login")} className={classes.link}>
             {t("auth", "login")}
           </span>
         </p>

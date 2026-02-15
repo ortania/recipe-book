@@ -34,7 +34,7 @@ function RecipeDetailsPage() {
       const stored = JSON.parse(localStorage.getItem(key) || "[]");
       const filtered = stored.filter((rid) => rid !== recipe.id);
       filtered.unshift(recipe.id);
-      localStorage.setItem(key, JSON.stringify(filtered.slice(0, 20)));
+      localStorage.setItem(key, JSON.stringify(filtered.slice(0, 10)));
     } catch (e) {
       /* ignore */
     }

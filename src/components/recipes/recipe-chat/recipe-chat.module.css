@@ -20,7 +20,7 @@
 
 .emptyText {
   font-size: var(--basic-font);
-  color: #888;
+  color: var(--text-muted);
   text-align: center;
   margin: 0;
 }
@@ -35,17 +35,17 @@
 
 .suggestionChip {
   padding: 0.4em 0.8em;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 20px;
-  background: #f8f8f8;
-  color: #555;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
   font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
 .suggestionChip:hover {
-  background: #eee;
+  background: var(--bg-hover);
   border-color: #9810fa;
   color: #9810fa;
 }
@@ -89,8 +89,8 @@
 }
 
 .assistantMessage .bubble {
-  background: #f0f0f0;
-  color: #333;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
   border-bottom-left-radius: 4px;
 }
 
@@ -111,7 +111,7 @@
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  background: #999;
+  background: var(--text-muted);
   animation: bounce 1.4s infinite ease-in-out;
 }
 
@@ -140,7 +140,7 @@
 
 .inputForm {
   padding-top: 0.5rem;
-  border-top: 1px solid #f0f0f0;
+  border-top: 1px solid var(--border-light);
 }
 
 .inputWrap {
@@ -148,7 +148,7 @@
   align-items: center;
   gap: 0.5rem;
   /* background: #f5f5f5; */
-  background: white;
+  background: var(--bg-card);
   border-radius: 24px;
   padding: 0.3rem 0.3rem 0.3rem 1rem;
 }
@@ -159,12 +159,12 @@
   background: transparent;
   font-size: var(--basic-font);
   outline: none;
-  color: #333;
+  color: var(--text-primary);
   min-width: 0;
 }
 
 .input::placeholder {
-  color: #aaa;
+  color: var(--text-muted);
 }
 
 .sendBtn {
@@ -187,13 +187,13 @@
 }
 
 .sendBtn:disabled {
-  background: #ccc;
+  background: var(--border-color);
   cursor: not-allowed;
 }
 
 .emptyHint {
   font-size: var(--small-font);
-  color: #aaa;
+  color: var(--text-muted);
   text-align: center;
   margin: 0;
   line-height: 1.5;
@@ -208,10 +208,10 @@
 
 .clearBtn {
   padding: 0.2em 0.7em;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   border-radius: 14px;
-  background: #f8f9fa;
-  color: #94a3b8;
+  background: var(--bg-tertiary);
+  color: var(--text-muted);
   font-size: var(--very-small-font);
   cursor: pointer;
   transition: all 0.15s;
@@ -290,11 +290,11 @@
   flex: 1;
   min-width: 80px;
   padding: 0.25em 0.5em;
-  border: 1px solid #d4d4d8;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   font-size: var(--very-small-font);
   outline: none;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .customUpdateInput:focus {
@@ -320,17 +320,17 @@
 
 .customCancelBtn {
   padding: 0.2em 0.4em;
-  border: 1px solid #e2e8f0;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: white;
-  color: #94a3b8;
+  background: var(--bg-card);
+  color: var(--text-muted);
   font-size: var(--very-small-font);
   cursor: pointer;
 }
 
 .customCancelBtn:hover {
-  border-color: #94a3b8;
-  color: #64748b;
+  border-color: var(--border-color);
+  color: var(--text-secondary);
 }
 
 .updateSummary {

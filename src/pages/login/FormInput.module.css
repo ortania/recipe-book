@@ -5,17 +5,17 @@
 .inputWrapper input {
   width: 100%;
   padding: 1rem 1.2rem;
-  border: 2px solid #e0e0e0;
+  border: 2px solid var(--border-color);
   border-radius: 12px;
   font-size: var(--basic-font);
   transition: all 0.3s ease;
-  background: #f8f9fa;
+  background: var(--bg-tertiary);
 }
 
 .inputWrapper input:focus {
   outline: none;
   border-color: #667eea;
-  background: white;
+  background: var(--bg-card);
   box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
@@ -47,7 +47,7 @@
   align-items: center;
   justify-content: center;
   transition: all 0.2s;
-  color: #999;
+  color: var(--text-muted);
   width: 2.5rem;
   height: 2.5rem;
   border-radius: 8px;

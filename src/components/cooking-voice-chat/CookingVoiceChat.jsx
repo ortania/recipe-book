@@ -3,6 +3,7 @@ import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
 import { FaMicrophone } from "react-icons/fa6";
 import { FaMicrophoneSlash } from "react-icons/fa";
 import { sendCookingChatMessage } from "../../services/openai";
+import { getOpenAIKey } from "../../firebase/apiKeyService";
 import { useLanguage } from "../../context";
 import classes from "./cooking-voice-chat.module.css";
 
@@ -156,7 +157,7 @@ function CookingVoiceChat({
   // ---- Helper: speak text aloud using OpenAI TTS ----
   async function speakText(text) {
     if (!text) return;
-    const apiKey = import.meta.env.VITE_OPENAI_API_KEY;
+    const apiKey = await getOpenAIKey();
     if (!apiKey) return;
     setIsSpeaking(true);
     try {

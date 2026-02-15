@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { FaImage } from "react-icons/fa";
+import { FiTrash2 } from "react-icons/fi";
 import {
   sendChatMessage,
   analyzeImageForNutrition,
@@ -7,6 +8,15 @@ import {
 import { useLanguage, useRecipeBook } from "../../context";
 import { Greeting } from "../greeting";
 import classes from "./chat-window.module.css";
+
+const IDEA_CHIPS = [
+  "ideaChip1",
+  "ideaChip2",
+  "ideaChip3",
+  "ideaChip4",
+  "ideaChip5",
+  "ideaChip6",
+];
 
 function ChatWindow({ recipeContext = null }) {
   const { t, language } = useLanguage();
@@ -90,13 +100,10 @@ function ChatWindow({ recipeContext = null }) {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (isLoading) return;
+  const sendMessage = async (text) => {
+    if (isLoading || !text.trim()) return;
 
-    if (!input.trim()) return;
-
-    const userMessage = { role: "user", content: input };
+    const userMessage = { role: "user", content: text };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInput("");
@@ -109,11 +116,10 @@ function ChatWindow({ recipeContext = null }) {
         recipeContext,
         language,
       );
-      const finalMessages = [
+      setMessages([
         ...updatedMessages,
         { role: "assistant", content: response },
-      ];
-      setMessages(finalMessages);
+      ]);
     } catch (err) {
       setError(err.message || "Failed to get response. Please try again.");
       console.error("Chat error:", err);
@@ -122,13 +128,50 @@ function ChatWindow({ recipeContext = null }) {
     }
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    sendMessage(input);
+  };
+
+  const handleChipClick = (chipKey) => {
+    const text = t("chat", chipKey);
+    if (text) sendMessage(text);
+  };
+
   return (
     <div className={classes.chatContainer}>
       <div className={classes.greeting}>
         <Greeting />
       </div>
 
+      {messages.length > 0 && (
+        <div className={classes.chatToolbar}>
+          <button className={classes.clearBtn} onClick={clearChat}>
+            <FiTrash2 /> {t("chat", "clearChat")}
+          </button>
+        </div>
+      )}
+
       <div className={classes.messagesArea}>
+        {messages.length === 0 && (
+          <div className={classes.ideasSection}>
+            <h3 className={classes.ideasTitle}>{t("chat", "ideaTitle")}</h3>
+            <p className={classes.ideasSubtitle}>{t("chat", "ideaSubtitle")}</p>
+            <div className={classes.ideaChips}>
+              {IDEA_CHIPS.map((chipKey) => (
+                <button
+                  key={chipKey}
+                  className={classes.ideaChip}
+                  onClick={() => handleChipClick(chipKey)}
+                  disabled={isLoading}
+                >
+                  {t("chat", chipKey)}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
+
         {messages.map((message, index) => (
           <div
             key={index}

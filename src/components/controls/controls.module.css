@@ -21,15 +21,15 @@
 
 /* Disabled button styles */
 .disabled {
-  background-color: #e0e0e0 !important;
-  color: #9e9e9e !important;
+  background-color: var(--bg-tertiary) !important;
+  color: var(--text-muted) !important;
   cursor: not-allowed !important;
   transform: none !important;
-  border-color: #e0e0e0 !important;
+  border-color: var(--border-color) !important;
 }
 
 .disabled:hover {
-  background-color: #e0e0e0 !important;
+  background-color: var(--bg-tertiary) !important;
   transform: none !important;
 }
 

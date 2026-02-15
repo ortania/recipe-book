@@ -64,6 +64,67 @@ Variables
   --basic-font: 1.4rem;
   --small-font: 1.2rem;
   --very-small-font: 1rem;
+
+  /* ===== Semantic theme tokens (light = default) ===== */
+  --bg-primary: #f2f2f2;
+  --bg-secondary: #ffffff;
+  --bg-tertiary: #f8f9fa;
+  --bg-input: #ffffff;
+  --bg-card: #ffffff;
+  --bg-sidebar: #ffffff;
+  --bg-hover: #f0f0f0;
+  --bg-chip: #ffffff;
+  --bg-chip-hover: #f0e6ff;
+
+  --text-primary: #222222;
+  --text-secondary: #555555;
+  --text-muted: #888888;
+  --text-on-primary: #ffffff;
+
+  --border-color: #e0e0e0;
+  --border-light: #eeeeee;
+  --divider: #dddddd;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  --bubble-user: #e8e8e8;
+  --bubble-assistant: #ffffff;
+  --bubble-user-text: #333333;
+  --bubble-assistant-text: #333333;
+}
+
+[data-theme="dark"] {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-tertiary: #1e2a45;
+  --bg-input: #1e2a45;
+  --bg-card: #16213e;
+  --bg-sidebar: #0f1729;
+  --bg-hover: #253352;
+  --bg-chip: #1e2a45;
+  --bg-chip-hover: #2d1b4e;
+
+  --text-primary: #e8e8e8;
+  --text-secondary: #b0b8c8;
+  --text-muted: #7a8599;
+  --text-on-primary: #ffffff;
+
+  --border-color: #2a3550;
+  --border-light: #222d42;
+  --divider: #2a3550;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+
+  --bubble-user: #2a3550;
+  --bubble-assistant: #1e2a45;
+  --bubble-user-text: #e0e0e0;
+  --bubble-assistant-text: #d0d8e8;
+
+  --clr-grey-10: #1a1a2e;
+  --clr-black: #e8e8e8;
+  --clr-white: #16213e;
 }
 
 /* #endregion variables */
@@ -100,11 +161,14 @@ body {
     Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   font-family: "Raleway", sans-serif;
 
-  background-color: var(--clr-grey-10);
-  color: var(--clr-black);
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   line-height: 1.5;
   font-size: 1.2rem;
   overscroll-behavior: none;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 ul {
   list-style-type: none;
@@ -173,3 +237,5 @@ html {
   overflow-y: scroll;
   overscroll-behavior-y: none;
 }
+
+

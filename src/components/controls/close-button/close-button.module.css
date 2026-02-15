@@ -11,26 +11,26 @@
 
 .plain {
   background: none;
-  color: #555;
+  color: var(--text-secondary);
   font-size: 2.5rem;
 }
 
 .plain:hover {
-  color: #333;
+  color: var(--text-primary);
 }
 
 .circle {
-  background: #f3f4f6;
+  background: var(--bg-tertiary);
   border-radius: 50%;
   width: 3rem;
   height: 3rem;
   font-size: 2.5rem;
-  color: #555;
-  border: 1px solid #d1d5db;
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
 }
 
 .closeButton:hover {
   /* background: #e5e7eb; */
-  color: #333;
+  color: var(--text-primary);
   transform: scale(1.1);
 }

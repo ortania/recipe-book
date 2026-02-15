@@ -74,7 +74,7 @@ function RecipesView({
       return stored
         .map((id) => localPersons.find((p) => p.id === id))
         .filter(Boolean)
-        .slice(0, 8);
+        .slice(0, 6);
     } catch {
       return [];
     }
@@ -409,6 +409,7 @@ function RecipesView({
                         src={person.image_src}
                         alt={person.name}
                         className={classes.recentlyViewedImage}
+                        loading="lazy"
                       />
                     )}
                     <span className={classes.recentlyViewedName}>

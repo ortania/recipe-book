@@ -1,7 +1,6 @@
 import { useState, useMemo } from "react";
-import { FaSearch } from "react-icons/fa";
-import { IoSearch } from "react-icons/io5";
 import { useLanguage } from "../../context";
+import { SearchBox } from "../controls/search";
 import conversionData from "./conversionData";
 import classes from "./conversion-tables.module.css";
 
@@ -79,22 +78,13 @@ function ConversionTables() {
         </p> */}
 
         <div className={classes.searchContainer}>
-          <IoSearch className={classes.searchIcon} />
-          <input
-            type="text"
+          <SearchBox
+            searchTerm={searchQuery}
+            onSearchChange={setSearchQuery}
             placeholder={t("conversions", "searchPlaceholder")}
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className={classes.searchInput}
+            size="large"
+            className={classes.searchBoxWrap}
           />
-          {searchQuery && (
-            <button
-              className={classes.clearSearch}
-              onClick={() => setSearchQuery("")}
-            >
-              ✕
-            </button>
-          )}
         </div>
       </div>
 

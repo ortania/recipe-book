@@ -22,6 +22,7 @@ import Settings from "../pages/settings/Settings";
 import RecipeDetailsPage from "../pages/recipe-details/RecipeDetailsPage";
 import MealPlanner from "../pages/meal-planner";
 import ShoppingList from "../pages/shopping-list";
+import { Onboarding } from "../pages/onboarding";
 
 const GlobalRecipes = React.lazy(() => import("../pages/global-recipes"));
 
@@ -45,6 +46,12 @@ function AppContent() {
   return (
     <Router>
       <Routes>
+        {/* Onboarding (shown once before login) */}
+        <Route
+          path="/onboarding"
+          element={isLoggedIn ? <Navigate to="/categories" /> : <Onboarding />}
+        />
+
         {/* Public Routes (Login Page - Has Header/Footer but No Navigation) */}
         <Route element={<MainLayout />}>
           <Route

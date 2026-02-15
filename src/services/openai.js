@@ -1,13 +1,15 @@
-const OPENAI_API_KEY = import.meta.env.VITE_OPENAI_API_KEY;
+import { getOpenAIKey } from "../firebase/apiKeyService";
+
 const API_URL = "https://api.openai.com/v1/chat/completions";
 const TTS_API_URL = "https://api.openai.com/v1/audio/speech";
 
 export const speakWithOpenAI = async (text, voice = "nova") => {
-  if (!OPENAI_API_KEY || !text) return null;
+  const apiKey = await getOpenAIKey();
+  if (!apiKey || !text) return null;
   const response = await fetch(TTS_API_URL, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify({
@@ -23,16 +25,17 @@ export const speakWithOpenAI = async (text, voice = "nova") => {
 };
 
 export const callOpenAI = async (requestBody) => {
-  if (!OPENAI_API_KEY) {
+  const apiKey = await getOpenAIKey();
+  if (!apiKey) {
     throw new Error(
-      "OpenAI API key is not configured. Please add VITE_OPENAI_API_KEY to your .env file.",
+      "OpenAI API key is not configured. Save it via Settings or add VITE_OPENAI_API_KEY to your .env file.",
     );
   }
 
   const response = await fetch(API_URL, {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${OPENAI_API_KEY}`,
+      Authorization: `Bearer ${apiKey}`,
       "Content-Type": "application/json",
     },
     body: JSON.stringify(requestBody),

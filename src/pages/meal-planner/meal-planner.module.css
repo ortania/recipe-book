@@ -11,8 +11,8 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  background: #f8f8f8;
-  border: 1px solid #ddd;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   padding: 1.4rem 1.8rem;
   margin-bottom: 1.4rem;
@@ -23,14 +23,14 @@
 .title {
   font-size: var(--large-font);
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0;
   text-align: start;
 }
 
 .dateRange {
   font-size: var(--basic-font);
-  color: #777;
+  color: var(--text-muted);
   display: block;
   margin-top: 0.15rem;
 }
@@ -47,10 +47,10 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.5em 1.2em;
-  border: 1px solid #222;
+  border: 1px solid var(--text-primary);
   border-radius: 6px;
-  background: #1a1a1a;
-  color: white;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   font-size: var(--basic-font);
   cursor: pointer;
   transition: opacity 0.15s;
@@ -72,18 +72,18 @@
 
 .headerBtnOutline {
   padding: 0.5em 1.2em;
-  border: 1px solid #bbb;
+  border: 1px solid var(--border-color);
   border-radius: 6px;
-  background: white;
-  color: #444;
+  background: var(--bg-card);
+  color: var(--text-secondary);
   font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .headerBtnOutline:hover {
-  background: #f0f0f0;
-  border-color: #888;
+  background: var(--bg-hover);
+  border-color: var(--border-color);
 }
 
 /* ===== Days Grid ===== */
@@ -95,8 +95,8 @@
 
 /* ===== Day Card ===== */
 .dayCard {
-  background: white;
-  border: 1px solid #d0d0d0;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -132,13 +132,13 @@
 .dayName {
   font-size: var(--basic-font);
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   line-height: 1.2;
 }
 
 .dayDate {
   font-size: var(--basic-font);
-  color: #999;
+  color: var(--text-muted);
 }
 
 .dayBody {
@@ -148,8 +148,8 @@
 
 /* ===== Meal Block ===== */
 .mealBlock {
-  background: #f7f7f7;
-  border: 1px solid #e0e0e0;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
   margin-bottom: 0.5rem;
@@ -165,13 +165,13 @@
   gap: 0.4rem;
   font-size: var(--basic-font);
   font-weight: 700;
-  color: #222;
+  color: var(--text-primary);
   margin-bottom: 0.15rem;
 }
 
 .mealIcon {
   font-size: var(--basic-font);
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .mealRecipeItem {
@@ -179,7 +179,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.35rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .mealRecipeItem:last-child {
@@ -188,7 +188,7 @@
 
 .recipeName {
   font-size: var(--basic-font);
-  color: #555;
+  color: var(--text-secondary);
   cursor: pointer;
 }
 
@@ -200,7 +200,7 @@
 .removeBtn {
   background: none;
   border: none;
-  color: #ccc;
+  color: var(--text-muted);
   font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.2em;
@@ -222,8 +222,8 @@
   padding: 0.55em;
   border: none;
   border-radius: 0 0 12px 12px;
-  background: #1a1a1a;
-  color: white;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
@@ -237,7 +237,7 @@
 
 /* ===== Shopping List Modal ===== */
 .shoppingModal {
-  background: white;
+  background: var(--bg-card);
   border-radius: 14px;
   width: 100%;
   max-width: 460px;
@@ -253,7 +253,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.1rem 1.3rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .shoppingModalTitle {
@@ -265,13 +265,13 @@
 .shoppingProgress {
   padding: 0.5rem 1.3rem;
   font-size: var(--basic-font);
-  color: #888;
-  border-bottom: 1px solid #eee;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-light);
 }
 
 .shoppingEmpty {
   font-size: var(--basic-font);
-  color: #999;
+  color: var(--text-muted);
   text-align: center;
   padding: 2.5rem 1rem;
 }
@@ -292,7 +292,7 @@
   cursor: pointer;
   padding: 0.45rem 0;
   font-size: var(--basic-font);
-  border-bottom: 1px solid #f2f2f2;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .shoppingItem:last-child {
@@ -302,23 +302,23 @@
 .shoppingCheckbox {
   width: 18px;
   height: 18px;
-  accent-color: #1a1a1a;
+  accent-color: var(--text-primary);
   cursor: pointer;
   flex-shrink: 0;
 }
 
 .shoppingName {
-  color: #333;
+  color: var(--text-primary);
   font-size: var(--basic-font);
 }
 
 .shoppingNameChecked {
   text-decoration: line-through;
-  color: #bbb;
+  color: var(--text-muted);
 }
 
 .shoppingQty {
-  color: #888;
+  color: var(--text-muted);
   font-size: var(--basic-font);
 }
 
@@ -327,17 +327,17 @@
   width: calc(100% - 2.6rem);
   margin: 0.7rem 1.3rem;
   padding: 0.5em;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
-  background: white;
-  color: #888;
+  background: var(--bg-card);
+  color: var(--text-muted);
   font-size: var(--basic-font);
   cursor: pointer;
   text-align: center;
 }
 
 .uncheckBtn:hover {
-  background: #f5f5f5;
+  background: var(--bg-hover);
 }
 
 /* ===== Recipe Picker Modal ===== */
@@ -353,7 +353,7 @@
 }
 
 .pickerModal {
-  background: white;
+  background: var(--bg-card);
   border-radius: 14px;
   width: 100%;
   max-width: 460px;
@@ -369,7 +369,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.1rem 1.3rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .pickerTitle {
@@ -382,7 +382,7 @@
   background: none;
   border: none;
   font-size: var(--basic-font);
-  color: #999;
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0.3em;
 }
@@ -390,7 +390,7 @@
 .mealTabs {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .mealTab {
@@ -400,7 +400,7 @@
   background: none;
   font-size: var(--basic-font);
   font-weight: 600;
-  color: #999;
+  color: var(--text-muted);
   cursor: pointer;
   text-align: center;
   border-bottom: 2px solid transparent;
@@ -408,8 +408,8 @@
 }
 
 .mealTabActive {
-  color: #1a1a1a;
-  border-bottom-color: #1a1a1a;
+  color: var(--text-primary);
+  border-bottom-color: var(--text-primary);
 }
 
 .catListItem {
@@ -422,13 +422,13 @@
   width: 100%;
   text-align: start;
   cursor: pointer;
-  border-bottom: 1px solid #f2f2f2;
+  border-bottom: 1px solid var(--border-light);
   transition: background 0.15s;
   font-size: var(--basic-font);
 }
 
 .catListItem:hover {
-  background: #f5f5f5;
+  background: var(--bg-hover);
 }
 
 .catListItem:last-child {
@@ -449,12 +449,12 @@
 .catListName {
   flex: 1;
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .catListCount {
   font-size: var(--small-font);
-  color: #999;
+  color: var(--text-muted);
   flex-shrink: 0;
 }
 
@@ -463,7 +463,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-light);
 }
 
 .backBtn {
@@ -482,15 +482,15 @@
 
 .pickerSubCount {
   font-size: var(--small-font);
-  color: #999;
+  color: var(--text-muted);
 }
 
 .doneBtn {
   padding: 0.3em 0.8em;
   border: none;
   border-radius: 6px;
-  background: #1a1a1a;
-  color: white;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   font-size: var(--small-font);
   font-weight: 600;
   cursor: pointer;
@@ -501,7 +501,7 @@
 }
 
 .pickerItemAdded {
-  background: #f0fdf4;
+  background: var(--bg-tertiary);
 }
 
 .pickerItemCheck {
@@ -513,21 +513,11 @@
 
 .pickerSearch {
   padding: 0.7rem 1.3rem;
-  border-bottom: 1px solid #eee;
+  border-bottom: 1px solid var(--border-light);
 }
 
-.pickerSearchInput {
-  width: 100%;
-  padding: 0.55rem 0.85rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: var(--basic-font);
-  outline: none;
-  box-sizing: border-box;
-}
-
-.pickerSearchInput:focus {
-  border-color: #2196f3;
+.pickerSearchBox {
+  flex: 1;
 }
 
 .pickerList {
@@ -552,7 +542,7 @@
 }
 
 .pickerItem:hover {
-  background: #f5f5f5;
+  background: var(--bg-hover);
 }
 
 .pickerItemImage {
@@ -560,7 +550,7 @@
   height: 40px;
   border-radius: 8px;
   object-fit: cover;
-  background: #f0f0f0;
+  background: var(--bg-tertiary);
   flex-shrink: 0;
 }
 
@@ -568,7 +558,7 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: #f0f0f0;
+  background: var(--bg-tertiary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -578,14 +568,14 @@
 
 .pickerItemName {
   font-size: var(--basic-font);
-  color: #333;
+  color: var(--text-primary);
   font-weight: 500;
 }
 
 .pickerEmpty {
   text-align: center;
   padding: 2rem;
-  color: #999;
+  color: var(--text-muted);
   font-size: var(--basic-font);
 }
 

@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { FiSun, FiMoon } from "react-icons/fi";
 import { applyFontScale } from "../../utils/applyFontScale";
+import { getStoredTheme, applyTheme } from "../../utils/theme";
 import { useLanguage } from "../../context";
 import { CloseButton } from "../../components/controls/close-button";
 import { LANGUAGES } from "../../utils/translations";
@@ -20,10 +22,17 @@ function Settings() {
     return saved ? parseFloat(saved) : DEFAULT_SCALE;
   });
 
+  const [theme, setTheme] = useState(getStoredTheme);
+
   useEffect(() => {
     applyFontScale(scale);
     localStorage.setItem("fontScale", scale.toString());
   }, [scale]);
+
+  const handleThemeChange = (newTheme) => {
+    setTheme(newTheme);
+    applyTheme(newTheme);
+  };
 
   const handleReset = () => {
     setScale(DEFAULT_SCALE);
@@ -58,6 +67,30 @@ function Settings() {
               <span className={classes.languageName}>{lang.label}</span>
             </button>
           ))}
+        </div>
+      </div>
+
+      <div className={classes.section}>
+        <div className={classes.sectionTitle}>
+          <span className={classes.sectionIcon}>🎨</span>
+          {t("settings", "appearance")}
+        </div>
+
+        <div className={classes.themeToggle}>
+          <button
+            className={`${classes.themeBtn} ${theme === "light" ? classes.themeBtnActive : ""}`}
+            onClick={() => handleThemeChange("light")}
+          >
+            <FiSun />
+            <span>{t("settings", "lightMode")}</span>
+          </button>
+          <button
+            className={`${classes.themeBtn} ${theme === "dark" ? classes.themeBtnActive : ""}`}
+            onClick={() => handleThemeChange("dark")}
+          >
+            <FiMoon />
+            <span>{t("settings", "darkMode")}</span>
+          </button>
         </div>
       </div>
 

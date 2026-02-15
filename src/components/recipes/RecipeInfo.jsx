@@ -91,6 +91,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
             src={getImageSrc()}
             alt={person.name}
             className={classes.recipeImage}
+            loading="lazy"
             onError={(e) => {
               e.target.src = DEFAULT_IMAGE;
             }}

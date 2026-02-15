@@ -7,7 +7,7 @@
   gap: 16px;
   padding: 0 16px 16px 16px;
   background-color: inherit;
-  border-inline-end: 1px solid #d1d1d1;
+  border-inline-end: 1px solid var(--border-color);
   min-width: 250px;
   align-self: flex-start;
 }
@@ -15,8 +15,8 @@
 .groupActions {
   padding-bottom: 16px;
   padding-top: 16px;
-  border-bottom: 1px solid #d1d1d1;
-  border-top: 1px solid #d1d1d1;
+  border-bottom: 1px solid var(--border-color);
+  border-top: 1px solid var(--border-color);
   display: flex;
   gap: 8px;
   align-items: center;
@@ -32,7 +32,7 @@
   padding: 0.75rem 1rem;
   /* background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); */
   /* color: white; */
-  color: black;
+  color: var(--text-primary);
   border: none;
   border-radius: 8px;
   font-size: var(--basic-font);
@@ -53,7 +53,7 @@
   padding: 0.75rem 1rem;
   border-radius: 8px;
   background: inherit;
-  color: #333;
+  color: var(--text-primary);
   /* border: 1px solid lightgray; */
   cursor: pointer;
   transition: all 0.2s ease;
@@ -65,7 +65,7 @@
 }
 
 .addCategoryBtn:hover {
-  background: #f1f3f4;
+  background: var(--bg-hover);
   transform: scale(1.02);
 }
 
@@ -106,7 +106,7 @@
 }
 
 .groupButton:hover {
-  background-color: #f8f9fa;
+  background-color: var(--bg-hover);
   transform: translateX(4px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
@@ -138,7 +138,7 @@
 
 .activeGroup {
   font-weight: 500;
-  color: #212529;
+  color: var(--text-primary);
 }
 
 .contactCount {
@@ -204,12 +204,12 @@
 }
 
 .reorderButton {
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .reorderButton:hover {
-  background: rgba(0, 0, 0, 0.05);
-  color: #333;
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .editButton:hover,
@@ -219,8 +219,8 @@
 
 .editButton,
 .deleteButton {
-  background: white;
-  border: 1px solid #ddd;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
   border-radius: 6px;
   padding: 0.4rem 0.6rem;
   cursor: pointer;
@@ -247,29 +247,29 @@
 .conversationsSection {
   margin-top: auto;
   padding: 1rem;
-  border-top: 1px solid #e0e0e0;
+  border-top: 1px solid var(--border-color);
 }
 
 .conversationsTab {
   padding: 0.75rem 1rem;
-  background: white;
+  background: var(--bg-card);
   border-radius: 8px;
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .conversationsSeparator {
   height: 1px;
-  background: #ddd;
+  background: var(--border-color);
   margin: 0.75rem 0;
 }
 
 .chatLogLabel {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  color: #666;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -319,7 +319,7 @@
     padding: 0;
     cursor: pointer;
     font-size: 2.5rem;
-    color: #333;
+    color: var(--text-primary);
     transition: all 0.2s ease;
   }
 
@@ -336,7 +336,7 @@
     cursor: pointer;
     font-size: 2rem;
     /* color: #667eea; */
-    color: black;
+    color: var(--text-primary);
     transition: all 0.2s ease;
     width: 30px;
     height: 30px;
@@ -361,7 +361,7 @@
   }
 
   .mobileToggle:hover {
-    background: #f5f5f5;
+    background: var(--bg-hover);
   }
 
   .categoriesContent {
@@ -370,8 +370,8 @@
     left: 0;
     right: 0;
     z-index: 10001;
-    background: white;
-    border-bottom: 1px solid #d1d1d1;
+    background: var(--bg-card);
+    border-bottom: 1px solid var(--border-color);
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
@@ -393,7 +393,7 @@
   .groupActions {
     padding-top: 1rem;
     padding-bottom: 0;
-    border-top: 1px solid #d1d1d1;
+    border-top: 1px solid var(--border-color);
     border-bottom: none;
   }
 

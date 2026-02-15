@@ -12,10 +12,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-light);
   position: sticky;
   top: 0;
-  background: white;
+  background: var(--bg-card);
   z-index: 10;
 }
 
@@ -51,13 +51,13 @@
 .editTitleGroup h2 {
   font-size: var(--large-font);
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--text-primary);
   margin: 0;
 }
 
 .editTitleGroup p {
   font-size: var(--basic-font);
-  color: #888;
+  color: var(--text-muted);
   margin: 0;
 }
 
@@ -89,14 +89,14 @@
   background: none;
   border: none;
   font-size: var(--basic-font);
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   padding: 0.5em 1em;
   transition: color 0.2s;
 }
 
 .cancelBtn:hover {
-  color: #333;
+  color: var(--text-primary);
 }
 
 .saveBtn {
@@ -104,8 +104,8 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.6em 1.4em;
-  background: #222;
-  color: white;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   border: none;
   border-radius: 12px;
   font-size: var(--basic-font);
@@ -115,7 +115,7 @@
 }
 
 .saveBtn:hover {
-  background: #444;
+  background: var(--text-secondary);
 }
 
 /* ========== Body Layout ========== */
@@ -129,8 +129,8 @@
 .sidebar {
   width: 120px;
   min-width: 120px;
-  background: #f8f9fa;
-  border-left: 1px solid #f0f0f0;
+  background: var(--bg-tertiary);
+  border-left: 1px solid var(--border-light);
   padding: 1rem 0;
   display: flex;
   flex-direction: column;
@@ -147,7 +147,7 @@
   border: none;
   background: none;
   cursor: pointer;
-  color: #888;
+  color: var(--text-muted);
   font-size: var(--basic-font);
   font-weight: 500;
   transition: all 0.2s;
@@ -157,13 +157,13 @@
 }
 
 .sidebarTab:hover {
-  color: #333;
-  background: #f0f0f0;
+  color: var(--text-primary);
+  background: var(--bg-hover);
 }
 
 .sidebarTabActive {
   color: #1a9c5a;
-  background: white;
+  background: var(--bg-card);
   border-right-color: #1a9c5a;
   font-weight: 600;
 }
@@ -181,7 +181,7 @@
 }
 
 .sidebarTabDelete:hover {
-  background: #fef2f2;
+  background: var(--bg-hover);
 }
 
 /* ========== Content Area ========== */
@@ -195,7 +195,7 @@
 .sectionTitle {
   font-size: var(--large-font);
   font-weight: 700;
-  color: #1a1a2e;
+  color: var(--text-primary);
   margin: 0 0 1.5rem 0;
 }
 
@@ -210,7 +210,7 @@
 .formLabel {
   font-size: var(--basic-font);
   font-weight: 600;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .formLabel span {
@@ -222,18 +222,18 @@
 
 .formInput {
   padding: 0.8rem 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   font-size: var(--basic-font);
   outline: none;
   transition: border-color 0.2s;
   width: 100%;
   box-sizing: border-box;
-  background: #f5f5f5;
+  background: var(--bg-tertiary);
 }
 
 .formInput::placeholder {
-  color: #bbb;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -243,7 +243,7 @@
 
 .formTextarea {
   padding: 0.8rem 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   font-size: var(--basic-font);
   outline: none;
@@ -252,11 +252,11 @@
   min-height: 80px;
   width: 100%;
   box-sizing: border-box;
-  background: #f5f5f5;
+  background: var(--bg-tertiary);
 }
 
 .formTextarea::placeholder {
-  color: #bbb;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -266,15 +266,14 @@
 
 .formSelect {
   padding: 0.8rem 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   font-size: var(--basic-font);
   outline: none;
-  background: white;
   cursor: pointer;
   width: 100%;
   box-sizing: border-box;
-  background: #f5f5f5;
+  background: var(--bg-tertiary);
 }
 
 .formRow {
@@ -297,7 +296,7 @@
   border: none;
   cursor: pointer;
   font-size: 1.5rem;
-  color: #ccc;
+  color: var(--border-color);
   transition: color 0.2s;
   padding: 0;
   display: flex;
@@ -318,7 +317,7 @@
 
 .favoriteBtn span,
 .favoriteBtnActive span {
-  color: black;
+  color: var(--text-primary);
 }
 
 /* ========== Star Rating ========== */
@@ -333,7 +332,7 @@
   border: none;
   cursor: pointer;
   font-size: 1.5rem;
-  color: #e0e0e0;
+  color: var(--border-color);
   padding: 0.1rem;
   transition: color 0.2s;
   display: flex;
@@ -364,7 +363,7 @@
 .dynamicItemNumber {
   font-size: var(--basic-font);
   font-weight: 700;
-  color: #333;
+  color: var(--text-primary);
   flex-shrink: 0;
   line-height: 1.5;
 }
@@ -376,9 +375,9 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.8rem 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: #f5f5f5;
+  background: var(--bg-tertiary);
   transition: border-color 0.2s;
   position: relative;
 }
@@ -403,7 +402,7 @@
 }
 
 .dynamicItemInput::placeholder {
-  color: #bbb;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -424,7 +423,7 @@
 }
 
 .dynamicItemTextarea::placeholder {
-  color: #bbb;
+  color: var(--text-muted);
   font-style: italic;
 }
 
@@ -448,9 +447,9 @@
   min-width: 0;
   position: relative;
   padding: 0.8rem 1rem;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
-  background: #f5f5f5;
+  background: var(--bg-tertiary);
   transition: border-color 0.2s;
 }
 
@@ -490,10 +489,10 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.8rem;
-  border: 2px dashed #d0d0d0;
+  border: 2px dashed var(--border-color);
   border-radius: 12px;
   background: none;
-  color: #888;
+  color: var(--text-muted);
   font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.2s;
@@ -509,7 +508,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #bbb;
+  color: var(--text-muted);
   cursor: grab;
   padding: 0.2em;
   flex-shrink: 0;
@@ -521,7 +520,7 @@
 }
 
 .dragHandle:hover {
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* ========== Image Section ========== */
@@ -531,7 +530,7 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border: 2px dashed #d0d0d0;
+  border: 2px dashed var(--border-color);
   border-radius: 16px;
   padding: 2rem;
   cursor: pointer;
@@ -553,20 +552,20 @@
 
 .imageUploadIcon {
   font-size: 2.5rem;
-  color: #bbb;
+  color: var(--text-muted);
   margin-bottom: 0.5rem;
 }
 
 .imageUploadText {
   font-size: var(--basic-font);
-  color: #888;
+  color: var(--text-muted);
 }
 
 .imageRemoveBtn {
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: white;
+  background: var(--bg-card);
   border: none;
   border-radius: 50%;
   width: 30px;
@@ -587,7 +586,7 @@
 .categorySubtitle {
   font-size: var(--basic-font);
   font-weight: 600;
-  color: #555;
+  color: var(--text-secondary);
   margin: 2rem 0 1rem 0;
 }
 
@@ -599,13 +598,13 @@
 
 .categoryChip {
   padding: 0.5em 1em;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 20px;
-  background: white;
+  background: var(--bg-card);
   font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.2s;
-  color: #555;
+  color: var(--text-secondary);
 }
 
 .categoryChip:hover {
@@ -622,8 +621,8 @@
   /* background: #1a9c5a; */
   /* border-color: #1a9c5a;
   color: white; */
-  background: #e0e0e0;
-  color: black;
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 /* ========== Nutrition ========== */
@@ -670,8 +669,8 @@
 
 .moveBtn {
   background: none;
-  border: 1px solid #e0e0e0;
-  color: #888;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
   cursor: pointer;
   padding: 0.15em 0.3em;
   display: flex;
@@ -691,8 +690,8 @@
 }
 
 .moveBtn:not(:disabled):hover {
-  background: #f0f0f0;
-  color: #333;
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .moveBtn:disabled {
@@ -830,7 +829,7 @@
 
 .nutritionNote {
   font-size: var(--basic-font);
-  color: #888;
+  color: var(--text-muted);
   text-align: center;
   margin: 0.25rem 0 0.75rem;
   font-style: italic;

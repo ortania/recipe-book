@@ -12,10 +12,10 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.5em 1em;
-  border: 1px solid #e0e0e0;
+  border: 1px solid var(--border-color);
   border-radius: 20px;
-  background: white;
-  color: #555;
+  background: var(--bg-card);
+  color: var(--text-secondary);
   font-size: var(--basic-font);
   font-weight: 500;
   cursor: pointer;
@@ -24,9 +24,9 @@
 }
 
 .backButton:hover {
-  background: #f5f5f5;
-  border-color: #ccc;
-  color: #333;
+  background: var(--bg-hover);
+  border-color: var(--border-color);
+  color: var(--text-primary);
 }
 
 .loading {
@@ -35,7 +35,7 @@
   align-items: center;
   min-height: 300px;
   font-size: var(--large-font);
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .notFound {
@@ -45,7 +45,7 @@
   justify-content: center;
   min-height: 300px;
   gap: 1rem;
-  color: #666;
+  color: var(--text-secondary);
   font-size: var(--basic-font);
 }
 

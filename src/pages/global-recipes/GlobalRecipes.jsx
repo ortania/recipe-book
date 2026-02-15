@@ -1,5 +1,6 @@
 import { useState, useCallback, useMemo, useRef } from "react";
-import { FiSearch, FiCopy } from "react-icons/fi";
+import { FiCopy } from "react-icons/fi";
+import { SearchBox } from "../../components/controls/search";
 import { useRecipeBook, useLanguage } from "../../context";
 import {
   fetchGlobalRecipes,
@@ -98,15 +99,12 @@ function GlobalRecipes() {
       </div>
 
       <div className={classes.controls}>
-        <div className={classes.searchBox}>
-          <FiSearch className={classes.searchIcon} />
-          <input
-            className={classes.searchInput}
-            placeholder={t("globalRecipes", "search")}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-        </div>
+        <SearchBox
+          searchTerm={search}
+          onSearchChange={setSearch}
+          placeholder={t("globalRecipes", "search")}
+          className={classes.searchBox}
+        />
       </div>
 
       {loading && allRecipes.length === 0 && (

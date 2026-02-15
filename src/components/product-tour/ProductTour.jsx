@@ -78,6 +78,164 @@ const FEATURES = [
   },
 ];
 
+/* ============ Onboarding Scenes (shown first in the tour) ============ */
+const ONBOARDING_SCREENS = [
+  {
+    key: "welcome",
+    emoji: "👨‍🍳",
+    titleKey: "welcomeTitle",
+    subtitleKey: "welcomeSubtitle",
+  },
+  {
+    key: "save",
+    emoji: "📋",
+    titleKey: "saveTitle",
+    bullets: ["saveBullet1", "saveBullet2", "saveBullet3", "saveBullet4"],
+    tipLabel: "howToStart",
+    tipKey: "saveTip",
+  },
+  {
+    key: "search",
+    emoji: "🔍",
+    titleKey: "searchTitle",
+    bullets: ["searchBullet1", "searchBullet2", "searchBullet3"],
+    tipLabel: "howToUse",
+    tipKey: "searchTip",
+  },
+  {
+    key: "cook",
+    emoji: "🍳",
+    titleKey: "cookTitle",
+    subtitleKey: "cookSubtitle",
+    tipLabel: "howToActivate",
+    tipKey: "cookTip",
+  },
+  {
+    key: "chat",
+    emoji: "💬",
+    titleKey: "chatTitle",
+    subtitleKey: "chatSubtitle",
+    tipLabel: "howToActivate",
+    tipKey: "chatTip",
+  },
+  {
+    key: "nutrition",
+    emoji: "🔥",
+    titleKey: "nutritionTitle",
+    subtitleKey: "nutritionSubtitle",
+    tipLabel: "howToActivate",
+    tipKey: "nutritionTip",
+  },
+  {
+    key: "plan",
+    emoji: "🛒",
+    titleKey: "planTitle",
+    subtitleKey: "planSubtitle",
+    tipLabel: "howToActivate",
+    tipKey: "planTip",
+  },
+];
+
+function OnboardingScene({ screenKey, t }) {
+  const data = ONBOARDING_SCREENS.find((s) => s.key === screenKey);
+  if (!data) return null;
+
+  const baseStyle = {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "0.75rem",
+    padding: "1.5rem 1rem",
+    minHeight: 260,
+  };
+  const titleStyle = {
+    fontSize: "1.5rem",
+    fontWeight: 700,
+    color: "var(--text-primary)",
+    margin: 0,
+    textAlign: "center",
+  };
+  const subtitleStyle = {
+    fontSize: "0.95rem",
+    color: "var(--text-secondary)",
+    margin: 0,
+    textAlign: "center",
+    maxWidth: 340,
+    lineHeight: 1.6,
+    whiteSpace: "pre-line",
+  };
+  const bulletStyle = {
+    fontSize: "0.95rem",
+    color: "var(--text-primary)",
+    padding: "0.4rem 0.8rem",
+    background: "var(--bg-tertiary)",
+    borderRadius: 8,
+    textAlign: "center",
+  };
+  const tipBoxStyle = {
+    marginTop: "0.5rem",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: "0.2rem",
+    padding: "0.6rem 0.8rem",
+    background: "rgba(0,102,204,0.08)",
+    borderRadius: 10,
+    maxWidth: 340,
+    width: "100%",
+  };
+
+  return (
+    <div style={baseStyle}>
+      <div style={{ fontSize: "4rem", lineHeight: 1 }}>{data.emoji}</div>
+      <h2 style={titleStyle}>{t("onboarding", data.titleKey)}</h2>
+      {data.subtitleKey && (
+        <p style={subtitleStyle}>{t("onboarding", data.subtitleKey)}</p>
+      )}
+      {data.bullets && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0.4rem",
+            width: "100%",
+            maxWidth: 280,
+          }}
+        >
+          {data.bullets.map((bKey) => (
+            <div key={bKey} style={bulletStyle}>
+              {t("onboarding", bKey)}
+            </div>
+          ))}
+        </div>
+      )}
+      {data.tipKey && (
+        <div style={tipBoxStyle}>
+          <span
+            style={{
+              fontSize: "0.85rem",
+              fontWeight: 700,
+              color: "var(--clr-blue-3)",
+            }}
+          >
+            {t("onboarding", data.tipLabel)}
+          </span>
+          <span
+            style={{
+              fontSize: "0.85rem",
+              color: "var(--text-secondary)",
+              textAlign: "center",
+            }}
+          >
+            {t("onboarding", data.tipKey)}
+          </span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ============ Screen 0: Welcome / Features (moved from Home page) ============ */
 function WelcomeFeaturesScene({ t }) {
   return (
@@ -114,6 +272,7 @@ function RecipeDetailScene({ cursorTargetRef, onGoNext, t }) {
           className={classes.recipeImage}
           src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=700&h=300&fit=crop"
           alt="Recipe"
+          loading="lazy"
         />
       </div>
 
@@ -331,6 +490,15 @@ function ProductTour({ onClose }) {
   const sceneBodyRef = useRef(null);
 
   const SCREENS = [
+    ...ONBOARDING_SCREENS.map((s) => ({
+      id: `onboarding-${s.key}`,
+      title: t("onboarding", s.titleKey),
+      tooltip: "",
+      description: t("onboarding", s.subtitleKey),
+      hasCursor: false,
+      isOnboarding: true,
+      onboardingKey: s.key,
+    })),
     {
       id: "welcome",
       title: t("productTour", "whatCanYouDo"),
@@ -476,20 +644,24 @@ function ProductTour({ onClose }) {
           </div>
         </div>
 
-        <div className={classes.sceneHeader}>
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={current.id}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -15 }}
-              transition={{ duration: 0.3 }}
-            >
-              <h2 className={classes.sceneTitle}>{current.title}</h2>
-              <p className={classes.sceneDescription}>{current.description}</p>
-            </motion.div>
-          </AnimatePresence>
-        </div>
+        {!current.isOnboarding && (
+          <div className={classes.sceneHeader}>
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={current.id}
+                initial={{ opacity: 0, y: 15 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -15 }}
+                transition={{ duration: 0.3 }}
+              >
+                <h2 className={classes.sceneTitle}>{current.title}</h2>
+                <p className={classes.sceneDescription}>
+                  {current.description}
+                </p>
+              </motion.div>
+            </AnimatePresence>
+          </div>
+        )}
 
         <div className={classes.sceneBody} ref={sceneBodyRef}>
           <AnimatePresence mode="wait">
@@ -501,6 +673,9 @@ function ProductTour({ onClose }) {
               exit={{ opacity: 0, x: -40 }}
               transition={{ duration: 0.35 }}
             >
+              {current.isOnboarding && (
+                <OnboardingScene screenKey={current.onboardingKey} t={t} />
+              )}
               {current.id === "welcome" && <WelcomeFeaturesScene t={t} />}
               {current.id === "recipe" && (
                 <RecipeDetailScene

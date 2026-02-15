@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import FormInput from "./FormInput";
@@ -11,29 +11,20 @@ function Login() {
   const { login } = useRecipeBook();
   const { t } = useLanguage();
 
+  const isReturningUser = !!localStorage.getItem("onboardingDone");
+
   // State management
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
   const [resetMessage, setResetMessage] = useState("");
   const [isResetting, setIsResetting] = useState(false);
 
   const navigate = useNavigate();
-
-  // Welcome message effect
-  useEffect(() => {
-    setShowWelcome(true);
-    const timer = setTimeout(() => {
-      setShowWelcome(false);
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   const handleFocus = (e) => {
     e.target.removeAttribute("readonly");
@@ -113,54 +104,76 @@ function Login() {
 
   return (
     <div className={classes.loginContainer}>
-      {showWelcome && (
-        <p className={classes.welcome}>{t("common", "welcomeApp")}</p>
-      )}
-      <form className={classes.loginForm} onSubmit={handleSubmit}>
-        <p className={classes.title}>{t("auth", "login")}</p>
-        {error && <p className={classes.error}>{error}</p>}
-
-        <FormInput
-          type="email"
-          placeholder={t("auth", "email")}
-          value={email}
-          onChange={handleEmailChange}
-          isLoading={isLoading}
-          onFocus={handleFocus}
-        />
-
-        <FormInput
-          type="password"
-          placeholder={t("auth", "password")}
-          value={password}
-          onChange={handlePasswordChange}
-          isLoading={isLoading}
-          onFocus={handleFocus}
-          isPassword={true}
-          togglePassword={togglePassword}
-          showPassword={showPassword}
-        />
-
-        <button type="submit" disabled={isLoading}>
-          {isLoading ? t("auth", "loggingIn") : t("auth", "login")}
-        </button>
-
-        <p className={classes.forgotPassword}>
-          <span
-            onClick={() => setShowForgotPassword(true)}
-            className={classes.link}
+      <div className={classes.loginContent}>
+        {/* Landing card — always visible */}
+        <div className={classes.landingCard}>
+          <div className={classes.landingLogo}>
+            <span className={classes.landingLogoCook}>Cook</span>
+            <span className={classes.landingLogoBook}>book</span>
+          </div>
+          <p className={classes.landingSubtitle}>
+            {t("onboarding", "welcomeSubtitle")}
+          </p>
+          <button
+            className={classes.landingBtn}
+            onClick={() => navigate("/signup")}
           >
-            {t("auth", "forgotPassword")}
-          </span>
-        </p>
+            {t("onboarding", "letsStart")}
+          </button>
+        </div>
 
-        <p className={classes.signupLink}>
-          {t("auth", "noAccount")}{" "}
-          <span onClick={() => navigate("/signup")} className={classes.link}>
-            {t("auth", "signup")}
-          </span>
-        </p>
-      </form>
+        {/* Login form — only for returning users */}
+        {isReturningUser && (
+          <form className={classes.loginForm} onSubmit={handleSubmit}>
+            <p className={classes.title}>{t("auth", "login")}</p>
+            {error && <p className={classes.error}>{error}</p>}
+
+            <FormInput
+              type="email"
+              placeholder={t("auth", "email")}
+              value={email}
+              onChange={handleEmailChange}
+              isLoading={isLoading}
+              onFocus={handleFocus}
+            />
+
+            <FormInput
+              type="password"
+              placeholder={t("auth", "password")}
+              value={password}
+              onChange={handlePasswordChange}
+              isLoading={isLoading}
+              onFocus={handleFocus}
+              isPassword={true}
+              togglePassword={togglePassword}
+              showPassword={showPassword}
+            />
+
+            <button type="submit" disabled={isLoading}>
+              {isLoading ? t("auth", "loggingIn") : t("auth", "login")}
+            </button>
+
+            <p className={classes.forgotPassword}>
+              <span
+                onClick={() => setShowForgotPassword(true)}
+                className={classes.link}
+              >
+                {t("auth", "forgotPassword")}
+              </span>
+            </p>
+
+            <p className={classes.signupLink}>
+              {t("auth", "noAccount")}{" "}
+              <span
+                onClick={() => navigate("/signup")}
+                className={classes.link}
+              >
+                {t("auth", "signup")}
+              </span>
+            </p>
+          </form>
+        )}
+      </div>
 
       {showForgotPassword && (
         <div

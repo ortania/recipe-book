@@ -25,6 +25,7 @@ import { CategoriesManagement } from "../categories-management";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { CloseButton } from "../controls/close-button";
 import { getCategoryIcon } from "../../utils/categoryIcons";
+import { SearchBox } from "../controls/search";
 import classes from "./navigation.module.css";
 
 const iconMap = {
@@ -200,7 +201,7 @@ function Navigation({ onLogout, links }) {
               >
                 <span>
                   {t("nav", "categories").toUpperCase()}
-                  {selectedCount > 0 && (
+                  {!categorySearch && selectedCount > 0 && (
                     <span className={classes.sectionCount}>
                       ({selectedCount})
                     </span>
@@ -216,21 +217,16 @@ function Navigation({ onLogout, links }) {
               {categoriesOpen && (
                 <div className={classes.categoryList}>
                   <div className={classes.categorySearchWrap}>
-                    <input
-                      type="text"
-                      className={classes.categorySearchInput}
+                    <SearchBox
+                      searchTerm={categorySearch}
+                      onSearchChange={(val) => {
+                        setCategorySearch(val);
+                        if (!val) clearCategorySelection();
+                      }}
                       placeholder={t("categories", "searchCategory")}
-                      value={categorySearch}
-                      onChange={(e) => setCategorySearch(e.target.value)}
+                      size="small"
+                      className={classes.categorySearchBox}
                     />
-                    {categorySearch && (
-                      <button
-                        className={classes.categorySearchClear}
-                        onClick={() => setCategorySearch("")}
-                      >
-                        ×
-                      </button>
-                    )}
                   </div>
                   {categories
                     .filter((group) => {

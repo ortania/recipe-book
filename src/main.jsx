@@ -7,8 +7,10 @@ import "./index.css";
 
 import App from "./app/App";
 import { applySavedFontSize } from "./utils/applyFontScale";
+import { applySavedTheme } from "./utils/theme";
 
 applySavedFontSize();
+applySavedTheme();
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <React.StrictMode>

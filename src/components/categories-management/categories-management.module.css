@@ -1,6 +1,6 @@
 .container {
   width: 100%;
-  background: white;
+  background: var(--bg-card);
   border-radius: 16px;
 }
 
@@ -11,7 +11,7 @@
   padding: 1.25rem 1.5rem;
   position: sticky;
   top: -2rem;
-  background: white;
+  background: var(--bg-card);
   z-index: 10;
 }
 
@@ -19,7 +19,7 @@
   font-size: var(--large-font);
   font-weight: 700;
   margin: 0;
-  color: #1e293b;
+  color: var(--text-primary);
 }
 
 .listWrap {
@@ -37,7 +37,7 @@
 }
 
 .catRow:hover {
-  background: #f5f5f5;
+  background: var(--bg-hover);
 }
 
 .catInfo {
@@ -60,7 +60,7 @@
 .catName {
   font-size: var(--basic-font);
   font-weight: 500;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .catActions {
@@ -80,7 +80,7 @@
   border: none;
   cursor: pointer;
   font-size: var(--basic-font);
-  color: #999;
+  color: var(--text-muted);
   padding: 0.3rem;
   border-radius: 6px;
   transition: all 0.15s ease;
@@ -90,8 +90,8 @@
 }
 
 .editBtn:hover {
-  color: #555;
-  background: #e8e8e8;
+  color: var(--text-secondary);
+  background: var(--bg-hover);
 }
 
 .deleteBtn:hover {
@@ -122,9 +122,9 @@
 .inlineForm {
   padding: 0.75rem;
   margin: 0.5rem 0;
-  background: #fafafa;
+  background: var(--bg-tertiary);
   border-radius: 12px;
-  border: 1px solid #e5e7eb;
+  border: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -140,7 +140,7 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  border: 1.5px solid #ddd;
+  border: 1.5px solid var(--border-color);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -151,12 +151,12 @@
 }
 
 .iconPickerToggle:hover {
-  border-color: #aaa;
+  border-color: var(--text-muted);
 }
 
 .inlineInput {
   flex: 1;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
   font-size: var(--basic-font);
@@ -177,7 +177,7 @@
 
 .pickerLabel {
   font-size: var(--very-small-font);
-  color: #888;
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -197,14 +197,14 @@
   align-items: center;
   justify-content: center;
   font-size: 1.9rem;
-  color: #666;
+  color: var(--text-secondary);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .iconOption:hover {
-  background: #eee;
-  color: #333;
+  background: var(--bg-hover);
+  color: var(--text-primary);
 }
 
 .iconSelected {
@@ -232,7 +232,7 @@
 }
 
 .colorSelected {
-  border-color: #333;
+  border-color: var(--text-primary);
   transform: scale(1.2);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
@@ -247,7 +247,7 @@
 .cancelBtn {
   background: transparent;
   border: none;
-  color: #888;
+  color: var(--text-muted);
   font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.4em 0.8em;
@@ -256,13 +256,13 @@
 }
 
 .cancelBtn:hover {
-  color: #333;
-  background: #eee;
+  color: var(--text-primary);
+  background: var(--bg-hover);
 }
 
 .addBtn {
-  background: #3b3b3b;
-  color: white;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   border: none;
   font-size: var(--basic-font);
   padding: 0.4em 1em;
@@ -272,7 +272,7 @@
 }
 
 .addBtn:hover {
-  background: #555;
+  background: var(--text-secondary);
 }
 
 .addBtn:disabled {
@@ -288,8 +288,8 @@
 }
 
 .doneBtn {
-  background: #3b3b3b;
-  color: white;
+  background: var(--text-primary);
+  color: var(--bg-primary);
   border: none;
   font-size: var(--basic-font);
   font-weight: 600;
@@ -300,7 +300,7 @@
 }
 
 .doneBtn:hover {
-  background: #555;
+  background: var(--text-secondary);
 }
 
 /* Mobile */

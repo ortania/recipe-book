@@ -1,5 +1,5 @@
 .dialog {
-  background-color: white;
+  background-color: var(--bg-card);
   padding: 2rem;
   border-radius: 12px;
   width: 90%;
@@ -19,7 +19,7 @@
 
 .recipeName {
   font-size: var(--basic-font);
-  color: #555;
+  color: var(--text-secondary);
   margin-bottom: 1.5rem;
   margin-top: 0;
   font-style: italic;
@@ -35,7 +35,7 @@
   display: block;
   font-size: var(--basic-font);
   /* font-weight: 600; */
-  color: #333;
+  color: var(--text-primary);
   margin-bottom: 0.5rem;
 }
 
@@ -47,7 +47,7 @@
 .emailInput {
   flex: 1;
   padding: 0.6rem 0.75rem;
-  border: 1.5px solid #e0e0e0;
+  border: 1.5px solid var(--border-color);
   border-radius: 8px;
   font-size: var(--basic-font);
   direction: ltr;
@@ -104,11 +104,11 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.3rem 0.5rem 0.3rem 0.75rem;
-  background: #e3f2fd;
-  border: 1px solid #90caf9;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
   border-radius: 20px;
   font-size: var(--basic-font);
-  color: #1565c0;
+  color: var(--clr-blue-3);
   font-weight: 500;
 }
 
@@ -123,7 +123,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #1565c0;
+  color: var(--clr-blue-3);
   font-size: var(--basic-font);
   padding: 0;
   border-radius: 50%;

@@ -192,6 +192,7 @@ function RecipeDetailsFull({
             src={recipe.image_src}
             alt={recipe.name}
             className={classes.recipeImage}
+            loading="lazy"
           />
         )}
       </div>

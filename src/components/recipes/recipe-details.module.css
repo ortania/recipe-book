@@ -6,7 +6,7 @@
 }
 
 .recipeCard {
-  background: white;
+  background: var(--bg-card);
   border-radius: 20px;
   max-width: 500px;
   width: 100%;
@@ -123,7 +123,7 @@
 .recipeName {
   font-size: 1.5rem;
   font-weight: 700;
-  color: #1a1a1a;
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
   line-height: 1.3;
   text-align: center;
@@ -134,16 +134,16 @@
   align-items: center;
   gap: 0.5rem;
   margin-bottom: 1rem;
-  color: #666;
+  color: var(--text-secondary);
   font-size: var(--basic-font);
 }
 
 .infoItem {
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .infoDot {
-  color: #666;
+  color: var(--text-muted);
   font-weight: bold;
 }
 
@@ -156,10 +156,10 @@
 
 .categoryTag {
   padding: 0.4rem 0.8rem;
-  background: #f5f5f5;
+  background: var(--bg-tertiary);
   border-radius: 6px;
   font-size: var(--basic-font);
-  color: #555;
+  color: var(--text-secondary);
   font-weight: 500;
 }
 
@@ -169,14 +169,14 @@
   gap: 0.5rem;
   margin-bottom: 1rem;
   padding: 0.75rem;
-  background: #f8f9fa;
+  background: var(--bg-tertiary);
   border-radius: 8px;
   font-size: var(--basic-font);
 }
 
 .sourceLabel {
   font-weight: 600;
-  color: #666;
+  color: var(--text-secondary);
   margin-right: 0.5rem;
 }
 
@@ -191,8 +191,8 @@
 }
 
 .notesSection {
-  background: #f8f9fa;
-  border-left: 4px solid #667eea;
+  background: var(--bg-tertiary);
+  border-left: 4px solid var(--clr-blue-3);
   padding: 1rem;
   border-radius: 8px;
   margin-bottom: 1rem;
@@ -201,13 +201,13 @@
 .notesTitle {
   font-size: var(--basic-font);
   font-weight: 600;
-  color: #333;
+  color: var(--text-primary);
   margin: 0 0 0.5rem 0;
 }
 
 .notesText {
   font-size: var(--basic-font);
-  color: #555;
+  color: var(--text-secondary);
   line-height: 1.6;
   margin: 0;
   white-space: pre-wrap;
@@ -218,7 +218,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem;
-  background: #f8f9fa;
+  background: var(--bg-tertiary);
   border-radius: 20px;
   margin-bottom: 1.5rem;
 }
@@ -226,7 +226,7 @@
 .servingLabel {
   font-size: var(--basic-font);
   font-weight: 400;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .servingLabelCooking {
@@ -250,14 +250,14 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 1px solid #ddd;
-  background: white;
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   font-size: var(--basic-font);
-  color: #333;
+  color: var(--text-primary);
   transition: all 0.2s ease;
   font-weight: 600;
 }
@@ -266,9 +266,9 @@
   width: 45px;
   height: 45px;
   border-radius: 50%;
-  border: 1px solid #ddd;
+  border: 1px solid var(--border-color);
 
-  background: white;
+  background: var(--bg-card);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -286,15 +286,15 @@
 
 .servingButton:hover,
 .servingButtonCooking:hover {
-  background: #f5f5f5;
-  border-color: #999;
+  background: var(--bg-hover);
+  border-color: var(--border-color);
 }
 
 .tabs,
 .tabsCooking {
   display: flex;
   gap: 0;
-  border-bottom: 2px solid #f0f0f0;
+  border-bottom: 2px solid var(--border-light);
   margin-bottom: 1.5rem;
 }
 
@@ -314,19 +314,19 @@
   border-bottom: 3px solid transparent;
   font-size: var(--basic-font);
   font-weight: 600;
-  color: #999;
+  color: var(--text-muted);
   cursor: pointer;
   transition: all 0.2s ease;
   margin-bottom: -2px;
 }
 
 .tab:hover {
-  color: #666;
+  color: var(--text-secondary);
 }
 
 .activeTab {
-  color: #333;
-  border-bottom-color: #333;
+  color: var(--text-primary);
+  border-bottom-color: var(--text-primary);
 }
 
 .tabContent {
@@ -343,7 +343,7 @@
 .ingredientItem,
 .instructionItem {
   padding: 0.75rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid var(--border-light);
   font-size: var(--basic-font);
 }
 
@@ -370,7 +370,7 @@
   height: 20px;
   min-width: 20px;
   border-radius: 50%;
-  border: 2px solid #ddd;
+  border: 2px solid var(--border-color);
   cursor: pointer;
   margin-top: 0.1rem;
   appearance: none;
@@ -399,10 +399,10 @@
 .checkboxLabel span {
   flex: 1;
   line-height: 1.5;
-  color: #333;
+  color: var(--text-primary);
 }
 
 .checkedText {
   text-decoration: line-through;
-  color: #999 !important;
+  color: var(--text-muted) !important;
 }
