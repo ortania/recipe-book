@@ -48,6 +48,10 @@
   font-size: 1.9rem;
 }
 
+.mobileTopBar {
+  display: none;
+}
+
 .mobileLogo {
   display: none;
 }
@@ -602,23 +606,14 @@
 
 .hamburger {
   display: none;
-  position: fixed;
-  top: 0.75rem;
-  inset-inline-start: 1rem;
-  z-index: 10002;
   background: transparent;
-  /* background: white; */
-  background: inherit;
   border: none;
-  /* border: 1px solid #ddd;
-  border-radius: 8px; */
-  /* padding: 0.75rem; */
   padding: 0;
   cursor: pointer;
   font-size: 2.5rem;
   color: var(--text-primary);
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
   transition: all 0.2s ease;
+  flex-shrink: 0;
 }
 
 .hamburger:hover {
@@ -629,16 +624,30 @@
   display: none;
 }
 
-/* Hide hamburger when modal is open on any screen size */
-body.modal-open button.hamburger,
-body.modal-open .hamburger {
+/* Hide top bar when modal is open on any screen size */
+:global(body.modal-open) .mobileTopBar {
   display: none !important;
-  visibility: hidden !important;
-  opacity: 0 !important;
-  pointer-events: none !important;
 }
 
 @media (max-width: 768px) {
+  .mobileTopBar {
+    display: flex;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10002;
+    background: var(--bg-primary);
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border-color);
+    gap: 0.75rem;
+  }
+
+  :global(body.sidebar-open) .mobileTopBar {
+    display: none !important;
+  }
+
   .hamburger {
     display: block;
   }
@@ -650,26 +659,14 @@ body.modal-open .hamburger {
 
   .mobileLogo {
     display: block;
-    position: fixed;
-    top: 0.75rem;
-    inset-inline-start: 3.5rem;
-    transform: none;
-    z-index: 10003;
     font-size: 1.9rem;
     padding: 0;
-    margin-inline-start: 1rem;
   }
 
   .mobileLogo .logo,
   .mobileLogo .logoTail {
-    /* display: inline; */
     padding: 0;
     margin: 0;
-  }
-
-  :global(body.sidebar-open) .mobileLogo,
-  :global(body.modal-open) .mobileLogo {
-    display: none !important;
   }
 
   .nav {

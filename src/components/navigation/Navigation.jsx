@@ -154,15 +154,14 @@ function Navigation({ onLogout, links }) {
   return (
     <>
       {!isRecipeDetailsPage && (
-        <button className={classes.hamburger} onClick={toggleSidebar}>
-          {isOpen ? <IoMdClose /> : <RxHamburgerMenu />}
-        </button>
-      )}
-
-      {!isRecipeDetailsPage && (
-        <div className={classes.mobileLogo}>
-          <span className={classes.logo}>Cook</span>
-          <span className={classes.logoTail}>book</span>
+        <div className={classes.mobileTopBar}>
+          <button className={classes.hamburger} onClick={toggleSidebar}>
+            {isOpen ? <IoMdClose /> : <RxHamburgerMenu />}
+          </button>
+          <div className={classes.mobileLogo}>
+            <span className={classes.logo}>Cook</span>
+            <span className={classes.logoTail}>book</span>
+          </div>
         </div>
       )}
 
