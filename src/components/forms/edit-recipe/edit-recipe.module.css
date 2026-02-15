@@ -178,6 +178,7 @@
 .sidebarTabDelete {
   color: #e53935;
   margin-top: auto;
+  padding-bottom: 1rem;
 }
 
 .sidebarTabDelete:hover {
@@ -187,7 +188,7 @@
 /* ========== Content Area ========== */
 .contentArea {
   flex: 1;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 2rem 0;
   overflow-y: auto;
   min-height: 0;
 }
@@ -718,7 +719,7 @@
   .sidebar {
     width: 90px;
     min-width: 90px;
-    padding: 0.5rem 0;
+    padding: 0.5rem 0 1rem;
   }
 
   .sidebarTab {

@@ -55,6 +55,45 @@
   }
 }
 
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border: none;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  width: 100%;
+  font-size: var(--basic-font);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  text-align: start;
+}
+
+.menuItem:hover {
+  background: var(--bg-hover);
+}
+
+.menuItem:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.menuItemLabel {
+  flex: 1;
+  font-weight: 500;
+}
+
+.menuItemIcon {
+  font-size: 1.7rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
 @media (max-width: 600px) {
   .exportButton {
     padding: 0.4em 0.8em;

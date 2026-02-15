@@ -342,7 +342,7 @@ function RecipeDetailsCookingMode({
                   </li>
                 ))
               ) : (
-                <p>No ingredients listed</p>
+                <p>{t("recipes", "noIngredientsListed")}</p>
               )}
             </ul>
           )}
@@ -364,7 +364,7 @@ function RecipeDetailsCookingMode({
                   </li>
                 ))
               ) : (
-                <p>No instructions provided</p>
+                <p>{t("recipes", "noInstructionsListed")}</p>
               )}
             </ol>
           )}

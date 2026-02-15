@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from "react";
-import { sendChatMessage } from "../../../services/openai";
+import { sendChatMessage, calculateNutrition } from "../../../services/openai";
 import { useLanguage } from "../../../context";
 import classes from "./recipe-chat.module.css";
 
@@ -164,6 +164,25 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
       if (parsed.nutrition && typeof parsed.nutrition === "object") {
         changes.nutrition = parsed.nutrition;
         updatedFieldNames.push(t("recipeChat", "fieldNutrition"));
+      }
+
+      if (
+        changes.ingredients &&
+        !arraysEqual(changes.ingredients, recipeContext.ingredients) &&
+        !changes.nutrition
+      ) {
+        try {
+          const nutritionResult = await calculateNutrition(
+            changes.ingredients,
+            recipeContext.servings,
+          );
+          if (nutritionResult && !nutritionResult.error) {
+            changes.nutrition = nutritionResult;
+            updatedFieldNames.push(t("recipeChat", "fieldNutrition"));
+          }
+        } catch (err) {
+          console.error("Auto nutrition recalc failed:", err);
+        }
       }
 
       if (Object.keys(changes).length > 0) {

@@ -26,14 +26,15 @@
 }
 
 .header h1 {
-  font-size: 2rem;
+  font-size:var(--large-font);
+  font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 0.5rem;
 }
 
 .subtitle {
   color: var(--text-secondary);
-  font-size: 1.1rem;
+  font-size: var(--basic-font);
   margin-bottom: 0.75rem;
 }
 
@@ -128,12 +129,13 @@
   font-weight: 500;
   color: var(--text-primary);
   flex: 1;
+  font-size: var(--basic-font);
 }
 
 .itemAmount {
   font-weight: 600;
   color: #667eea;
-  font-size: 1.05rem;
+  font-size: var(--basic-font);
 }
 
 .temperatureTable {

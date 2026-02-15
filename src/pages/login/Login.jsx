@@ -23,6 +23,7 @@ function Login() {
   const [resetEmail, setResetEmail] = useState("");
   const [resetMessage, setResetMessage] = useState("");
   const [isResetting, setIsResetting] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
 
   const navigate = useNavigate();
 
@@ -83,7 +84,7 @@ function Login() {
     setIsLoading(true);
 
     try {
-      const user = await loginUser(email, password);
+      const user = await loginUser(email, password, rememberMe);
       await login(user.uid);
     } catch (error) {
       if (
@@ -107,10 +108,9 @@ function Login() {
       <div className={classes.loginContent}>
         {/* Landing card — always visible */}
         <div className={classes.landingCard}>
-          <div className={classes.landingLogo}>
-            <span className={classes.landingLogoCook}>Cook</span>
-            <span className={classes.landingLogoBook}>book</span>
-          </div>
+          <h1 className={classes.landingLogo}>
+            Cook<span className={classes.landingLogoBook}>book</span>
+          </h1>
           <p className={classes.landingSubtitle}>
             {t("onboarding", "welcomeSubtitle")}
           </p>
@@ -148,6 +148,15 @@ function Login() {
               togglePassword={togglePassword}
               showPassword={showPassword}
             />
+
+            <label className={classes.rememberMe}>
+              <input
+                type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
+              />
+              <span>{t("auth", "rememberMe")}</span>
+            </label>
 
             <button type="submit" disabled={isLoading}>
               {isLoading ? t("auth", "loggingIn") : t("auth", "login")}

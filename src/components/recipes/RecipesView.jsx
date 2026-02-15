@@ -24,6 +24,7 @@ import ChatWindow from "../chat/ChatWindow";
 import { Greeting } from "../greeting";
 import { search } from "./utils";
 import { AddButton, AddRecipeDropdown } from "../controls";
+import { CloseButton } from "../controls/close-button";
 
 function RecipesView({
   persons,
@@ -471,6 +472,9 @@ function RecipesView({
                     style={filterMenuStyle}
                     onClick={(e) => e.stopPropagation()}
                   >
+                    <div className={classes.dropdownClose}>
+                      <CloseButton onClick={() => setShowFilterMenu(false)} />
+                    </div>
                     <div className={classes.filterSection}>
                       <label className={classes.filterLabel}>
                         {t("recipesView", "sortByRating")}:
@@ -685,6 +689,9 @@ function RecipesView({
                 </button>
                 {showSortMenu && (
                   <div className={classes.dropdownMenu} style={sortMenuStyle}>
+                    <div className={classes.dropdownClose}>
+                      <CloseButton onClick={() => setShowSortMenu(false)} />
+                    </div>
                     <button
                       className={sortField === "name" ? classes.active : ""}
                       onClick={() => {
@@ -745,9 +752,9 @@ function RecipesView({
             />
           )}
 
-          <div className={classes.recipeCount}>
+          {/* <div className={classes.recipeCount}>
             {filteredAndSortedPersons.length} {t("recipesView", "recipesCount")}
-          </div>
+          </div> */}
 
           {filteredAndSortedPersons.length === 0 ? (
             <div className={classes.noResults}>

@@ -138,6 +138,27 @@
   padding: 0;
 }
 
+.rememberMe {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  font-size: var(--basic-font);
+  color: var(--text-secondary);
+  margin: -0.25rem 0;
+}
+
+.rememberMe input[type="checkbox"] {
+  width: 1.4rem;
+  height: 1.4rem;
+  accent-color: var(--clr-blue-3);
+  cursor: pointer;
+}
+
+.rememberMe span {
+  user-select: none;
+}
+
 .error {
   background: #fee;
   color: #c33;
@@ -166,21 +187,13 @@
 }
 
 .landingLogo {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0;
-}
-
-.landingLogoCook {
   font-size: 3.5rem;
   font-weight: 400;
   color: var(--text-muted);
+  margin: 0;
 }
 
 .landingLogoBook {
-  font-size: 3.5rem;
-  font-weight: 400;
   color: var(--clr-blue-3);
 }
 
@@ -234,8 +247,7 @@
     padding: 2rem 1.5rem;
   }
 
-  .landingLogoCook,
-  .landingLogoBook {
+  .landingLogo {
     font-size: 2.8rem;
   }
 }

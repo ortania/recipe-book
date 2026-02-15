@@ -6,7 +6,7 @@ import { HiOutlineTrash } from "react-icons/hi2";
 import { BsTrash3 } from "react-icons/bs";
 import { Button } from "../controls/button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
-import { formatDifficulty } from "./utils";
+import { formatDifficulty, formatTime } from "./utils";
 import { useLanguage } from "../../context";
 import useTranslatedText from "../../hooks/useTranslatedText";
 
@@ -135,7 +135,9 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
           <h3 className={classes.recipeName}>{translatedName}</h3>
           <div className={classes.recipeMetadata}>
             {person.prepTime && (
-              <p className={classes.recipeTime}>{person.prepTime}</p>
+              <p className={classes.recipeTime}>
+                {formatTime(person.prepTime, t("recipes", "minutes"))}
+              </p>
             )}
             {person.difficulty && (
               <span className={classes.recipeDifficulty}>

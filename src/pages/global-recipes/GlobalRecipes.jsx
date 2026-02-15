@@ -91,11 +91,11 @@ function GlobalRecipes() {
     <div className={classes.container}>
       <div className={classes.header}>
         <h1 className={classes.title}>{t("globalRecipes", "title")}</h1>
-        {allRecipes.length > 0 && (
+        {/* {allRecipes.length > 0 && (
           <span className={classes.recipeCount}>
             {filtered.length} {t("recipesView", "recipesCount")}
           </span>
-        )}
+        )} */}
       </div>
 
       <div className={classes.controls}>

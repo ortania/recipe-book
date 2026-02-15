@@ -43,7 +43,7 @@
 
 /* --- Size: small --- */
 .small .searchIcon {
-  font-size: 0.85rem;
+  font-size: var(--small-font);
   inset-inline-start: 0.6rem;
 }
 
@@ -58,7 +58,8 @@
 .small .clearSearch {
   width: 1.2rem;
   height: 1.2rem;
-  font-size: 0.85rem;
+  font-size: 1.2rem;
+  background: none;
 }
 
 /* --- Size: large --- */
@@ -71,14 +72,15 @@
   padding-block: 0.6rem;
   padding-inline-start: 2.6rem;
   padding-inline-end: 2.4rem;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   border-radius: 10px;
 }
 
 .large .clearSearch {
-  width: 1.6rem;
-  height: 1.6rem;
-  font-size: 1.1rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 2.5rem;
+  background: none;
 }
 
 .clearSearch {
@@ -105,6 +107,7 @@
 .clearSearch:hover {
   background: var(--border-color);
   color: var(--text-primary);
+
 }
 
 .clearSearch:focus {

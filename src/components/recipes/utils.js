@@ -1,3 +1,12 @@
+export function formatTime(value, minutesLabel) {
+  if (!value) return "";
+  const str = String(value).trim();
+  if (/^\d+$/.test(str)) {
+    return `${str} ${minutesLabel}`;
+  }
+  return str;
+}
+
 export function formatDifficulty(difficulty) {
   if (!difficulty || difficulty === "Unknown") return "";
 

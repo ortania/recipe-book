@@ -216,7 +216,7 @@
   display: flex;
   gap: 0.75rem;
   align-items: center;
-  margin: 3rem 0 .5rem;
+  margin: 3rem 0 0.5rem;
   /* background: var(--bg-tertiary); */
   background: transparent;
   padding: 0.5rem 0;
@@ -275,13 +275,29 @@
   padding-bottom: 0.5rem;
 }
 
+.dropdownClose {
+  display: flex;
+  justify-content: flex-start;
+  padding: 0.4rem 0.6rem 0;
+  background: none;
+}
+
+.dropdownClose button {
+  background: none;
+  border: none;
+  width: auto;
+  border-bottom: none;
+  padding: 0;
+  font-size: 1.6rem;
+}
+
 .dropdownMenu button {
   width: 100%;
   padding: 0.75rem 1rem;
   border: none;
   background: var(--bg-card);
   color: var(--text-primary);
-  text-align: left;
+  text-align: start;
   cursor: pointer;
   font-size: var(--small-font);
   transition: background 0.2s ease;

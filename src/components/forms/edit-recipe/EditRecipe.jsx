@@ -14,15 +14,13 @@ import {
   BsListOl,
   BsImage,
   BsTags,
-  BsBarChart,
-  BsCalculator,
 } from "react-icons/bs";
 import { useLanguage } from "../../../context";
-import { calculateNutrition } from "../../../services/openai";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./edit-recipe.module.css";
 import { CloseButton } from "../../controls";
+import { calculateNutrition } from "../../../services/openai";
 
 const TABS = [
   { id: "basic", icon: BsFileText, labelKey: "basicInfo" },
@@ -30,7 +28,6 @@ const TABS = [
   { id: "instructions", icon: BsListOl, labelKey: "instructions" },
   { id: "image", icon: BsImage, labelKey: "recipeImage" },
   { id: "categories", icon: BsTags, labelKey: "categories" },
-  { id: "nutrition", icon: BsBarChart, labelKey: "nutrition" },
 ];
 
 function EditRecipe({ person, onSave, onCancel, groups = [] }) {
@@ -46,8 +43,6 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [dragIndex, setDragIndex] = useState(null);
   const [dragField, setDragField] = useState(null);
-  const [calculatingNutrition, setCalculatingNutrition] = useState(false);
-  const [nutritionMessage, setNutritionMessage] = useState("");
   const [savedMessage, setSavedMessage] = useState("");
 
   const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
@@ -102,58 +97,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     },
   });
 
-  const nutritionBaseServings = useRef(parseInt(person.servings) || 1);
-  const nutritionBaseValues = useRef({
-    calories: "",
-    protein: "",
-    carbs: "",
-    fat: "",
-    fiber: "",
-    sugars: "",
-    note: "",
-    ...person.nutrition,
-  });
-  const scaleNutritionValue = (text, ratio) => {
-    if (!text || typeof text !== "string") return text;
-    return text.replace(/(\d+\.?\d*)/g, (match) => {
-      const num = parseFloat(match);
-      const scaled = num * ratio;
-      return scaled % 1 === 0 ? scaled.toString() : scaled.toFixed(1);
-    });
-  };
-
   const handleServingsChange = (e) => {
     const newServings = e.target.value;
-    const newServingsNum = parseInt(newServings);
-
-    if (newServingsNum > 0 && nutritionBaseServings.current > 0) {
-      const ratio = nutritionBaseServings.current / newServingsNum;
-      const scaledNutrition = {};
-      for (const key of [
-        "calories",
-        "protein",
-        "carbs",
-        "fat",
-        "fiber",
-        "sugars",
-      ]) {
-        scaledNutrition[key] = scaleNutritionValue(
-          nutritionBaseValues.current[key],
-          ratio,
-        );
-      }
-      scaledNutrition.note = editedPerson.nutrition.note;
-      setEditedPerson((prev) => ({
-        ...prev,
-        servings: newServings,
-        nutrition: scaledNutrition,
-      }));
-    } else {
-      setEditedPerson((prev) => ({
-        ...prev,
-        servings: newServings,
-      }));
-    }
+    setEditedPerson((prev) => ({
+      ...prev,
+      servings: newServings,
+    }));
   };
 
   useEffect(() => {
@@ -325,56 +274,6 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         ? prev.categories.filter((c) => c !== catId)
         : [...prev.categories, catId],
     }));
-  };
-
-  const updateNutrition = (field, value) => {
-    setEditedPerson((prev) => ({
-      ...prev,
-      nutrition: { ...prev.nutrition, [field]: value },
-    }));
-  };
-
-  const handleCalculateNutrition = async () => {
-    const filledIngredients = editedPerson.ingredients.filter((i) => i.trim());
-    if (filledIngredients.length === 0) {
-      setNutritionMessage(t("addWizard", "noIngredientsForNutrition"));
-      return;
-    }
-    setCalculatingNutrition(true);
-    setNutritionMessage("");
-    try {
-      const result = await calculateNutrition(
-        filledIngredients,
-        editedPerson.servings,
-      );
-      if (result && !result.error) {
-        const newNutrition = {
-          calories: result.calories || "",
-          protein: result.protein || "",
-          fat: result.fat || "",
-          carbs: result.carbs || "",
-          sugars: result.sugars || "",
-          fiber: result.fiber || "",
-        };
-        setEditedPerson((prev) => ({
-          ...prev,
-          nutrition: { ...prev.nutrition, ...newNutrition },
-        }));
-        nutritionBaseValues.current = {
-          ...nutritionBaseValues.current,
-          ...newNutrition,
-        };
-        nutritionBaseServings.current = parseInt(editedPerson.servings) || 1;
-        setNutritionMessage(t("addWizard", "nutritionCalculated"));
-      } else {
-        setNutritionMessage(t("addWizard", "nutritionError"));
-      }
-    } catch (err) {
-      console.error("Nutrition calculation failed:", err);
-      setNutritionMessage(t("addWizard", "nutritionError"));
-    } finally {
-      setCalculatingNutrition(false);
-    }
   };
 
   const handleDragStart = (index, field) => {
@@ -860,81 +759,6 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     </>
   );
 
-  const renderNutritionTab = () => (
-    <>
-      <h3 className={classes.sectionTitle}>
-        {t("addWizard", "nutritionValues")}
-      </h3>
-      <div className={classes.nutritionActions}>
-        <button
-          type="button"
-          className={classes.calculateNutritionBtn}
-          onClick={handleCalculateNutrition}
-          disabled={calculatingNutrition}
-        >
-          <BsCalculator className={classes.calculateNutritionIcon} />
-          <span>
-            {calculatingNutrition
-              ? t("addWizard", "calculatingNutrition")
-              : editedPerson.nutrition?.calories
-                ? t("addWizard", "updateNutrition")
-                : t("addWizard", "calculateNutrition")}
-          </span>
-        </button>
-        {nutritionMessage && (
-          <p className={classes.nutritionMessage}>{nutritionMessage}</p>
-        )}
-      </div>
-      <p className={classes.nutritionNote}>
-        {t("addWizard", "nutritionAutoUpdateNote")}
-      </p>
-      <div className={classes.nutritionGrid}>
-        {[
-          { key: "calories", label: `${t("recipes", "calories")} (kcal)` },
-          {
-            key: "protein",
-            label: `${t("recipes", "protein")} (${t("addWizard", "grams")})`,
-          },
-          {
-            key: "fat",
-            label: `${t("recipes", "fat")} (${t("addWizard", "grams")})`,
-          },
-          {
-            key: "carbs",
-            label: `${t("recipes", "carbs")} (${t("addWizard", "grams")})`,
-          },
-          {
-            key: "sugars",
-            label: `${t("recipes", "sugars")} (${t("addWizard", "grams")})`,
-          },
-          {
-            key: "fiber",
-            label: `${t("recipes", "fiber")} (${t("addWizard", "grams")})`,
-          },
-        ].map(({ key, label }) => (
-          <div key={key} className={classes.formGroup}>
-            <label className={classes.formLabel}>{label}</label>
-            <input
-              type="text"
-              className={classes.formInput}
-              value={editedPerson.nutrition[key]}
-              onChange={(e) => updateNutrition(key, e.target.value)}
-            />
-          </div>
-        ))}
-      </div>
-      <div className={classes.formGroup}>
-        <label className={classes.formLabel}>{t("recipes", "note")}</label>
-        <input
-          type="text"
-          className={classes.formInput}
-          value={editedPerson.nutrition.note}
-          onChange={(e) => updateNutrition("note", e.target.value)}
-        />
-      </div>
-    </>
-  );
-
   const renderDeleteTab = () => (
     <div className={classes.deleteSection}>
       <h3 className={classes.sectionTitle}>{t("confirm", "deleteRecipe")}</h3>
@@ -956,8 +780,6 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         return renderImageTab();
       case "categories":
         return renderCategoriesTab();
-      case "nutrition":
-        return renderNutritionTab();
       case "delete":
         return renderDeleteTab();
       default:
@@ -1013,10 +835,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                     key={tab.id}
                     type="button"
                     className={`${classes.sidebarTab} ${activeTab === tab.id ? classes.sidebarTabActive : ""}`}
-                    onClick={() => {
-                      setActiveTab(tab.id);
-                      setNutritionMessage("");
-                    }}
+                    onClick={() => setActiveTab(tab.id)}
                   >
                     <span className={classes.sidebarTabIcon}>
                       <Icon />
@@ -1028,10 +847,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               <button
                 type="button"
                 className={`${classes.sidebarTab} ${classes.sidebarTabDelete} ${activeTab === "delete" ? classes.sidebarTabActive : ""}`}
-                onClick={() => {
-                  setActiveTab("delete");
-                  setNutritionMessage("");
-                }}
+                onClick={() => setActiveTab("delete")}
               >
                 <span className={classes.sidebarTabIcon}>
                   <FiTrash2 />

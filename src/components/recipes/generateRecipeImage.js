@@ -49,7 +49,7 @@ function drawRoundedRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-export async function generateRecipeImage(recipe) {
+export async function generateRecipeImage(recipe, t) {
   const WIDTH = 1080;
   const PADDING = 60;
   const CONTENT_WIDTH = WIDTH - PADDING * 2;
@@ -199,7 +199,10 @@ export async function generateRecipeImage(recipe) {
     };
     metaParts.push(`📊 ${diffMap[recipe.difficulty] || recipe.difficulty}`);
   }
-  if (recipe.servings) metaParts.push(`🍽 ${recipe.servings} servings`);
+  if (recipe.servings)
+    metaParts.push(
+      `🍽 ${recipe.servings} ${t ? t("recipes", "servings") : "servings"}`,
+    );
 
   if (metaParts.length > 0) {
     // Draw meta bar background
@@ -228,7 +231,11 @@ export async function generateRecipeImage(recipe) {
   y += 30;
   ctx.font = SECTION_FONT;
   ctx.fillStyle = "#0066cc";
-  ctx.fillText("🥗  Ingredients", PADDING, y);
+  ctx.fillText(
+    `🥗  ${t ? t("recipes", "ingredients") : "Ingredients"}`,
+    PADDING,
+    y,
+  );
   y += 30;
 
   ctx.font = BODY_FONT;
@@ -250,7 +257,11 @@ export async function generateRecipeImage(recipe) {
     }
   } else {
     ctx.fillStyle = "#999";
-    ctx.fillText("No ingredients listed", PADDING + 28, y);
+    ctx.fillText(
+      t ? t("recipes", "noIngredientsListed") : "No ingredients listed",
+      PADDING + 28,
+      y,
+    );
     y += LINE_HEIGHT;
   }
 
@@ -266,7 +277,11 @@ export async function generateRecipeImage(recipe) {
   y += 30;
   ctx.font = SECTION_FONT;
   ctx.fillStyle = "#0066cc";
-  ctx.fillText("📝  Instructions", PADDING, y);
+  ctx.fillText(
+    `📝  ${t ? t("recipes", "instructions") : "Instructions"}`,
+    PADDING,
+    y,
+  );
   y += 30;
 
   ctx.font = BODY_FONT;
@@ -293,7 +308,11 @@ export async function generateRecipeImage(recipe) {
     }
   } else {
     ctx.fillStyle = "#999";
-    ctx.fillText("No instructions provided", PADDING + 28, y);
+    ctx.fillText(
+      t ? t("recipes", "noInstructionsListed") : "No instructions provided",
+      PADDING + 28,
+      y,
+    );
     y += LINE_HEIGHT;
   }
 
@@ -309,7 +328,7 @@ export async function generateRecipeImage(recipe) {
     y += 30;
     ctx.font = SECTION_FONT;
     ctx.fillStyle = "#7c3aed";
-    ctx.fillText("📝  Notes", PADDING, y);
+    ctx.fillText(`📝  ${t ? t("recipes", "notes") : "Notes"}`, PADDING, y);
     y += 30;
 
     // Notes background

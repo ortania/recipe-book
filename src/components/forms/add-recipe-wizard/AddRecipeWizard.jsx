@@ -24,13 +24,14 @@ import {
   FiChevronDown,
 } from "react-icons/fi";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
-import { BsClipboardData, BsCalculator } from "react-icons/bs";
+import { BsClipboardData } from "react-icons/bs";
 import { FaMicrophone, FaStop } from "react-icons/fa6";
 import { MdOutlineEditNote } from "react-icons/md";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./add-recipe-wizard.module.css";
 import { CloseButton } from "../../controls";
+import { formatTime } from "../../recipes/utils";
 
 const INITIAL_RECIPE = {
   name: "",
@@ -62,7 +63,6 @@ const STEP_LABELS = [
   "ingredients",
   "instructions",
   "imageCategories",
-  "nutrition",
   "summary",
 ];
 
@@ -100,8 +100,6 @@ function AddRecipeWizard({
   const [dragField, setDragField] = useState(null);
   const [visitedSteps, setVisitedSteps] = useState(new Set([0]));
   const [showPreview, setShowPreview] = useState(false);
-  const [calculatingNutrition, setCalculatingNutrition] = useState(false);
-  const [nutritionMessage, setNutritionMessage] = useState("");
   const [importProgress, setImportProgress] = useState(0);
   const progressRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -142,51 +140,6 @@ function AddRecipeWizard({
 
   const updateRecipe = (field, value) => {
     setRecipe((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const updateNutrition = (field, value) => {
-    setRecipe((prev) => ({
-      ...prev,
-      nutrition: { ...prev.nutrition, [field]: value },
-    }));
-  };
-
-  const handleCalculateNutrition = async () => {
-    const filledIngredients = recipe.ingredients.filter((i) => i.trim());
-    if (filledIngredients.length === 0) {
-      setNutritionMessage(t("addWizard", "noIngredientsForNutrition"));
-      return;
-    }
-    setCalculatingNutrition(true);
-    setNutritionMessage("");
-    try {
-      const result = await calculateNutrition(
-        filledIngredients,
-        recipe.servings,
-      );
-      if (result && !result.error) {
-        setRecipe((prev) => ({
-          ...prev,
-          nutrition: {
-            ...prev.nutrition,
-            calories: result.calories || prev.nutrition.calories,
-            protein: result.protein || prev.nutrition.protein,
-            fat: result.fat || prev.nutrition.fat,
-            carbs: result.carbs || prev.nutrition.carbs,
-            sugars: result.sugars || prev.nutrition.sugars,
-            fiber: result.fiber || prev.nutrition.fiber,
-          },
-        }));
-        setNutritionMessage(t("addWizard", "nutritionCalculated"));
-      } else {
-        setNutritionMessage(t("addWizard", "nutritionError"));
-      }
-    } catch (err) {
-      console.error("Nutrition calculation failed:", err);
-      setNutritionMessage(t("addWizard", "nutritionError"));
-    } finally {
-      setCalculatingNutrition(false);
-    }
   };
 
   // ========== Import handlers ==========
@@ -771,7 +724,7 @@ function AddRecipeWizard({
         <span className={classes.stepperCount}>
           {t("addWizard", "stepOf")
             .replace("{current}", manualStep + 1)
-            .replace("{total}", 6)}
+            .replace("{total}", 5)}
         </span>
       </div>
       <div className={classes.segmentedBar}>
@@ -1129,136 +1082,7 @@ function AddRecipeWizard({
     </div>
   );
 
-  // ========== Step 5: Nutrition ==========
-  const renderNutrition = () => (
-    <div className={classes.stepContent}>
-      <h3 className={classes.stepSectionTitle}>
-        {t("addWizard", "nutritionValues")}
-      </h3>
-      <p className={classes.stepSectionSubtitle}>
-        {t("addWizard", "nutritionSubtitle")}
-      </p>
-
-      <div className={classes.nutritionActions}>
-        <button
-          type="button"
-          className={classes.calculateNutritionBtn}
-          onClick={handleCalculateNutrition}
-          disabled={calculatingNutrition}
-        >
-          <BsCalculator className={classes.calculateNutritionIcon} />
-          <span>
-            {calculatingNutrition
-              ? t("addWizard", "calculatingNutrition")
-              : recipe.nutrition?.calories
-                ? t("addWizard", "updateNutrition")
-                : t("addWizard", "calculateNutrition")}
-          </span>
-        </button>
-        {nutritionMessage && (
-          <p className={classes.nutritionMessage}>{nutritionMessage}</p>
-        )}
-      </div>
-      <p className={classes.nutritionNote}>
-        {t("addWizard", "nutritionAutoUpdateNote")}
-      </p>
-
-      <div className={classes.formRow}>
-        <div className={classes.formGroup}>
-          <label className={classes.formGroupLabel}>
-            {t("recipes", "protein")} ({t("addWizard", "grams")})
-          </label>
-          <input
-            type="text"
-            className={classes.formInput}
-            placeholder="10"
-            value={recipe.nutrition.protein}
-            onChange={(e) => updateNutrition("protein", e.target.value)}
-          />
-        </div>
-        <div className={classes.formGroup}>
-          <label className={classes.formGroupLabel}>
-            {t("recipes", "calories")} (kcal)
-          </label>
-          <input
-            type="text"
-            className={classes.formInput}
-            placeholder="250"
-            value={recipe.nutrition.calories}
-            onChange={(e) => updateNutrition("calories", e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className={classes.formRow}>
-        <div className={classes.formGroup}>
-          <label className={classes.formGroupLabel}>
-            {t("recipes", "fat")} ({t("addWizard", "grams")})
-          </label>
-          <input
-            type="text"
-            className={classes.formInput}
-            placeholder="5"
-            value={recipe.nutrition.fat}
-            onChange={(e) => updateNutrition("fat", e.target.value)}
-          />
-        </div>
-        <div className={classes.formGroup}>
-          <label className={classes.formGroupLabel}>
-            {t("recipes", "carbs")} ({t("addWizard", "grams")})
-          </label>
-          <input
-            type="text"
-            className={classes.formInput}
-            placeholder="30"
-            value={recipe.nutrition.carbs}
-            onChange={(e) => updateNutrition("carbs", e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className={classes.formRow}>
-        <div className={classes.formGroup}>
-          <label className={classes.formGroupLabel}>
-            {t("addWizard", "sugars")} ({t("addWizard", "grams")})
-          </label>
-          <input
-            type="text"
-            className={classes.formInput}
-            placeholder="8"
-            value={recipe.nutrition.sugars}
-            onChange={(e) => updateNutrition("sugars", e.target.value)}
-          />
-        </div>
-        <div className={classes.formGroup}>
-          <label className={classes.formGroupLabel}>
-            {t("addWizard", "fiber")} ({t("addWizard", "grams")})
-          </label>
-          <input
-            type="text"
-            className={classes.formInput}
-            placeholder="3"
-            value={recipe.nutrition.fiber}
-            onChange={(e) => updateNutrition("fiber", e.target.value)}
-          />
-        </div>
-      </div>
-
-      <div className={classes.formGroup}>
-        <label className={classes.formGroupLabel}>
-          {t("addWizard", "nutritionNote")}
-        </label>
-        <textarea
-          className={classes.formTextarea}
-          placeholder={t("addWizard", "nutritionNotePlaceholder")}
-          value={recipe.nutrition.note}
-          onChange={(e) => updateNutrition("note", e.target.value)}
-        />
-      </div>
-    </div>
-  );
-
-  // ========== Step 6: Summary ==========
+  // ========== Step 5: Summary ==========
   const renderPreview = () => {
     const filledIngredients = recipe.ingredients.filter((i) => i.trim());
     const filledInstructions = recipe.instructions.filter((i) => i.trim());
@@ -1287,12 +1111,12 @@ function AddRecipeWizard({
               <div className={classes.previewMeta}>
                 {recipe.prepTime && (
                   <span>
-                    ⏱ {recipe.prepTime} {t("addWizard", "min")}
+                    ⏱ {formatTime(recipe.prepTime, t("recipes", "minutes"))}
                   </span>
                 )}
                 {recipe.cookTime && (
                   <span>
-                    🔥 {recipe.cookTime} {t("addWizard", "min")}
+                    🔥 {formatTime(recipe.cookTime, t("recipes", "minutes"))}
                   </span>
                 )}
                 {recipe.servings && (
@@ -1409,8 +1233,6 @@ function AddRecipeWizard({
       case 3:
         return renderImageCategories();
       case 4:
-        return renderNutrition();
-      case 5:
         return renderSummary();
       default:
         return null;
@@ -1423,24 +1245,21 @@ function AddRecipeWizard({
   };
 
   const handleNext = () => {
-    if (manualStep === 5) {
+    if (manualStep === 4) {
       handleSubmit();
     } else {
       const nextStep = manualStep + 1;
       setManualStep(nextStep);
-      setNutritionMessage("");
       setVisitedSteps((prev) => new Set([...prev, nextStep]));
     }
   };
 
   const handlePrev = () => {
     setManualStep(manualStep - 1);
-    setNutritionMessage("");
   };
 
   const handleStepClick = (stepIndex) => {
     setManualStep(stepIndex);
-    setNutritionMessage("");
     setVisitedSteps((prev) => new Set([...prev, stepIndex]));
   };
 
@@ -1953,7 +1772,7 @@ function AddRecipeWizard({
           onClick={handleNext}
           disabled={!canProceed()}
         >
-          {manualStep === 5
+          {manualStep === 4
             ? t("addWizard", "saveRecipe")
             : t("addWizard", "continue")}
           {/* <FiChevronRight /> */}

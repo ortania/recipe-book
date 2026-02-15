@@ -1,9 +1,10 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import classes from "./recipe-details-full.module.css";
-import { formatDifficulty } from "./utils";
+import { formatDifficulty, formatTime } from "./utils";
 import { useLanguage } from "../../context";
 import { FaRegEdit } from "react-icons/fa";
-import { BsTrash3 } from "react-icons/bs";
+import { BsTrash3, BsThreeDotsVertical } from "react-icons/bs";
 import { MdExpandMore, MdExpandLess } from "react-icons/md";
 import { GiMeal } from "react-icons/gi";
 import { FaNutritionix } from "react-icons/fa";
@@ -12,6 +13,8 @@ import {
   IoShareSocialOutline,
   IoTimeOutline,
   IoPrintOutline,
+  IoStarOutline,
+  IoStar,
 } from "react-icons/io5";
 import { HiOutlineDocumentDuplicate } from "react-icons/hi2";
 import { TbChefHat, TbUsers } from "react-icons/tb";
@@ -35,8 +38,10 @@ function RecipeDetailsFull({
   onEnterCookingMode,
   onCopyRecipe,
   currentUserId,
+  onToggleFavorite,
 }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  const navigate = useNavigate();
   // State management
   const [activeTab, setActiveTab] = useState("ingredients");
   const [servings, setServings] = useState(recipe.servings || 4);
@@ -48,10 +53,24 @@ function RecipeDetailsFull({
   const [showCopyDialog, setShowCopyDialog] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [chatAppliedFields, setChatAppliedFields] = useState({});
+  const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [showCookingHelp, setShowCookingHelp] = useState(false);
+  const moreMenuRef = useRef(null);
 
   const handleCopyClick = () => {
     setShowCopyDialog(true);
   };
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (moreMenuRef.current && !moreMenuRef.current.contains(e.target)) {
+        setShowMoreMenu(false);
+      }
+    };
+    document.addEventListener("pointerdown", handleClickOutside);
+    return () =>
+      document.removeEventListener("pointerdown", handleClickOutside);
+  }, []);
 
   const handleShare = async () => {
     const shareData = {
@@ -157,8 +176,8 @@ function RecipeDetailsFull({
   const handleConfirmDelete = async () => {
     setShowDeleteConfirm(false);
     if (onDelete) {
+      navigate("/categories", { replace: true });
       await onDelete(recipe.id);
-      onClose();
     }
   };
 
@@ -175,9 +194,12 @@ function RecipeDetailsFull({
 
       {showDeleteConfirm && (
         <ConfirmDialog
-          message={`האם אתה בטוח שברצונך למחוק את המתכון "${recipe.name}"?`}
+          title={t("confirm", "deleteRecipe")}
+          message={`${t("confirm", "deleteRecipeMsg")} "${recipe.name}"? ${t("confirm", "cannotUndo")}.`}
           onConfirm={handleConfirmDelete}
           onCancel={() => setShowDeleteConfirm(false)}
+          confirmText={t("confirm", "yesDelete")}
+          cancelText={t("common", "cancel")}
         />
       )}
 
@@ -198,55 +220,140 @@ function RecipeDetailsFull({
       </div>
 
       <div className={classes.actionBar}>
-        {onEdit && (
+        <div className={classes.actionBarStart}>
+          <div className={classes.moreMenuWrapper} ref={moreMenuRef}>
+            <button
+              className={classes.actionIcon}
+              onClick={() => setShowMoreMenu((prev) => !prev)}
+              title={t("common", "more")}
+            >
+              <BsThreeDotsVertical size={20} />
+            </button>
+            {showMoreMenu && (
+              <div className={classes.moreMenu}>
+                {onDelete && (
+                  <button
+                    className={classes.moreMenuItem}
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      handleDeleteClick();
+                    }}
+                  >
+                    <span className={classes.moreMenuLabel}>
+                      {t("recipes", "delete")}
+                    </span>
+                    <span className={classes.moreMenuIcon}>
+                      <BsTrash3 />
+                    </span>
+                  </button>
+                )}
+                {onDuplicate && (
+                  <button
+                    className={classes.moreMenuItem}
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      onDuplicate();
+                    }}
+                  >
+                    <span className={classes.moreMenuLabel}>
+                      {t("recipes", "duplicate")}
+                    </span>
+                    <span className={classes.moreMenuIcon}>
+                      <HiOutlineDocumentDuplicate />
+                    </span>
+                  </button>
+                )}
+                <button
+                  className={classes.moreMenuItem}
+                  onClick={() => {
+                    setShowMoreMenu(false);
+                    handleCopyClick();
+                  }}
+                >
+                  <span className={classes.moreMenuLabel}>
+                    {t("recipes", "copyToAnotherUser")}
+                  </span>
+                  <span className={classes.moreMenuIcon}>
+                    <IoCopyOutline />
+                  </span>
+                </button>
+                <ExportImageButton recipe={recipe} asMenuItem />
+                <button
+                  className={classes.moreMenuItem}
+                  onClick={() => {
+                    setShowMoreMenu(false);
+                    window.print();
+                  }}
+                >
+                  <span className={classes.moreMenuLabel}>
+                    {t("mealPlanner", "print")}
+                  </span>
+                  <span className={classes.moreMenuIcon}>
+                    <IoPrintOutline />
+                  </span>
+                </button>
+              </div>
+            )}
+          </div>
+
+          {onToggleFavorite && (
+            <button
+              className={`${classes.actionIcon} ${recipe.isFavorite ? classes.actionIconActive : ""}`}
+              onClick={() => onToggleFavorite(recipe)}
+              title={t("recipes", "favorite")}
+            >
+              {recipe.isFavorite ? (
+                <IoStar size={22} />
+              ) : (
+                <IoStarOutline size={22} />
+              )}
+            </button>
+          )}
+
           <button
-            onClick={() => {
-              onEdit(recipe);
-            }}
-            className={classes.actionButton}
-            title="Edit"
+            className={classes.actionIcon}
+            onClick={handleShare}
+            title={t("recipes", "share")}
           >
-            <FaRegEdit size={18} />
+            <IoShareSocialOutline size={20} />
+          </button>
+
+          <div className={classes.cookingHelpWrapper}>
+            <button
+              className={classes.cookingHelpBtn}
+              onClick={() => setShowCookingHelp((prev) => !prev)}
+              title={t("cookingMode", "helpTitle")}
+            >
+              ?
+            </button>
+            {showCookingHelp && (
+              <div className={classes.cookingHelpDropdown}>
+                <button
+                  className={classes.cookingHelpClose}
+                  onClick={() => setShowCookingHelp(false)}
+                >
+                  ✕
+                </button>
+                <div className={classes.cookingHelpContent}>
+                  <strong>{t("cookingMode", "helpGuideTitle")}</strong>
+                  <p>{t("cookingMode", "helpGuideText")}</p>
+                  <ul>
+                    <li>{t("cookingMode", "helpGuideFeature1")}</li>
+                    <li>{t("cookingMode", "helpGuideFeature2")}</li>
+                    <li>{t("cookingMode", "helpGuideFeature3")}</li>
+                  </ul>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {onEdit && (
+          <button className={classes.editBtn} onClick={() => onEdit(recipe)}>
+            <FaRegEdit size={16} />
             <span>{t("recipes", "edit")}</span>
           </button>
         )}
-        {onDelete && (
-          <button
-            onClick={handleDeleteClick}
-            className={`${classes.actionButton} ${classes.actionDelete}`}
-            title="Delete"
-          >
-            <BsTrash3 size={18} />
-            <span>{t("recipes", "delete")}</span>
-          </button>
-        )}
-        {onDuplicate && (
-          <button
-            onClick={onDuplicate}
-            className={classes.actionButton}
-            title={t("recipes", "duplicate")}
-          >
-            <HiOutlineDocumentDuplicate size={18} />
-            <span>{t("recipes", "duplicate")}</span>
-          </button>
-        )}
-        <button
-          onClick={handleShare}
-          className={classes.actionButton}
-          title={t("recipes", "share")}
-        >
-          <IoShareSocialOutline size={18} />
-          <span>{t("recipes", "share")}</span>
-        </button>
-        <ExportImageButton recipe={recipe} />
-        <button
-          onClick={() => window.print()}
-          className={classes.actionButton}
-          title={t("mealPlanner", "print")}
-        >
-          <IoPrintOutline size={18} />
-          <span>{t("mealPlanner", "print")}</span>
-        </button>
       </div>
 
       <div className={classes.recipeContent}>
@@ -265,13 +372,16 @@ function RecipeDetailsFull({
               </span>
             )}
           </h2>
-          <button
-            className={classes.cookingModeBtn}
-            onClick={onEnterCookingMode}
-            title={t("recipes", "cookingMode")}
-          >
-            <TbChefHat />
-          </button>
+          <div className={classes.cookingModeBtnWrapper}>
+            <button
+              className={`${classes.cookingModeBtn} ${showCookingHelp ? classes.cookingModeBtnHighlight : ""}`}
+              onClick={onEnterCookingMode}
+              title={t("recipes", "cookingMode")}
+            >
+              <TbChefHat />
+            </button>
+            {showCookingHelp && <div className={classes.cookingModeArrow} />}
+          </div>
         </div>
 
         {recipe.rating > 0 && (
@@ -305,7 +415,10 @@ function RecipeDetailsFull({
           {(recipe.prepTime || recipe.cookTime) && (
             <span className={classes.infoItem}>
               <IoTimeOutline className={classes.infoIcon} />
-              {recipe.prepTime || recipe.cookTime}
+              {formatTime(
+                recipe.prepTime || recipe.cookTime,
+                t("recipes", "minutes"),
+              )}
             </span>
           )}
         </div>
@@ -314,13 +427,15 @@ function RecipeDetailsFull({
           <div className={classes.prepTimeBar}>
             {recipe.prepTime && (
               <span>
-                {t("recipes", "prepTime")}: {recipe.prepTime}
+                {t("recipes", "prepTime")}:{" "}
+                {formatTime(recipe.prepTime, t("recipes", "minutes"))}
               </span>
             )}
             {recipe.prepTime && recipe.cookTime && <span> - </span>}
             {recipe.cookTime && (
               <span>
-                {t("recipes", "cookTime")}: {recipe.cookTime}
+                {t("recipes", "cookTime")}:{" "}
+                {formatTime(recipe.cookTime, t("recipes", "minutes"))}
               </span>
             )}
           </div>
@@ -409,42 +524,54 @@ function RecipeDetailsFull({
                       <li>
                         <span className={classes.nutritionEmoji}>🔥</span>{" "}
                         {t("recipes", "calories")}:{" "}
-                        {scaleNutrition(recipe.nutrition.calories)}
+                        <span className={classes.nutritionValue}>
+                          {scaleNutrition(recipe.nutrition.calories)} kcal
+                        </span>
                       </li>
                     )}
                     {recipe.nutrition.protein && (
                       <li>
                         <span className={classes.nutritionEmoji}>🍗</span>{" "}
                         {t("recipes", "protein")}:{" "}
-                        {scaleNutrition(recipe.nutrition.protein)}
+                        <span className={classes.nutritionValue}>
+                          {scaleNutrition(recipe.nutrition.protein)} g
+                        </span>
                       </li>
                     )}
                     {recipe.nutrition.fat && (
                       <li>
                         <span className={classes.nutritionEmoji}>🥑</span>{" "}
                         {t("recipes", "fat")}:{" "}
-                        {scaleNutrition(recipe.nutrition.fat)}
+                        <span className={classes.nutritionValue}>
+                          {scaleNutrition(recipe.nutrition.fat)} g
+                        </span>
                       </li>
                     )}
                     {recipe.nutrition.carbs && (
                       <li>
                         <span className={classes.nutritionEmoji}>🍞</span>{" "}
                         {t("recipes", "carbs")}:{" "}
-                        {scaleNutrition(recipe.nutrition.carbs)}
+                        <span className={classes.nutritionValue}>
+                          {scaleNutrition(recipe.nutrition.carbs)} g
+                        </span>
                       </li>
                     )}
                     {recipe.nutrition.sugars && (
                       <li>
                         <span className={classes.nutritionEmoji}>🍬</span>{" "}
                         {t("recipes", "sugars")}:{" "}
-                        {scaleNutrition(recipe.nutrition.sugars)}
+                        <span className={classes.nutritionValue}>
+                          {scaleNutrition(recipe.nutrition.sugars)} g
+                        </span>
                       </li>
                     )}
                     {recipe.nutrition.fiber && (
                       <li>
                         <span className={classes.nutritionEmoji}>🥬</span>{" "}
                         {t("recipes", "fiber")}:{" "}
-                        {scaleNutrition(recipe.nutrition.fiber)}
+                        <span className={classes.nutritionValue}>
+                          {scaleNutrition(recipe.nutrition.fiber)} g
+                        </span>
                       </li>
                     )}
                   </ul>
@@ -506,7 +633,7 @@ function RecipeDetailsFull({
                   </li>
                 ))
               ) : (
-                <p>No ingredients listed</p>
+                <p>{t("recipes", "noIngredientsListed")}</p>
               )}
             </ul>
           )}
@@ -534,7 +661,7 @@ function RecipeDetailsFull({
                   </li>
                 ))
               ) : (
-                <p>No instructions provided</p>
+                <p>{t("recipes", "noInstructionsListed")}</p>
               )}
             </ol>
           )}

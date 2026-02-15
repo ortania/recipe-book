@@ -340,6 +340,13 @@ const translations = {
       de: "Konto erstellen...",
       mixed: "Creating Account...",
     },
+    rememberMe: {
+      he: "זכור אותי",
+      en: "Remember me",
+      ru: "Запомнить меня",
+      de: "Angemeldet bleiben",
+      mixed: "Remember me",
+    },
     forgotPassword: {
       he: "שכחת סיסמה?",
       en: "Forgot Password?",
@@ -764,6 +771,13 @@ const translations = {
       de: "Duplizieren",
       mixed: "Duplicate",
     },
+    copyToAnotherUser: {
+      he: "העתק למשתמש אחר",
+      en: "Copy to Another User",
+      ru: "Копировать другому пользователю",
+      de: "An anderen Benutzer kopieren",
+      mixed: "Copy to Another User",
+    },
     share: {
       he: "שיתוף",
       en: "Share",
@@ -791,6 +805,20 @@ const translations = {
       ru: "Экспорт как изображение",
       de: "Als Bild exportieren",
       mixed: "Export as image",
+    },
+    noIngredientsListed: {
+      he: "לא נמצאו מרכיבים",
+      en: "No ingredients listed",
+      ru: "Ингредиенты не указаны",
+      de: "Keine Zutaten aufgeführt",
+      mixed: "לא נמצאו מרכיבים",
+    },
+    noInstructionsListed: {
+      he: "לא נמצאו הוראות הכנה",
+      en: "No instructions provided",
+      ru: "Инструкции не указаны",
+      de: "Keine Anweisungen vorhanden",
+      mixed: "לא נמצאו הוראות הכנה",
     },
   },
 
@@ -1554,6 +1582,41 @@ const translations = {
       de: "Erklärungen für jeden Kochschritt erhalten",
       mixed: "Get explanations for each cooking step",
     },
+    helpGuideTitle: {
+      he: "בישול ללא ידיים 👨‍🍳",
+      en: "Hands-free Cooking 👨‍🍳",
+      ru: "Готовка без рук 👨‍🍳",
+      de: "Freihändiges Kochen 👨‍🍳",
+      mixed: "Hands-free Cooking 👨‍🍳",
+    },
+    helpGuideText: {
+      he: "לחצו על כפתור מצב הבישול כדי להתחיל! במצב בישול תוכלו:",
+      en: "Click the cooking mode button to start! In cooking mode you can:",
+      ru: "Нажмите кнопку режима готовки, чтобы начать! В режиме готовки вы можете:",
+      de: "Klicken Sie auf den Kochmodus-Button, um zu starten! Im Kochmodus können Sie:",
+      mixed: "Click the cooking mode button to start! In cooking mode you can:",
+    },
+    helpGuideFeature1: {
+      he: "לעקוב אחרי שלבי ההכנה צעד אחר צעד",
+      en: "Follow preparation steps one by one",
+      ru: "Следовать шагам приготовления один за другим",
+      de: "Zubereitungsschritte Schritt für Schritt verfolgen",
+      mixed: "Follow preparation steps one by one",
+    },
+    helpGuideFeature2: {
+      he: "להפעיל טיימר בישול",
+      en: "Set a cooking timer",
+      ru: "Установить таймер готовки",
+      de: "Einen Kochtimer einstellen",
+      mixed: "Set a cooking timer",
+    },
+    helpGuideFeature3: {
+      he: "לדבר עם עוזר קולי שינחה אתכם",
+      en: "Talk to a voice assistant that will guide you",
+      ru: "Говорить с голосовым помощником, который вас направит",
+      de: "Mit einem Sprachassistenten sprechen, der Sie anleitet",
+      mixed: "Talk to a voice assistant that will guide you",
+    },
   },
 
   // ===================== RECIPE DETAILS =====================
@@ -1871,6 +1934,13 @@ const translations = {
       ru: "Редактировать",
       de: "Bearbeiten",
       mixed: "Edit",
+    },
+    notFound: {
+      he: "המתכון לא נמצא",
+      en: "Recipe not found",
+      ru: "Рецепт не найден",
+      de: "Rezept nicht gefunden",
+      mixed: "Recipe not found",
     },
     close: {
       he: "סגור",

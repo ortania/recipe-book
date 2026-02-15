@@ -133,12 +133,15 @@ function RecipeDetailsPage() {
 
   const handleDelete = async (recipeId) => {
     await deleteRecipe(recipeId);
-    navigate("/categories");
   };
 
   const handleSaveEdit = (updatedPerson) => {
     editRecipe(updatedPerson);
     setEditingRecipe(null);
+  };
+
+  const handleToggleFavorite = (rec) => {
+    editRecipe({ ...rec, isFavorite: !rec.isFavorite });
   };
 
   const handleDuplicate = async () => {
@@ -227,6 +230,7 @@ function RecipeDetailsPage() {
         onEnterCookingMode={handleCookingModeToggle}
         onCopyRecipe={copyRecipeToUser}
         currentUserId={currentUser?.uid}
+        onToggleFavorite={handleToggleFavorite}
       />
 
       {editingRecipe && (

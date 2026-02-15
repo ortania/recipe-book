@@ -76,7 +76,7 @@
   max-width: 85%;
   padding: 0.6rem 0.9rem;
   border-radius: 16px;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   line-height: 1.5;
   white-space: pre-wrap;
   word-break: break-word;
@@ -192,7 +192,7 @@
 }
 
 .emptyHint {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: var(--text-muted);
   text-align: center;
   margin: 0;
@@ -207,12 +207,12 @@
 }
 
 .clearBtn {
-  padding: 0.2em 0.7em;
+  padding: 0.4em 0.7em;
   border: 1px solid var(--border-color);
   border-radius: 14px;
   background: var(--bg-tertiary);
   color: var(--text-muted);
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.15s;
 }
@@ -240,7 +240,7 @@
   border-radius: 6px;
   background: #f0fdf4;
   color: #10b981;
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
@@ -262,7 +262,7 @@
   border-radius: 6px;
   background: #faf5ff;
   color: #9810fa;
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.15s;
@@ -289,10 +289,10 @@
 .customUpdateInput {
   flex: 1;
   min-width: 80px;
-  padding: 0.25em 0.5em;
+  padding:  0.5em;
   border: 1px solid var(--border-color);
   border-radius: 6px;
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   outline: none;
   color: var(--text-primary);
 }
@@ -302,12 +302,12 @@
 }
 
 .customUpdateBtn {
-  padding: 0.25em 0.6em;
+  padding: 0.6em;
   border: 1px solid #9810fa;
   border-radius: 6px;
   background: #9810fa;
   color: white;
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
@@ -320,11 +320,13 @@
 
 .customCancelBtn {
   padding: 0.2em 0.4em;
-  border: 1px solid var(--border-color);
+  /* border: 1px solid var(--border-color); */
+  border: none;
   border-radius: 6px;
-  background: var(--bg-card);
+  /* background: var(--bg-card); */
+  background: transparent;
   color: var(--text-muted);
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   cursor: pointer;
 }
 
@@ -334,7 +336,7 @@
 }
 
 .updateSummary {
-  font-size: var(--very-small-font);
+  font-size: var(--vbasic-font);
   color: #10b981;
   background: #f0fdf4;
   border: 1px solid #bbf7d0;

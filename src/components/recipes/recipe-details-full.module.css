@@ -14,48 +14,129 @@
 .actionBar {
   display: flex;
   align-items: center;
-  justify-content: flex-start;
-  gap: 0.75rem;
+  justify-content: space-between;
   padding: 0.75rem 1.5rem;
   border-bottom: 1px solid var(--border-light);
   background: var(--bg-primary);
 }
 
-.actionButton {
+.actionBarStart {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.actionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  padding: 0.4em;
+  border-radius: 8px;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+  font-size: 1.25rem;
+}
+
+.actionIcon:hover {
+  /* color: var(--text-primary); */
+  background: var(--bg-hover);
+}
+
+.actionIconActive {
+  color: #ffc107;
+}
+
+.editBtn {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.5em 1em;
-  border: 1px solid var(--border-color);
+  padding: 0.5em 1.2em;
+  border: none;
   border-radius: 20px;
-  background: var(--bg-card);
-  color: var(--text-secondary);
+  background: linear-gradient(135deg, #0066cc, #004a99);
+  color: white;
   font-size: var(--basic-font);
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
 }
 
-.actionButton:hover {
-  background: var(--bg-hover);
-  border-color: var(--border-color);
+.editBtn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 102, 204, 0.3);
+}
+
+/* More menu popup (matches AddRecipeDropdown) */
+.moreMenuWrapper {
+  position: relative;
+}
+
+.moreMenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  inset-inline-start: 0;
+  background: var(--bg-card);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+  z-index: 1000;
+  min-width: 260px;
+  overflow: hidden;
+  animation: moreMenuFadeIn 0.15s ease;
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+@keyframes moreMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.moreMenuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border: none;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  width: 100%;
+  font-size: var(--basic-font);
   color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  text-align: start;
 }
 
-.actionButton:active {
-  transform: translateY(0);
+.moreMenuItem:hover {
+  background: var(--bg-hover);
 }
 
-.actionDelete {
-  color: #dc2626;
-  border-color: #fecaca;
+.moreMenuLabel {
+  flex: 1;
+  font-weight: 500;
 }
 
-.actionDelete:hover {
-  background: #fef2f2;
-  border-color: #f87171;
-  color: #b91c1c;
+.moreMenuIcon {
+  font-size: 1.7rem;
+  color: var(--text-muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
 }
 
 .imageContainer {
@@ -76,10 +157,10 @@
   right: 0.75rem;
   z-index: 20;
   background: var(--bg-card) !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
-  width: 3rem !important;
-  height: 3rem !important;
-  font-size: 1.5rem !important;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); */
+  width: 4rem;
+  height: 4rem;
+  font-size: 2.3rem;
 }
 
 .recipeImage {
@@ -117,6 +198,14 @@
   text-align: center;
 }
 
+/* Cooking Mode Button */
+.cookingModeBtnWrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .cookingModeBtn {
   display: flex;
   align-items: center;
@@ -138,6 +227,158 @@
   background: #7a0dcc;
   transform: scale(1.08);
   box-shadow: 0 4px 12px rgba(152, 16, 250, 0.4);
+}
+
+.cookingModeBtnHighlight {
+  animation: pulseBtn 1.2s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(152, 16, 250, 0.5);
+}
+
+@keyframes pulseBtn {
+  0% {
+    box-shadow: 0 0 0 0 rgba(152, 16, 250, 0.5);
+  }
+  70% {
+    box-shadow: 0 0 0 12px rgba(152, 16, 250, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(152, 16, 250, 0);
+  }
+}
+
+.cookingModeArrow {
+  position: absolute;
+  top: -1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-bottom: 12px solid #9810fa;
+  animation: arrowBounce 1s ease-in-out infinite;
+  z-index: 10;
+}
+
+@keyframes arrowBounce {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-8px);
+  }
+}
+
+/* Cooking Help ? Button in Action Bar */
+.cookingHelpWrapper {
+  position: relative;
+}
+
+.cookingHelpBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  border: 2px solid #9810fa;
+  background: transparent;
+  color: #9810fa;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.cookingHelpBtn:hover {
+  background: #9810fa;
+  color: white;
+  transform: scale(1.1);
+}
+
+.cookingHelpDropdown {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  border: 2px solid #9810fa;
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+  width: calc(100vw - 2rem);
+  max-width: 360px;
+  box-shadow: 0 8px 28px rgba(152, 16, 250, 0.18);
+  z-index: 1000;
+  animation: dropdownSlideUp 0.25s ease;
+  direction: rtl;
+  text-align: right;
+}
+
+@keyframes dropdownSlideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.cookingHelpClose {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.2em;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.cookingHelpClose:hover {
+  color: var(--text-primary);
+}
+
+.cookingHelpContent {
+  font-size: var(--basic-font);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.cookingHelpContent strong {
+  display: block;
+  font-size: var(--basic-font);
+  color: #9810fa;
+  margin-bottom: 0.3rem;
+}
+
+.cookingHelpContent p {
+  margin: 0 0 0.5rem 0;
+  color: var(--text-secondary);
+  font-size: var(--basic-font);
+}
+
+.cookingHelpContent ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cookingHelpContent li {
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-tertiary);
+  border-right: 3px solid #9810fa;
+  font-size: var(--basic-font);
+  line-height: 2;
 }
 
 .recipeInfo {
@@ -603,6 +844,13 @@
   flex-shrink: 0;
 }
 
+.nutritionValue {
+  direction: ltr;
+  display: inline-block;
+  unicode-bidi: embed;
+  font-weight: 600;
+}
+
 /* ===== Mobile Responsive ===== */
 @media (max-width: 600px) {
   .recipeCard {
@@ -630,14 +878,17 @@
   }
 
   .actionBar {
-    flex-wrap: wrap;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
   }
 
-  .actionButton {
-    padding: 0.4em 0.8em;
+  .editBtn {
+    padding: 0.4em 1em;
     font-size: var(--small-font);
+  }
+
+  .moreMenu {
+    min-width: 220px;
   }
 
   .recipeContent {
