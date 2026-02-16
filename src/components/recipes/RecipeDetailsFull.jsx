@@ -15,6 +15,7 @@ import {
   IoPrintOutline,
   IoStarOutline,
   IoStar,
+  IoChevronBackOutline,
 } from "react-icons/io5";
 import { HiOutlineDocumentDuplicate } from "react-icons/hi2";
 import { TbChefHat, TbUsers } from "react-icons/tb";
@@ -24,6 +25,7 @@ import { CloseButton } from "../controls/close-button";
 import { AddButton } from "../controls/add-button";
 import { ExportImageButton } from "./export-image-button";
 import { RecipeChat } from "./recipe-chat";
+import { ChatHelpButton } from "../controls/chat-help-button";
 
 function RecipeDetailsFull({
   recipe,
@@ -44,6 +46,30 @@ function RecipeDetailsFull({
   const navigate = useNavigate();
   // State management
   const [activeTab, setActiveTab] = useState("ingredients");
+  const touchRef = useRef({ startX: 0, startY: 0 });
+
+  const tabOrder = useMemo(() => {
+    const tabs = ["ingredients", "instructions"];
+    if (recipe.notes) tabs.push("tips");
+    tabs.push("chat");
+    return tabs;
+  }, [recipe.notes]);
+
+  const handleTabSwipe = (e) => {
+    const diffX = e.changedTouches[0].clientX - touchRef.current.startX;
+    const diffY = Math.abs(
+      e.changedTouches[0].clientY - touchRef.current.startY,
+    );
+    if (diffY > Math.abs(diffX) || Math.abs(diffX) < 50) return;
+    const isRTL = document.documentElement.dir === "rtl";
+    const direction = isRTL ? -diffX : diffX;
+    const currentIndex = tabOrder.indexOf(activeTab);
+    if (direction < 0 && currentIndex < tabOrder.length - 1) {
+      setActiveTab(tabOrder[currentIndex + 1]);
+    } else if (direction > 0 && currentIndex > 0) {
+      setActiveTab(tabOrder[currentIndex - 1]);
+    }
+  };
   const [servings, setServings] = useState(recipe.servings || 4);
   const [checkedIngredients, setCheckedIngredients] = useState({});
   const [checkedInstructions, setCheckedInstructions] = useState({});
@@ -55,11 +81,21 @@ function RecipeDetailsFull({
   const [chatAppliedFields, setChatAppliedFields] = useState({});
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showCookingHelp, setShowCookingHelp] = useState(false);
+
+  const cookingHelpItems = [
+    t("cookingMode", "helpGuideFeature1"),
+    t("cookingMode", "helpGuideFeature2"),
+    t("cookingMode", "helpGuideFeature3"),
+  ];
   const moreMenuRef = useRef(null);
 
   const handleCopyClick = () => {
     setShowCopyDialog(true);
   };
+
+  useEffect(() => {
+    setServings(recipe.servings || 4);
+  }, [recipe.servings]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -203,11 +239,13 @@ function RecipeDetailsFull({
         />
       )}
 
-      <CloseButton
+      <button
         onClick={onClose}
-        type="circle"
-        className={classes.imageCloseButton}
-      />
+        className={classes.backButton}
+        title={t("common", "close")}
+      >
+        <IoChevronBackOutline /> {t("common", "back")}
+      </button>
       <div className={classes.imageContainer}>
         {recipe.image_src && (
           <img
@@ -318,34 +356,10 @@ function RecipeDetailsFull({
             <IoShareSocialOutline size={20} />
           </button>
 
-          <div className={classes.cookingHelpWrapper}>
-            <button
-              className={classes.cookingHelpBtn}
-              onClick={() => setShowCookingHelp((prev) => !prev)}
-              title={t("cookingMode", "helpTitle")}
-            >
-              ?
-            </button>
-            {showCookingHelp && (
-              <div className={classes.cookingHelpDropdown}>
-                <button
-                  className={classes.cookingHelpClose}
-                  onClick={() => setShowCookingHelp(false)}
-                >
-                  ✕
-                </button>
-                <div className={classes.cookingHelpContent}>
-                  <strong>{t("cookingMode", "helpGuideTitle")}</strong>
-                  <p>{t("cookingMode", "helpGuideText")}</p>
-                  <ul>
-                    <li>{t("cookingMode", "helpGuideFeature1")}</li>
-                    <li>{t("cookingMode", "helpGuideFeature2")}</li>
-                    <li>{t("cookingMode", "helpGuideFeature3")}</li>
-                  </ul>
-                </div>
-              </div>
-            )}
-          </div>
+          <ChatHelpButton
+            title={t("cookingMode", "helpGuideTitle")}
+            items={cookingHelpItems}
+          />
         </div>
 
         {onEdit && (
@@ -469,30 +483,27 @@ function RecipeDetailsFull({
           </div>
         )}
 
-        {recipe.servings && (
-          <div className={classes.servingSelector}>
-            <div className={classes.servingControls}>
-              <AddButton
-                type="circle"
-                sign="+"
-                className={classes.servingButton}
-                onClick={() => setServings(servings + 1)}
-              />
-              <span>{servings}</span>
-
-              <AddButton
-                type="circle"
-                sign="-"
-                className={classes.servingButton}
-                onClick={() => setServings(Math.max(1, servings - 1))}
-              />
-            </div>
-            <span className={classes.servingLabel}>
-              <TbUsers className={classes.servingLabelIcon} />
-              {t("recipes", "servings")} ({servings})
-            </span>
+        <div className={classes.servingSelector}>
+          <div className={classes.servingControls}>
+            <AddButton
+              type="circle"
+              sign="+"
+              className={classes.servingButton}
+              onClick={() => setServings(servings + 1)}
+            />
+            <span>{servings}</span>
+            <AddButton
+              type="circle"
+              sign="-"
+              className={classes.servingButton}
+              onClick={() => setServings(Math.max(1, servings - 1))}
+            />
           </div>
-        )}
+          <span className={classes.servingLabel}>
+            <TbUsers className={classes.servingLabelIcon} />
+            {t("recipes", "servings")} ({servings})
+          </span>
+        </div>
 
         {recipe.nutrition &&
           Object.entries(recipe.nutrition).some(
@@ -609,7 +620,14 @@ function RecipeDetailsFull({
           </button>
         </div>
 
-        <div className={classes.tabContent}>
+        <div
+          className={classes.tabContent}
+          onTouchStart={(e) => {
+            touchRef.current.startX = e.touches[0].clientX;
+            touchRef.current.startY = e.touches[0].clientY;
+          }}
+          onTouchEnd={handleTabSwipe}
+        >
           {activeTab === "ingredients" && (
             <ul className={classes.ingredientsList}>
               {ingredientsArray.length > 0 ? (

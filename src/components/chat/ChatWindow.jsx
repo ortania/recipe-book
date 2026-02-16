@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect } from "react";
-import { FaImage } from "react-icons/fa";
 import { FiTrash2 } from "react-icons/fi";
 import {
   sendChatMessage,
@@ -7,6 +6,8 @@ import {
 } from "../../services/openai";
 import { useLanguage, useRecipeBook } from "../../context";
 import { Greeting } from "../greeting";
+import { ChatHelpButton } from "../controls/chat-help-button";
+import { ChatInput } from "../controls/chat-input";
 import classes from "./chat-window.module.css";
 
 const IDEA_CHIPS = [
@@ -29,7 +30,6 @@ function ChatWindow({ recipeContext = null }) {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const messagesEndRef = useRef(null);
-  const fileInputRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -54,8 +54,7 @@ function ChatWindow({ recipeContext = null }) {
     localStorage.removeItem("chatMessages");
   };
 
-  const handleImageSelect = (e) => {
-    const file = e.target.files[0];
+  const handleImageFile = (file) => {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
@@ -73,7 +72,6 @@ function ChatWindow({ recipeContext = null }) {
       handleImageAnalysis(reader.result);
     };
     reader.readAsDataURL(file);
-    e.target.value = "";
   };
 
   const handleImageAnalysis = async (imageBase64) => {
@@ -128,9 +126,9 @@ function ChatWindow({ recipeContext = null }) {
     }
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    sendMessage(input);
+  const handleChatSubmit = (text) => {
+    sendMessage(text);
+    setInput("");
   };
 
   const handleChipClick = (chipKey) => {
@@ -140,8 +138,19 @@ function ChatWindow({ recipeContext = null }) {
 
   return (
     <div className={classes.chatContainer}>
-      <div className={classes.greeting}>
-        <Greeting />
+      <div className={classes.chatHeader}>
+        <div className={classes.greeting}>
+          <Greeting />
+        </div>
+        <ChatHelpButton
+          title={t("chat", "helpTitle")}
+          items={[
+            t("chat", "helpFeature1"),
+            t("chat", "helpFeature2"),
+            t("chat", "helpFeature3"),
+            t("chat", "helpFeature4"),
+          ]}
+        />
       </div>
 
       {messages.length > 0 && (
@@ -211,64 +220,15 @@ function ChatWindow({ recipeContext = null }) {
         <div ref={messagesEndRef} />
       </div>
 
-      <form className={classes.inputForm} onSubmit={handleSubmit}>
-        <input
-          type="file"
-          accept="image/*"
-          ref={fileInputRef}
-          onChange={handleImageSelect}
-          style={{ display: "none" }}
-        />
-        <div className={classes.inputWrap}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={t("chat", "placeholder")}
-            className={classes.input}
-            disabled={isLoading}
-          />
-          <div className={classes.inputActions}>
-            <button
-              type="button"
-              className={classes.imageBtn}
-              onClick={() => fileInputRef.current?.click()}
-              disabled={isLoading}
-              title="Upload food image"
-            >
-              <FaImage />
-            </button>
-            <button
-              type="submit"
-              className={classes.sendBtn}
-              disabled={isLoading || !input.trim()}
-            >
-              <svg
-                width="18"
-                height="18"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path
-                  d="M22 2L11 13"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <path
-                  d="M22 2L15 22L11 13L2 9L22 2Z"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      </form>
+      <ChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={handleChatSubmit}
+        placeholder={t("chat", "placeholder")}
+        disabled={isLoading}
+        showImageButton={true}
+        onImageSelect={handleImageFile}
+      />
     </div>
   );
 }

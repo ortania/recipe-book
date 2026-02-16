@@ -1,13 +1,12 @@
 /* Recipe Details - Full Normal View */
 
 .recipeCard {
-  background: var(--bg-card);
-  border-radius: 20px;
+  /* background: var(--bg-card); */
+  /* border-radius: 20px; */
   max-width: 750px;
   width: 100%;
   position: relative;
   margin: 0 auto;
-  overflow: hidden;
 }
 
 /* Action toolbar below image */
@@ -48,7 +47,7 @@
 }
 
 .actionIconActive {
-  color: #ffc107;
+  color: #e53935;
 }
 
 .editBtn {
@@ -152,15 +151,35 @@
 }
 
 .imageCloseButton {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
+  position: sticky;
+  top: 0.5rem;
   z-index: 20;
   background: var(--bg-card) !important;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15); */
-  width: 4rem;
-  height: 4rem;
-  font-size: 2.3rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 3rem;
+  height: 3rem;
+  font-size: 1.8rem;
+  float: inline-end;
+  margin: 0.5rem;
+}
+
+.backButton {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  background: var(--bg-card);
+  border: none;
+  border-radius: 20px;
+  padding: 0.4em 0.8em;
+  font-size: var(--large-font);
+  color: var(--text-primary);
+  cursor: pointer;
+  margin: 0 0.5rem 0.5rem;
+  transition: background 0.2s;
+}
+
+.backButton:hover {
+  background: var(--bg-hover);
 }
 
 .recipeImage {
@@ -858,15 +877,6 @@
     max-width: 100%;
     width: 100%;
     min-height: 100%;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .imageCloseButton {
-    position: fixed;
-    top: 0.5rem;
-    right: 0.5rem;
-    z-index: 100;
   }
 
   .closeButton {

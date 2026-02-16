@@ -382,7 +382,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         >
           <FiStar
             size={22}
-            fill={editedPerson.isFavorite ? "#ffc107" : "none"}
+            fill={editedPerson.isFavorite ? "#e53935" : "none"}
           />{" "}
           <span>
             {t(

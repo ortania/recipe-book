@@ -238,4 +238,8 @@ html {
   overscroll-behavior-y: none;
 }
 
-
+@media (max-width: 768px) {
+  html {
+    overflow-y: auto;
+  }
+}

@@ -6,12 +6,13 @@ import React, {
   useMemo,
 } from "react";
 import { VscDebugRestart } from "react-icons/vsc";
-import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
 import { FaStop } from "react-icons/fa";
 import { TbUsers } from "react-icons/tb";
+import { IoChevronBackOutline } from "react-icons/io5";
 import { CookingVoiceChat } from "../cooking-voice-chat";
 import { CloseButton } from "../controls/close-button";
 import { AddButton } from "../controls/add-button";
+import { ChatHelpButton } from "../controls/chat-help-button";
 import { useLanguage } from "../../context";
 import classes from "./recipe-details-cooking.module.css";
 
@@ -33,8 +34,29 @@ function RecipeDetailsCookingMode({
   const [customTimerInput, setCustomTimerInput] = useState("");
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [totalSeconds, setTotalSeconds] = useState(0);
+  const touchRef = useRef({ startX: 0, startY: 0 });
+
+  const handleTabSwipe = (e) => {
+    const diffX = e.changedTouches[0].clientX - touchRef.current.startX;
+    const diffY = Math.abs(
+      e.changedTouches[0].clientY - touchRef.current.startY,
+    );
+    if (diffY > Math.abs(diffX) || Math.abs(diffX) < 50) return;
+    const isRTL = document.documentElement.dir === "rtl";
+    const direction = isRTL ? -diffX : diffX;
+    const tabs = ["ingredients", "instructions"];
+    const currentIndex = tabs.indexOf(activeTab);
+    if (direction < 0 && currentIndex < tabs.length - 1) {
+      setActiveTab(tabs[currentIndex + 1]);
+      setCurrentStep(0);
+      setShowCompletion(false);
+    } else if (direction > 0 && currentIndex > 0) {
+      setActiveTab(tabs[currentIndex - 1]);
+      setCurrentStep(0);
+      setShowCompletion(false);
+    }
+  };
   const [showVolumeNotification, setShowVolumeNotification] = useState(true);
-  const [showInfo, setShowInfo] = useState(false);
 
   const originalServings = recipe.servings || 4;
   const handleNextStepRef = useRef();
@@ -226,50 +248,52 @@ function RecipeDetailsCookingMode({
       <div className={classes.headerButtonsCooking}>
         <div className={classes.headerLeft}>
           {!(showCompletion && activeTab === "instructions") && (
-            <button
-              className={classes.cookingHelpBtn}
-              onClick={(e) => {
-                e.stopPropagation();
-                setShowInfo((prev) => !prev);
-              }}
-              title={t("cookingMode", "helpTitle")}
-            >
-              ?
-            </button>
-          )}
-          <div className={classes.micWrapper}>
-            {showInfo && <div className={classes.micArrow} />}
-            <CookingVoiceChat
-              recipe={recipe}
-              ingredients={ingredientsArray}
-              instructions={instructionsArray}
-              currentStep={currentStep}
-              servings={servings}
-              activeTab={activeTab}
-              onNextStep={() => handleNextStepRef.current()}
-              onPrevStep={() => handlePrevStepRef.current()}
-              onGotoStep={(step) => {
-                setCurrentStep(step);
-                setShowCompletion(false);
-              }}
-              onStartTimer={(minutes) => startTimer(minutes)}
-              onStopTimer={() => {
-                setIsTimerRunning(false);
-                setTotalSeconds(0);
-                setCustomTimerInput("");
-              }}
-              onSwitchTab={(tab) => {
-                setActiveTab(tab);
-                setCurrentStep(0);
-                setShowCompletion(false);
-              }}
-              isTimerRunning={isTimerRunning}
+            <ChatHelpButton
+              title={t("cookingMode", "howToUse")}
+              items={[
+                t("cookingMode", "navTabs"),
+                t("cookingMode", "navSteps"),
+                `⏱️ ${t("cookingMode", "timerTitle")} — ${t("cookingMode", "timerText")}`,
+                `${t("cookingMode", "chatTitle")} — ${t("cookingMode", "chatText")}`,
+                t("cookingMode", "chatFeature1"),
+                t("cookingMode", "chatFeature2"),
+                t("cookingMode", "chatFeature3"),
+                t("cookingMode", "chatFeature4"),
+              ]}
             />
-          </div>
+          )}
+          <CookingVoiceChat
+            recipe={recipe}
+            ingredients={ingredientsArray}
+            instructions={instructionsArray}
+            currentStep={currentStep}
+            servings={servings}
+            activeTab={activeTab}
+            onNextStep={() => handleNextStepRef.current()}
+            onPrevStep={() => handlePrevStepRef.current()}
+            onGotoStep={(step) => {
+              setCurrentStep(step);
+              setShowCompletion(false);
+            }}
+            onStartTimer={(minutes) => startTimer(minutes)}
+            onStopTimer={() => {
+              setIsTimerRunning(false);
+              setTotalSeconds(0);
+              setCustomTimerInput("");
+            }}
+            onSwitchTab={(tab) => {
+              setActiveTab(tab);
+              setCurrentStep(0);
+              setShowCompletion(false);
+            }}
+            isTimerRunning={isTimerRunning}
+          />
         </div>
         <h3 className={classes.headerTitle}>{t("recipes", "cookingMode")}</h3>
         <div className={classes.headerRight}>
-          <CloseButton onClick={onClose} />
+          <button onClick={onClose} className={classes.backButton}>
+            <IoChevronBackOutline /> {t("common", "back")}
+          </button>
         </div>
       </div>
 
@@ -327,7 +351,15 @@ function RecipeDetailsCookingMode({
           </button>
         </div>
 
-        <div className={classes.tabContent} onClick={handleScreenClick}>
+        <div
+          className={classes.tabContent}
+          onClick={handleScreenClick}
+          onTouchStart={(e) => {
+            touchRef.current.startX = e.touches[0].clientX;
+            touchRef.current.startY = e.touches[0].clientY;
+          }}
+          onTouchEnd={handleTabSwipe}
+        >
           {activeTab === "ingredients" && !showCompletion && (
             <ul className={classes.ingredientsList}>
               {ingredientsArray.length > 0 ? (
@@ -455,38 +487,6 @@ function RecipeDetailsCookingMode({
                   {t("recipes", "next")} →
                 </button>
               </div>
-
-              {/* Info Help Card */}
-              {showInfo && (
-                <div className={classes.helpDropdown}>
-                  <button
-                    className={classes.helpClose}
-                    onClick={() => setShowInfo(false)}
-                  >
-                    ✕
-                  </button>
-                  <div className={classes.helpContent}>
-                    <strong>{t("cookingMode", "howToUse")}</strong>
-                    <ul>
-                      <li>{t("cookingMode", "navTabs")}</li>
-                      <li>{t("cookingMode", "navSteps")}</li>
-                      <li>
-                        ⏱️ {t("cookingMode", "timerTitle")} —{" "}
-                        {t("cookingMode", "timerText")}
-                      </li>
-                      <li>
-                        <PiMicrophoneThin style={{ verticalAlign: "middle" }} />{" "}
-                        {t("cookingMode", "chatTitle")} —{" "}
-                        {t("cookingMode", "chatText")}
-                      </li>
-                      <li>{t("cookingMode", "chatFeature1")}</li>
-                      <li>{t("cookingMode", "chatFeature2")}</li>
-                      <li>{t("cookingMode", "chatFeature3")}</li>
-                      <li>{t("cookingMode", "chatFeature4")}</li>
-                    </ul>
-                  </div>
-                </div>
-              )}
 
               {/* Timer Section - Only show in Instructions tab */}
               {activeTab === "instructions" && (

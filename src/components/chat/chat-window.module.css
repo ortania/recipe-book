@@ -8,8 +8,16 @@
   padding: 0 1rem;
 }
 
+.chatHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
 .greeting {
   padding: 1.5rem 0 1rem;
+  flex: 1;
 }
 
 /* Messages area */

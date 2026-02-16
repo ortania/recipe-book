@@ -9,7 +9,7 @@ import {
 import classes from "./global-recipes.module.css";
 
 function GlobalRecipes() {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { currentUser, addRecipe } = useRecipeBook();
 
   const [allRecipes, setAllRecipes] = useState([]);
@@ -71,7 +71,11 @@ function GlobalRecipes() {
     if (!currentUser) return;
     setCopying((prev) => ({ ...prev, [recipe.id]: true }));
     try {
-      const newRecipe = await copyRecipeToUser(recipe.id, currentUser.uid);
+      const newRecipe = await copyRecipeToUser(
+        recipe.id,
+        currentUser.uid,
+        language,
+      );
       if (addRecipe) {
         addRecipe(newRecipe);
       }
@@ -89,22 +93,19 @@ function GlobalRecipes() {
 
   return (
     <div className={classes.container}>
-      <div className={classes.header}>
-        <h1 className={classes.title}>{t("globalRecipes", "title")}</h1>
-        {/* {allRecipes.length > 0 && (
-          <span className={classes.recipeCount}>
-            {filtered.length} {t("recipesView", "recipesCount")}
-          </span>
-        )} */}
-      </div>
+      <div className={classes.stickyTop}>
+        <div className={classes.header}>
+          <h1 className={classes.title}>{t("globalRecipes", "title")}</h1>
+        </div>
 
-      <div className={classes.controls}>
-        <SearchBox
-          searchTerm={search}
-          onSearchChange={setSearch}
-          placeholder={t("globalRecipes", "search")}
-          className={classes.searchBox}
-        />
+        <div className={classes.controls}>
+          <SearchBox
+            searchTerm={search}
+            onSearchChange={setSearch}
+            placeholder={t("globalRecipes", "search")}
+            className={classes.searchBox}
+          />
+        </div>
       </div>
 
       {loading && allRecipes.length === 0 && (

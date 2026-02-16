@@ -764,6 +764,15 @@
   direction: rtl;
 }
 
+.andMore {
+  grid-column: 1 / -1;
+  text-align: center;
+  font-size: var(--large-font);
+  font-weight: 600;
+  color: #9810fa;
+  margin: 0.5rem 0 0;
+}
+
 .featureCard {
   background: var(--bg-card);
   border-radius: 12px;

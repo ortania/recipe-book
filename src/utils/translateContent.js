@@ -58,7 +58,7 @@ async function translateText(text, targetLang, sourceLang = "auto") {
 }
 
 export async function translateRecipeContent(recipe, targetLang) {
-  if (!recipe || !targetLang || targetLang === "mixed" || targetLang === "he") {
+  if (!recipe || !targetLang || targetLang === "mixed") {
     return recipe;
   }
 

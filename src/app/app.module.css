@@ -16,6 +16,9 @@
 @media (max-width: 768px) {
   .contentWrapper {
     margin-inline-start: 0;
+    height: 100vh;
+    height: 100dvh;
+    overflow: hidden;
   }
 }
 
@@ -25,6 +28,7 @@
   justify-content: center;
   background-color: var(--bg-primary);
   padding: 1.5rem;
+  padding-bottom: 5rem;
 }
 
 .main > * {
@@ -36,7 +40,15 @@
   .main {
     padding: 0;
     padding-top: 3.5rem;
-    padding-bottom: 4rem;
+    padding-bottom: 5rem;
+    overflow-y: auto;
+    min-height: 0;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .main::-webkit-scrollbar {
+    display: none;
   }
 }
 

@@ -11,6 +11,7 @@ import {
   getDoc,
 } from "firebase/firestore";
 import { db } from "./config";
+import { translateRecipeContent } from "../utils/translateContent";
 
 const RECIPES_COLLECTION = "recipes";
 const PAGE_SIZE = 20;
@@ -41,7 +42,7 @@ export const fetchGlobalRecipes = async (currentUserId, lastDoc = null) => {
   }
 };
 
-export const copyRecipeToUser = async (recipeId, targetUserId) => {
+export const copyRecipeToUser = async (recipeId, targetUserId, targetLang) => {
   try {
     const srcRef = doc(db, RECIPES_COLLECTION, recipeId);
     const snap = await getDoc(srcRef);
@@ -51,8 +52,17 @@ export const copyRecipeToUser = async (recipeId, targetUserId) => {
     const { userId, createdAt, updatedAt, order, categories, ...recipeData } =
       srcData;
 
+    let translatedData = recipeData;
+    if (targetLang && targetLang !== "mixed") {
+      try {
+        translatedData = await translateRecipeContent(recipeData, targetLang);
+      } catch (err) {
+        console.warn("Translation failed, copying without translation:", err);
+      }
+    }
+
     const newRecipe = {
-      ...recipeData,
+      ...translatedData,
       userId: targetUserId,
       categories: [],
       order: Date.now(),

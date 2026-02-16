@@ -1,0 +1,112 @@
+/* Reusable purple ? help button with dropdown */
+.wrapper {
+  position: relative;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.8rem;
+  height: 1.8rem;
+  border-radius: 50%;
+  border: 2px solid #9810fa;
+  background: transparent;
+  color: #9810fa;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn:hover {
+  background: #9810fa;
+  color: white;
+  transform: scale(1.1);
+}
+
+.dropdown {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-card);
+  border: 2px solid #9810fa;
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+  width: calc(100vw - 2rem);
+  max-width: 400px;
+  max-height: 60vh;
+  overflow-y: auto;
+  box-shadow: 0 8px 28px rgba(152, 16, 250, 0.18);
+  z-index: 10200;
+  animation: helpSlideUp 0.25s ease;
+  direction: rtl;
+  text-align: right;
+}
+
+@keyframes helpSlideUp {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(1rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.close {
+  position: absolute;
+  top: 0.4rem;
+  left: 0.4rem;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.2em;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.close:hover {
+  color: var(--text-primary);
+}
+
+.content {
+  font-size: var(--basic-font);
+  color: var(--text-primary);
+  line-height: 1.6;
+}
+
+.content strong {
+  display: block;
+  font-size: var(--basic-font);
+  color: #9810fa;
+  margin-bottom: 0.3rem;
+}
+
+.content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.content li {
+  padding: 0.4rem 0.6rem;
+  background: var(--bg-tertiary);
+  border-right: 3px solid #9810fa;
+  font-size: var(--basic-font);
+  line-height: 1.5;
+}
+
+@media (max-width: 768px) {
+  .dropdown {
+    max-width: 95%;
+  }
+}

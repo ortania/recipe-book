@@ -212,11 +212,6 @@ function RecipeDetailsPage() {
 
   return (
     <div className={classes.pageContainer}>
-      {/* <button className={classes.backButton} onClick={handleClose}>
-        <IoArrowBack />
-        {t("common", "back") || "Back"}
-      </button> */}
-
       <RecipeDetailsFull
         recipe={translatedRecipe}
         originalRecipe={recipe}
@@ -228,7 +223,9 @@ function RecipeDetailsPage() {
         onSaveRecipe={editRecipe}
         getCategoryName={getCategoryName}
         onEnterCookingMode={handleCookingModeToggle}
-        onCopyRecipe={copyRecipeToUser}
+        onCopyRecipe={(recipe, targetUserId) =>
+          copyRecipeToUser(recipe, targetUserId, language)
+        }
         currentUserId={currentUser?.uid}
         onToggleFavorite={handleToggleFavorite}
       />

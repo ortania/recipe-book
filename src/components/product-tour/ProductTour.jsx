@@ -98,7 +98,12 @@ const ONBOARDING_SCREENS = [
     key: "search",
     emoji: "🔍",
     titleKey: "searchTitle",
-    bullets: ["searchBullet1", "searchBullet2", "searchBullet3"],
+    bullets: [
+      "searchBullet1",
+      "searchBullet2",
+      "searchBullet3",
+      "searchBullet4",
+    ],
     tipLabel: "howToUse",
     tipKey: "searchTip",
   },
@@ -259,6 +264,7 @@ function WelcomeFeaturesScene({ t }) {
           </div>
         );
       })}
+      <p className={classes.andMore}>{t("productTour", "andMore")}</p>
     </div>
   );
 }
@@ -506,20 +512,6 @@ function ProductTour({ onClose }) {
       description: "",
       hasCursor: false,
     },
-    {
-      id: "recipe",
-      title: t("productTour", "recipeView"),
-      tooltip: t("productTour", "recipeViewTooltip"),
-      description: t("productTour", "recipeViewDesc"),
-      hasCursor: true,
-    },
-    {
-      id: "cooking",
-      title: t("productTour", "voiceChat"),
-      tooltip: t("productTour", "voiceChatTooltip"),
-      description: t("productTour", "voiceChatDesc"),
-      hasCursor: true,
-    },
   ];
 
   const current = SCREENS[screen];
@@ -677,21 +669,6 @@ function ProductTour({ onClose }) {
                 <OnboardingScene screenKey={current.onboardingKey} t={t} />
               )}
               {current.id === "welcome" && <WelcomeFeaturesScene t={t} />}
-              {current.id === "recipe" && (
-                <RecipeDetailScene
-                  cursorTargetRef={cursorTargetRef}
-                  onGoNext={goNext}
-                  t={t}
-                />
-              )}
-              {current.id === "cooking" && (
-                <CookingModeScene
-                  cursorTargetRef={cursorTargetRef}
-                  onMicClicked={handleMicClick}
-                  micPhase={micPhase}
-                  t={t}
-                />
-              )}
             </motion.div>
           </AnimatePresence>
 
@@ -756,10 +733,6 @@ function ProductTour({ onClose }) {
           <button
             className={`${classes.navBtn} ${classes.navBtnPrimary}`}
             onClick={goNext}
-            disabled={current.id === "cooking" && micPhase < 2}
-            style={
-              current.id === "cooking" && micPhase < 2 ? { opacity: 0.4 } : {}
-            }
           >
             {screen === SCREENS.length - 1
               ? t("productTour", "finish")

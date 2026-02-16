@@ -14,6 +14,7 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import { db } from "./config";
+import { translateRecipeContent } from "../utils/translateContent";
 
 const RECIPES_COLLECTION = "recipes";
 export const RECIPES_PER_PAGE = 50; // Number of recipes to load per page
@@ -283,7 +284,7 @@ export const deleteRecipesByCategory = async (categoryId, userId = null) => {
   }
 };
 
-export const copyRecipeToUser = async (recipe, targetUserId) => {
+export const copyRecipeToUser = async (recipe, targetUserId, targetLang) => {
   try {
     const recipesRef = collection(db, RECIPES_COLLECTION);
 
@@ -299,8 +300,17 @@ export const copyRecipeToUser = async (recipe, targetUserId) => {
     const { id, userId, createdAt, updatedAt, categories, ...recipeData } =
       recipe;
 
+    let translatedData = recipeData;
+    if (targetLang && targetLang !== "mixed") {
+      try {
+        translatedData = await translateRecipeContent(recipeData, targetLang);
+      } catch (err) {
+        console.warn("Translation failed, copying without translation:", err);
+      }
+    }
+
     const copiedRecipe = {
-      ...recipeData,
+      ...translatedData,
       categories: [],
       userId: targetUserId,
       order,

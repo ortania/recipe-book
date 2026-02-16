@@ -6,20 +6,18 @@
   padding: 0 1.5rem 1.5rem 1.5rem;
 }
 
-.viewToggleWrapper {
-  /* display: flex; */
-  /* justify-content: space-between; */
-  /* align-items: center; */
-  margin-bottom: 1rem;
-  /* padding-top: 0.5rem; */
+.stickyTop {
   position: sticky;
   top: 0;
-  background: var(--bg-primary);
   z-index: 100;
-  padding: 1.5rem 0;
-  min-height: 60px;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); */
-  background-color: var(--bg-primary);
+  background: var(--bg-primary);
+}
+
+.viewToggleWrapper {
+  margin-bottom: 0;
+  padding: 1rem 0;
+  min-height: 50px;
+  position: relative;
 }
 
 .viewToggle {
@@ -96,45 +94,47 @@
 
 @media (max-width: 768px) {
   .recipesContainer {
-    padding-top: 6rem;
+    /* מרווח אחרי ה-header העליון: גובה סרגל Chat/Recipes + סרגל חיפוש קבוע */
+    padding-top: 9.5rem;
     padding-left: 0;
     padding-right: 0;
     max-width: 100%;
   }
 
+  .stickyTop {
+    position: sticky;
+    top: 7.8rem;
+    z-index: 100;
+    background: var(--bg-primary);
+  }
+
   :global(body.sidebar-open) .viewToggleWrapper,
   :global(body.sidebar-open) .iconButtons,
+  :global(body.sidebar-open) .searchHeader,
   :global(body.modal-open) .viewToggleWrapper,
-  :global(body.modal-open) .iconButtons {
+  :global(body.modal-open) .iconButtons,
+  :global(body.modal-open) .searchHeader {
     display: none !important;
   }
 
   .viewToggleWrapper {
+    /* במובייל הסרגל Chat/Recipes מקובע מתחת ל-header העליון */
     position: fixed;
-    top: 0;
+    top: 3.8rem;
     left: 0;
     right: 0;
-    z-index: 10001;
-    background: var(--bg-primary);
-    padding: 0.75rem 1rem;
+    padding: 6rem 1rem 0.6rem;
     margin: 0;
     border-bottom: 1px solid var(--border-color);
-    margin-top: 3rem;
     display: flex;
     align-items: center;
     justify-content: center;
+    background: var(--bg-primary);
   }
 
   .viewToggleWrapper::before {
-    content: "";
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3rem;
-    background: var(--bg-primary);
-    z-index: 10000;
-    pointer-events: none;
+    /* במובייל כבר לא צריך שכבת רקע נוספת – הכל בתוך stickyTop */
+    content: none;
   }
 
   .viewToggle {
@@ -154,6 +154,26 @@
   .headerTitle {
     margin-top: 3rem;
     padding-left: 0;
+  }
+
+  .searchHeader {
+    position: fixed;
+    top: 7.5rem;
+    left: 0;
+    right: 0;
+    z-index: 99;
+    padding: 0.6rem 1rem 0.75rem;
+    margin: 0;
+    background: var(--bg-primary);
+    border-bottom: 1px solid var(--border-color);
+    flex-wrap: nowrap;
+    gap: 0.6rem;
+  }
+
+  .searchBoxWrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
   }
 
   .recipeGrid {
@@ -214,18 +234,33 @@
 
 .searchHeader {
   display: flex;
+  flex-wrap: wrap;
   gap: 0.75rem;
   align-items: center;
-  margin: 3rem 0 0.5rem;
-  /* background: var(--bg-tertiary); */
-  background: transparent;
+  justify-content: center;
+  margin: 0;
   padding: 0.5rem 0;
-  border-radius: 8px;
+  border-radius: 0;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.searchBoxWrapper {
+  flex: 1 1 280px;
+  min-width: 0;
+  max-width: 400px;
+  display: flex;
+}
+
+.searchBoxWrapper > * {
+  width: 100%;
+  min-width: 0;
 }
 
 .headerControls {
   display: flex;
   gap: 0.75rem;
+  align-items: center;
+  justify-content: center;
 }
 
 .dropdownContainer {
@@ -288,8 +323,14 @@
 .dropdownClose {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
   padding: 0.4rem 0.6rem 0;
   background: none;
+}
+
+.dropdownClose .clearFiltersBtn {
+  margin-inline-end: auto;
 }
 
 .dropdownMenu button {
@@ -432,6 +473,98 @@
   margin: 0.5rem 0;
 }
 
+.ingredientInputRow {
+  display: flex;
+  gap: 0.4rem;
+  width: 100%;
+}
+
+.ingredientInput {
+  flex: 1;
+  padding: 0.4rem 0.6rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  font-size: var(--very-small-font);
+  background: var(--bg-card);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.ingredientInput:focus {
+  border-color: var(--clr-blue-3);
+}
+
+.ingredientAddBtn {
+  flex: 0 0 auto;
+  width: 32px !important;
+  height: 32px;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: #2196f3 !important;
+  color: white !important;
+  border: none !important;
+  font-size: 1.2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ingredientChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  width: 100%;
+  margin-top: 0.25rem;
+}
+
+.ingredientChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.2rem 0.5rem;
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  font-size: var(--very-small-font);
+  color: var(--text-primary);
+}
+
+.ingredientChipRemove {
+  width: auto !important;
+  padding: 0 0.15rem !important;
+  border: none !important;
+  background: none !important;
+  color: var(--text-muted) !important;
+  cursor: pointer;
+  font-size: 0.75rem;
+  line-height: 1;
+}
+
+.ingredientChipRemove:hover {
+  color: var(--text-primary) !important;
+}
+
+.clearFiltersBtn {
+  padding: 0.3em 0.7em !important;
+  border: none !important;
+  background: #ff5252 !important;
+  color: white !important;
+  text-align: center;
+  cursor: pointer;
+  font-size: var(--very-small-font) !important;
+  font-weight: 600;
+  border-radius: 16px !important;
+  transition: background 0.2s;
+  width: auto !important;
+  border-bottom: none !important;
+  white-space: nowrap;
+}
+
+.clearFiltersBtn:hover {
+  background: #e04040 !important;
+}
+
 .section {
   margin-bottom: 3rem;
 }
@@ -506,11 +639,20 @@
 
 @media (max-width: 768px) {
   .searchHeader {
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    padding: 0.35rem 0;
-    margin: 0.5rem 0;
-    justify-content: center;
+    flex-wrap: nowrap;
+    gap: 0.6rem;
+    padding: 0.6rem 1rem;
+    margin: 1rem 0;
+  }
+
+  .searchBoxWrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+  }
+
+  .headerControls {
+    flex-shrink: 0;
   }
 
   .recipeGrid {
@@ -520,10 +662,6 @@
 
   .sectionTitle {
     font-size: var(--large-font);
-  }
-
-  .headerControls {
-    justify-content: center;
   }
 }
 
@@ -635,23 +773,31 @@
     right: 0;
     bottom: 0;
     background: rgba(0, 0, 0, 0.3);
-    z-index: 9998;
-    touch-action: none;
+    z-index: 10002;
+    /* מאפשר מחוות גלילה מבלי לחסום אותן לגמרי */
+    touch-action: auto;
   }
 
   .dropdownMenu {
-    position: fixed;
+    position: fixed !important;
     top: auto !important;
-    bottom: 0 !important;
+    /* להופיע ממש מעל ה-footer הנעול במוביל */
+    bottom: 3.5rem !important;
     left: 0 !important;
     right: 0 !important;
     width: 100% !important;
     max-height: 70vh !important;
-    overflow: hidden;
+    /* חלון סינון כמו bottom‑sheet במוביל */
+    min-height: 40vh;
+    background: var(--bg-card);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 10003 !important;
     display: flex;
     flex-direction: column;
     border-radius: 16px 16px 0 0;
     box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0) + 1rem);
   }
 
   .dropdownClose {
@@ -662,19 +808,34 @@
   }
 
   .dropdownScrollable {
-    flex: 1;
+    flex: 1 1 0;
+    min-height: 0;
     overflow-y: auto;
+    overflow-x: hidden;
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
-    padding-bottom: 1.5rem;
+    padding-bottom: 2rem;
   }
 
   .searchHeader {
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    padding: 0.4rem 1rem;
+    gap: 0.4rem;
+    align-items: center;
+  }
+
+  .searchBoxWrapper {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
   }
 
   .headerControls {
-    width: 100%;
-    justify-content: center;
+    flex-shrink: 0;
+    gap: 0.3rem;
+  }
+
+  .hideOnMobile {
+    display: none !important;
   }
 }

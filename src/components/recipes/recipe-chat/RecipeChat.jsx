@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { sendChatMessage, calculateNutrition } from "../../../services/openai";
 import { useLanguage } from "../../../context";
+import { ChatInput } from "../../controls/chat-input";
 import classes from "./recipe-chat.module.css";
 
 function RecipeChat({
@@ -388,46 +389,16 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
         </>
       )}
 
-      <form className={classes.inputForm} onSubmit={handleSubmit}>
-        <div className={classes.inputWrap}>
-          <input
-            type="text"
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            placeholder={t("recipeChat", "placeholder")}
-            className={classes.input}
-            disabled={isLoading}
-          />
-          <button
-            type="submit"
-            className={classes.sendBtn}
-            disabled={isLoading || !input.trim()}
-          >
-            <svg
-              width="18"
-              height="18"
-              viewBox="0 0 24 24"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M22 2L11 13"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M22 2L15 22L11 13L2 9L22 2Z"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-        </div>
-      </form>
+      <ChatInput
+        value={input}
+        onChange={setInput}
+        onSubmit={(text) => {
+          setInput(text);
+          handleSubmit({ preventDefault: () => {} });
+        }}
+        placeholder={t("recipeChat", "placeholder")}
+        disabled={isLoading}
+      />
     </div>
   );
 }

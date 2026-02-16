@@ -142,6 +142,7 @@
   width: auto !important;
   margin-right: 0.5rem !important;
   cursor: pointer;
+  accent-color: #e53935;
 }
 
 .favoriteText {
@@ -151,7 +152,7 @@
 }
 
 .favoriteLabel:hover .favoriteText {
-  color: #ffcc00;
+  color: #e53935;
 }
 
 .textarea {

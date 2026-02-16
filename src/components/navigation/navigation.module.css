@@ -104,6 +104,14 @@
 
 .sectionHeader {
   width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0;
+}
+
+.sectionHeaderBtn {
+  flex: 1;
   background: transparent;
   border: none;
   color: var(--text-muted);
@@ -119,14 +127,31 @@
   transition: all 0.15s ease;
 }
 
-.sectionHeader:hover {
+.sectionHeaderBtn:hover {
   background: var(--bg-hover);
 }
 
-.sectionHeader span {
+.sectionHeaderBtn span {
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.clearCategoriesBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 0.3em 0.6em;
+  border-radius: 4px;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.clearCategoriesBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
 }
 
 .sectionCount {
@@ -630,6 +655,10 @@
 }
 
 @media (max-width: 768px) {
+  .desktopOnly {
+    display: none !important;
+  }
+
   .mobileTopBar {
     display: flex;
     align-items: center;

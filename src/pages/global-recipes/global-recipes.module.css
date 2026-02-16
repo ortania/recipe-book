@@ -5,15 +5,20 @@
   font-size: var(--basic-font);
 }
 
+.stickyTop {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--bg-primary);
+}
+
 .header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  /* background: var(--bg-tertiary);
-  border: 1px solid var(--border-color); */
   border-radius: 12px;
   padding: 1.4rem 1.8rem;
-  margin-bottom: 1.4rem;
+  margin-bottom: 0;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
@@ -35,7 +40,8 @@
 .controls {
   display: flex;
   gap: 0.75rem;
-  margin-bottom: 1.2rem;
+  margin-bottom: 0;
+  padding-bottom: 0.5rem;
 }
 
 .searchBox {
@@ -192,6 +198,10 @@
 
   .title {
     font-size: var(--basic-font);
+  }
+
+  .stickyTop {
+    top: 3.5rem;
   }
 
   .header {

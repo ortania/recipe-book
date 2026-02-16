@@ -309,11 +309,11 @@
 }
 
 .favoriteBtn span:hover {
-  color: #ffc107;
+  color: #e53935;
 }
 
 .favoriteBtnActive {
-  color: #ffc107;
+  color: #e53935;
 }
 
 .favoriteBtn span,

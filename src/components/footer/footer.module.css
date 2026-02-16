@@ -3,6 +3,13 @@
   padding: 0.5rem 0;
   background: var(--bg-tertiary);
   border-top: 1px solid var(--border-color);
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-inline-start: 220px;
+  z-index: 999;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
 }
 
 .footerNav {
@@ -46,14 +53,7 @@
 
 @media (max-width: 768px) {
   .footer {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    z-index: 999;
-    background: var(--bg-tertiary);
-    border-top: 1px solid var(--border-color);
+    margin-inline-start: 0;
     padding: 0.4rem 0;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
   }
 }

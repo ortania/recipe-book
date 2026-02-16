@@ -70,6 +70,7 @@ function Navigation({ onLogout, links }) {
   const [chatHistory, setChatHistory] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
   const [categoriesOpen, setCategoriesOpen] = useState(true);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [chatLogOpen, setChatLogOpen] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
   const [showTour, setShowTour] = useState(false);
@@ -117,9 +118,62 @@ function Navigation({ onLogout, links }) {
 
     const interval = setInterval(loadChatHistory, 1000);
 
+    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener("resize", handleResize);
+
+    // Swipe gesture for hamburger menu on mobile
+    let touchStartX = 0;
+    let touchStartY = 0;
+    const SWIPE_THRESHOLD = 60;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = (e) => {
+      if (window.innerWidth > 768) return;
+      // Disable hamburger swipe on recipe detail/cooking pages (tabs use swipe there)
+      if (window.location.pathname.startsWith("/recipe/")) return;
+      const touchEndX = e.changedTouches[0].clientX;
+      const touchEndY = e.changedTouches[0].clientY;
+      const diffX = touchEndX - touchStartX;
+      const diffY = Math.abs(touchEndY - touchStartY);
+      if (diffY > Math.abs(diffX)) return; // vertical scroll, ignore
+
+      const isRTL = document.documentElement.dir === "rtl";
+      if (isRTL) {
+        // RTL: swipe left opens, swipe right closes
+        if (diffX < -SWIPE_THRESHOLD && touchStartX > window.innerWidth - 40) {
+          setIsOpen(true);
+          document.body.classList.add("sidebar-open");
+        } else if (diffX > SWIPE_THRESHOLD) {
+          setIsOpen(false);
+          document.body.classList.remove("sidebar-open");
+        }
+      } else {
+        // LTR: swipe right opens, swipe left closes
+        if (diffX > SWIPE_THRESHOLD && touchStartX < 40) {
+          setIsOpen(true);
+          document.body.classList.add("sidebar-open");
+        } else if (diffX < -SWIPE_THRESHOLD) {
+          setIsOpen(false);
+          document.body.classList.remove("sidebar-open");
+        }
+      }
+    };
+
+    document.addEventListener("touchstart", handleTouchStart, {
+      passive: true,
+    });
+    document.addEventListener("touchend", handleTouchEnd, { passive: true });
+
     return () => {
       window.removeEventListener("storage", handleStorageChange);
       clearInterval(interval);
+      window.removeEventListener("resize", handleResize);
+      document.removeEventListener("touchstart", handleTouchStart);
+      document.removeEventListener("touchend", handleTouchEnd);
     };
   }, []);
 
@@ -167,53 +221,72 @@ function Navigation({ onLogout, links }) {
 
       <nav className={`${classes.nav} ${isOpen ? classes.open : ""}`}>
         <div className={classes.navScrollable}>
-          <div>
+          <div className={classes.desktopOnly}>
             <span className={classes.logo}>Cook</span>
             <span className={classes.logoTail}>book</span>
           </div>
 
-          {filteredLinks.map((el) => {
-            const Icon = iconMap[el.name];
-            return (
-              <NavLink
-                key={el.name}
-                to={el.link}
-                onClick={closeSidebar}
-                className={({ isActive }) =>
-                  `${classes.navLink} ${isActive ? classes.active : ""}`
-                }
-              >
-                {Icon && <Icon className={classes.icon} />}
-                {t("nav", navTranslationMap[el.name] || el.name.toLowerCase())}
-              </NavLink>
-            );
-          })}
+          <div className={classes.desktopOnly}>
+            {filteredLinks.map((el) => {
+              const Icon = iconMap[el.name];
+              return (
+                <NavLink
+                  key={el.name}
+                  to={el.link}
+                  onClick={closeSidebar}
+                  className={({ isActive }) =>
+                    `${classes.navLink} ${isActive ? classes.active : ""}`
+                  }
+                >
+                  {Icon && <Icon className={classes.icon} />}
+                  {t(
+                    "nav",
+                    navTranslationMap[el.name] || el.name.toLowerCase(),
+                  )}
+                </NavLink>
+              );
+            })}
+          </div>
 
-          {location.pathname === "/categories" && (
+          {(isMobile || location.pathname === "/categories") && (
             <>
               <div className={classes.separator}></div>
 
               {/* Categories Section */}
-              <button
-                className={classes.sectionHeader}
-                onClick={() => setCategoriesOpen(!categoriesOpen)}
-              >
-                <span>
-                  {t("nav", "categories").toUpperCase()}
-                  {!categorySearch && selectedCount > 0 && (
-                    <span className={classes.sectionCount}>
-                      ({selectedCount})
-                    </span>
-                  )}
-                </span>
-                {categoriesOpen ? (
-                  <FaChevronUp className={classes.chevron} />
-                ) : (
-                  <FaChevronDown className={classes.chevron} />
+              <div className={classes.sectionHeader}>
+                <button
+                  className={classes.sectionHeaderBtn}
+                  onClick={() =>
+                    !isMobile && setCategoriesOpen(!categoriesOpen)
+                  }
+                >
+                  <span>
+                    {t("nav", "categories").toUpperCase()}
+                    {!categorySearch && selectedCount > 0 && (
+                      <span className={classes.sectionCount}>
+                        ({selectedCount})
+                      </span>
+                    )}
+                  </span>
+                  {!isMobile &&
+                    (categoriesOpen ? (
+                      <FaChevronUp className={classes.chevron} />
+                    ) : (
+                      <FaChevronDown className={classes.chevron} />
+                    ))}
+                </button>
+                {!isAllSelected && selectedCount > 0 && (
+                  <button
+                    className={classes.clearCategoriesBtn}
+                    onClick={clearCategorySelection}
+                    title={t("categories", "clearAllFilters")}
+                  >
+                    ✕
+                  </button>
                 )}
-              </button>
+              </div>
 
-              {categoriesOpen && (
+              {(categoriesOpen || isMobile) && (
                 <div className={classes.categoryList}>
                   <div className={classes.categorySearchWrap}>
                     <SearchBox
@@ -282,13 +355,6 @@ function Navigation({ onLogout, links }) {
                     })}
 
                   <div className={classes.categoryActions}>
-                    {/* <button
-                  className={classes.categoryActionBtn}
-                  onClick={() => setShowManagement(true)}
-                  title={t("categories", "add")}
-                >
-                  <PiPlusLight /> {t("categories", "add")}
-                </button> */}
                     <button
                       className={classes.categoryActionBtn}
                       onClick={() => setShowManagement(true)}
@@ -338,7 +404,7 @@ function Navigation({ onLogout, links }) {
 
           {/* Chat Log Section */}
           <button
-            className={classes.sectionHeader}
+            className={classes.sectionHeaderBtn}
             onClick={() => setChatLogOpen(!chatLogOpen)}
           >
             <span>

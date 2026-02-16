@@ -68,37 +68,34 @@ function ConversionTables() {
 
   return (
     <div className={classes.container}>
-      <div className={classes.header}>
-        <h1>{t("conversions", "title")}</h1>
-        <p className={classes.subtitle}>{t("conversions", "subtitle")}</p>
-        {/* <p className={classes.intro}>
-          המרת מידות אפייה לפעמים חשובה לא פחות ממתכון טוב: איך ממירים פרנהייט
-          לצלזיוס? כמה כוסות הן חצי קילו קמח? וכמה זה 100 גרם סוכר? הנה כל
-          התשובות
-        </p> */}
+      <div className={classes.stickyTop}>
+        <div className={classes.header}>
+          <h1>{t("conversions", "title")}</h1>
+          <p className={classes.subtitle}>{t("conversions", "subtitle")}</p>
 
-        <div className={classes.searchContainer}>
-          <SearchBox
-            searchTerm={searchQuery}
-            onSearchChange={setSearchQuery}
-            placeholder={t("conversions", "searchPlaceholder")}
-            size="large"
-            className={classes.searchBoxWrap}
-          />
+          <div className={classes.searchContainer}>
+            <SearchBox
+              searchTerm={searchQuery}
+              onSearchChange={setSearchQuery}
+              placeholder={t("conversions", "searchPlaceholder")}
+              size="large"
+              className={classes.searchBoxWrap}
+            />
+          </div>
         </div>
-      </div>
 
-      <div className={classes.tabs}>
-        {tabs.map((tab) => (
-          <button
-            key={tab.id}
-            className={`${classes.tab} ${activeTab === tab.id ? classes.activeTab : ""}`}
-            onClick={() => setActiveTab(tab.id)}
-          >
-            <span className={classes.tabIcon}>{tab.icon}</span>
-            <span className={classes.tabLabel}>{tab.label}</span>
-          </button>
-        ))}
+        <div className={classes.tabs}>
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              className={`${classes.tab} ${activeTab === tab.id ? classes.activeTab : ""}`}
+              onClick={() => setActiveTab(tab.id)}
+            >
+              <span className={classes.tabIcon}>{tab.icon}</span>
+              <span className={classes.tabLabel}>{tab.label}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className={classes.content}>

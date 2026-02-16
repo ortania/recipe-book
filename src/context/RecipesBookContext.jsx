@@ -396,10 +396,14 @@ export const RecipeBookProvider = ({ children }) => {
     }
   };
 
-  const copyRecipeToUser = async (recipe, targetUserId) => {
+  const copyRecipeToUser = async (recipe, targetUserId, targetLang) => {
     try {
       if (!currentUser) throw new Error("No user logged in");
-      const copiedRecipe = await copyRecipeToUserInDB(recipe, targetUserId);
+      const copiedRecipe = await copyRecipeToUserInDB(
+        recipe,
+        targetUserId,
+        targetLang,
+      );
       console.log("📋 Recipe copied successfully:", copiedRecipe.id);
       return copiedRecipe;
     } catch (error) {
