@@ -85,7 +85,7 @@ function Categories() {
         showGreeting
       />
 
-      {showChat && <ChatWindow recipeContext={filteredRecipes} />}
+      {showChat && <ChatWindow recipeContext={filteredRecipes} showImageButton />}
 
       <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>
         <PiArrowFatLineUp />

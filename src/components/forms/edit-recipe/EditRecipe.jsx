@@ -9,6 +9,7 @@ import {
   FiTrash2,
   FiGlobe,
 } from "react-icons/fi";
+import {GoHeart, GoHeartFill} from "react-icons/go"
 import {
   BsFileText,
   BsListUl,
@@ -402,10 +403,11 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           className={`${classes.favoriteBtn} ${editedPerson.isFavorite ? classes.favoriteBtnActive : ""}`}
           onClick={toggleFavorite}
         >
-          <FiStar
-            size={22}
-            fill={editedPerson.isFavorite ? "#e53935" : "none"}
-          />{" "}
+          {editedPerson.isFavorite ? <GoHeartFill color="red" size={22}/> : <GoHeart color="black" size={22}/>}
+          {/* // <FiStar
+          //   size={22}
+          //   fill={editedPerson.isFavorite ? "#e53935" : "none"}
+          // />{" "} */}
           <span>
             {t(
               "recipes",

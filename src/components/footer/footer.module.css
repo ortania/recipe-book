@@ -26,6 +26,7 @@
   padding: 0.4em 0.6em;
   text-decoration: none;
   color: var(--text-muted);
+  /* color: unset; */
   border-radius: 8px;
   border: none;
   background: none;

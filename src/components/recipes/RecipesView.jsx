@@ -436,7 +436,7 @@ function RecipesView({
         </div>
 
         <div style={{ display: showChat ? "block" : "none" }}>
-          <ChatWindow />
+          <ChatWindow showImageButton />
         </div>
 
         <div style={{ display: showChat ? "none" : "block" }}>
@@ -914,7 +914,7 @@ function RecipesView({
       </div>
 
       {showChat ? (
-        <ChatWindow />
+        <ChatWindow showImageButton />
       ) : (
         <div>
           {recentlyViewed.length > 0 && (

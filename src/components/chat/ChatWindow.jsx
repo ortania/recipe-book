@@ -1,8 +1,9 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import {
   sendChatMessage,
   analyzeImageForNutrition,
+  calculateNutrition,
 } from "../../services/openai";
 import { useLanguage, useRecipeBook } from "../../context";
 import { Greeting } from "../greeting";
@@ -19,58 +20,120 @@ const IDEA_CHIPS = [
   "ideaChip6",
 ];
 
-function ChatWindow({ recipeContext = null }) {
+function ChatWindow({
+  recipeContext: externalRecipeContext = null,
+  showImageButton = false,
+  recipe = null,
+  servings = null,
+  onUpdateRecipe = null,
+  messages: externalMessages,
+  onMessagesChange,
+  appliedFields: externalAppliedFields,
+  onAppliedFieldsChange,
+}) {
   const { t, language } = useLanguage();
   const { currentUser } = useRecipeBook();
-  const [messages, setMessages] = useState(() => {
-    const savedMessages = localStorage.getItem("chatMessages");
-    return savedMessages ? JSON.parse(savedMessages) : [];
+
+  /* ── state: messages (internal with localStorage OR external) ── */
+  const [internalMessages, setInternalMessages] = useState(() => {
+    if (externalMessages !== undefined) return [];
+    const saved = localStorage.getItem("chatMessages");
+    return saved ? JSON.parse(saved) : [];
   });
+
+  const messages =
+    externalMessages !== undefined ? externalMessages : internalMessages;
+  const setMessages = onMessagesChange || setInternalMessages;
+
+  /* ── state: applied fields (for recipe-update feature) ── */
+  const [internalAppliedFields, setInternalAppliedFields] = useState({});
+  const appliedFields =
+    externalAppliedFields !== undefined
+      ? externalAppliedFields
+      : internalAppliedFields;
+  const setAppliedFields = onAppliedFieldsChange || setInternalAppliedFields;
+
+  /* ── common state ── */
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [applyingIdx, setApplyingIdx] = useState(null);
+  const [customUpdateIdx, setCustomUpdateIdx] = useState(null);
+  const [customUpdateText, setCustomUpdateText] = useState("");
   const messagesEndRef = useRef(null);
 
+  const isRecipeMode = !!recipe;
+
+  /* ── build context for OpenAI ── */
+  const recipeContext = useMemo(() => {
+    if (recipe) {
+      return {
+        name: recipe.name,
+        ingredients: Array.isArray(recipe.ingredients)
+          ? recipe.ingredients
+          : recipe.ingredients
+            ? recipe.ingredients.split("\n").filter(Boolean)
+            : [],
+        instructions: Array.isArray(recipe.instructions)
+          ? recipe.instructions
+          : recipe.instructions
+            ? recipe.instructions.split("\n").filter(Boolean)
+            : [],
+        notes: recipe.notes || "",
+        servings: servings,
+        cookTime: recipe.cookTime || "",
+        nutrition: recipe.nutrition || null,
+      };
+    }
+    return externalRecipeContext;
+  }, [recipe, servings, externalRecipeContext]);
+
+  /* ── scroll to bottom ── */
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, customUpdateIdx]);
 
+  /* ── persist internal messages to localStorage ── */
   useEffect(() => {
-    const messagesForStorage = messages.map(({ image, ...rest }) => rest);
-    localStorage.setItem("chatMessages", JSON.stringify(messagesForStorage));
-  }, [messages]);
+    if (externalMessages === undefined) {
+      const forStorage = messages.map(({ image, ...rest }) => rest);
+      localStorage.setItem("chatMessages", JSON.stringify(forStorage));
+    }
+  }, [messages, externalMessages]);
 
   const userInitial = currentUser?.displayName
     ? currentUser.displayName.charAt(0).toUpperCase()
     : "C";
 
+  /* ── clear chat ── */
   const clearChat = () => {
     setMessages([]);
+    setAppliedFields({});
     setError("");
-    localStorage.removeItem("chatMessages");
+    setCustomUpdateIdx(null);
+    setCustomUpdateText("");
+    if (externalMessages === undefined) {
+      localStorage.removeItem("chatMessages");
+    }
   };
 
+  /* ── image handling (only for general chat) ── */
   const handleImageFile = (file) => {
     if (!file) return;
-
     if (!file.type.startsWith("image/")) {
       setError("Please select an image file.");
       return;
     }
-
     if (file.size > 5 * 1024 * 1024) {
       setError("Image must be smaller than 5MB.");
       return;
     }
-
     const reader = new FileReader();
-    reader.onload = () => {
-      handleImageAnalysis(reader.result);
-    };
+    reader.onload = () => handleImageAnalysis(reader.result);
     reader.readAsDataURL(file);
   };
 
@@ -83,7 +146,6 @@ function ChatWindow({ recipeContext = null }) {
     setMessages((prev) => [...prev, userImageMsg]);
     setIsLoading(true);
     setError("");
-
     try {
       const response = await analyzeImageForNutrition(imageBase64);
       setMessages((prev) => [
@@ -98,16 +160,15 @@ function ChatWindow({ recipeContext = null }) {
     }
   };
 
+  /* ── send message ── */
   const sendMessage = async (text) => {
     if (isLoading || !text.trim()) return;
-
     const userMessage = { role: "user", content: text };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
     setInput("");
     setIsLoading(true);
     setError("");
-
     try {
       const response = await sendChatMessage(
         updatedMessages,
@@ -126,16 +187,152 @@ function ChatWindow({ recipeContext = null }) {
     }
   };
 
-  const handleChatSubmit = (text) => {
-    sendMessage(text);
-    setInput("");
+  /* ── apply AI suggestion to recipe ── */
+  const handleApplyUpdate = async (aiResponse, msgIndex, userInstruction) => {
+    if (!onUpdateRecipe) return;
+    setApplyingIdx(msgIndex);
+    setError("");
+    try {
+      const { callOpenAI } = await import("../../services/openai");
+
+      const systemPrompt = `You are a recipe update assistant. Given the original recipe and an AI suggestion, apply the suggested changes and return the updated recipe.
+
+CRITICAL RULES:
+1. ALWAYS return the COMPLETE "ingredients" array — ALL original ingredients with the suggested changes applied. Never omit unchanged ingredients.
+2. ALWAYS return the COMPLETE "instructions" array — ALL original steps with the suggested changes applied. Never omit unchanged steps.
+3. If cooking time changed, include "cookTime".
+4. If nutritional values changed, include "nutrition" with all fields: calories, protein, carbs, fat, fiber, sugar.
+5. Keep the original language of the recipe.
+6. Return ONLY valid JSON, no extra text.
+
+JSON format:
+{
+  "ingredients": ["complete ingredient 1", "complete ingredient 2", ...],
+  "instructions": ["complete step 1", "complete step 2", ...],
+  "cookTime": "time if changed",
+  "nutrition": {"calories": "...", "protein": "...", "carbs": "...", "fat": "...", "fiber": "...", "sugar": "..."} 
+}
+
+Always include "ingredients" and "instructions" with the FULL lists. Only include "cookTime" and "nutrition" if they changed.`;
+
+      const instruction = userInstruction
+        ? `\n\nUser's specific instruction: ${userInstruction}`
+        : "";
+
+      const userPrompt = `Original recipe:
+Name: ${recipeContext.name}
+Ingredients: ${JSON.stringify(recipeContext.ingredients)}
+Instructions: ${JSON.stringify(recipeContext.instructions)}
+Cook time: ${recipeContext.cookTime || "not specified"}
+Nutrition: ${JSON.stringify(recipeContext.nutrition || "not specified")}
+
+AI suggestion to apply:
+${aiResponse}${instruction}
+
+Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL instructions (not just the changed ones).`;
+
+      const result = await callOpenAI({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: systemPrompt },
+          { role: "user", content: userPrompt },
+        ],
+        temperature: 0.1,
+        max_tokens: 2000,
+      });
+
+      const cleaned = result
+        .replace(/```json\n?/g, "")
+        .replace(/```\n?/g, "")
+        .trim();
+      const parsed = JSON.parse(cleaned);
+
+      const changes = {};
+      const updatedFieldNames = [];
+
+      const arraysEqual = (a, b) =>
+        a.length === b.length && a.every((v, i) => v === b[i]);
+
+      if (parsed.ingredients && Array.isArray(parsed.ingredients)) {
+        changes.ingredients = parsed.ingredients;
+        if (!arraysEqual(parsed.ingredients, recipeContext.ingredients)) {
+          updatedFieldNames.push(t("recipeChat", "fieldIngredients"));
+        }
+      }
+      if (parsed.instructions && Array.isArray(parsed.instructions)) {
+        changes.instructions = parsed.instructions;
+        if (!arraysEqual(parsed.instructions, recipeContext.instructions)) {
+          updatedFieldNames.push(t("recipeChat", "fieldInstructions"));
+        }
+      }
+      if (parsed.cookTime && typeof parsed.cookTime === "string") {
+        changes.cookTime = parsed.cookTime;
+        updatedFieldNames.push(t("recipeChat", "fieldCookTime"));
+      }
+      if (parsed.nutrition && typeof parsed.nutrition === "object") {
+        changes.nutrition = parsed.nutrition;
+        updatedFieldNames.push(t("recipeChat", "fieldNutrition"));
+      }
+
+      if (
+        changes.ingredients &&
+        !arraysEqual(changes.ingredients, recipeContext.ingredients) &&
+        !changes.nutrition
+      ) {
+        try {
+          const nutritionResult = await calculateNutrition(
+            changes.ingredients,
+            recipeContext.servings,
+          );
+          if (nutritionResult && !nutritionResult.error) {
+            changes.nutrition = nutritionResult;
+            updatedFieldNames.push(t("recipeChat", "fieldNutrition"));
+          }
+        } catch (err) {
+          console.error("Auto nutrition recalc failed:", err);
+        }
+      }
+
+      if (Object.keys(changes).length > 0) {
+        onUpdateRecipe(changes);
+
+        const fieldsList =
+          updatedFieldNames.length > 0
+            ? `${t("recipeChat", "updatedFields")}: ${updatedFieldNames.join(", ")}`
+            : t("recipeChat", "updatedFields");
+
+        const ingLabel = t("recipeChat", "fieldIngredients");
+        const insLabel = t("recipeChat", "fieldInstructions");
+        const ingList = (changes.ingredients || recipeContext.ingredients)
+          .map((item) => `• ${item}`)
+          .join("\n");
+        const insList = (changes.instructions || recipeContext.instructions)
+          .map((item, i) => `${i + 1}. ${item}`)
+          .join("\n");
+
+        const details = `${fieldsList}\n\n${ingLabel}:\n${ingList}\n\n${insLabel}:\n${insList}\n\n${t("recipeChat", "autoUpdateNote")}`;
+
+        setAppliedFields((prev) => ({
+          ...prev,
+          [msgIndex]: details,
+        }));
+        setCustomUpdateIdx(null);
+        setCustomUpdateText("");
+      }
+    } catch (err) {
+      console.error("Failed to apply changes:", err);
+      setError(t("recipeChat", "updateFailed"));
+    } finally {
+      setApplyingIdx(null);
+    }
   };
 
-  const handleChipClick = (chipKey) => {
-    const text = t("chat", chipKey);
+  /* ── suggestion chips ── */
+  const handleChipClick = (text) => {
     if (text) sendMessage(text);
   };
 
+  /* ── render ── */
   return (
     <div className={classes.chatContainer}>
       <div className={classes.chatHeader}>
@@ -164,19 +361,42 @@ function ChatWindow({ recipeContext = null }) {
       <div className={classes.messagesArea}>
         {messages.length === 0 && (
           <div className={classes.ideasSection}>
-            <h3 className={classes.ideasTitle}>{t("chat", "ideaTitle")}</h3>
-            <p className={classes.ideasSubtitle}>{t("chat", "ideaSubtitle")}</p>
+            <h3 className={classes.ideasTitle}>
+              {isRecipeMode
+                ? t("recipeChat", "emptyMessage")
+                : t("chat", "ideaTitle")}
+            </h3>
+            <p className={classes.ideasSubtitle}>
+              {isRecipeMode
+                ? t("recipeChat", "updateHint")
+                : t("chat", "ideaSubtitle")}
+            </p>
             <div className={classes.ideaChips}>
-              {IDEA_CHIPS.map((chipKey) => (
-                <button
-                  key={chipKey}
-                  className={classes.ideaChip}
-                  onClick={() => handleChipClick(chipKey)}
-                  disabled={isLoading}
-                >
-                  {t("chat", chipKey)}
-                </button>
-              ))}
+              {isRecipeMode
+                ? [
+                    t("recipeChat", "suggestSubstitute"),
+                    t("recipeChat", "suggestHealthier"),
+                    t("recipeChat", "suggestDouble"),
+                  ].map((text, i) => (
+                    <button
+                      key={i}
+                      className={classes.ideaChip}
+                      onClick={() => handleChipClick(text)}
+                      disabled={isLoading}
+                    >
+                      {text}
+                    </button>
+                  ))
+                : IDEA_CHIPS.map((chipKey) => (
+                    <button
+                      key={chipKey}
+                      className={classes.ideaChip}
+                      onClick={() => handleChipClick(t("chat", chipKey))}
+                      disabled={isLoading}
+                    >
+                      {t("chat", chipKey)}
+                    </button>
+                  ))}
             </div>
           </div>
         )}
@@ -199,12 +419,101 @@ function ChatWindow({ recipeContext = null }) {
                 />
               )}
               {message.content}
+
+              {message.role === "assistant" && onUpdateRecipe && (
+                <div className={classes.applySection}>
+                  {appliedFields[index] ? (
+                    <div className={classes.updateSummary}>
+                      {appliedFields[index]}
+                    </div>
+                  ) : (
+                    <div className={classes.applyActions}>
+                      <button
+                        className={classes.applyBtn}
+                        onClick={() =>
+                          handleApplyUpdate(message.content, index)
+                        }
+                        disabled={applyingIdx !== null}
+                      >
+                        {applyingIdx === index
+                          ? t("recipeChat", "updating")
+                          : t("recipeChat", "applyToRecipe")}
+                      </button>
+                      {customUpdateIdx === index ? (
+                        <div className={classes.customUpdateWrap}>
+                          <input
+                            className={classes.customUpdateInput}
+                            value={customUpdateText}
+                            onChange={(e) =>
+                              setCustomUpdateText(e.target.value)
+                            }
+                            placeholder={t(
+                              "recipeChat",
+                              "customUpdatePlaceholder",
+                            )}
+                            onKeyDown={(e) => {
+                              if (
+                                e.key === "Enter" &&
+                                customUpdateText.trim()
+                              ) {
+                                handleApplyUpdate(
+                                  message.content,
+                                  index,
+                                  customUpdateText.trim(),
+                                );
+                              }
+                            }}
+                            disabled={applyingIdx !== null}
+                          />
+                          <button
+                            className={classes.customUpdateBtn}
+                            onClick={() =>
+                              handleApplyUpdate(
+                                message.content,
+                                index,
+                                customUpdateText.trim(),
+                              )
+                            }
+                            disabled={
+                              applyingIdx !== null ||
+                              !customUpdateText.trim()
+                            }
+                          >
+                            {t("recipeChat", "applyCustom")}
+                          </button>
+                          <button
+                            className={classes.customCancelBtn}
+                            onClick={() => {
+                              setCustomUpdateIdx(null);
+                              setCustomUpdateText("");
+                            }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                      ) : (
+                        <button
+                          className={classes.customChooseBtn}
+                          onClick={() => {
+                            setCustomUpdateIdx(index);
+                            setCustomUpdateText("");
+                          }}
+                          disabled={applyingIdx !== null}
+                        >
+                          {t("recipeChat", "customUpdate")}
+                        </button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
             {message.role === "user" && (
               <div className={classes.avatar}>{userInitial}</div>
             )}
           </div>
         ))}
+
         {isLoading && (
           <div className={`${classes.message} ${classes.assistantMessage}`}>
             <div className={classes.bubble}>
@@ -223,10 +532,12 @@ function ChatWindow({ recipeContext = null }) {
       <ChatInput
         value={input}
         onChange={setInput}
-        onSubmit={handleChatSubmit}
-        placeholder={t("chat", "placeholder")}
+        onSubmit={(text) => sendMessage(text)}
+        placeholder={
+          isRecipeMode ? t("recipeChat", "placeholder") : t("chat", "placeholder")
+        }
         disabled={isLoading}
-        showImageButton={true}
+        showImageButton={showImageButton}
         onImageSelect={handleImageFile}
       />
     </div>

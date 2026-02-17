@@ -141,7 +141,7 @@
   background: none;
   border: none;
   color: var(--text-muted);
-  font-size: 1rem;
+  font-size: 1.5rem;
   cursor: pointer;
   padding: 0.3em 0.6em;
   border-radius: 4px;
@@ -157,7 +157,7 @@
 .sectionCount {
   font-weight: 400;
   color: var(--text-muted);
-  font-size: var(--very-small-font);
+  font-size: var(--small-font);
 }
 
 .sectionIcon {

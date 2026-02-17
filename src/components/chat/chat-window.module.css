@@ -295,6 +295,130 @@
   cursor: not-allowed;
 }
 
+/* Apply-to-recipe section (inside assistant bubble) */
+.applySection {
+  margin-top: 0.5rem;
+}
+
+.applyActions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: center;
+}
+
+.applyBtn {
+  padding: 0.3em 0.8em;
+  border: 1px solid #10b981;
+  border-radius: 6px;
+  background: #f0fdf4;
+  color: #10b981;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.applyBtn:hover:not(:disabled) {
+  background: #10b981;
+  color: white;
+}
+
+.applyBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.customChooseBtn {
+  padding: 0.3em 0.8em;
+  border: 1px solid #9810fa;
+  border-radius: 6px;
+  background: #faf5ff;
+  color: #9810fa;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.customChooseBtn:hover:not(:disabled) {
+  background: #9810fa;
+  color: white;
+}
+
+.customChooseBtn:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.customUpdateWrap {
+  display: flex;
+  gap: 0.3rem;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+}
+
+.customUpdateInput {
+  flex: 1;
+  min-width: 80px;
+  padding: 0.5em;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: var(--basic-font);
+  outline: none;
+  color: var(--text-primary);
+}
+
+.customUpdateInput:focus {
+  border-color: #9810fa;
+}
+
+.customUpdateBtn {
+  padding: 0.6em;
+  border: 1px solid #9810fa;
+  border-radius: 6px;
+  background: #9810fa;
+  color: white;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.customUpdateBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.customCancelBtn {
+  padding: 0.2em 0.4em;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--basic-font);
+  cursor: pointer;
+}
+
+.customCancelBtn:hover {
+  border-color: var(--border-color);
+  color: var(--text-secondary);
+}
+
+.updateSummary {
+  font-size: var(--basic-font);
+  color: #10b981;
+  background: #f0fdf4;
+  border: 1px solid #bbf7d0;
+  border-radius: 6px;
+  padding: 0.4em 0.6em;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .chatContainer {

@@ -5,6 +5,7 @@ import { formatDifficulty, formatTime } from "./utils";
 import { useLanguage } from "../../context";
 import { FaRegEdit } from "react-icons/fa";
 import { BsTrash3, BsThreeDotsVertical } from "react-icons/bs";
+import { GoHeart, GoHeartFill } from "react-icons/go";
 import {
   MdExpandMore,
   MdExpandLess,
@@ -31,7 +32,7 @@ import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
 import { CloseButton } from "../controls/close-button";
 import { AddButton } from "../controls/add-button";
 import { ExportImageButton } from "./export-image-button";
-import { RecipeChat } from "./recipe-chat";
+import ChatWindow from "../chat/ChatWindow";
 import { ChatHelpButton } from "../controls/chat-help-button";
 
 function RecipeDetailsFull({
@@ -353,9 +354,11 @@ function RecipeDetailsFull({
               title={t("recipes", "favorite")}
             >
               {recipe.isFavorite ? (
-                <IoStar size={22} />
+                // <IoStar size={22} />
+                <GoHeartFill color="red" size={22} />
               ) : (
-                <IoStarOutline size={22} />
+                // <IoStarOutline size={22} />
+                <GoHeart size={22} />
               )}
             </button>
           )}
@@ -679,7 +682,7 @@ function RecipeDetailsFull({
           )}
 
           {activeTab === "chat" && (
-            <RecipeChat
+            <ChatWindow
               recipe={recipe}
               servings={servings}
               messages={chatMessages}

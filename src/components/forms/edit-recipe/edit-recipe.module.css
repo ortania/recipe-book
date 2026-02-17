@@ -306,6 +306,7 @@
 
 .favoriteBtn span {
   transition: color 0.2s;
+  padding: 0.5em;
 }
 
 .favoriteBtn span:hover {

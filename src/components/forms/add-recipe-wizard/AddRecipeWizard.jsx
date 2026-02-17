@@ -24,6 +24,7 @@ import {
   FiChevronDown,
   FiGlobe,
 } from "react-icons/fi";
+import { GoHeart } from "react-icons/go";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { BsClipboardData } from "react-icons/bs";
 import { FaMicrophone, FaStop } from "react-icons/fa6";
@@ -685,7 +686,12 @@ function AddRecipeWizard({
     let nutrition = recipe.nutrition || {};
     if (filledIngredients.length > 0) {
       try {
-        console.log("🍎 NUTRITION - Starting calculation for new recipe, ingredients:", filledIngredients.length, "servings:", recipe.servings);
+        console.log(
+          "🍎 NUTRITION - Starting calculation for new recipe, ingredients:",
+          filledIngredients.length,
+          "servings:",
+          recipe.servings,
+        );
         const result = await calculateNutrition(
           filledIngredients,
           recipe.servings,
@@ -703,7 +709,10 @@ function AddRecipeWizard({
           };
           console.log("🍎 NUTRITION - Updated nutrition:", nutrition);
         } else {
-          console.warn("🍎 NUTRITION - Calculation returned error:", result?.error);
+          console.warn(
+            "🍎 NUTRITION - Calculation returned error:",
+            result?.error,
+          );
         }
       } catch (err) {
         console.error("🍎 NUTRITION - Auto nutrition calculation failed:", err);
@@ -726,7 +735,10 @@ function AddRecipeWizard({
       shareToGlobal: recipe.shareToGlobal,
       nutrition,
     };
-    console.log("🍎 NUTRITION - Saving new recipe with nutrition:", newRecipe.nutrition);
+    console.log(
+      "🍎 NUTRITION - Saving new recipe with nutrition:",
+      newRecipe.nutrition,
+    );
     try {
       await onAddPerson(newRecipe);
     } catch (err) {
@@ -1233,6 +1245,7 @@ function AddRecipeWizard({
           checked={recipe.isFavorite}
           onChange={() => updateRecipe("isFavorite", !recipe.isFavorite)}
         />
+        <GoHeart size={16} />
         <span className={classes.favoriteLabel}>
           {t(
             "recipes",
