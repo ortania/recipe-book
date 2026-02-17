@@ -25,8 +25,13 @@ function CategoriesList({
   onDeleteGroup,
   getGroupContacts,
 }) {
-  const { reorderCategories, addCategory, editCategory, deleteCategory } =
-    useRecipeBook();
+  const {
+    reorderCategories,
+    sortCategoriesAlphabetically,
+    addCategory,
+    editCategory,
+    deleteCategory,
+  } = useRecipeBook();
   const { t } = useLanguage();
   const { getTranslated, getTranslatedDesc } = useTranslatedList(
     groups,
@@ -139,6 +144,7 @@ function CategoriesList({
           onEditCategory={editCategory}
           onDeleteCategory={deleteCategory}
           onReorderCategories={reorderCategories}
+          onSortAlphabetically={sortCategoriesAlphabetically}
           getGroupContacts={getGroupContacts}
         />
       )}

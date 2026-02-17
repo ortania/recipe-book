@@ -22,6 +22,39 @@
   color: var(--text-primary);
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.sortBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  /* border: 1px solid var(--border-color); */
+  border: none;
+  border-radius: 8px;
+  padding: 0.35em;
+  font-size: 2rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.sortBtn:hover {
+  color: var(--text-secondary);
+  /* background: var(--bg-hover); */
+  transform: scale(1.1);
+}
+
+.sortBtnActive {
+  color: #4f9dde;
+  border-color: #4f9dde;
+  background: rgba(79, 157, 222, 0.08);
+}
+
 .listWrap {
   padding: 0 0.5rem;
 }
@@ -30,10 +63,35 @@
 .catRow {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   padding: 0.65rem 1rem;
   border-radius: 10px;
   transition: background 0.15s ease;
+  gap: 1rem;
+}
+
+.catRow.dragging {
+  opacity: 0.3;
+}
+
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  cursor: grab;
+  padding: 0.2em;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+  touch-action: none;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.dragHandle:hover {
+  color: var(--text-secondary);
 }
 
 .catRow:hover {
@@ -44,6 +102,8 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .catIconWrap {

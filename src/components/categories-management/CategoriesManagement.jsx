@@ -1,12 +1,15 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { BsTrash3 } from "react-icons/bs";
 import { PiPlusLight } from "react-icons/pi";
+import { FiMenu } from "react-icons/fi";
+import { LuArrowUpDown } from "react-icons/lu";
 import { Modal } from "../modal";
 import { CloseButton } from "../controls/close-button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
+import { useTouchDragDrop } from "../../hooks/useTouchDragDrop";
 import {
   CATEGORY_ICONS,
   DEFAULT_ICON_ID,
@@ -48,6 +51,7 @@ function CategoriesManagement({
   onEditCategory,
   onDeleteCategory,
   onReorderCategories,
+  onSortAlphabetically,
   getGroupContacts,
 }) {
   const { t } = useLanguage();
@@ -56,12 +60,47 @@ function CategoriesManagement({
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [dragIndex, setDragIndex] = useState(null);
+  const listRef = useRef(null);
 
   // Inline form state
   const [formName, setFormName] = useState("");
   const [formColor, setFormColor] = useState(COLORS[0]);
   const [formIcon, setFormIcon] = useState(DEFAULT_ICON_ID);
   const [showIconPicker, setShowIconPicker] = useState(false);
+
+  // Drag and drop
+  const handleReorder = useCallback(
+    (fromIndex, toIndex) => {
+      if (onReorderCategories) {
+        onReorderCategories(fromIndex, toIndex);
+      }
+      setDragIndex(null);
+    },
+    [onReorderCategories],
+  );
+
+  const { handleTouchStart, handleTouchMove, handleTouchEnd } =
+    useTouchDragDrop(handleReorder);
+
+  const handleDragStart = (index) => {
+    setDragIndex(index);
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (toIndex) => {
+    if (dragIndex !== null && dragIndex !== toIndex) {
+      handleReorder(dragIndex, toIndex);
+    }
+    setDragIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDragIndex(null);
+  };
 
   const editableCategories = categories.filter(
     (c) => c.id !== "all" && c.id !== "general",
@@ -240,16 +279,52 @@ function CategoriesManagement({
           <h2 className={classes.title}>
             {t("categories", "categoryManagement")}
           </h2>
-          <CloseButton onClick={onClose} />
+          <div className={classes.headerActions}>
+            <button
+              className={classes.sortBtn}
+              onClick={() =>
+                onSortAlphabetically && onSortAlphabetically(getTranslated)
+              }
+              title={t("categories", "sortAlphabetically") || "מיון לפי אב"}
+            >
+              <LuArrowUpDown />
+            </button>
+            <CloseButton onClick={onClose} />
+          </div>
         </div>
 
-        <div className={classes.listWrap}>
-          {editableCategories.map((category) => (
-            <div key={category.id} className={classes.catRow}>
+        <div
+          className={classes.listWrap}
+          ref={listRef}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          {editableCategories.map((category, index) => (
+            <div
+              key={category.id}
+              data-drag-item
+              className={`${classes.catRow} ${dragIndex === index ? classes.dragging : ""}`}
+              onDragOver={handleDragOver}
+              onDrop={() => handleDrop(index)}
+              onDragEnd={handleDragEnd}
+            >
               {editingId === category.id ? (
                 renderInlineForm(true)
               ) : (
                 <>
+                  <span
+                    className={classes.dragHandle}
+                    draggable
+                    onDragStart={(e) => {
+                      e.dataTransfer.effectAllowed = "move";
+                      handleDragStart(index);
+                    }}
+                    onTouchStart={(e) =>
+                      handleTouchStart(e, index, "categories", listRef)
+                    }
+                  >
+                    <FiMenu size={16} />
+                  </span>
                   <div className={classes.catInfo}>
                     {renderIconButton(category.icon, category.color)}
                     <span className={classes.catName}>

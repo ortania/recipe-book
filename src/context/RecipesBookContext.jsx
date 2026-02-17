@@ -349,6 +349,29 @@ export const RecipeBookProvider = ({ children }) => {
     }
   };
 
+  const sortCategoriesAlphabetically = async (getTranslatedName) => {
+    try {
+      // Separate fixed categories (all, general) from user categories
+      const fixed = categories.filter(
+        (c) => c.id === "all" || c.id === "general",
+      );
+      const userCats = categories.filter(
+        (c) => c.id !== "all" && c.id !== "general",
+      );
+      const sorted = [...userCats].sort((a, b) => {
+        const nameA = (getTranslatedName(a) || "").toLowerCase();
+        const nameB = (getTranslatedName(b) || "").toLowerCase();
+        return nameA.localeCompare(nameB, "he");
+      });
+      const newCategories = [...fixed, ...sorted];
+      setCategories(newCategories);
+      await reorderCategoriesInFirestore(sorted);
+    } catch (error) {
+      console.error("Error sorting categories:", error);
+      setCategories(categories);
+    }
+  };
+
   const login = async () => {
     // onAuthStateChange handles loading user data and setting isLoggedIn.
     // This function just ensures we wait for that to complete.
@@ -456,6 +479,7 @@ export const RecipeBookProvider = ({ children }) => {
     clearCategoryRecipes,
     reorderRecipes,
     reorderCategories,
+    sortCategoriesAlphabetically,
     loadMoreRecipes,
     copyRecipeToUser,
     login,

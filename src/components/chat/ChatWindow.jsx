@@ -335,20 +335,22 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
   /* ── render ── */
   return (
     <div className={classes.chatContainer}>
-      <div className={classes.chatHeader}>
-        <div className={classes.greeting}>
-          <Greeting />
+      {!isRecipeMode && (
+        <div className={classes.chatHeader}>
+          <div className={classes.greeting}>
+            <Greeting />
+          </div>
+          <ChatHelpButton
+            title={t("chat", "helpTitle")}
+            items={[
+              t("chat", "helpFeature1"),
+              t("chat", "helpFeature2"),
+              t("chat", "helpFeature3"),
+              t("chat", "helpFeature4"),
+            ]}
+          />
         </div>
-        <ChatHelpButton
-          title={t("chat", "helpTitle")}
-          items={[
-            t("chat", "helpFeature1"),
-            t("chat", "helpFeature2"),
-            t("chat", "helpFeature3"),
-            t("chat", "helpFeature4"),
-          ]}
-        />
-      </div>
+      )}
 
       {messages.length > 0 && (
         <div className={classes.chatToolbar}>
@@ -475,8 +477,7 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
                               )
                             }
                             disabled={
-                              applyingIdx !== null ||
-                              !customUpdateText.trim()
+                              applyingIdx !== null || !customUpdateText.trim()
                             }
                           >
                             {t("recipeChat", "applyCustom")}
@@ -534,7 +535,9 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
         onChange={setInput}
         onSubmit={(text) => sendMessage(text)}
         placeholder={
-          isRecipeMode ? t("recipeChat", "placeholder") : t("chat", "placeholder")
+          isRecipeMode
+            ? t("recipeChat", "placeholder")
+            : t("chat", "placeholder")
         }
         disabled={isLoading}
         showImageButton={showImageButton}

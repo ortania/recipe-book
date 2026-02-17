@@ -63,6 +63,7 @@ function Navigation({ onLogout, links }) {
     editCategory,
     deleteCategory,
     reorderCategories,
+    sortCategoriesAlphabetically,
   } = useRecipeBook();
   const { t } = useLanguage();
   const { getTranslated } = useTranslatedList(categories, "name");
@@ -536,6 +537,7 @@ function Navigation({ onLogout, links }) {
           onEditCategory={editCategory}
           onDeleteCategory={deleteCategory}
           onReorderCategories={reorderCategories}
+          onSortAlphabetically={sortCategoriesAlphabetically}
           getGroupContacts={getGroupContacts}
         />
       )}

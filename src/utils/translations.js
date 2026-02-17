@@ -909,6 +909,13 @@ const translations = {
       de: "Neue Kategorie hinzufügen",
       mixed: "Add New Category",
     },
+    sortAlphabetically: {
+      he: "מיון לפי א-ב",
+      en: "Sort Alphabetically",
+      ru: "Сортировать по алфавиту",
+      de: "Alphabetisch sortieren",
+      mixed: "Sort Alphabetically",
+    },
     recipes: {
       he: "מתכונים",
       en: "recipes",
