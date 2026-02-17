@@ -64,7 +64,7 @@
   position: absolute;
   top: 0.75rem;
   right: 0.75rem;
-  background: rgba(255, 255, 255, 0.9);
+  /* background: rgba(255, 255, 255, 0.9); */
   border: none;
   border-radius: 50%;
   width: 23px;
@@ -84,7 +84,7 @@
 }
 
 .favoriteButton.active {
-  background: #ff6b6b;
+  /* background: #ff6b6b; */
   color: white;
 }
 
@@ -123,12 +123,12 @@
 }
 
 .actionButton.danger {
-  background: rgba(244, 67, 54, 0.9);
+  /* background: rgba(244, 67, 54, 0.9); */
   color: white;
 }
 
 .actionButton.danger:hover {
-  background: #f44336;
+  /* background: #f44336; */
   transform: scale(1.05);
 }
 

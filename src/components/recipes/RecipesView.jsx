@@ -8,6 +8,7 @@ import { IoMdStarOutline } from "react-icons/io";
 import { IoChevronDown } from "react-icons/io5";
 import { BiSortAlt2 } from "react-icons/bi";
 import { IoBookOutline } from "react-icons/io5";
+import { GoHeart, GoHeartFill } from "react-icons/go";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 
@@ -30,7 +31,6 @@ import { CloseButton } from "../controls/close-button";
 function RecipesView({
   persons,
   onAddPerson,
-  onShowFavorites,
   groups = [],
   onEditPerson,
   onDeletePerson,
@@ -429,7 +429,7 @@ function RecipesView({
               title={t("recipes", "favorite")}
               className={showFavoritesOnly ? classes.favoritesActive : ""}
             >
-              {showFavoritesOnly ? <PiStarFill /> : <PiStar />}
+              {showFavoritesOnly ? <GoHeartFill color="red"/> : <GoHeart />}
             </AddButton>
             <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
           </div>
@@ -479,7 +479,7 @@ function RecipesView({
               title={t("recipes", "favorite")}
               className={showFavoritesOnly ? classes.favoritesActive : ""}
             >
-              {showFavoritesOnly ? <PiStarFill /> : <PiStar />}
+              {showFavoritesOnly ? <GoHeartFill color="red"/> : <GoHeart />}
             </AddButton>
             <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
           </div>

@@ -1,7 +1,8 @@
 import classes from "./recipe-card-new.module.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHeart, FaRegHeart, FaEdit, FaTrash } from "react-icons/fa";
+import { FaHeart, FaRegHeart, FaEdit, FaTrash, FaRegEdit } from "react-icons/fa";
+import { GoHeart, GoHeartFill, GoTrash } from "react-icons/go";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { BsTrash3 } from "react-icons/bs";
 import { Button } from "../controls/button";
@@ -106,7 +107,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
               isFavorite ? "Remove from favorites" : "Add to favorites"
             }
           >
-            {isFavorite ? "★" : "☆"}
+            {isFavorite ? <GoHeartFill color="red"/> : <GoHeart />}
           </button>
 
           <div className={classes.actionButtons}>
@@ -115,7 +116,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
               className={classes.actionButton}
               title="Edit recipe"
             >
-              <FaEdit />
+              <FaRegEdit />
             </button>
             <button
               onClick={(e) => {
@@ -126,7 +127,8 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
               title="Delete recipe"
             >
               {/* <BsTrash3  /> */}
-              <FaTrash />
+              {/* <FaTrash /> */}
+              <GoTrash color="red"/>
             </button>
           </div>
         </div>
