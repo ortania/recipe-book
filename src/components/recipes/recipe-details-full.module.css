@@ -173,6 +173,7 @@
   padding: 0.5rem 0.75rem;
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border-light);
+  gap: 1rem;
 }
 
 .backButton {
