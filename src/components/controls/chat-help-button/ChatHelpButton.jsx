@@ -1,8 +1,13 @@
 import { useState } from "react";
 import classes from "./chat-help-button.module.css";
 
-function ChatHelpButton({ items, title }) {
+function ChatHelpButton({ items, title, onToggle }) {
   const [open, setOpen] = useState(false);
+
+  const handleToggle = (val) => {
+    setOpen(val);
+    if (onToggle) onToggle(val);
+  };
 
   return (
     <div className={classes.wrapper}>
@@ -10,17 +15,14 @@ function ChatHelpButton({ items, title }) {
         className={classes.btn}
         onClick={(e) => {
           e.stopPropagation();
-          setOpen((prev) => !prev);
+          handleToggle(!open);
         }}
       >
         ?
       </button>
       {open && (
         <div className={classes.dropdown}>
-          <button
-            className={classes.close}
-            onClick={() => setOpen(false)}
-          >
+          <button className={classes.close} onClick={() => handleToggle(false)}>
             ✕
           </button>
           <div className={classes.content}>

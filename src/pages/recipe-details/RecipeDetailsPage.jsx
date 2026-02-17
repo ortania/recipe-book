@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
 import RecipeDetailsFull from "../../components/recipes/RecipeDetailsFull";
@@ -22,9 +22,26 @@ function RecipeDetailsPage() {
     deleteRecipe,
     copyRecipeToUser,
     currentUser,
+    setRecipes,
   } = useRecipeBook();
 
-  const recipe = recipes.find((r) => r.id === id);
+  const contextRecipe = recipes.find((r) => r.id === id);
+  const [localRecipe, setLocalRecipe] = useState(null);
+
+  // Use localRecipe override if set, otherwise use context recipe
+  const recipe = localRecipe || contextRecipe;
+
+  // Clear local override when context catches up
+  useEffect(() => {
+    if (
+      localRecipe &&
+      contextRecipe &&
+      JSON.stringify(contextRecipe.nutrition) ===
+        JSON.stringify(localRecipe.nutrition)
+    ) {
+      setLocalRecipe(null);
+    }
+  }, [contextRecipe, localRecipe]);
 
   // Track recently viewed recipes
   React.useEffect(() => {
@@ -135,9 +152,15 @@ function RecipeDetailsPage() {
     await deleteRecipe(recipeId);
   };
 
-  const handleSaveEdit = (updatedPerson) => {
-    editRecipe(updatedPerson);
+  const handleSaveEdit = async (updatedPerson) => {
+    // Set local override immediately so view updates right away
+    setLocalRecipe({ ...updatedPerson });
     setEditingRecipe(null);
+    try {
+      await editRecipe(updatedPerson);
+    } catch (err) {
+      console.error("Failed to save recipe:", err);
+    }
   };
 
   const handleToggleFavorite = (rec) => {
@@ -213,7 +236,9 @@ function RecipeDetailsPage() {
   return (
     <div className={classes.pageContainer}>
       <RecipeDetailsFull
-        recipe={translatedRecipe}
+        recipe={
+          language === "he" || language === "mixed" ? recipe : translatedRecipe
+        }
         originalRecipe={recipe}
         isTranslating={isTranslating}
         onClose={handleClose}

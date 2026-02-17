@@ -9,6 +9,11 @@ import { VscDebugRestart } from "react-icons/vsc";
 import { FaStop } from "react-icons/fa";
 import { TbUsers } from "react-icons/tb";
 import { IoChevronBackOutline } from "react-icons/io5";
+import {
+  MdFormatSize,
+  MdOutlineFormatListBulleted,
+  MdOutlineFormatListNumbered,
+} from "react-icons/md";
 import { CookingVoiceChat } from "../cooking-voice-chat";
 import { CloseButton } from "../controls/close-button";
 import { AddButton } from "../controls/add-button";
@@ -34,6 +39,8 @@ function RecipeDetailsCookingMode({
   const [customTimerInput, setCustomTimerInput] = useState("");
   const [isTimerRunning, setIsTimerRunning] = useState(false);
   const [totalSeconds, setTotalSeconds] = useState(0);
+  const [fontSizeLevel, setFontSizeLevel] = useState(1);
+  const [showHelp, setShowHelp] = useState(false);
   const touchRef = useRef({ startX: 0, startY: 0 });
 
   const handleTabSwipe = (e) => {
@@ -56,6 +63,10 @@ function RecipeDetailsCookingMode({
       setShowCompletion(false);
     }
   };
+  const fontSizes = ["1.6rem", "2.2rem", "3rem", "4rem"];
+  const cycleFontSize = () =>
+    setFontSizeLevel((prev) => (prev + 1) % fontSizes.length);
+
   const [showVolumeNotification, setShowVolumeNotification] = useState(true);
 
   const originalServings = recipe.servings || 4;
@@ -260,39 +271,54 @@ function RecipeDetailsCookingMode({
                 t("cookingMode", "chatFeature3"),
                 t("cookingMode", "chatFeature4"),
               ]}
+              onToggle={setShowHelp}
             />
           )}
-          <CookingVoiceChat
-            recipe={recipe}
-            ingredients={ingredientsArray}
-            instructions={instructionsArray}
-            currentStep={currentStep}
-            servings={servings}
-            activeTab={activeTab}
-            onNextStep={() => handleNextStepRef.current()}
-            onPrevStep={() => handlePrevStepRef.current()}
-            onGotoStep={(step) => {
-              setCurrentStep(step);
-              setShowCompletion(false);
-            }}
-            onStartTimer={(minutes) => startTimer(minutes)}
-            onStopTimer={() => {
-              setIsTimerRunning(false);
-              setTotalSeconds(0);
-              setCustomTimerInput("");
-            }}
-            onSwitchTab={(tab) => {
-              setActiveTab(tab);
-              setCurrentStep(0);
-              setShowCompletion(false);
-            }}
-            isTimerRunning={isTimerRunning}
-          />
+          <button
+            className={classes.fontSizeBtn}
+            onClick={cycleFontSize}
+            title="גודל פונט"
+          >
+            <MdFormatSize />
+          </button>
+          <div className={classes.helpWrapper}>
+            <CookingVoiceChat
+              recipe={recipe}
+              ingredients={ingredientsArray}
+              instructions={instructionsArray}
+              currentStep={currentStep}
+              servings={servings}
+              activeTab={activeTab}
+              onNextStep={() => handleNextStepRef.current()}
+              onPrevStep={() => handlePrevStepRef.current()}
+              onGotoStep={(step) => {
+                setCurrentStep(step);
+                setShowCompletion(false);
+              }}
+              onStartTimer={(minutes) => startTimer(minutes)}
+              onStopTimer={() => {
+                setIsTimerRunning(false);
+                setTotalSeconds(0);
+                setCustomTimerInput("");
+              }}
+              onSwitchTab={(tab) => {
+                setActiveTab(tab);
+                setCurrentStep(0);
+                setShowCompletion(false);
+              }}
+              isTimerRunning={isTimerRunning}
+            />
+            {showHelp && <div className={classes.helpArrow} />}
+          </div>
         </div>
         <h3 className={classes.headerTitle}>{t("recipes", "cookingMode")}</h3>
         <div className={classes.headerRight}>
-          <button onClick={onClose} className={classes.backButton}>
-            <IoChevronBackOutline /> {t("common", "back")}
+          <button
+            onClick={onClose}
+            className={classes.backButton}
+            title={t("common", "back")}
+          >
+            <IoChevronBackOutline />
           </button>
         </div>
       </div>
@@ -330,6 +356,7 @@ function RecipeDetailsCookingMode({
               setCurrentStep(0);
             }}
           >
+            <MdOutlineFormatListBulleted className={classes.tabIcon} />
             {t("recipes", "ingredients")}
             {activeTab === "ingredients" &&
               voiceEnabled &&
@@ -347,6 +374,7 @@ function RecipeDetailsCookingMode({
               setCurrentStep(0);
             }}
           >
+            <MdOutlineFormatListNumbered className={classes.tabIcon} />
             {t("recipes", "instructions")}
           </button>
         </div>
@@ -371,7 +399,10 @@ function RecipeDetailsCookingMode({
                       display: index !== currentStep ? "none" : "flex",
                     }}
                   >
-                    <span className={classes.ingredientText}>
+                    <span
+                      className={classes.ingredientText}
+                      style={{ fontSize: fontSizes[fontSizeLevel] }}
+                    >
                       {scaleIngredient(ingredient)}
                     </span>
                   </li>
@@ -393,7 +424,10 @@ function RecipeDetailsCookingMode({
                       display: index !== currentStep ? "none" : "flex",
                     }}
                   >
-                    <span className={classes.instructionText}>
+                    <span
+                      className={classes.instructionText}
+                      style={{ fontSize: fontSizes[fontSizeLevel] }}
+                    >
                       {instruction}
                     </span>
                   </li>

@@ -7,6 +7,7 @@ import {
   FiMenu,
   FiSave,
   FiTrash2,
+  FiGlobe,
 } from "react-icons/fi";
 import {
   BsFileText,
@@ -44,6 +45,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const [dragIndex, setDragIndex] = useState(null);
   const [dragField, setDragField] = useState(null);
   const [savedMessage, setSavedMessage] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
     setEditedPerson((prev) => {
@@ -85,6 +87,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     isFavorite: person.isFavorite || false,
     notes: person.notes || "",
     rating: person.rating || 0,
+    shareToGlobal: person.shareToGlobal || false,
     nutrition: {
       calories: "",
       protein: "",
@@ -124,6 +127,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       isFavorite: person.isFavorite || false,
       notes: person.notes || "",
       rating: person.rating || 0,
+      shareToGlobal: person.shareToGlobal || false,
       nutrition: {
         calories: "",
         protein: "",
@@ -315,29 +319,40 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   const handleSubmit = async () => {
+    if (saving) return;
+    setSaving(true);
     const filledIngredients = editedPerson.ingredients
       .map((i) => i.trim())
       .filter((i) => i);
-    let nutrition = editedPerson.nutrition;
+    let nutrition = { ...editedPerson.nutrition };
+    let nutritionCalculated = false;
     if (filledIngredients.length > 0) {
       try {
+        setSavedMessage("⏳ מחשב ערכים תזונתיים...");
+        console.log("🍎 NUTRITION - Starting calculation for edit, ingredients:", filledIngredients.length, "servings:", editedPerson.servings);
         const result = await calculateNutrition(
           filledIngredients,
           editedPerson.servings,
         );
+        console.log("🍎 NUTRITION - Calculation result:", result);
         if (result && !result.error) {
-          nutrition = {
-            ...nutrition,
-            calories: result.calories || nutrition.calories,
-            protein: result.protein || nutrition.protein,
-            fat: result.fat || nutrition.fat,
-            carbs: result.carbs || nutrition.carbs,
-            sugars: result.sugars || nutrition.sugars,
-            fiber: result.fiber || nutrition.fiber,
-          };
+          nutrition.calories = result.calories ?? nutrition.calories;
+          nutrition.protein = result.protein ?? nutrition.protein;
+          nutrition.fat = result.fat ?? nutrition.fat;
+          nutrition.carbs = result.carbs ?? nutrition.carbs;
+          nutrition.sugars = result.sugars ?? nutrition.sugars;
+          nutrition.fiber = result.fiber ?? nutrition.fiber;
+          nutritionCalculated = true;
+          console.log("🍎 NUTRITION - Updated nutrition object:", nutrition);
+        } else {
+          console.warn("🍎 NUTRITION - Calculation returned error:", result?.error);
+          setSavedMessage("⚠️ חישוב ערכים תזונתיים נכשל");
+          await new Promise((r) => setTimeout(r, 1500));
         }
       } catch (err) {
-        console.error("Auto nutrition calculation failed:", err);
+        console.error("🍎 NUTRITION - Calculation failed:", err);
+        setSavedMessage("⚠️ חישוב ערכים תזונתיים נכשל");
+        await new Promise((r) => setTimeout(r, 1500));
       }
     }
     const updatedPerson = {
@@ -357,10 +372,17 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       isFavorite: editedPerson.isFavorite,
       notes: editedPerson.notes,
       rating: editedPerson.rating || 0,
+      shareToGlobal: editedPerson.shareToGlobal,
       nutrition,
     };
-    onSave(updatedPerson);
-    setSavedMessage(t("recipes", "saved"));
+    console.log("🍎 NUTRITION - Saving recipe with nutrition:", updatedPerson.nutrition);
+    await onSave(updatedPerson);
+    setSaving(false);
+    setSavedMessage(
+      nutritionCalculated
+        ? "✅ " + t("recipes", "saved")
+        : t("recipes", "saved"),
+    );
     setTimeout(() => setSavedMessage(""), 4000);
   };
 
@@ -529,6 +551,19 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             }))
           }
         />
+      </div>
+
+      <div className={classes.formGroup}>
+        <label className={classes.checkboxLabel}>
+          <input
+            type="checkbox"
+            name="shareToGlobal"
+            checked={editedPerson.shareToGlobal}
+            onChange={handleChange}
+          />
+          <FiGlobe size={16} />
+          <span>{t("recipes", "shareToGlobal")}</span>
+        </label>
       </div>
     </>
   );
@@ -820,8 +855,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 type="button"
                 className={classes.saveBtn}
                 onClick={handleSubmit}
+                disabled={saving}
               >
-                <FiSave size={16} /> {t("recipes", "saveChanges")}
+                <FiSave size={16} />{" "}
+                {saving ? t("common", "loading") : t("recipes", "saveChanges")}
               </button>
             </div>
           </div>

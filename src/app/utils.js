@@ -121,9 +121,10 @@ export const handleEditRecipe = (setRecipes) => async (editedRecipe) => {
     console.log("✏️ EDIT UTILS - Rating in data:", recipeData.rating);
     await updateRecipeInDB(id, recipeData);
     console.log("✏️ EDIT UTILS - Recipe updated in Firebase successfully");
+    console.log("✏️ EDIT UTILS - Nutrition being set:", editedRecipe.nutrition);
     setRecipes((prev) =>
       prev.map((recipe) =>
-        recipe.id === editedRecipe.id ? editedRecipe : recipe,
+        recipe.id === editedRecipe.id ? { ...editedRecipe } : recipe,
       ),
     );
   } catch (error) {

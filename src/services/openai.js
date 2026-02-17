@@ -235,6 +235,11 @@ export const calculateNutrition = async (ingredients, servings) => {
     : ingredients;
   const servingsText = servings ? `The recipe makes ${servings} servings.` : "";
 
+  console.log("🍎 calculateNutrition - calling OpenAI with", {
+    ingredientsCount: Array.isArray(ingredients) ? ingredients.length : "text",
+    servings,
+  });
+
   const result = await callOpenAI({
     model: "gpt-4o-mini",
     messages: [
@@ -242,7 +247,7 @@ export const calculateNutrition = async (ingredients, servings) => {
         role: "system",
         content: `You are a nutrition expert. Given a list of recipe ingredients, estimate the nutritional values PER SERVING.
 ${servingsText}
-You MUST respond with valid JSON in this exact format:
+You MUST respond with ONLY valid JSON in this exact format (no markdown, no explanation):
 {
   "calories": "250",
   "protein": "10",
@@ -254,7 +259,8 @@ You MUST respond with valid JSON in this exact format:
 - All values should be numbers as strings (grams, except calories which is kcal).
 - Provide realistic estimates based on common ingredient quantities.
 - If you cannot estimate, use empty string "".
-- Do NOT include units in the values, just the number.`,
+- Do NOT include units in the values, just the number.
+- Respond with ONLY the JSON object, nothing else.`,
       },
       {
         role: "user",
@@ -265,13 +271,23 @@ You MUST respond with valid JSON in this exact format:
     max_tokens: 300,
   });
 
+  console.log("🍎 calculateNutrition - raw API result:", result);
+
   try {
-    const cleaned = result
-      .replace(/```json\n?/g, "")
-      .replace(/```\n?/g, "")
+    let cleaned = result
+      .replace(/```json\s*/gi, "")
+      .replace(/```\s*/g, "")
       .trim();
-    return JSON.parse(cleaned);
-  } catch {
+    // Extract JSON object if surrounded by extra text
+    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (jsonMatch) {
+      cleaned = jsonMatch[0];
+    }
+    const parsed = JSON.parse(cleaned);
+    console.log("🍎 calculateNutrition - parsed result:", parsed);
+    return parsed;
+  } catch (parseErr) {
+    console.error("🍎 calculateNutrition - JSON parse failed:", parseErr, "raw:", result);
     return { error: result };
   }
 };

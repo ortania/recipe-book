@@ -5,7 +5,14 @@ import { formatDifficulty, formatTime } from "./utils";
 import { useLanguage } from "../../context";
 import { FaRegEdit } from "react-icons/fa";
 import { BsTrash3, BsThreeDotsVertical } from "react-icons/bs";
-import { MdExpandMore, MdExpandLess } from "react-icons/md";
+import {
+  MdExpandMore,
+  MdExpandLess,
+  MdOutlineFormatListBulleted,
+  MdOutlineFormatListNumbered,
+  MdOutlineTipsAndUpdates,
+  MdOutlineChat,
+} from "react-icons/md";
 import { GiMeal } from "react-icons/gi";
 import { FaNutritionix } from "react-icons/fa";
 import {
@@ -192,18 +199,7 @@ function RecipeDetailsFull({
     });
   };
 
-  const scaleNutrition = (value) => {
-    if (!value || servings === originalServings) return value;
-    const ratio = originalServings / servings;
-    const numberRegex = /(\d+\.?\d*)/g;
-    return value.replace(numberRegex, (match) => {
-      const num = parseFloat(match);
-      const scaled = num * ratio;
-      return scaled % 1 === 0
-        ? scaled.toString()
-        : scaled.toFixed(1).replace(/\.0$/, "");
-    });
-  };
+  const scaleNutrition = (value) => value;
 
   const handleDeleteClick = () => {
     setShowDeleteConfirm(true);
@@ -239,13 +235,29 @@ function RecipeDetailsFull({
         />
       )}
 
-      <button
-        onClick={onClose}
-        className={classes.backButton}
-        title={t("common", "close")}
-      >
-        <IoChevronBackOutline /> {t("common", "back")}
-      </button>
+      <div className={classes.stickyHeader}>
+        <div className={classes.cookingBtnWrapper}>
+          <button
+            className={`${classes.headerCookingBtn} ${showCookingHelp ? classes.cookingModeBtnHighlight : ""}`}
+            onClick={onEnterCookingMode}
+            title={t("recipes", "cookingMode")}
+          >
+            <TbChefHat />
+            <span>
+              {language === "he" || language === "mixed" ? "בישול" : "Cook"}
+            </span>
+          </button>
+          {showCookingHelp && <div className={classes.cookingArrow} />}
+        </div>
+        <h2 className={classes.headerTitle}>{recipe.name}</h2>
+        <button
+          onClick={onClose}
+          className={classes.backButton}
+          title={t("common", "back")}
+        >
+          <IoChevronBackOutline />
+        </button>
+      </div>
       <div className={classes.imageContainer}>
         {recipe.image_src && (
           <img
@@ -359,6 +371,7 @@ function RecipeDetailsFull({
           <ChatHelpButton
             title={t("cookingMode", "helpGuideTitle")}
             items={cookingHelpItems}
+            onToggle={setShowCookingHelp}
           />
         </div>
 
@@ -371,33 +384,6 @@ function RecipeDetailsFull({
       </div>
 
       <div className={classes.recipeContent}>
-        <div className={classes.nameRow}>
-          <h2 className={classes.recipeName}>
-            {recipe.name}
-            {isTranslating && (
-              <span
-                style={{
-                  fontSize: "0.8rem",
-                  color: "#999",
-                  marginInlineStart: "0.5rem",
-                }}
-              >
-                ⏳
-              </span>
-            )}
-          </h2>
-          <div className={classes.cookingModeBtnWrapper}>
-            <button
-              className={`${classes.cookingModeBtn} ${showCookingHelp ? classes.cookingModeBtnHighlight : ""}`}
-              onClick={onEnterCookingMode}
-              title={t("recipes", "cookingMode")}
-            >
-              <TbChefHat />
-            </button>
-            {showCookingHelp && <div className={classes.cookingModeArrow} />}
-          </div>
-        </div>
-
         {recipe.rating > 0 && (
           <div className={classes.rating}>
             {[1, 2, 3, 4, 5].map((star) => (
@@ -418,42 +404,38 @@ function RecipeDetailsFull({
           {recipe.difficulty && recipe.difficulty !== "Unknown" && (
             <span className={classes.infoItem}>
               <TbChefHat className={classes.infoIcon} />
-              {formatDifficulty(recipe.difficulty)}
+              {t("difficulty", recipe.difficulty)}
             </span>
           )}
           {recipe.difficulty &&
             recipe.difficulty !== "Unknown" &&
-            (recipe.prepTime || recipe.cookTime) && (
-              <span className={classes.infoDot}>•</span>
-            )}
-          {(recipe.prepTime || recipe.cookTime) && (
+            recipe.prepTime && <span className={classes.infoDot}>•</span>}
+          {recipe.prepTime && (
             <span className={classes.infoItem}>
               <IoTimeOutline className={classes.infoIcon} />
-              {formatTime(
-                recipe.prepTime || recipe.cookTime,
-                t("recipes", "minutes"),
-              )}
+              {language === "he" || language === "mixed" ? "הכנה" : "Prep"}{" "}
+              {formatTime(recipe.prepTime, t("recipes", "minutes"))}
+            </span>
+          )}
+          {recipe.cookTime && recipe.prepTime && (
+            <span className={classes.infoDot}>•</span>
+          )}
+          {recipe.cookTime &&
+            !recipe.prepTime &&
+            recipe.difficulty &&
+            recipe.difficulty !== "Unknown" && (
+              <span className={classes.infoDot}>•</span>
+            )}
+          {recipe.cookTime && (
+            <span className={classes.infoItem}>
+              <IoTimeOutline className={classes.infoIcon} />
+              {language === "he" || language === "mixed"
+                ? "בישול"
+                : "Cook"}{" "}
+              {formatTime(recipe.cookTime, t("recipes", "minutes"))}
             </span>
           )}
         </div>
-
-        {(recipe.prepTime || recipe.cookTime) && (
-          <div className={classes.prepTimeBar}>
-            {recipe.prepTime && (
-              <span>
-                {t("recipes", "prepTime")}:{" "}
-                {formatTime(recipe.prepTime, t("recipes", "minutes"))}
-              </span>
-            )}
-            {recipe.prepTime && recipe.cookTime && <span> - </span>}
-            {recipe.cookTime && (
-              <span>
-                {t("recipes", "cookTime")}:{" "}
-                {formatTime(recipe.cookTime, t("recipes", "minutes"))}
-              </span>
-            )}
-          </div>
-        )}
 
         {recipe.categories && recipe.categories.length > 0 && (
           <div className={classes.categoryTags}>
@@ -573,7 +555,9 @@ function RecipeDetailsFull({
                         {t("recipes", "sugars")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.sugars)} g
-                        </span>
+                        </span>{" "}
+                        ({(parseFloat(recipe.nutrition.sugars) / 4).toFixed(1)}{" "}
+                        {t("recipes", "teaspoons")})
                       </li>
                     )}
                     {recipe.nutrition.fiber && (
@@ -596,12 +580,14 @@ function RecipeDetailsFull({
             className={`${classes.tab} ${activeTab === "ingredients" ? classes.activeTab : ""}`}
             onClick={() => setActiveTab("ingredients")}
           >
+            <MdOutlineFormatListBulleted className={classes.tabIcon} />
             {t("recipes", "ingredients")}
           </button>
           <button
             className={`${classes.tab} ${activeTab === "instructions" ? classes.activeTab : ""}`}
             onClick={() => setActiveTab("instructions")}
           >
+            <MdOutlineFormatListNumbered className={classes.tabIcon} />
             {t("recipes", "instructions")}
           </button>
           {recipe.notes && (
@@ -609,6 +595,7 @@ function RecipeDetailsFull({
               className={`${classes.tab} ${activeTab === "tips" ? classes.activeTab : ""}`}
               onClick={() => setActiveTab("tips")}
             >
+              <MdOutlineTipsAndUpdates className={classes.tabIcon} />
               {t("recipes", "notes")}
             </button>
           )}
@@ -616,6 +603,7 @@ function RecipeDetailsFull({
             className={`${classes.tab} ${activeTab === "chat" ? classes.activeTab : ""}`}
             onClick={() => setActiveTab("chat")}
           >
+            <MdOutlineChat className={classes.tabIcon} />
             {t("recipeChat", "tabLabel")}
           </button>
         </div>

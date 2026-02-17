@@ -423,11 +423,11 @@ const translations = {
       mixed: "מרכיבים",
     },
     instructions: {
-      he: "הוראות הכנה",
+      he: "הוראות",
       en: "Instructions",
       ru: "Инструкции",
       de: "Anleitung",
-      mixed: "הוראות הכנה",
+      mixed: "הוראות",
     },
     prepTime: {
       he: "זמן הכנה",
@@ -463,6 +463,13 @@ const translations = {
       ru: "Ссылка на источник",
       de: "Quell-URL",
       mixed: "Source URL",
+    },
+    shareToGlobal: {
+      he: "שתף במאגר המתכונים",
+      en: "Share to recipe collection",
+      ru: "Поделиться в коллекции рецептов",
+      de: "In Rezeptsammlung teilen",
+      mixed: "שתף במאגר המתכונים",
     },
     notes: {
       he: "הערות",
@@ -663,7 +670,7 @@ const translations = {
       de: "Zurücksetzen",
       mixed: "Reset",
     },
-    minutes: { he: "דקות", en: "min", ru: "мин", de: "Min", mixed: "min" },
+    minutes: { he: "דק'", en: "min", ru: "мин", de: "Min", mixed: "דק'" },
     nutrition: {
       he: "ערכים תזונתיים (למנה)",
       en: "Nutrition (per serving)",
@@ -706,6 +713,13 @@ const translations = {
       ru: "Клетчатка",
       de: "Ballaststoffe",
       mixed: "סיבים תזונתיים",
+    },
+    teaspoons: {
+      he: "כפיות",
+      en: "tsp",
+      ru: "ч.л.",
+      de: "TL",
+      mixed: "כפיות",
     },
     note: {
       he: "הערה",
@@ -1582,12 +1596,12 @@ const translations = {
       mixed: "Voice Chat",
     },
     chatText: {
-      he: "הפעל את הצ'אט הקולי ודבר עם העוזר. כשהצ'אט מופעל אפשר:",
-      en: "Activate voice chat and talk to the assistant. When chat is active you can:",
-      ru: "Активируйте голосовой чат и говорите с помощником. Когда чат активен, можно:",
-      de: "Aktivieren Sie den Sprachchat und sprechen Sie mit dem Assistenten. Bei aktivem Chat können Sie:",
+      he: "הפעל את הצ'אט הקולי ע\"י לחיצה על מיקרופון ודבר עם העוזר. כשהצ'אט מופעל אפשר:",
+      en: "Activate voice chat by clicking the microphone and talk to the assistant. When chat is active you can:",
+      ru: "Активируйте голосовой чат нажатием на микрофон и говорите с помощником. Когда чат активен, можно:",
+      de: "Aktivieren Sie den Sprachchat durch Klicken auf das Mikrofon und sprechen Sie mit dem Assistenten. Bei aktivem Chat können Sie:",
       mixed:
-        "Activate voice chat and talk to the assistant. When chat is active you can:",
+        "הפעל את הצ'אט הקולי ע\"י לחיצה על מיקרופון ודבר עם העוזר. כשהצ'אט מופעל אפשר:",
     },
     chatFeature1: {
       he: "לשאול שאלות על המתכון והמרכיבים",

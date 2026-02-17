@@ -228,7 +228,7 @@
   }
 
   .header h1 {
-    font-size: 1.5rem;
+    font-size: var(--basic-font);
   }
 
   .header p {
@@ -257,7 +257,19 @@
     grid-template-columns: 1fr 1fr 1.5fr;
     gap: 0.5rem;
     padding: 0.75rem;
-    font-size: var(--very-small-font);
+    font-size: var(--basic-font);
+  }
+
+  .question {
+    font-size: var(--basic-font);
+  }
+
+  .answer {
+    font-size: var(--basic-font);
+  }
+
+  .noResults {
+    font-size: var(--basic-font);
   }
 
   .simpleList {

@@ -31,6 +31,7 @@ export const fetchGlobalRecipes = async (currentUserId, lastDoc = null) => {
     snap.forEach((d) => {
       const data = d.data();
       if (currentUserId && data.userId === currentUserId) return;
+      if (!data.shareToGlobal) return;
       recipes.push({ id: d.id, ...data });
     });
     const lastVisible = snap.docs[snap.docs.length - 1] || null;

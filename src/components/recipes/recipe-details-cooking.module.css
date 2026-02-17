@@ -65,6 +65,9 @@
   margin-bottom: 0.5rem;
   z-index: 2000;
   box-sizing: border-box;
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
 }
 
 .voiceToggleButton {
@@ -214,6 +217,10 @@
 
 .tab {
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
   padding: 1rem 1.5rem;
   background: none;
   border: none;
@@ -224,6 +231,11 @@
   cursor: pointer;
   transition: all 0.2s ease;
   margin-bottom: -3px;
+}
+
+.tabIcon {
+  font-size: 1.1em;
+  flex-shrink: 0;
 }
 
 .tab:hover {
@@ -363,7 +375,7 @@
 }
 
 .headerTitle {
-  font-size: var(--large-font);
+  font-size: var(--huge-font);
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
@@ -381,19 +393,63 @@
 .backButton {
   display: flex;
   align-items: center;
-  gap: 0.3rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: 20px;
-  padding: 0.4em 0.8em;
+  background: none;
+  border: none;
+  padding: 0.3em;
   font-size: var(--large-font);
   color: var(--text-primary);
   cursor: pointer;
-  transition: background 0.2s;
 }
 
 .backButton:hover {
-  background: var(--bg-hover);
+  opacity: 0.7;
+}
+
+.helpWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.helpArrow {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-bottom: 10px solid #9810fa;
+  animation: helpArrowBounce 1s ease-in-out infinite;
+  z-index: 10;
+}
+
+@keyframes helpArrowBounce {
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+  50% {
+    transform: translateX(-50%) translateY(-6px);
+  }
+}
+
+.fontSizeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 2.2rem;
+  cursor: pointer;
+  padding: 0.2em;
+  flex-shrink: 0;
+}
+
+.fontSizeBtn:active {
+  transform: scale(0.9);
 }
 
 .voiceBar {

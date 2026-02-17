@@ -22,6 +22,7 @@ import {
   FiMenu,
   FiChevronUp,
   FiChevronDown,
+  FiGlobe,
 } from "react-icons/fi";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { BsClipboardData } from "react-icons/bs";
@@ -47,6 +48,7 @@ const INITIAL_RECIPE = {
   isFavorite: false,
   notes: "",
   rating: 0,
+  shareToGlobal: false,
   nutrition: {
     calories: "",
     protein: "",
@@ -552,6 +554,8 @@ function AddRecipeWizard({
     }
   };
 
+  const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
   // ========== Image upload ==========
   const handleImageUpload = (e) => {
     const file = e.target.files[0];
@@ -673,31 +677,39 @@ function AddRecipeWizard({
   };
 
   // ========== Submit ==========
+  const [saving, setSaving] = useState(false);
   const handleSubmit = async () => {
+    if (saving) return;
+    setSaving(true);
     const filledIngredients = recipe.ingredients.filter(Boolean);
-    let nutrition = recipe.nutrition;
+    let nutrition = recipe.nutrition || {};
     if (filledIngredients.length > 0) {
       try {
+        console.log("🍎 NUTRITION - Starting calculation for new recipe, ingredients:", filledIngredients.length, "servings:", recipe.servings);
         const result = await calculateNutrition(
           filledIngredients,
           recipe.servings,
         );
+        console.log("🍎 NUTRITION - Calculation result:", result);
         if (result && !result.error) {
           nutrition = {
             ...nutrition,
-            calories: result.calories || nutrition.calories,
-            protein: result.protein || nutrition.protein,
-            fat: result.fat || nutrition.fat,
-            carbs: result.carbs || nutrition.carbs,
-            sugars: result.sugars || nutrition.sugars,
-            fiber: result.fiber || nutrition.fiber,
+            calories: result.calories ?? nutrition.calories,
+            protein: result.protein ?? nutrition.protein,
+            fat: result.fat ?? nutrition.fat,
+            carbs: result.carbs ?? nutrition.carbs,
+            sugars: result.sugars ?? nutrition.sugars,
+            fiber: result.fiber ?? nutrition.fiber,
           };
+          console.log("🍎 NUTRITION - Updated nutrition:", nutrition);
+        } else {
+          console.warn("🍎 NUTRITION - Calculation returned error:", result?.error);
         }
       } catch (err) {
-        console.error("Auto nutrition calculation failed:", err);
+        console.error("🍎 NUTRITION - Auto nutrition calculation failed:", err);
       }
     }
-    onAddPerson({
+    const newRecipe = {
       name: recipe.name,
       ingredients: filledIngredients,
       instructions: recipe.instructions.filter(Boolean),
@@ -711,8 +723,16 @@ function AddRecipeWizard({
       isFavorite: recipe.isFavorite,
       notes: recipe.notes,
       rating: recipe.rating || 0,
+      shareToGlobal: recipe.shareToGlobal,
       nutrition,
-    });
+    };
+    console.log("🍎 NUTRITION - Saving new recipe with nutrition:", newRecipe.nutrition);
+    try {
+      await onAddPerson(newRecipe);
+    } catch (err) {
+      console.error("🍎 NUTRITION - Failed to save recipe:", err);
+    }
+    setSaving(false);
     onCancel();
   };
 
@@ -1036,14 +1056,16 @@ function AddRecipeWizard({
           </div>
         ) : (
           <div className={classes.imageUploadButtons}>
-            <button
-              type="button"
-              className={classes.imageOptionBtn}
-              onClick={() => cameraInputRef.current?.click()}
-            >
-              <FiCamera className={classes.imageOptionIcon} />
-              <span>{t("addWizard", "takePhoto")}</span>
-            </button>
+            {isMobileDevice && (
+              <button
+                type="button"
+                className={classes.imageOptionBtn}
+                onClick={() => cameraInputRef.current?.click()}
+              >
+                <FiCamera className={classes.imageOptionIcon} />
+                <span>{t("addWizard", "takePhoto")}</span>
+              </button>
+            )}
             <button
               type="button"
               className={classes.imageOptionBtn}
@@ -1218,6 +1240,19 @@ function AddRecipeWizard({
           )}
         </span>
       </label>
+
+      <label className={classes.favoriteToggle}>
+        <input
+          type="checkbox"
+          className={classes.favoriteCheckbox}
+          checked={recipe.shareToGlobal}
+          onChange={() => updateRecipe("shareToGlobal", !recipe.shareToGlobal)}
+        />
+        <FiGlobe size={16} />
+        <span className={classes.favoriteLabel}>
+          {t("recipes", "shareToGlobal")}
+        </span>
+      </label>
     </div>
   );
 
@@ -1244,9 +1279,9 @@ function AddRecipeWizard({
     return true;
   };
 
-  const handleNext = () => {
+  const handleNext = async () => {
     if (manualStep === 4) {
-      handleSubmit();
+      await handleSubmit();
     } else {
       const nextStep = manualStep + 1;
       setManualStep(nextStep);
@@ -1695,14 +1730,16 @@ function AddRecipeWizard({
         </div>
       ) : (
         <div className={classes.imageUploadButtons}>
-          <button
-            type="button"
-            className={classes.imageOptionBtn}
-            onClick={() => photoInputRef.current?.click()}
-          >
-            <FiCamera className={classes.imageOptionIcon} />
-            <span>{t("addWizard", "takePhoto")}</span>
-          </button>
+          {isMobileDevice && (
+            <button
+              type="button"
+              className={classes.imageOptionBtn}
+              onClick={() => photoInputRef.current?.click()}
+            >
+              <FiCamera className={classes.imageOptionIcon} />
+              <span>{t("addWizard", "takePhoto")}</span>
+            </button>
+          )}
           <button
             type="button"
             className={classes.imageOptionBtn}
@@ -1770,11 +1807,13 @@ function AddRecipeWizard({
           type="button"
           className={classes.nextBtn}
           onClick={handleNext}
-          disabled={!canProceed()}
+          disabled={!canProceed() || saving}
         >
-          {manualStep === 4
-            ? t("addWizard", "saveRecipe")
-            : t("addWizard", "continue")}
+          {saving
+            ? "⏳ " + (t("common", "loading") || "...")
+            : manualStep === 4
+              ? t("addWizard", "saveRecipe")
+              : t("addWizard", "continue")}
           {/* <FiChevronRight /> */}
         </button>
       </div>

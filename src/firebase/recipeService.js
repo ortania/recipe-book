@@ -182,15 +182,14 @@ export const updateRecipe = async (recipeId, updatedData) => {
     );
 
     const recipeRef = doc(db, RECIPES_COLLECTION, recipeId);
-    const dataToSave = {
+    const raw = {
       ...updatedData,
       updatedAt: new Date().toISOString(),
     };
 
-    console.log("💾 FIREBASE UPDATE - Final data to save:", dataToSave);
-    console.log(
-      "💾 FIREBASE UPDATE - Rating in final data:",
-      dataToSave.rating,
+    // Remove undefined values — Firestore updateDoc throws on them
+    const dataToSave = Object.fromEntries(
+      Object.entries(raw).filter(([, v]) => v !== undefined),
     );
 
     await updateDoc(recipeRef, dataToSave);
