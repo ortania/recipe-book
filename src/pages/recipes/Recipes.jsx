@@ -6,10 +6,8 @@ import {
   RecipesView,
   AddRecipeWizard,
   UpButton,
-  FavoritesButton,
   Button,
   AddRecipeDropdown,
-  FavoritesPopup,
   ConfirmDialog,
 } from "../../components";
 import { useRecipeBook, useLanguage } from "../../context";
@@ -29,7 +27,6 @@ function Recipes() {
 
   const [showAddPerson, setShowAddPerson] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
-  const [showFavorites, setShowFavorites] = useState(false);
   const [showConfirmClear, setShowConfirmClear] = useState(false);
 
   const handleClearAllClick = () => {
@@ -50,12 +47,6 @@ function Recipes() {
       <div className={classes.headerContainer}>
         <p className={pageClasses.title}>{t("recipesView", "recipesTab")}</p>
         <div className={classes.headerButtons}>
-          <FavoritesButton
-            onClick={() => setShowFavorites(true)}
-            title={t("recipes", "favorite")}
-          >
-            {t("recipes", "favorite")}
-          </FavoritesButton>
           <Button
             variant="danger"
             onClick={handleClearAllClick}
@@ -86,16 +77,6 @@ function Recipes() {
           }}
           groups={categories}
           initialScreen={addMethod}
-        />
-      )}
-
-      {showFavorites && (
-        <FavoritesPopup
-          persons={recipes}
-          groups={categories}
-          onClose={() => setShowFavorites(false)}
-          onEditPerson={editRecipe}
-          onDeletePerson={deleteRecipe}
         />
       )}
 

@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaFilter } from "react-icons/fa";
 import { FaHistory } from "react-icons/fa";
-import { PiStar } from "react-icons/pi";
+import { PiStar, PiStarFill } from "react-icons/pi";
 import { CiFilter } from "react-icons/ci";
 import { IoMdStarOutline } from "react-icons/io";
 import { IoChevronDown } from "react-icons/io5";
@@ -57,6 +57,7 @@ function RecipesView({
   const [ingredientInput, setIngredientInput] = useState("");
   const [activeView, setActiveView] = useState("recipes");
   const [showChat, setShowChat] = useState(false);
+  const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const filterRef = useRef(null);
   const sortRef = useRef(null);
   const [filterMenuStyle, setFilterMenuStyle] = useState({});
@@ -69,7 +70,13 @@ function RecipesView({
     clearCategorySelection,
   } = useRecipeBook();
 
-  // Recently viewed recipes
+  // Filtered persons based on favorites toggle
+  const displayPersons = useMemo(() => {
+    if (!showFavoritesOnly) return localPersons;
+    return localPersons.filter((p) => p.isFavorite);
+  }, [localPersons, showFavoritesOnly]);
+
+  // Recently viewed recipes (filtered by favorites mode)
   const recentlyViewed = useMemo(() => {
     try {
       const stored = JSON.parse(
@@ -77,12 +84,12 @@ function RecipesView({
       );
       return stored
         .map((id) => localPersons.find((p) => p.id === id))
-        .filter(Boolean)
+        .filter((p) => p && (!showFavoritesOnly || p.isFavorite))
         .slice(0, 6);
     } catch {
       return [];
     }
-  }, [localPersons]);
+  }, [localPersons, showFavoritesOnly]);
 
   const handleViewChange = (view) => {
     setActiveView(view);
@@ -180,7 +187,7 @@ function RecipesView({
 
   // search, filter and sort
   const filteredAndSortedPersons = useMemo(() => {
-    let filtered = localPersons;
+    let filtered = displayPersons;
 
     // Filter by rating
     if (selectedRating !== "all") {
@@ -301,7 +308,7 @@ function RecipesView({
 
     return result;
   }, [
-    localPersons,
+    displayPersons,
     searchTerm,
     sortField,
     sortDirection,
@@ -418,10 +425,11 @@ function RecipesView({
           <div className={classes.iconButtons}>
             <AddButton
               type="circle"
-              onClick={onShowFavorites}
+              onClick={() => setShowFavoritesOnly((prev) => !prev)}
               title={t("recipes", "favorite")}
+              className={showFavoritesOnly ? classes.favoritesActive : ""}
             >
-              <PiStar />
+              {showFavoritesOnly ? <PiStarFill /> : <PiStar />}
             </AddButton>
             <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
           </div>
@@ -467,11 +475,11 @@ function RecipesView({
           <div className={classes.iconButtons}>
             <AddButton
               type="circle"
-              // className={classes.iconButton}
-              onClick={onShowFavorites}
+              onClick={() => setShowFavoritesOnly((prev) => !prev)}
               title={t("recipes", "favorite")}
+              className={showFavoritesOnly ? classes.favoritesActive : ""}
             >
-              <PiStar />
+              {showFavoritesOnly ? <PiStarFill /> : <PiStar />}
             </AddButton>
             <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
           </div>
@@ -975,7 +983,9 @@ function RecipesView({
 
           {filteredAndSortedPersons.length === 0 ? (
             <div className={classes.noResults}>
-              {t("recipesView", "noResults")}
+              {showFavoritesOnly
+                ? t("favorites", "noFavorites")
+                : t("recipesView", "noResults")}
             </div>
           ) : selectedGroup === "all" ? (
             <div>

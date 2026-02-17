@@ -5,7 +5,6 @@ import {
   RecipesView,
   AddRecipeWizard,
   UpButton,
-  FavoritesPopup,
   ConfirmDialog,
   ChatWindow,
   ProductTour,
@@ -31,7 +30,6 @@ function Categories() {
 
   const [showAddPerson, setShowAddPerson] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
-  const [showFavorites, setShowFavorites] = useState(false);
   const [showChat, setShowChat] = useState(false);
   const [showTour, setShowTour] = useState(() => {
     return !localStorage.getItem("tourCompleted");
@@ -83,21 +81,9 @@ function Categories() {
           setAddMethod(method || "method");
           setShowAddPerson(true);
         }}
-        onShowFavorites={() => setShowFavorites(true)}
         selectedGroup={isAllSelected ? "all" : selectedCategories}
         showGreeting
       />
-
-      {showFavorites && (
-        <FavoritesPopup
-          persons={filteredRecipes}
-          groups={categories}
-          onClose={() => setShowFavorites(false)}
-          onEditPerson={editRecipe}
-          onDeletePerson={deleteRecipe}
-          groupName={t("categories", "allRecipes")}
-        />
-      )}
 
       {showChat && <ChatWindow recipeContext={filteredRecipes} />}
 

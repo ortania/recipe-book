@@ -40,6 +40,11 @@
   inset-inline-start: 0;
 }
 
+.favoritesActive {
+  color: #f5a623;
+  background: rgba(245, 166, 35, 0.12);
+}
+
 .headerTitle {
   display: flex;
   align-items: center;
