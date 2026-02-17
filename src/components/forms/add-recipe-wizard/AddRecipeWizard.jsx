@@ -57,6 +57,11 @@ const INITIAL_RECIPE = {
     fat: "",
     fiber: "",
     sugars: "",
+    sodium: "",
+    calcium: "",
+    iron: "",
+    cholesterol: "",
+    saturatedFat: "",
     note: "",
   },
 };
@@ -706,6 +711,11 @@ function AddRecipeWizard({
             carbs: result.carbs ?? nutrition.carbs,
             sugars: result.sugars ?? nutrition.sugars,
             fiber: result.fiber ?? nutrition.fiber,
+            sodium: result.sodium ?? nutrition.sodium,
+            calcium: result.calcium ?? nutrition.calcium,
+            iron: result.iron ?? nutrition.iron,
+            cholesterol: result.cholesterol ?? nutrition.cholesterol,
+            saturatedFat: result.saturatedFat ?? nutrition.saturatedFat,
           };
           console.log("🍎 NUTRITION - Updated nutrition:", nutrition);
         } else {

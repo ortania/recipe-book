@@ -777,6 +777,10 @@
     gap: 0.5rem;
   }
 
+  .savedMessage {
+    font-size: var(--small-font);
+  }
+
   .saveBtn {
     padding: 0.5em 1em;
     font-size: var(--small-font);

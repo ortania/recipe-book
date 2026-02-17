@@ -254,9 +254,15 @@ You MUST respond with ONLY valid JSON in this exact format (no markdown, no expl
   "fat": "8",
   "carbs": "30",
   "sugars": "12",
-  "fiber": "3"
+  "fiber": "3",
+  "sodium": "400",
+  "calcium": "50",
+  "iron": "2",
+  "cholesterol": "30",
+  "saturatedFat": "3"
 }
-- All values should be numbers as strings (grams, except calories which is kcal).
+- All values should be numbers as strings.
+- Units: calories=kcal, sodium/calcium/iron=mg, cholesterol=mg, all others=grams.
 - Provide realistic estimates based on common ingredient quantities.
 - If you cannot estimate, use empty string "".
 - Do NOT include units in the values, just the number.
@@ -287,7 +293,12 @@ You MUST respond with ONLY valid JSON in this exact format (no markdown, no expl
     console.log("🍎 calculateNutrition - parsed result:", parsed);
     return parsed;
   } catch (parseErr) {
-    console.error("🍎 calculateNutrition - JSON parse failed:", parseErr, "raw:", result);
+    console.error(
+      "🍎 calculateNutrition - JSON parse failed:",
+      parseErr,
+      "raw:",
+      result,
+    );
     return { error: result };
   }
 };

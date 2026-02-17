@@ -572,6 +572,51 @@ function RecipeDetailsFull({
                         </span>
                       </li>
                     )}
+                    {recipe.nutrition.saturatedFat && (
+                      <li>
+                        <span className={classes.nutritionEmoji}>🧈</span>{" "}
+                        {t("recipes", "saturatedFat")}:{" "}
+                        <span className={classes.nutritionValue}>
+                          {scaleNutrition(recipe.nutrition.saturatedFat)} g
+                        </span>
+                      </li>
+                    )}
+                    {recipe.nutrition.cholesterol && (
+                      <li>
+                        <span className={classes.nutritionEmoji}>💊</span>{" "}
+                        {t("recipes", "cholesterol")}:{" "}
+                        <span className={classes.nutritionValue}>
+                          {scaleNutrition(recipe.nutrition.cholesterol)} mg
+                        </span>
+                      </li>
+                    )}
+                    {recipe.nutrition.sodium && (
+                      <li>
+                        <span className={classes.nutritionEmoji}>🧂</span>{" "}
+                        {t("recipes", "sodium")}:{" "}
+                        <span className={classes.nutritionValue}>
+                          {scaleNutrition(recipe.nutrition.sodium)} mg
+                        </span>
+                      </li>
+                    )}
+                    {recipe.nutrition.calcium && (
+                      <li>
+                        <span className={classes.nutritionEmoji}>🦴</span>{" "}
+                        {t("recipes", "calcium")}:{" "}
+                        <span className={classes.nutritionValue}>
+                          {scaleNutrition(recipe.nutrition.calcium)} mg
+                        </span>
+                      </li>
+                    )}
+                    {recipe.nutrition.iron && (
+                      <li>
+                        <span className={classes.nutritionEmoji}>⚙️</span>{" "}
+                        {t("recipes", "iron")}:{" "}
+                        <span className={classes.nutritionValue}>
+                          {scaleNutrition(recipe.nutrition.iron)} mg
+                        </span>
+                      </li>
+                    )}
                   </ul>
                 </div>
               )}

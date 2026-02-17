@@ -38,6 +38,11 @@ function AddRecipe({
       fat: "",
       fiber: "",
       sugars: "",
+      sodium: "",
+      calcium: "",
+      iron: "",
+      cholesterol: "",
+      saturatedFat: "",
       note: "",
     },
   });
@@ -106,6 +111,11 @@ function AddRecipe({
         fat: "",
         fiber: "",
         sugars: "",
+        sodium: "",
+        calcium: "",
+        iron: "",
+        cholesterol: "",
+        saturatedFat: "",
         note: "",
       },
     });

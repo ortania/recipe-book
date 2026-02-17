@@ -9,7 +9,7 @@ import {
   FiTrash2,
   FiGlobe,
 } from "react-icons/fi";
-import {GoHeart, GoHeartFill} from "react-icons/go"
+import { GoHeart, GoHeartFill } from "react-icons/go";
 import {
   BsFileText,
   BsListUl,
@@ -96,6 +96,11 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       fat: "",
       fiber: "",
       sugars: "",
+      sodium: "",
+      calcium: "",
+      iron: "",
+      cholesterol: "",
+      saturatedFat: "",
       note: "",
       ...person.nutrition,
     },
@@ -136,6 +141,11 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         fat: "",
         fiber: "",
         sugars: "",
+        sodium: "",
+        calcium: "",
+        iron: "",
+        cholesterol: "",
+        saturatedFat: "",
         note: "",
         ...person.nutrition,
       },
@@ -330,7 +340,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     if (filledIngredients.length > 0) {
       try {
         setSavedMessage("⏳ מחשב ערכים תזונתיים...");
-        console.log("🍎 NUTRITION - Starting calculation for edit, ingredients:", filledIngredients.length, "servings:", editedPerson.servings);
+        console.log(
+          "🍎 NUTRITION - Starting calculation for edit, ingredients:",
+          filledIngredients.length,
+          "servings:",
+          editedPerson.servings,
+        );
         const result = await calculateNutrition(
           filledIngredients,
           editedPerson.servings,
@@ -343,10 +358,19 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           nutrition.carbs = result.carbs ?? nutrition.carbs;
           nutrition.sugars = result.sugars ?? nutrition.sugars;
           nutrition.fiber = result.fiber ?? nutrition.fiber;
+          nutrition.sodium = result.sodium ?? nutrition.sodium;
+          nutrition.calcium = result.calcium ?? nutrition.calcium;
+          nutrition.iron = result.iron ?? nutrition.iron;
+          nutrition.cholesterol = result.cholesterol ?? nutrition.cholesterol;
+          nutrition.saturatedFat =
+            result.saturatedFat ?? nutrition.saturatedFat;
           nutritionCalculated = true;
           console.log("🍎 NUTRITION - Updated nutrition object:", nutrition);
         } else {
-          console.warn("🍎 NUTRITION - Calculation returned error:", result?.error);
+          console.warn(
+            "🍎 NUTRITION - Calculation returned error:",
+            result?.error,
+          );
           setSavedMessage("⚠️ חישוב ערכים תזונתיים נכשל");
           await new Promise((r) => setTimeout(r, 1500));
         }
@@ -376,7 +400,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       shareToGlobal: editedPerson.shareToGlobal,
       nutrition,
     };
-    console.log("🍎 NUTRITION - Saving recipe with nutrition:", updatedPerson.nutrition);
+    console.log(
+      "🍎 NUTRITION - Saving recipe with nutrition:",
+      updatedPerson.nutrition,
+    );
     await onSave(updatedPerson);
     setSaving(false);
     setSavedMessage(
@@ -403,7 +430,11 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           className={`${classes.favoriteBtn} ${editedPerson.isFavorite ? classes.favoriteBtnActive : ""}`}
           onClick={toggleFavorite}
         >
-          {editedPerson.isFavorite ? <GoHeartFill color="red" size={22}/> : <GoHeart color="black" size={22}/>}
+          {editedPerson.isFavorite ? (
+            <GoHeartFill color="red" size={22} />
+          ) : (
+            <GoHeart color="black" size={22} />
+          )}
           {/* // <FiStar
           //   size={22}
           //   fill={editedPerson.isFavorite ? "#e53935" : "none"}
