@@ -89,6 +89,7 @@ function RecipeDetailsFull({
   const [chatAppliedFields, setChatAppliedFields] = useState({});
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showCookingHelp, setShowCookingHelp] = useState(false);
+  const [showImageLightbox, setShowImageLightbox] = useState(false);
 
   const cookingHelpItems = [
     t("cookingMode", "helpGuideFeature1"),
@@ -266,9 +267,31 @@ function RecipeDetailsFull({
             alt={recipe.name}
             className={classes.recipeImage}
             loading="lazy"
+            onClick={() => setShowImageLightbox(true)}
           />
         )}
       </div>
+
+      {showImageLightbox && recipe.image_src && (
+        <div
+          className={classes.lightboxOverlay}
+          onClick={() => setShowImageLightbox(false)}
+        >
+          <button
+            className={classes.lightboxClose}
+            onClick={() => setShowImageLightbox(false)}
+            aria-label={t("common", "close")}
+          >
+            ✕
+          </button>
+          <img
+            src={recipe.image_src}
+            alt={recipe.name}
+            className={classes.lightboxImage}
+            onClick={(e) => e.stopPropagation()}
+          />
+        </div>
+      )}
 
       <div className={classes.actionBar}>
         <div className={classes.actionBarStart}>

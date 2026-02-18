@@ -1,17 +1,16 @@
-import { getOpenAIKey } from "../firebase/apiKeyService";
+const CLOUD_CHAT_URL =
+  "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiChat";
+const CLOUD_TTS_URL =
+  "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts";
 
-const API_URL = "https://api.openai.com/v1/chat/completions";
-const TTS_API_URL = "https://api.openai.com/v1/audio/speech";
+const nutritionCache = new Map();
+const NUTRITION_CACHE_MAX = 50;
 
 export const speakWithOpenAI = async (text, voice = "nova") => {
-  const apiKey = await getOpenAIKey();
-  if (!apiKey || !text) return null;
-  const response = await fetch(TTS_API_URL, {
+  if (!text) return null;
+  const response = await fetch(CLOUD_TTS_URL, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       model: "tts-1",
       input: text,
@@ -25,19 +24,9 @@ export const speakWithOpenAI = async (text, voice = "nova") => {
 };
 
 export const callOpenAI = async (requestBody) => {
-  const apiKey = await getOpenAIKey();
-  if (!apiKey) {
-    throw new Error(
-      "OpenAI API key is not configured. Save it via Settings or add VITE_OPENAI_API_KEY to your .env file.",
-    );
-  }
-
-  const response = await fetch(API_URL, {
+  const response = await fetch(CLOUD_CHAT_URL, {
     method: "POST",
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify(requestBody),
   });
 
@@ -235,10 +224,10 @@ export const calculateNutrition = async (ingredients, servings) => {
     : ingredients;
   const servingsText = servings ? `The recipe makes ${servings} servings.` : "";
 
-  console.log("🍎 calculateNutrition - calling OpenAI with", {
-    ingredientsCount: Array.isArray(ingredients) ? ingredients.length : "text",
-    servings,
-  });
+  const cacheKey = `${ingredientsList}|${servings || ""}`;
+  if (nutritionCache.has(cacheKey)) {
+    return nutritionCache.get(cacheKey);
+  }
 
   const result = await callOpenAI({
     model: "gpt-4o-mini",
@@ -277,24 +266,27 @@ You MUST respond with ONLY valid JSON in this exact format (no markdown, no expl
     max_tokens: 300,
   });
 
-  console.log("🍎 calculateNutrition - raw API result:", result);
-
   try {
     let cleaned = result
       .replace(/```json\s*/gi, "")
       .replace(/```\s*/g, "")
       .trim();
-    // Extract JSON object if surrounded by extra text
     const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
     if (jsonMatch) {
       cleaned = jsonMatch[0];
     }
     const parsed = JSON.parse(cleaned);
-    console.log("🍎 calculateNutrition - parsed result:", parsed);
+
+    if (nutritionCache.size >= NUTRITION_CACHE_MAX) {
+      const firstKey = nutritionCache.keys().next().value;
+      nutritionCache.delete(firstKey);
+    }
+    nutritionCache.set(cacheKey, parsed);
+
     return parsed;
   } catch (parseErr) {
     console.error(
-      "🍎 calculateNutrition - JSON parse failed:",
+      "calculateNutrition JSON parse failed:",
       parseErr,
       "raw:",
       result,
@@ -396,12 +388,10 @@ Examples:
       action: parsed.action || null,
     };
   } catch {
-    // JSON parse failed - extract just the spoken text, strip JSON artifacts
     const textMatch = result.match(/"text"\s*:\s*"([^"]+)"/);
     if (textMatch) {
       return { text: textMatch[1], action: null };
     }
-    // Remove any JSON-like artifacts before returning
     const cleanText = result
       .replace(/[{}"]/g, "")
       .replace(/\b(text|action|null|type)\b\s*:?\s*/gi, "")
@@ -438,8 +428,6 @@ Help the user with questions about THIS recipe - substitutions, adjustments, tec
     content: `You are a helpful cooking assistant. You help users with recipe questions, ingredient substitutions, cooking techniques, and adjusting recipe quantities. Always be friendly, concise, and practical in your responses. Always respond in ${langName}.${contextBlock}`,
   };
 
-  // Limit to last 5 messages to prevent token limit errors
-  // Strip image data from older messages to save tokens
   const recentMessages = messages.slice(-5).map(({ image, ...msg }) => msg);
 
   return callOpenAI({

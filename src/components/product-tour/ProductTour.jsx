@@ -18,6 +18,8 @@ import { FiCamera } from "react-icons/fi";
 import { VscDebugRestart } from "react-icons/vsc";
 import { IoLanguageOutline } from "react-icons/io5";
 import { useLanguage } from "../../context";
+import RecipeBookTourIcon from "../icons/RecipeBookIcon/RecipeBookTourIcon";
+import { SaveBookIcon } from "../icons/SaveBookIcon";
 import classes from "./productTour.module.css";
 
 const FEATURES = [
@@ -82,13 +84,13 @@ const FEATURES = [
 const ONBOARDING_SCREENS = [
   {
     key: "welcome",
-    emoji: "👨‍🍳",
+    icon: <RecipeBookTourIcon />,
     titleKey: "welcomeTitle",
     subtitleKey: "welcomeSubtitle",
   },
   {
     key: "save",
-    emoji: "📋",
+    icon: <SaveBookIcon />,
     titleKey: "saveTitle",
     bullets: ["saveBullet1", "saveBullet2", "saveBullet3", "saveBullet4"],
     tipLabel: "howToStart",
@@ -98,12 +100,7 @@ const ONBOARDING_SCREENS = [
     key: "search",
     emoji: "🔍",
     titleKey: "searchTitle",
-    bullets: [
-      "searchBullet1",
-      "searchBullet2",
-      "searchBullet3",
-      "searchBullet4",
-    ],
+    bullets: ["searchBullet1", "searchBullet2", "searchBullet3"],
     tipLabel: "howToUse",
     tipKey: "searchTip",
   },
@@ -193,7 +190,9 @@ function OnboardingScene({ screenKey, t }) {
 
   return (
     <div style={baseStyle}>
-      <div style={{ fontSize: "4rem", lineHeight: 1 }}>{data.emoji}</div>
+      <div style={{ fontSize: "4rem", lineHeight: 1 }}>
+        {data.icon || data.emoji}
+      </div>
       <h2 style={titleStyle}>{t("onboarding", data.titleKey)}</h2>
       {data.subtitleKey && (
         <p style={subtitleStyle}>{t("onboarding", data.subtitleKey)}</p>

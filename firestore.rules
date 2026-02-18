@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Users: each user can only read/write their own document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Recipes: owner has full access, others can read shared recipes
+    match /recipes/{recipeId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+      allow update, delete: if request.auth != null
+                            && resource.data.userId == request.auth.uid;
+    }
+
+    // Categories: only the owner can read/write
+    match /categories/{categoryId} {
+      allow read, write: if request.auth != null
+                         && resource.data.userId == request.auth.uid;
+      allow create: if request.auth != null
+                    && request.resource.data.userId == request.auth.uid;
+    }
+
+    // Meal plans: only the owner can read/write
+    match /mealPlans/{docId} {
+      allow read, write: if request.auth != null;
+    }
+
+    // API keys (managed by admin/cloud functions)
+    match /apiKeys/{docId} {
+      allow read: if request.auth != null;
+      allow write: if false;
+    }
+
+    // App settings (OpenAI key etc.) — read for logged-in users, write only for admin
+    match /appSettings/{docId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null
+                   && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+  }
+}

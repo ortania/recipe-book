@@ -9,6 +9,7 @@ import { VscDebugRestart } from "react-icons/vsc";
 import { FaStop } from "react-icons/fa";
 import { TbUsers } from "react-icons/tb";
 import { IoChevronBackOutline } from "react-icons/io5";
+import { AiOutlineFontSize } from "react-icons/ai";
 import {
   MdFormatSize,
   MdOutlineFormatListBulleted,
@@ -279,7 +280,8 @@ function RecipeDetailsCookingMode({
             onClick={cycleFontSize}
             title="גודל פונט"
           >
-            <MdFormatSize />
+            {/* <MdFormatSize /> */}
+            <AiOutlineFontSize />
           </button>
           <div className={classes.helpWrapper}>
             <CookingVoiceChat

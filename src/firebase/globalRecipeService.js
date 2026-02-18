@@ -14,26 +14,41 @@ import { db } from "./config";
 import { translateRecipeContent } from "../utils/translateContent";
 
 const RECIPES_COLLECTION = "recipes";
-const PAGE_SIZE = 20;
 const FETCH_SIZE = 40;
 
 export const fetchGlobalRecipes = async (currentUserId, lastDoc = null) => {
   try {
     const ref = collection(db, RECIPES_COLLECTION);
-    const constraints = [orderBy("name"), limit(FETCH_SIZE)];
+
+    const constraints = [
+      where("shareToGlobal", "==", true),
+      orderBy("name"),
+      limit(FETCH_SIZE),
+    ];
     if (lastDoc) {
-      constraints.splice(1, 0, startAfter(lastDoc));
+      constraints.splice(2, 0, startAfter(lastDoc));
     }
 
-    const q = query(ref, ...constraints);
-    const snap = await getDocs(q);
+    let snap;
+    try {
+      snap = await getDocs(query(ref, ...constraints));
+    } catch (indexError) {
+      console.warn(
+        "⚠️ fetchGlobalRecipes composite index missing, falling back:",
+        indexError.message,
+      );
+      const fallback = [where("shareToGlobal", "==", true), limit(FETCH_SIZE)];
+      if (lastDoc) fallback.splice(1, 0, startAfter(lastDoc));
+      snap = await getDocs(query(ref, ...fallback));
+    }
+
     const recipes = [];
     snap.forEach((d) => {
       const data = d.data();
       if (currentUserId && data.userId === currentUserId) return;
-      if (!data.shareToGlobal) return;
       recipes.push({ id: d.id, ...data });
     });
+
     const lastVisible = snap.docs[snap.docs.length - 1] || null;
     const hasMore = snap.docs.length === FETCH_SIZE;
     return { recipes, lastVisible, hasMore };

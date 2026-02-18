@@ -1,3 +1,4 @@
+import React from "react";
 import classes from "./recipe-card-new.module.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -77,7 +78,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
   const handleEdit = (e) => {
     e.stopPropagation();
     if (onEdit) {
-      onEdit();
+      onEdit(person);
     }
   };
 
@@ -192,4 +193,14 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
   );
 }
 
-export { RecipeInfo };
+const MemoizedRecipeInfo = React.memo(RecipeInfo, (prev, next) => {
+  return (
+    prev.person === next.person &&
+    prev.groups === next.groups &&
+    prev.onEdit === next.onEdit &&
+    prev.onDelete === next.onDelete &&
+    prev.onToggleFavorite === next.onToggleFavorite
+  );
+});
+
+export { MemoizedRecipeInfo as RecipeInfo };

@@ -6,7 +6,35 @@ const LANG_MAP = {
   mixed: null,
 };
 
+const STORAGE_KEY = "translationCache";
+const CACHE_MAX = 500;
+
 const cache = new Map();
+
+try {
+  const stored = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+  stored.forEach(([k, v]) => cache.set(k, v));
+} catch {
+  /* ignore corrupt storage */
+}
+
+function persistCache() {
+  try {
+    const entries = [...cache.entries()].slice(-CACHE_MAX);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  } catch {
+    /* quota exceeded — ignore */
+  }
+}
+
+let persistTimer = null;
+function schedulePersist() {
+  if (persistTimer) return;
+  persistTimer = setTimeout(() => {
+    persistTimer = null;
+    persistCache();
+  }, 2000);
+}
 
 function getCacheKey(text, targetLang) {
   return `${targetLang}:${text}`;
@@ -47,6 +75,7 @@ async function translateText(text, targetLang, sourceLang = "auto") {
       const result = data.translation || parseGoogleResponse(data);
       if (result) {
         cache.set(cacheKey, result);
+        schedulePersist();
         return result;
       }
     } catch {

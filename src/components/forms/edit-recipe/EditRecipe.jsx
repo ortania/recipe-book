@@ -17,7 +17,8 @@ import {
   BsImage,
   BsTags,
 } from "react-icons/bs";
-import { useLanguage } from "../../../context";
+import { useLanguage, useRecipeBook } from "../../../context";
+import { uploadRecipeImage } from "../../../firebase/imageService";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./edit-recipe.module.css";
@@ -34,6 +35,7 @@ const TABS = [
 
 function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const { t } = useLanguage();
+  const { currentUser } = useRecipeBook();
   const { getTranslated: getTranslatedGroup } = useTranslatedList(
     groups,
     "name",
@@ -160,74 +162,20 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     });
   };
 
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (file) {
       setUploadingImage(true);
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        // Compress image to fit Firebase 1MB limit
-        const img = new Image();
-        img.onload = () => {
-          const canvas = document.createElement("canvas");
-          let width = img.width;
-          let height = img.height;
-
-          // Calculate new dimensions to keep image under 800KB
-          const maxSize = 800 * 1024; // 800KB to be safe
-          let quality = 0.7;
-
-          // Scale down if image is too large
-          const maxDimension = 1200;
-          if (width > maxDimension || height > maxDimension) {
-            if (width > height) {
-              height = (height / width) * maxDimension;
-              width = maxDimension;
-            } else {
-              width = (width / height) * maxDimension;
-              height = maxDimension;
-            }
-          }
-
-          canvas.width = width;
-          canvas.height = height;
-          const ctx = canvas.getContext("2d");
-          ctx.drawImage(img, 0, 0, width, height);
-
-          // Convert to base64 with compression
-          let compressedBase64 = canvas.toDataURL("image/jpeg", quality);
-
-          // If still too large, reduce quality further
-          while (compressedBase64.length > maxSize && quality > 0.1) {
-            quality -= 0.1;
-            compressedBase64 = canvas.toDataURL("image/jpeg", quality);
-          }
-
-          console.log(
-            "📸 Image compressed from",
-            reader.result.length,
-            "to",
-            compressedBase64.length,
-            "bytes",
-          );
-
-          setEditedPerson((prev) => ({
-            ...prev,
-            image_src: compressedBase64,
-          }));
-          setUploadingImage(false);
-        };
-        img.onerror = () => {
-          setUploadingImage(false);
-          alert("Error processing image");
-        };
-        img.src = reader.result;
-      };
-      reader.onerror = () => {
-        setUploadingImage(false);
+      try {
+        const userId = currentUser?.uid;
+        const url = await uploadRecipeImage(userId, person.id, file);
+        setEditedPerson((prev) => ({ ...prev, image_src: url }));
+      } catch (err) {
+        console.error("Image upload failed:", err);
         alert("Error uploading image");
-      };
-      reader.readAsDataURL(file);
+      } finally {
+        setUploadingImage(false);
+      }
     }
   };
 

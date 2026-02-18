@@ -1,4 +1,4 @@
-// v2 - server-side text extraction
+// v2 - server-side text extraction + OpenAI proxy
 const { onRequest } = require("firebase-functions/v2/https");
 
 function extractTextFromHtml(html) {
@@ -89,6 +89,90 @@ exports.fetchUrl = onRequest(
         jsonLd,
         ogImage,
       });
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+);
+
+// ── OpenAI chat completions proxy ──
+exports.openaiChat = onRequest(
+  { cors: true, region: "us-central1" },
+  async (req, res) => {
+    if (req.method !== "POST") {
+      res.status(405).json({ error: "Method not allowed" });
+      return;
+    }
+
+    const key = process.env.OPENAI_API_KEY;
+    if (!key) {
+      res.status(500).json({ error: "OpenAI API key not configured" });
+      return;
+    }
+
+    try {
+      const response = await fetch(
+        "https://api.openai.com/v1/chat/completions",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(req.body),
+        },
+      );
+
+      const data = await response.json();
+      if (!response.ok) {
+        res
+          .status(response.status)
+          .json({ error: data.error?.message || "OpenAI request failed" });
+        return;
+      }
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+);
+
+// ── OpenAI TTS proxy (returns audio binary) ──
+exports.openaiTts = onRequest(
+  { cors: true, region: "us-central1" },
+  async (req, res) => {
+    if (req.method !== "POST") {
+      res.status(405).json({ error: "Method not allowed" });
+      return;
+    }
+
+    const key = process.env.OPENAI_API_KEY;
+    if (!key) {
+      res.status(500).json({ error: "OpenAI API key not configured" });
+      return;
+    }
+
+    try {
+      const response = await fetch("https://api.openai.com/v1/audio/speech", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${key}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(req.body),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        res
+          .status(response.status)
+          .json({ error: errorData.error?.message || "TTS request failed" });
+        return;
+      }
+
+      const arrayBuffer = await response.arrayBuffer();
+      res.set("Content-Type", "audio/mpeg");
+      res.send(Buffer.from(arrayBuffer));
     } catch (error) {
       res.status(500).json({ error: error.message });
     }

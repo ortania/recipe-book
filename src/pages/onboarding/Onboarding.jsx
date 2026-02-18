@@ -1,18 +1,20 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../context";
+import { RecipeBookIcon } from "../../components/icons/RecipeBookIcon";
+import { SaveBookIcon } from "../../components/icons/SaveBookIcon";
 import classes from "./onboarding.module.css";
 
 const SCREENS = [
   {
     key: "welcome",
-    emoji: "👨‍🍳",
+    icon: <RecipeBookIcon />,
     titleKey: "welcomeTitle",
     subtitleKey: "welcomeSubtitle",
   },
   {
     key: "save",
-    emoji: "📋",
+    icon: <SaveBookIcon />,
     titleKey: "saveTitle",
     bullets: ["saveBullet1", "saveBullet2", "saveBullet3", "saveBullet4"],
     tipLabel: "howToStart",
@@ -98,7 +100,7 @@ function Onboarding({ onFinish }) {
         </button>
 
         <div className={classes.content}>
-          <div className={classes.emoji}>{screen.emoji}</div>
+          <div className={classes.emoji}>{screen.icon || screen.emoji}</div>
           <h1 className={classes.title}>{t("onboarding", screen.titleKey)}</h1>
 
           {screen.subtitleKey && (

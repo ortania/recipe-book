@@ -48,7 +48,8 @@
 .headerTitle {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* justify-content: space-between; */
+  justify-content: center;
   gap: 0.5rem;
   margin-top: 3rem;
   margin-bottom: 1.5rem;
@@ -688,35 +689,49 @@
   justify-content: center;
   min-height: 60vh;
   text-align: center;
-  gap: 1rem;
+  gap: 1.25rem;
+  padding: 2rem 1.5rem;
 }
 
 .emptyIcon {
-  font-size: 4rem;
-  color: var(--text-muted);
+  font-size: 5rem;
+  color: #9e9e9e;
+  opacity: 0.85;
+}
+
+.emptyState img {
+  opacity: 0.9;
 }
 
 .emptyText {
-  font-size: var(--basic-font);
-  color: var(--text-secondary);
+  font-size: var(--large-font);
+  color: var(--text-primary);
   margin: 0;
+  font-weight: 500;
+  letter-spacing: 0.01em;
 }
 
 .emptyButton {
-  margin-top: 0.5rem;
-  padding: 0.85em 2.5em;
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 1em 3em;
   font-size: var(--basic-font);
   font-weight: 600;
-  color: var(--bg-primary);
-  background: var(--text-primary);
+  color: #ffffff;
+  background: #222222;
   border: none;
-  border-radius: 2rem;
+  border-radius: 50px;
   cursor: pointer;
-  transition: background 0.2s ease;
+  transition: background 0.2s ease, transform 0.15s ease;
 }
 
 .emptyButton:hover {
-  background: var(--text-secondary);
+  background: #3a3a3a;
+  transform: translateY(-1px);
+}
+
+.emptyButton:active {
+  transform: translateY(0);
 }
 
 /* ===== Recently Viewed ===== */

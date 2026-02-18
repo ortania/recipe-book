@@ -10,21 +10,33 @@ import classes from "./app.module.css";
 import { MainLayout, ProtectedLayout } from "./layout";
 import { Login, Categories } from "../pages";
 import Signup from "../pages/signup";
-import MigratePage from "../pages/migrate";
-import Repair from "../pages/repair/Repair";
 import {
   RecipeBookProvider,
   useRecipeBook,
   LanguageProvider,
 } from "../context";
-import ConversionTables from "../components/conversion-tables";
-import Settings from "../pages/settings/Settings";
-import RecipeDetailsPage from "../pages/recipe-details/RecipeDetailsPage";
-import MealPlanner from "../pages/meal-planner";
-import ShoppingList from "../pages/shopping-list";
 import { Onboarding } from "../pages/onboarding";
 
+const RecipeDetailsPage = React.lazy(
+  () => import("../pages/recipe-details/RecipeDetailsPage"),
+);
+const MealPlanner = React.lazy(() => import("../pages/meal-planner"));
+const ShoppingList = React.lazy(() => import("../pages/shopping-list"));
 const GlobalRecipes = React.lazy(() => import("../pages/global-recipes"));
+const ConversionTables = React.lazy(
+  () => import("../components/conversion-tables"),
+);
+const Settings = React.lazy(() => import("../pages/settings/Settings"));
+const MigratePage = React.lazy(() => import("../pages/migrate"));
+const Repair = React.lazy(() => import("../pages/repair/Repair"));
+
+function Lazy({ children }) {
+  return (
+    <Suspense fallback={<div className={classes.loading}>Loading...</div>}>
+      {children}
+    </Suspense>
+  );
+}
 
 function App() {
   return (
@@ -78,22 +90,28 @@ function AppContent() {
         <Route element={<ProtectedLayout />}>
           <Route path="/home" element={<Navigate to="/categories" />} />
           <Route path="/categories" element={<Categories />} />
-          <Route path="/conversions" element={<ConversionTables />} />
-          <Route path="/settings" element={<Settings />} />
-          <Route path="/migrate" element={<MigratePage />} />
-          <Route path="/repair" element={<Repair />} />
-          <Route path="/recipe/:id" element={<RecipeDetailsPage />} />
-          <Route path="/meal-planner" element={<MealPlanner />} />
-          <Route path="/shopping-list" element={<ShoppingList />} />
+          <Route
+            path="/conversions"
+            element={<Lazy><ConversionTables /></Lazy>}
+          />
+          <Route path="/settings" element={<Lazy><Settings /></Lazy>} />
+          <Route path="/migrate" element={<Lazy><MigratePage /></Lazy>} />
+          <Route path="/repair" element={<Lazy><Repair /></Lazy>} />
+          <Route
+            path="/recipe/:id"
+            element={<Lazy><RecipeDetailsPage /></Lazy>}
+          />
+          <Route
+            path="/meal-planner"
+            element={<Lazy><MealPlanner /></Lazy>}
+          />
+          <Route
+            path="/shopping-list"
+            element={<Lazy><ShoppingList /></Lazy>}
+          />
           <Route
             path="/global-recipes"
-            element={
-              <Suspense
-                fallback={<div className={classes.loading}>Loading...</div>}
-              >
-                <GlobalRecipes />
-              </Suspense>
-            }
+            element={<Lazy><GlobalRecipes /></Lazy>}
           />
         </Route>
 

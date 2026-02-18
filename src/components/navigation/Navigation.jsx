@@ -17,6 +17,10 @@ import {
   FiGlobe,
 } from "react-icons/fi";
 import { MdRestaurant, MdMenuBook } from "react-icons/md";
+import { CiGrid41 } from "react-icons/ci";
+import { BsGrid } from "react-icons/bs";
+import { ChatLogIcon } from "../icons/ChatLogIcon";
+
 import { AnimatePresence } from "framer-motion";
 import { ProductTour } from "../product-tour";
 import { PiPlusLight } from "react-icons/pi";
@@ -27,6 +31,7 @@ import { CloseButton } from "../controls/close-button";
 import { getCategoryIcon } from "../../utils/categoryIcons";
 import { SearchBox } from "../controls/search";
 import classes from "./navigation.module.css";
+import { ManageCategoriesIcon } from "../icons/ManageCategoriesIcon";
 
 const iconMap = {
   Home: FiHome,
@@ -259,38 +264,8 @@ function Navigation({ onLogout, links }) {
                   onClick={() => setShowManagement(true)}
                   title={t("categories", "manage")}
                 >
-                  <svg
-                    width="12"
-                    height="12"
-                    viewBox="0 0 12 12"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <path
-                      d="M10 3.5H5.5"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M7 8.5H2.5"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M8.5 10C9.32843 10 10 9.32843 10 8.5C10 7.67157 9.32843 7 8.5 7C7.67157 7 7 7.67157 7 8.5C7 9.32843 7.67157 10 8.5 10Z"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M3.5 5C4.32843 5 5 4.32843 5 3.5C5 2.67157 4.32843 2 3.5 2C2.67157 2 2 2.67157 2 3.5C2 4.32843 2.67157 5 3.5 5Z"
-                      stroke="currentColor"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>{" "}
+                  <ManageCategoriesIcon width={16} height={16} />
+
                   {t("categories", "manage")}
                 </button>
               </div>
@@ -304,6 +279,8 @@ function Navigation({ onLogout, links }) {
                   }
                 >
                   <span>
+                    {/* <CiGrid41 /> */}
+                    <BsGrid />
                     {t("nav", "categories").toUpperCase()}
                     {!categorySearch && selectedCount > 0 && (
                       <span className={classes.sectionCount}>
@@ -410,6 +387,7 @@ function Navigation({ onLogout, links }) {
             className={classes.navLink}
             onClick={() => setChatLogOpen(!chatLogOpen)}
           >
+            {/* 
             <svg
               width="24"
               height="20"
@@ -463,7 +441,8 @@ function Navigation({ onLogout, links }) {
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
-            </svg>
+            </svg> */}
+            <ChatLogIcon width={17} height={17} />
             {t("nav", "chatLog")}
             {chatLogOpen ? (
               <FaChevronUp

@@ -3,9 +3,10 @@ import { FiLink, FiCamera } from "react-icons/fi";
 import { BsClipboardData } from "react-icons/bs";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
-import { FaMicrophone } from "react-icons/fa6";
+import { PiMicrophoneLight } from "react-icons/pi";
 import { useLanguage } from "../../../context";
 import { AddButton } from "../add-button";
+import { GalleryIcon } from "../../icons/GalleryIcon";
 import classes from "./add-recipe-dropdown.module.css";
 
 function AddRecipeDropdown({ onSelect, buttonType = "circle", children }) {
@@ -101,7 +102,10 @@ function AddRecipeDropdown({ onSelect, buttonType = "circle", children }) {
               {t("addWizard", "fromPhoto")}
             </span>
             <span className={classes.dropdownIcon}>
-              <FiCamera />
+              {/* <FiCamera /> */}
+
+              <GalleryIcon width={20} height={20} />
+              {/* <img src={photo} alt="" /> */}
             </span>
           </button>
           <button
@@ -134,7 +138,7 @@ function AddRecipeDropdown({ onSelect, buttonType = "circle", children }) {
               {t("addWizard", "fromRecording")}
             </span>
             <span className={classes.dropdownIcon}>
-              <FaMicrophone />
+              <PiMicrophoneLight size="1.2em" />
             </span>
           </button>
           <button

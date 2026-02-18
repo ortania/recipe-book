@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Modal } from "../../modal";
-import { useLanguage } from "../../../context";
+import { useLanguage, useRecipeBook } from "../../../context";
+import { uploadRecipeImage } from "../../../firebase/imageService";
 import {
   parseRecipeFromUrl,
   parseRecipeFromText,
@@ -82,6 +83,7 @@ function AddRecipeWizard({
   initialScreen = "method",
 }) {
   const { t } = useLanguage();
+  const { currentUser } = useRecipeBook();
   const { getTranslated: getTranslatedGroup } = useTranslatedList(
     groups,
     "name",
@@ -563,47 +565,20 @@ function AddRecipeWizard({
   const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
   // ========== Image upload ==========
-  const handleImageUpload = (e) => {
+  const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
     setUploadingImage(true);
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement("canvas");
-        let width = img.width;
-        let height = img.height;
-        const maxDimension = 1200;
-        if (width > maxDimension || height > maxDimension) {
-          if (width > height) {
-            height = (height / width) * maxDimension;
-            width = maxDimension;
-          } else {
-            width = (width / height) * maxDimension;
-            height = maxDimension;
-          }
-        }
-        canvas.width = width;
-        canvas.height = height;
-        const ctx = canvas.getContext("2d");
-        ctx.drawImage(img, 0, 0, width, height);
-        let quality = 0.7;
-        let compressed = canvas.toDataURL("image/jpeg", quality);
-        const maxSize = 800 * 1024;
-        while (compressed.length > maxSize && quality > 0.1) {
-          quality -= 0.1;
-          compressed = canvas.toDataURL("image/jpeg", quality);
-        }
-        updateRecipe("image_src", compressed);
-        setUploadingImage(false);
-      };
-      img.onerror = () => setUploadingImage(false);
-      img.src = reader.result;
-    };
-    reader.onerror = () => setUploadingImage(false);
-    reader.readAsDataURL(file);
-    e.target.value = "";
+    try {
+      const userId = currentUser?.uid;
+      const url = await uploadRecipeImage(userId, null, file);
+      updateRecipe("image_src", url);
+    } catch (err) {
+      console.error("Image upload failed:", err);
+    } finally {
+      setUploadingImage(false);
+      e.target.value = "";
+    }
   };
 
   // ========== Ingredient/Instruction handlers ==========

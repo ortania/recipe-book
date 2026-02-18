@@ -76,4 +76,14 @@ function SimpleRecipeInfo({
   );
 }
 
-export { SimpleRecipeInfo };
+const MemoizedSimpleRecipeInfo = React.memo(SimpleRecipeInfo, (prev, next) => {
+  return (
+    prev.person === next.person &&
+    prev.groups === next.groups &&
+    prev.onEdit === next.onEdit &&
+    prev.onDelete === next.onDelete &&
+    prev.onToggleFavorite === next.onToggleFavorite
+  );
+});
+
+export { MemoizedSimpleRecipeInfo as SimpleRecipeInfo };

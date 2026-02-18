@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef } from "react";
+import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { FaFilter } from "react-icons/fa";
 import { FaHistory } from "react-icons/fa";
@@ -8,6 +8,7 @@ import { IoMdStarOutline } from "react-icons/io";
 import { IoChevronDown } from "react-icons/io5";
 import { BiSortAlt2 } from "react-icons/bi";
 import { IoBookOutline } from "react-icons/io5";
+import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
 import { GoHeart, GoHeartFill } from "react-icons/go";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
@@ -41,6 +42,7 @@ function RecipesView({
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
   const [editingPerson, setEditingPerson] = useState(null);
@@ -69,6 +71,11 @@ function RecipesView({
     toggleCategory,
     clearCategorySelection,
   } = useRecipeBook();
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedSearch(searchTerm), 250);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
 
   // Filtered persons based on favorites toggle
   const displayPersons = useMemo(() => {
@@ -279,7 +286,7 @@ function RecipesView({
     }
 
     // Search and sort
-    let result = search(filtered, searchTerm, sortField, sortDirection);
+    let result = search(filtered, debouncedSearch, sortField, sortDirection);
 
     // Sort by favorites
     if (sortField === "favorites") {
@@ -309,7 +316,7 @@ function RecipesView({
     return result;
   }, [
     displayPersons,
-    searchTerm,
+    debouncedSearch,
     sortField,
     sortDirection,
     selectedRating,
@@ -374,28 +381,22 @@ function RecipesView({
     setEditingPerson(updatedPerson);
   };
 
-  const handleToggleFavorite = (personId, isFavorite) => {
-    // Find the person to update
-    const personToUpdate = localPersons.find(
-      (person) => person.id === personId,
-    );
+  const handleToggleFavorite = useCallback(
+    (personId, isFavorite) => {
+      setLocalPersons((prev) => {
+        const personToUpdate = prev.find((p) => p.id === personId);
+        if (!personToUpdate) return prev;
+        const updatedPerson = { ...personToUpdate, isFavorite };
+        onEditPerson(updatedPerson);
+        return prev.map((p) => (p.id === personId ? updatedPerson : p));
+      });
+    },
+    [onEditPerson],
+  );
 
-    if (personToUpdate) {
-      // Create updated person with the new favorite status
-      const updatedPerson = {
-        ...personToUpdate,
-        isFavorite,
-      };
-
-      // Update the local state
-      setLocalPersons((prev) =>
-        prev.map((person) => (person.id === personId ? updatedPerson : person)),
-      );
-
-      // Update the parent state
-      onEditPerson(updatedPerson);
-    }
-  };
+  const handleEditClick = useCallback((person) => {
+    setEditingPerson(person);
+  }, []);
 
   const toggleView = () => {
     setIsSimpleView((prev) => !prev);
@@ -447,7 +448,7 @@ function RecipesView({
           )}
 
           <div className={classes.emptyState}>
-            <IoBookOutline className={classes.emptyIcon} />
+            <RecipeBookIcon width={72} height={72} />
             <p className={classes.emptyText}>
               {t("recipesView", "emptyTitle")}
             </p>
@@ -1021,7 +1022,7 @@ function RecipesView({
                             key={person.id}
                             person={person}
                             groups={groups}
-                            onEdit={() => setEditingPerson(person)}
+                            onEdit={handleEditClick}
                             onDelete={onDeletePerson}
                             onToggleFavorite={handleToggleFavorite}
                           />
@@ -1056,7 +1057,7 @@ function RecipesView({
                           key={person.id}
                           person={person}
                           groups={groups}
-                          onEdit={() => setEditingPerson(person)}
+                          onEdit={handleEditClick}
                           onDelete={onDeletePerson}
                           onToggleFavorite={handleToggleFavorite}
                         />
@@ -1073,7 +1074,7 @@ function RecipesView({
                   key={person.id}
                   person={person}
                   groups={groups}
-                  onEdit={() => setEditingPerson(person)}
+                  onEdit={handleEditClick}
                   onDelete={onDeletePerson}
                   onToggleFavorite={handleToggleFavorite}
                 />

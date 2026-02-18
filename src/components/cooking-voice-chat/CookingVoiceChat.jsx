@@ -2,8 +2,8 @@ import { useState, useRef, useEffect } from "react";
 import { PiMicrophoneThin, PiMicrophoneSlashThin } from "react-icons/pi";
 import { FaMicrophone } from "react-icons/fa6";
 import { FaMicrophoneSlash } from "react-icons/fa";
+import { PiMicrophoneLight, PiMicrophoneSlash } from "react-icons/pi";
 import { sendCookingChatMessage } from "../../services/openai";
-import { getOpenAIKey } from "../../firebase/apiKeyService";
 import { useLanguage } from "../../context";
 import classes from "./cooking-voice-chat.module.css";
 
@@ -154,26 +154,24 @@ function CookingVoiceChat({
     }
   }
 
-  // ---- Helper: speak text aloud using OpenAI TTS ----
+  // ---- Helper: speak text aloud using OpenAI TTS via Cloud Function ----
   async function speakText(text) {
     if (!text) return;
-    const apiKey = await getOpenAIKey();
-    if (!apiKey) return;
     setIsSpeaking(true);
     try {
-      const response = await fetch("https://api.openai.com/v1/audio/speech", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${apiKey}`,
-          "Content-Type": "application/json",
+      const response = await fetch(
+        "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            model: "tts-1",
+            input: text,
+            voice: "nova",
+            response_format: "mp3",
+          }),
         },
-        body: JSON.stringify({
-          model: "tts-1",
-          input: text,
-          voice: "nova",
-          response_format: "mp3",
-        }),
-      });
+      );
       if (!response.ok || !isActiveRef.current) {
         setIsSpeaking(false);
         return;
@@ -508,7 +506,7 @@ function CookingVoiceChat({
         className={`${classes.voiceChatIcon} ${isActive ? classes.active : ""} ${isSpeaking ? classes.speaking : ""}`}
         title={isActive ? "עצור צ'אט קולי" : "צ'אט קולי"}
       >
-        {isActive ? <FaMicrophone /> : <FaMicrophoneSlash />}
+        {isActive ? <PiMicrophoneLight /> : <PiMicrophoneSlash />}
         {/* {isActive ? <PiMicrophoneThin /> : <PiMicrophoneSlashThin />} */}
       </button>
 

@@ -75,11 +75,8 @@ export const RecipeBookProvider = ({ children }) => {
     const unsubscribe = onAuthStateChange(async (user) => {
       if (user) {
         setIsLoading(true);
-        console.log("✅ User authenticated:", user.uid);
         let userData = await getUserData(user.uid);
-        // Retry if user document not yet created (race condition on signup)
         if (!userData) {
-          console.log("⏳ User document not found, retrying...");
           await new Promise((resolve) => setTimeout(resolve, 1500));
           userData = await getUserData(user.uid);
         }
@@ -91,7 +88,6 @@ export const RecipeBookProvider = ({ children }) => {
         await loadUserData(user.uid);
         setIsLoggedIn(true);
       } else {
-        console.log("❌ No user authenticated");
         setCurrentUser(null);
         setIsAdmin(false);
         setIsLoggedIn(false);
@@ -109,17 +105,8 @@ export const RecipeBookProvider = ({ children }) => {
   // Load user's categories and recipes
   const loadUserData = async (userId) => {
     try {
-      console.log("🔄 Loading user data for:", userId);
-
-      // Load categories
       let categoriesFromFirestore = await fetchCategories(userId);
-      console.log(
-        "📋 Categories from Firestore:",
-        categoriesFromFirestore.length,
-        categoriesFromFirestore.map((c) => c.id),
-      );
-      // New users start with no categories — they can add their own
-      // Always ensure "All" virtual category is first
+
       const allCategory = {
         id: "all",
         name: "All",
@@ -150,8 +137,6 @@ export const RecipeBookProvider = ({ children }) => {
       setLastRecipeDoc(lastVisible);
       setHasMoreRecipes(hasMore);
       setRecipesLoaded(true);
-
-      console.log("✅ User data loaded");
     } catch (error) {
       console.error("Error loading user data:", error);
     }
@@ -235,9 +220,6 @@ export const RecipeBookProvider = ({ children }) => {
         if (hasUpdates) {
           batch
             .commit()
-            .then(() =>
-              console.log("✅ Recipe categories batch update successful"),
-            )
             .catch((error) =>
               console.error("Error updating recipe categories:", error),
             );
@@ -257,7 +239,6 @@ export const RecipeBookProvider = ({ children }) => {
   const addRecipe = async (newRecipe) => {
     try {
       if (!currentUser) throw new Error("No user logged in");
-      console.log("🔥 CONTEXT - Adding recipe to Firebase:", newRecipe.name);
       const addedRecipe = await handleAddRecipe(
         setRecipes,
         currentUser.uid,
@@ -282,12 +263,9 @@ export const RecipeBookProvider = ({ children }) => {
   };
 
   const reorderRecipes = async (fromIndex, toIndex) => {
-    console.log("🔄 reorderRecipes called:", { fromIndex, toIndex });
     setRecipes((prevRecipes) => {
-      console.log("📋 Current recipes count:", prevRecipes.length);
       const newRecipes = [...prevRecipes];
       const [movedRecipe] = newRecipes.splice(fromIndex, 1);
-      console.log("📦 Moving recipe:", movedRecipe?.name);
       newRecipes.splice(toIndex, 0, movedRecipe);
 
       // Use batch write for all recipe order updates
@@ -296,12 +274,6 @@ export const RecipeBookProvider = ({ children }) => {
 
       newRecipes.forEach((recipe, index) => {
         if (recipe.order !== index) {
-          console.log(
-            "💾 Batching order update for:",
-            recipe.name,
-            "to",
-            index,
-          );
           const recipeRef = doc(db, "recipes", recipe.id);
           batch.update(recipeRef, { order: index });
           hasUpdates = true;
@@ -311,7 +283,6 @@ export const RecipeBookProvider = ({ children }) => {
       if (hasUpdates) {
         batch
           .commit()
-          .then(() => console.log("✅ Recipe order batch update successful"))
           .catch((error) =>
             console.error("Error updating recipe order:", error),
           );
@@ -381,39 +352,20 @@ export const RecipeBookProvider = ({ children }) => {
     if (!hasMoreRecipes || !currentUser) return;
 
     try {
-      console.log("📥 Loading more recipes...");
       const {
         recipes: moreRecipes,
         lastVisible,
         hasMore,
       } = await fetchRecipes(RECIPES_PER_PAGE, currentUser.uid, lastRecipeDoc);
 
-      console.log(
-        "🔍 More recipes IDs:",
-        moreRecipes.map((r) => r.id),
-      );
-
       setRecipes((prev) => {
-        console.log("🔍 Current recipe count:", prev.length);
-        console.log(
-          "🔍 Current recipe IDs:",
-          prev.map((r) => r.id),
-        );
-
-        // Filter out any duplicates
         const existingIds = new Set(prev.map((r) => r.id));
         const newRecipes = moreRecipes.filter((r) => !existingIds.has(r.id));
-
-        console.log("🔍 New unique recipes:", newRecipes.length);
-        const result = [...prev, ...newRecipes];
-        console.log("🔍 Total after merge:", result.length);
-
-        return result;
+        return [...prev, ...newRecipes];
       });
 
       setLastRecipeDoc(lastVisible);
       setHasMoreRecipes(hasMore);
-      console.log("✅ Loaded", moreRecipes.length, "more recipes");
     } catch (error) {
       console.error("Error loading more recipes:", error);
     }
@@ -427,7 +379,6 @@ export const RecipeBookProvider = ({ children }) => {
         targetUserId,
         targetLang,
       );
-      console.log("📋 Recipe copied successfully:", copiedRecipe.id);
       return copiedRecipe;
     } catch (error) {
       console.error("Error copying recipe:", error);

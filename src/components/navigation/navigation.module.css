@@ -114,10 +114,12 @@
   flex: 1;
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  /* color: var(--text-muted); */
+  color: var(--text-primary);
   padding: 0.5rem 1rem;
+  padding-right: 0;
   font-size: var(--basic-font);
-  font-weight: 600;
+  /* font-weight: 600; */
   letter-spacing: 0.05em;
   cursor: pointer;
   display: flex;
@@ -245,15 +247,17 @@
   display: flex;
   gap: 0.75rem;
   padding: 0.5rem 1rem;
+  padding-right: 0;
   margin-top: 0.25rem;
 }
 
 .categoryActionBtn {
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  /* color: var(--text-muted); */
+  color: var(--text-primary);
   font-size: var(--basic-font);
-  font-weight: 600;
+  /* font-weight: 600; */
   cursor: pointer;
   display: flex;
   align-items: center;
