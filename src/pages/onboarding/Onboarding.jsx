@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../../context";
+import useSwipe from "../../hooks/useSwipe";
 import { RecipeBookIcon } from "../../components/icons/RecipeBookIcon";
 import { SaveBookIcon } from "../../components/icons/SaveBookIcon";
 import classes from "./onboarding.module.css";
@@ -60,6 +61,14 @@ const SCREENS = [
     tipLabel: "howToActivate",
     tipKey: "planTip",
   },
+  {
+    key: "share",
+    emoji: "🔗",
+    titleKey: "shareTitle",
+    subtitleKey: "shareSubtitle",
+    tipLabel: "howToActivate",
+    tipKey: "shareTip",
+  },
 ];
 
 function Onboarding({ onFinish }) {
@@ -92,9 +101,14 @@ function Onboarding({ onFinish }) {
 
   const screen = SCREENS[current];
 
+  const swipeHandlers = useSwipe(
+    () => setCurrent((prev) => Math.max(prev - 1, 0)),
+    () => setCurrent((prev) => Math.min(prev + 1, SCREENS.length - 1)),
+  );
+
   return (
     <div className={classes.container}>
-      <div className={classes.card}>
+      <div className={classes.card} {...swipeHandlers}>
         <button className={classes.skipBtn} onClick={handleSkip}>
           {t("onboarding", "skip")}
         </button>

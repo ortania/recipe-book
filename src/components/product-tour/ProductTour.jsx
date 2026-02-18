@@ -18,6 +18,7 @@ import { FiCamera } from "react-icons/fi";
 import { VscDebugRestart } from "react-icons/vsc";
 import { IoLanguageOutline } from "react-icons/io5";
 import { useLanguage } from "../../context";
+import useSwipe from "../../hooks/useSwipe";
 import RecipeBookTourIcon from "../icons/RecipeBookIcon/RecipeBookTourIcon";
 import { SaveBookIcon } from "../icons/SaveBookIcon";
 import classes from "./productTour.module.css";
@@ -135,6 +136,14 @@ const ONBOARDING_SCREENS = [
     subtitleKey: "planSubtitle",
     tipLabel: "howToActivate",
     tipKey: "planTip",
+  },
+  {
+    key: "share",
+    emoji: "🔗",
+    titleKey: "shareTitle",
+    subtitleKey: "shareSubtitle",
+    tipLabel: "howToActivate",
+    tipKey: "shareTip",
   },
 ];
 
@@ -572,6 +581,15 @@ function ProductTour({ onClose }) {
     if (screen > 0) setScreen((s) => s - 1);
   };
 
+  const swipeHandlers = useSwipe(
+    () => {
+      if (screen > 0) setScreen((s) => s - 1);
+    },
+    () => {
+      if (screen < SCREENS.length - 1) setScreen((s) => s + 1);
+    },
+  );
+
   const handleStepClick = (i) => {
     if (i <= screen) setScreen(i);
   };
@@ -599,7 +617,7 @@ function ProductTour({ onClose }) {
       transition={{ duration: 0.3 }}
       onClick={handleOverlayClick}
     >
-      <div className={classes.sceneContainer}>
+      <div className={classes.sceneContainer} {...swipeHandlers}>
         {/* Stepper progress bar */}
         <div className={classes.stepperBar}>
           <div className={classes.stepperHeader}>

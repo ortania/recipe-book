@@ -16,11 +16,11 @@ const translations = {
       mixed: "Categories",
     },
     recipes: {
-      he: "מתכונים",
-      en: "Recipes",
-      ru: "Рецепты",
-      de: "Rezepte",
-      mixed: "מתכונים",
+      he: "מתכונים שלי",
+      en: "My Recipes",
+      ru: "Мои рецепты",
+      de: "Meine Rezepte",
+      mixed: "מתכונים שלי",
     },
     conversions: {
       he: "המרות",
@@ -44,11 +44,11 @@ const translations = {
       mixed: "Shopping List",
     },
     globalRecipes: {
-      he: "מאגר מתכונים",
+      he: "מאגר",
       en: "Recipe Hub",
       ru: "Банк рецептов",
       de: "Rezeptsammlung",
-      mixed: "Recipe Hub",
+      mixed: "מאגר",
     },
     settings: {
       he: "הגדרות",
@@ -3735,7 +3735,7 @@ const translations = {
       mixed: "Smart filtering by rating, difficulty and more",
     },
     searchTip: {
-      he: "הקלידו בשורת החיפוש או הפעילו מסננים כדי למצוא את המתכון המתאים לכם במהירות.",
+      he: "הקלידו בשורת החיפוש והפעילו מסננים כדי למצוא את המתכון המתאים לכם במהירות.",
       en: "Type in the search bar or activate filters to quickly find the right recipe for you.",
       ru: "Введите в строке поиска или включите фильтры, чтобы быстро найти подходящий рецепт.",
       de: "Tippe in die Suchleiste oder aktiviere Filter, um schnell das passende Rezept zu finden.",
@@ -3750,12 +3750,12 @@ const translations = {
       mixed: "Interactive Cooking Mode",
     },
     cookSubtitle: {
-      he: "האפליקציה מציגה את שלבי ההכנה אחד־אחד ומאפשרת להפעיל טיימרים לפי הצורך במהלך הבישול.\nבמצב קולי ניתן גם להאזין להוראות ולהתקדם בין השלבים באמצעות פקודות קוליות, ללא צורך במגע במסך.",
-      en: "The app presents preparation steps one by one and lets you activate timers as needed during cooking.\nIn voice mode, you can also listen to instructions and advance between steps using voice commands, without touching the screen.",
-      ru: "Приложение показывает шаги приготовления один за другим и позволяет запускать таймеры по мере необходимости.\nВ голосовом режиме можно слушать инструкции и переходить между шагами голосовыми командами, не касаясь экрана.",
-      de: "Die App zeigt die Zubereitungsschritte einzeln an und ermöglicht es, Timer bei Bedarf zu aktivieren.\nIm Sprachmodus kannst du Anweisungen anhören und per Sprachbefehl zwischen den Schritten wechseln, ohne den Bildschirm zu berühren.",
+      he: "שלבי ההכנה מוצגים צעד־אחר־צעד, עם אפשרות להפעיל טיימרים.\nבמצב קולי ניתן גם להאזין להוראות ולהתקדם בפקודות קוליות.",
+      en: "Preparation steps are shown step by step, with the option to activate timers.\nIn voice mode, you can also listen to instructions and advance with voice commands.",
+      ru: "Шаги приготовления отображаются последовательно, с возможностью запуска таймеров.\nВ голосовом режиме можно слушать инструкции и переходить голосовыми командами.",
+      de: "Die Zubereitungsschritte werden Schritt für Schritt angezeigt, mit der Möglichkeit, Timer zu aktivieren.\nIm Sprachmodus kannst du Anweisungen anhören und per Sprachbefehl weiterschalten.",
       mixed:
-        "The app presents preparation steps one by one and lets you activate timers as needed during cooking.\nIn voice mode, you can also listen to instructions and advance between steps using voice commands, without touching the screen.",
+        "Preparation steps are shown step by step, with the option to activate timers.\nIn voice mode, you can also listen to instructions and advance with voice commands.",
     },
     cookTip: {
       he: "פתחו מתכון ולחצו על מצב בישול כדי להתחיל.",
@@ -3829,6 +3829,28 @@ const translations = {
       ru: "Перейдите на экран планирования.",
       de: "Gehe zum Wochenplaner.",
       mixed: "Go to the Weekly Planner screen.",
+    },
+    shareTitle: {
+      he: "שיתוף מתכונים בין משתמשים",
+      en: "Share Recipes Between Users",
+      ru: "Обмен рецептами между пользователями",
+      de: "Rezepte zwischen Nutzern teilen",
+      mixed: "Share Recipes Between Users",
+    },
+    shareSubtitle: {
+      he: "שתפו מתכונים עם חברים ובני משפחה, או משכו מתכונים ממאגר משותף.",
+      en: "Share recipes with friends and family, or pull recipes from a shared collection.",
+      ru: "Делитесь рецептами с друзьями и семьёй или берите рецепты из общего хранилища.",
+      de: "Teile Rezepte mit Freunden und Familie oder hole Rezepte aus einer gemeinsamen Sammlung.",
+      mixed:
+        "Share recipes with friends and family, or pull recipes from a shared collection.",
+    },
+    shareTip: {
+      he: "פתחו מתכון ולחצו על כפתור השיתוף.",
+      en: "Open a recipe and tap the share button.",
+      ru: "Откройте рецепт и нажмите кнопку поделиться.",
+      de: "Öffne ein Rezept und tippe auf Teilen.",
+      mixed: "Open a recipe and tap the share button.",
     },
     howToStart: {
       he: "איך?",

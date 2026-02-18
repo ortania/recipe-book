@@ -13,9 +13,11 @@
 }
 
 .footerNav {
-  display: flex;
+  /* display: flex;
   justify-content: space-around;
-  align-items: center;
+  align-items: center; */
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 
 .footerLink {
