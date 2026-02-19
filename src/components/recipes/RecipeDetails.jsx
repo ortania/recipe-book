@@ -317,7 +317,9 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
           onSaveRecipe={editRecipe}
           getCategoryName={getCategoryName}
           onEnterCookingMode={handleCookingModeToggle}
-          onCopyRecipe={copyRecipeToUser}
+          onCopyRecipe={(recipe, targetUserId) =>
+            copyRecipeToUser(recipe, targetUserId, language)
+          }
           currentUserId={currentUser?.uid}
         />
       ) : (

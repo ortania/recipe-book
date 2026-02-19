@@ -809,11 +809,13 @@ function AddRecipeWizard({
             {t("addWizard", "cookTimeMin")}
           </label>
           <input
-            type="text"
+            type="number"
+            inputMode="numeric"
+            min="0"
             className={classes.formInput}
             placeholder="45"
             value={recipe.cookTime}
-            onChange={(e) => updateRecipe("cookTime", e.target.value)}
+            onChange={(e) => updateRecipe("cookTime", e.target.value.replace(/[^0-9]/g, ""))}
           />
         </div>
         <div className={classes.formGroup}>
@@ -821,11 +823,13 @@ function AddRecipeWizard({
             {t("addWizard", "prepTimeMin")}
           </label>
           <input
-            type="text"
+            type="number"
+            inputMode="numeric"
+            min="0"
             className={classes.formInput}
             placeholder="30"
             value={recipe.prepTime}
-            onChange={(e) => updateRecipe("prepTime", e.target.value)}
+            onChange={(e) => updateRecipe("prepTime", e.target.value.replace(/[^0-9]/g, ""))}
           />
         </div>
       </div>

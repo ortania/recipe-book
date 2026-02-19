@@ -54,7 +54,10 @@ function RecipesView({
   const [sortDirection, setSortDirection] = useState("asc");
   const [editingPerson, setEditingPerson] = useState(null);
   const [localPersons, setLocalPersons] = useState(persons);
-  const [isSimpleView, setIsSimpleView] = useState(false);
+  const [isSimpleView, setIsSimpleView] = useState(() => {
+    try { return localStorage.getItem("recipesSimpleView") === "true"; }
+    catch { return false; }
+  });
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
   const [selectedRating, setSelectedRating] = useState("all");
@@ -409,7 +412,11 @@ function RecipesView({
   }, []);
 
   const toggleView = () => {
-    setIsSimpleView((prev) => !prev);
+    setIsSimpleView((prev) => {
+      const next = !prev;
+      try { localStorage.setItem("recipesSimpleView", String(next)); } catch {}
+      return next;
+    });
   };
 
   const { getTranslated: getTranslatedGroup } = useTranslatedList(

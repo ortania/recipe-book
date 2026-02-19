@@ -460,13 +460,15 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             {t("recipes", "cookTime")} ({t("addWizard", "min")})
           </label>
           <input
-            type="text"
+            type="number"
+            inputMode="numeric"
+            min="0"
             className={classes.formInput}
             value={editedPerson.cookTime}
             onChange={(e) =>
               setEditedPerson((prev) => ({
                 ...prev,
-                cookTime: e.target.value,
+                cookTime: e.target.value.replace(/[^0-9]/g, ""),
               }))
             }
           />
@@ -476,13 +478,15 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             {t("recipes", "prepTime")} ({t("addWizard", "min")})
           </label>
           <input
-            type="text"
+            type="number"
+            inputMode="numeric"
+            min="0"
             className={classes.formInput}
             value={editedPerson.prepTime}
             onChange={(e) =>
               setEditedPerson((prev) => ({
                 ...prev,
-                prepTime: e.target.value,
+                prepTime: e.target.value.replace(/[^0-9]/g, ""),
               }))
             }
           />

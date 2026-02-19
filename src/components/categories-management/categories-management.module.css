@@ -57,6 +57,19 @@
 
 .listWrap {
   padding: 0 0.5rem;
+  position: relative;
+}
+
+.listWrap::after {
+  content: "";
+  position: sticky;
+  bottom: 0;
+  display: block;
+  height: 40px;
+  margin-top: -40px;
+  background: linear-gradient(to bottom, transparent, var(--bg-card));
+  pointer-events: none;
+  z-index: 5;
 }
 
 /* Category row */
@@ -345,6 +358,10 @@
   padding: 1rem 1.5rem;
   display: flex;
   justify-content: flex-end;
+  position: sticky;
+  bottom: 0;
+  background: var(--bg-card);
+  z-index: 6;
 }
 
 .doneBtn {
