@@ -20,6 +20,14 @@
       "collectionGroup": "recipes",
       "queryScope": "COLLECTION",
       "fields": [
+        { "fieldPath": "shareToGlobal", "order": "ASCENDING" },
+        { "fieldPath": "avgRating", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "recipes",
+      "queryScope": "COLLECTION",
+      "fields": [
         { "fieldPath": "categories", "arrayConfig": "CONTAINS" },
         { "fieldPath": "name", "order": "ASCENDING" }
       ]

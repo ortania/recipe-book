@@ -6,6 +6,10 @@ const CLOUD_TTS_URL =
 const nutritionCache = new Map();
 const NUTRITION_CACHE_MAX = 50;
 
+export const clearNutritionCache = () => {
+  nutritionCache.clear();
+};
+
 export const speakWithOpenAI = async (text, voice = "nova") => {
   if (!text) return null;
   const response = await fetch(CLOUD_TTS_URL, {
@@ -31,11 +35,18 @@ export const callOpenAI = async (requestBody) => {
   });
 
   if (!response.ok) {
-    const error = await response.json();
-    throw new Error(error.error?.message || "Failed to get response from AI");
+    let msg = `Cloud function error (${response.status})`;
+    try {
+      const err = await response.json();
+      msg = err.error?.message || err.error || msg;
+    } catch {}
+    throw new Error(msg);
   }
 
   const data = await response.json();
+  if (!data.choices?.[0]?.message?.content) {
+    throw new Error("Unexpected API response format");
+  }
   return data.choices[0].message.content;
 };
 
@@ -218,80 +229,81 @@ You MUST respond with valid JSON in this exact format:
   }
 };
 
-export const calculateNutrition = async (ingredients, servings) => {
-  const ingredientsList = Array.isArray(ingredients)
-    ? ingredients.join("\n")
-    : ingredients;
-  const servingsText = servings ? `The recipe makes ${servings} servings.` : "";
+const NUTRITION_FIELDS = [
+  "calories", "protein", "fat", "carbs", "sugars",
+  "fiber", "sodium", "calcium", "iron", "cholesterol", "saturatedFat",
+];
 
-  const cacheKey = `${ingredientsList}|${servings || ""}`;
+const lookupSingleIngredient = async (ingredient) => {
+  const result = await callOpenAI({
+    model: "gpt-4o",
+    messages: [
+      {
+        role: "system",
+        content: `You are a nutrition database. Return the TOTAL nutritional values for the EXACT quantity of the given ingredient.
+Return ONLY a JSON object, no markdown, no explanation:
+{"calories":<n>,"protein":<n>,"fat":<n>,"carbs":<n>,"sugars":<n>,"fiber":<n>,"sodium":<n>,"calcium":<n>,"iron":<n>,"cholesterol":<n>,"saturatedFat":<n>}
+
+Rules:
+- Values are for the FULL quantity stated (e.g. "10 eggs" = 10 × single egg).
+- 1 large egg = 72 cal, 6g protein, 5g fat, 0.4g carbs, 186mg cholesterol.
+- 1 cup flour = 455 cal, 13g protein, 1g fat, 95g carbs.
+- 100g chicken breast = 165 cal, 31g protein, 3.6g fat.
+- Use USDA values. All numbers are integers. Unknown fields = 0.`,
+      },
+      { role: "user", content: ingredient },
+    ],
+    temperature: 0,
+    max_tokens: 150,
+  });
+
+  let cleaned = result
+    .replace(/```json\s*/gi, "")
+    .replace(/```\s*/g, "")
+    .trim();
+  const objMatch = cleaned.match(/\{[\s\S]*\}/);
+  if (objMatch) cleaned = objMatch[0];
+  return JSON.parse(cleaned);
+};
+
+export const calculateNutrition = async (ingredients, servings) => {
+  const ingredientArray = Array.isArray(ingredients)
+    ? ingredients
+    : ingredients.split("\n").map((s) => s.trim()).filter(Boolean);
+  const numServings = parseInt(servings, 10) || 1;
+
+  const cacheKey = `${ingredientArray.join("|")}|${numServings}`;
   if (nutritionCache.has(cacheKey)) {
     return nutritionCache.get(cacheKey);
   }
 
-  const result = await callOpenAI({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: `You are a nutrition expert. Given a list of recipe ingredients, estimate the nutritional values PER SERVING.
-${servingsText}
-You MUST respond with ONLY valid JSON in this exact format (no markdown, no explanation):
-{
-  "calories": "250",
-  "protein": "10",
-  "fat": "8",
-  "carbs": "30",
-  "sugars": "12",
-  "fiber": "3",
-  "sodium": "400",
-  "calcium": "50",
-  "iron": "2",
-  "cholesterol": "30",
-  "saturatedFat": "3"
-}
-- All values should be numbers as strings.
-- Units: calories=kcal, sodium/calcium/iron=mg, cholesterol=mg, all others=grams.
-- Provide realistic estimates based on common ingredient quantities.
-- If you cannot estimate, use empty string "".
-- Do NOT include units in the values, just the number.
-- Respond with ONLY the JSON object, nothing else.`,
-      },
-      {
-        role: "user",
-        content: `Calculate nutrition per serving for this recipe:\n\n${ingredientsList}`,
-      },
-    ],
-    temperature: 0.2,
-    max_tokens: 300,
-  });
-
   try {
-    let cleaned = result
-      .replace(/```json\s*/gi, "")
-      .replace(/```\s*/g, "")
-      .trim();
-    const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      cleaned = jsonMatch[0];
+    const results = await Promise.all(
+      ingredientArray.map((ing) => lookupSingleIngredient(ing))
+    );
+
+    const totals = {};
+    for (const f of NUTRITION_FIELDS) totals[f] = 0;
+    for (const item of results) {
+      for (const f of NUTRITION_FIELDS) {
+        totals[f] += parseFloat(item[f]) || 0;
+      }
     }
-    const parsed = JSON.parse(cleaned);
+
+    const perServing = {};
+    for (const f of NUTRITION_FIELDS) {
+      perServing[f] = String(Math.round(totals[f] / numServings));
+    }
 
     if (nutritionCache.size >= NUTRITION_CACHE_MAX) {
       const firstKey = nutritionCache.keys().next().value;
       nutritionCache.delete(firstKey);
     }
-    nutritionCache.set(cacheKey, parsed);
-
-    return parsed;
-  } catch (parseErr) {
-    console.error(
-      "calculateNutrition JSON parse failed:",
-      parseErr,
-      "raw:",
-      result,
-    );
-    return { error: result };
+    nutritionCache.set(cacheKey, perServing);
+    return perServing;
+  } catch (err) {
+    console.error("calculateNutrition failed:", err);
+    return { error: err.message };
   }
 };
 

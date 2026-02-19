@@ -22,7 +22,7 @@ export const fetchGlobalRecipes = async (currentUserId, lastDoc = null) => {
 
     const constraints = [
       where("shareToGlobal", "==", true),
-      orderBy("name"),
+      orderBy("avgRating", "desc"),
       limit(FETCH_SIZE),
     ];
     if (lastDoc) {
@@ -80,6 +80,7 @@ export const copyRecipeToUser = async (recipeId, targetUserId, targetLang) => {
     const newRecipe = {
       ...translatedData,
       userId: targetUserId,
+      shareToGlobal: false,
       categories: [],
       order: Date.now(),
       createdAt: new Date().toISOString(),

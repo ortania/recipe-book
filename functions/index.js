@@ -1,5 +1,10 @@
 // v2 - server-side text extraction + OpenAI proxy
 const { onRequest } = require("firebase-functions/v2/https");
+const { onDocumentWritten } = require("firebase-functions/v2/firestore");
+const { getFirestore } = require("firebase-admin/firestore");
+const { initializeApp } = require("firebase-admin/app");
+
+initializeApp();
 
 function extractTextFromHtml(html) {
   let text = html
@@ -176,5 +181,43 @@ exports.openaiTts = onRequest(
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
+  },
+);
+
+// ── Update avgRating on original recipe when a copy's rating changes ──
+exports.updateAvgRating = onDocumentWritten(
+  { document: "recipes/{recipeId}", region: "us-central1" },
+  async (event) => {
+    const before = event.data.before?.data();
+    const after = event.data.after?.data();
+
+    const copiedFrom = after?.copiedFrom || before?.copiedFrom;
+    if (!copiedFrom) return;
+
+    const oldRating = before?.rating || 0;
+    const newRating = after?.rating || 0;
+    if (oldRating === newRating && event.data.after.exists) return;
+
+    const db = getFirestore();
+    const snap = await db
+      .collection("recipes")
+      .where("copiedFrom", "==", copiedFrom)
+      .get();
+
+    let sum = 0;
+    let count = 0;
+    snap.forEach((doc) => {
+      const r = doc.data().rating;
+      if (r && r > 0) {
+        sum += r;
+        count++;
+      }
+    });
+
+    const avgRating = count > 0 ? Math.round((sum / count) * 10) / 10 : 0;
+    await db.collection("recipes").doc(copiedFrom).update({
+      avgRating,
+      ratingCount: count,
+    });
   },
 );

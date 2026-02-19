@@ -9,6 +9,7 @@ import {
 import {
   extractRecipeFromImage,
   calculateNutrition,
+  clearNutritionCache,
   parseFreeSpeechRecipe,
 } from "../../../services/openai";
 import {
@@ -50,7 +51,7 @@ const INITIAL_RECIPE = {
   isFavorite: false,
   notes: "",
   rating: 0,
-  shareToGlobal: false,
+  shareToGlobal: true,
   nutrition: {
     calories: "",
     protein: "",
@@ -666,17 +667,11 @@ function AddRecipeWizard({
     let nutrition = recipe.nutrition || {};
     if (filledIngredients.length > 0) {
       try {
-        console.log(
-          "🍎 NUTRITION - Starting calculation for new recipe, ingredients:",
-          filledIngredients.length,
-          "servings:",
-          recipe.servings,
-        );
+        clearNutritionCache();
         const result = await calculateNutrition(
           filledIngredients,
           recipe.servings,
         );
-        console.log("🍎 NUTRITION - Calculation result:", result);
         if (result && !result.error) {
           nutrition = {
             ...nutrition,
@@ -692,15 +687,11 @@ function AddRecipeWizard({
             cholesterol: result.cholesterol ?? nutrition.cholesterol,
             saturatedFat: result.saturatedFat ?? nutrition.saturatedFat,
           };
-          console.log("🍎 NUTRITION - Updated nutrition:", nutrition);
         } else {
-          console.warn(
-            "🍎 NUTRITION - Calculation returned error:",
-            result?.error,
-          );
+          console.warn("Nutrition calculation returned error:", result?.error);
         }
       } catch (err) {
-        console.error("🍎 NUTRITION - Auto nutrition calculation failed:", err);
+        console.error("Nutrition calculation failed:", err);
       }
     }
     const newRecipe = {

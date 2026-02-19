@@ -22,6 +22,24 @@
   overflow-y: auto;
   display: flex;
   flex-direction: column;
+  position: relative;
+}
+
+.navScrollable::after {
+  content: "";
+  position: sticky;
+  bottom: 0;
+  display: block;
+  height: 50px;
+  margin-top: -50px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--bg-sidebar) 70%
+  );
+  pointer-events: none;
+  z-index: 5;
+  flex-shrink: 0;
 }
 
 .navScrollable > a:first-of-type {
@@ -30,6 +48,25 @@
 
 .navBottom {
   flex-shrink: 0;
+  position: relative;
+  z-index: 6;
+  margin-top: -40px;
+  padding-top: 40px;
+}
+
+.navBottom::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40px;
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    var(--bg-sidebar) 70%
+  );
+  pointer-events: none;
 }
 
 .logo {
@@ -176,6 +213,7 @@
   flex-direction: column;
   gap: 0.15rem;
   padding: 0.25rem 0;
+  padding-bottom: 3rem;
 }
 
 .categorySearchWrap {

@@ -23,7 +23,7 @@ import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./edit-recipe.module.css";
 import { CloseButton } from "../../controls";
-import { calculateNutrition } from "../../../services/openai";
+import { calculateNutrition, clearNutritionCache } from "../../../services/openai";
 
 const TABS = [
   { id: "basic", icon: BsFileText, labelKey: "basicInfo" },
@@ -285,47 +285,29 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       .filter((i) => i);
     let nutrition = { ...editedPerson.nutrition };
     let nutritionCalculated = false;
+
     if (filledIngredients.length > 0) {
       try {
         setSavedMessage("⏳ מחשב ערכים תזונתיים...");
-        console.log(
-          "🍎 NUTRITION - Starting calculation for edit, ingredients:",
-          filledIngredients.length,
-          "servings:",
-          editedPerson.servings,
-        );
+        clearNutritionCache();
         const result = await calculateNutrition(
           filledIngredients,
           editedPerson.servings,
         );
-        console.log("🍎 NUTRITION - Calculation result:", result);
         if (result && !result.error) {
-          nutrition.calories = result.calories ?? nutrition.calories;
-          nutrition.protein = result.protein ?? nutrition.protein;
-          nutrition.fat = result.fat ?? nutrition.fat;
-          nutrition.carbs = result.carbs ?? nutrition.carbs;
-          nutrition.sugars = result.sugars ?? nutrition.sugars;
-          nutrition.fiber = result.fiber ?? nutrition.fiber;
-          nutrition.sodium = result.sodium ?? nutrition.sodium;
-          nutrition.calcium = result.calcium ?? nutrition.calcium;
-          nutrition.iron = result.iron ?? nutrition.iron;
-          nutrition.cholesterol = result.cholesterol ?? nutrition.cholesterol;
-          nutrition.saturatedFat =
-            result.saturatedFat ?? nutrition.saturatedFat;
+          for (const key of Object.keys(result)) {
+            nutrition[key] = result[key];
+          }
           nutritionCalculated = true;
-          console.log("🍎 NUTRITION - Updated nutrition object:", nutrition);
         } else {
-          console.warn(
-            "🍎 NUTRITION - Calculation returned error:",
-            result?.error,
-          );
-          setSavedMessage("⚠️ חישוב ערכים תזונתיים נכשל");
-          await new Promise((r) => setTimeout(r, 1500));
+          console.warn("Nutrition calculation returned error:", result?.error);
+          setSavedMessage("⚠️ חישוב תזונתי נכשל: " + (result?.error || "unknown"));
+          await new Promise((r) => setTimeout(r, 2500));
         }
       } catch (err) {
-        console.error("🍎 NUTRITION - Calculation failed:", err);
-        setSavedMessage("⚠️ חישוב ערכים תזונתיים נכשל");
-        await new Promise((r) => setTimeout(r, 1500));
+        console.error("Nutrition calculation failed:", err);
+        setSavedMessage("⚠️ חישוב תזונתי נכשל: " + err.message);
+        await new Promise((r) => setTimeout(r, 2500));
       }
     }
     const updatedPerson = {
@@ -354,11 +336,11 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     );
     await onSave(updatedPerson);
     setSaving(false);
-    setSavedMessage(
-      nutritionCalculated
-        ? "✅ " + t("recipes", "saved")
-        : t("recipes", "saved"),
-    );
+    if (nutritionCalculated) {
+      setSavedMessage(`✅ ${t("recipes", "saved")} (🔥 ${nutrition.calories || "?"} kcal)`);
+    } else {
+      setSavedMessage("✅ " + t("recipes", "saved"));
+    }
     setTimeout(() => setSavedMessage(""), 4000);
   };
 
@@ -534,18 +516,20 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         />
       </div>
 
-      <div className={classes.formGroup}>
-        <label className={classes.checkboxLabel}>
-          <input
-            type="checkbox"
-            name="shareToGlobal"
-            checked={editedPerson.shareToGlobal}
-            onChange={handleChange}
-          />
-          <FiGlobe size={16} />
-          <span>{t("recipes", "shareToGlobal")}</span>
-        </label>
-      </div>
+      {!person.copiedFrom && (
+        <div className={classes.formGroup}>
+          <label className={classes.checkboxLabel}>
+            <input
+              type="checkbox"
+              name="shareToGlobal"
+              checked={editedPerson.shareToGlobal}
+              onChange={handleChange}
+            />
+            <FiGlobe size={16} />
+            <span>{t("recipes", "shareToGlobal")}</span>
+          </label>
+        </div>
+      )}
     </>
   );
 

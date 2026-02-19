@@ -2,7 +2,13 @@ import React from "react";
 import classes from "./recipe-card-new.module.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaHeart, FaRegHeart, FaEdit, FaTrash, FaRegEdit } from "react-icons/fa";
+import {
+  FaHeart,
+  FaRegHeart,
+  FaEdit,
+  FaTrash,
+  FaRegEdit,
+} from "react-icons/fa";
 import { GoHeart, GoHeartFill, GoTrash } from "react-icons/go";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { BsTrash3 } from "react-icons/bs";
@@ -108,7 +114,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
               isFavorite ? "Remove from favorites" : "Add to favorites"
             }
           >
-            {isFavorite ? <GoHeartFill color="red"/> : <GoHeart />}
+            {isFavorite ? <GoHeartFill color="red" /> : <GoHeart />}
           </button>
 
           <div className={classes.actionButtons}>
@@ -129,7 +135,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
             >
               {/* <BsTrash3  /> */}
               {/* <FaTrash /> */}
-              <GoTrash color="red"/>
+              <GoTrash color="red" />
             </button>
           </div>
         </div>
@@ -142,14 +148,38 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
                 {formatTime(person.prepTime, t("recipes", "minutes"))}
               </p>
             )}
-            {person.difficulty && (
+            {person.difficulty && person.difficulty !== "Unknown" && (
               <span className={classes.recipeDifficulty}>
                 {person.prepTime && "• "}
-                {formatDifficulty(person.difficulty)}
+                {t("difficulty", person.difficulty)}
               </span>
             )}
           </div>
-          {person.rating !== undefined && person.rating > 0 && (
+          {person.avgRating > 0 ? (
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.3rem",
+                margin: "0.3rem 0",
+              }}
+            >
+              {[1, 2, 3, 4, 5].map((star) => (
+                <span
+                  key={star}
+                  style={{
+                    color: star <= Math.round(person.avgRating) ? "#ffc107" : "#e0e0e0",
+                    fontSize: "1.2rem",
+                  }}
+                >
+                  ★
+                </span>
+              ))}
+              <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
+                ({person.avgRating} · {person.ratingCount})
+              </span>
+            </div>
+          ) : person.rating > 0 && (
             <div
               style={{
                 display: "flex",

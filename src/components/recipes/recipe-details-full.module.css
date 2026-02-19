@@ -9,6 +9,12 @@
   margin: 0 auto;
 }
 
+.actionBarSentinel {
+  height: 0;
+  line-height: 0;
+  font-size: 0;
+}
+
 /* Action toolbar below image */
 .actionBar {
   display: flex;
@@ -1033,6 +1039,12 @@
     padding-top: 3rem;
   }
 
+  .actionBarSentinel {
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
+
   .headerTitle {
     font-size: var(--large-font);
   }
@@ -1083,6 +1095,7 @@
 
   .recipeContent {
     padding: 1rem;
+    padding-bottom: 5rem;
   }
 
   .recipeName {
@@ -1109,4 +1122,5 @@
   .imageContainer {
     max-height: 250px;
   }
+
 }

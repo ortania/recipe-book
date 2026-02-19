@@ -97,6 +97,10 @@ function RecipeDetailsFull({
     t("cookingMode", "helpGuideFeature3"),
   ];
   const moreMenuRef = useRef(null);
+  const stickyHeaderRef = useRef(null);
+  const actionBarSentinelRef = useRef(null);
+  const actionBarRef = useRef(null);
+  const [actionBarFixed, setActionBarFixed] = useState(false);
 
   const handleCopyClick = () => {
     setShowCopyDialog(true);
@@ -115,6 +119,28 @@ function RecipeDetailsFull({
     document.addEventListener("pointerdown", handleClickOutside);
     return () =>
       document.removeEventListener("pointerdown", handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    const sentinel = actionBarSentinelRef.current;
+    if (!sentinel) return;
+    const isMobile = window.matchMedia("(max-width: 768px)").matches;
+    if (!isMobile) return;
+    const scrollRoot = sentinel.closest("main");
+    const handleScroll = () => {
+      const headerH = stickyHeaderRef.current?.offsetHeight || 56;
+      const rect = sentinel.getBoundingClientRect();
+      setActionBarFixed(rect.top < headerH);
+    };
+    if (scrollRoot) {
+      scrollRoot.addEventListener("scroll", handleScroll, { passive: true });
+    }
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll();
+    return () => {
+      if (scrollRoot) scrollRoot.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("scroll", handleScroll);
+    };
   }, []);
 
   const handleShare = async () => {
@@ -237,7 +263,7 @@ function RecipeDetailsFull({
         />
       )}
 
-      <div className={classes.stickyHeader}>
+      <div ref={stickyHeaderRef} className={classes.stickyHeader}>
         <div className={classes.cookingBtnWrapper}>
           <button
             className={`${classes.headerCookingBtn} ${showCookingHelp ? classes.cookingModeBtnHighlight : ""}`}
@@ -293,7 +319,28 @@ function RecipeDetailsFull({
         </div>
       )}
 
-      <div className={classes.actionBar}>
+      <div
+        ref={actionBarSentinelRef}
+        className={classes.actionBarSentinel}
+        style={actionBarFixed && actionBarRef.current
+          ? { height: actionBarRef.current.offsetHeight }
+          : undefined}
+      />
+      <div
+        ref={actionBarRef}
+        className={classes.actionBar}
+        style={actionBarFixed ? {
+          position: "fixed",
+          top: stickyHeaderRef.current
+            ? `${stickyHeaderRef.current.offsetHeight}px`
+            : "3.5rem",
+          left: 0,
+          right: 0,
+          zIndex: 99,
+          background: "var(--bg-primary)",
+          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+        } : undefined}
+      >
         <div className={classes.actionBarStart}>
           <div className={classes.moreMenuWrapper} ref={moreMenuRef}>
             <button

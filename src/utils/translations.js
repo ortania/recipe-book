@@ -1209,6 +1209,13 @@ const translations = {
       de: "Sie haben noch keine Rezepte",
       mixed: "You don't have any recipes",
     },
+    emptyGlobalTitle: {
+      he: "המאגר ריק",
+      en: "The repository is empty",
+      ru: "Хранилище пусто",
+      de: "Das Repository ist leer",
+      mixed: "The repository is empty",
+    },
     addNewRecipe: {
       he: "הוסף מתכון חדש",
       en: "Add new recipe",
@@ -1357,6 +1364,20 @@ const translations = {
       ru: "Загрузить ещё",
       de: "Mehr Rezepte laden",
       mixed: "Load more recipes",
+    },
+    gridView: {
+      he: "תצוגת כרטיסים",
+      en: "Grid view",
+      ru: "Плитка",
+      de: "Kachelansicht",
+      mixed: "Grid view",
+    },
+    listView: {
+      he: "תצוגת רשימה",
+      en: "List view",
+      ru: "Список",
+      de: "Listenansicht",
+      mixed: "List view",
     },
     keywordPlaceholder: {
       he: "קמח, גבינה, עגבניות (הפרד בפסיק)",

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useLanguage } from "../../../context";
 import classes from "./view-toggle.module.css";
 
-function ViewToggle({ activeView, onViewChange }) {
+function ViewToggle({ activeView, onViewChange, recipesLabel }) {
   const { t } = useLanguage();
   return (
     <div className={classes.toggleContainer}>
@@ -16,7 +16,7 @@ function ViewToggle({ activeView, onViewChange }) {
         className={`${classes.toggleButton} ${activeView === "recipes" ? classes.active : ""}`}
         onClick={() => onViewChange("recipes")}
       >
-        {t("recipesView", "recipesTab")}
+        {recipesLabel || t("recipesView", "recipesTab")}
       </button>
     </div>
   );

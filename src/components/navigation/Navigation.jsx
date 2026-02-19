@@ -258,19 +258,20 @@ function Navigation({ onLogout, links }) {
             <>
               <div className={classes.separator}></div>
 
-              <div className={classes.categoryActions}>
-                <button
-                  className={classes.categoryActionBtn}
-                  onClick={() => setShowManagement(true)}
-                  title={t("categories", "manage")}
-                >
-                  <ManageCategoriesIcon width={16} height={16} />
+              {location.pathname !== "/global-recipes" && (
+                <>
+                  <div className={classes.categoryActions}>
+                    <button
+                      className={classes.categoryActionBtn}
+                      onClick={() => setShowManagement(true)}
+                      title={t("categories", "manage")}
+                    >
+                      <ManageCategoriesIcon width={16} height={16} />
 
-                  {t("categories", "manage")}
-                </button>
-              </div>
+                      {t("categories", "manage")}
+                    </button>
+                  </div>
 
-              {/* Categories Section */}
               <div className={classes.sectionHeader}>
                 <button
                   className={classes.sectionHeaderBtn}
@@ -374,6 +375,8 @@ function Navigation({ onLogout, links }) {
                       );
                     })}
                 </div>
+              )}
+                </>
               )}
             </>
           )}

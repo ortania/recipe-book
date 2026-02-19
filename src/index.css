@@ -242,4 +242,30 @@ html {
   html {
     overflow-y: auto;
   }
+
+  body::after {
+    content: "";
+    position: fixed;
+    bottom: 3.2rem;
+    left: 0;
+    right: 0;
+    height: 70px;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(242, 242, 242, 0.7) 35%,
+      rgba(242, 242, 242, 1) 70%
+    );
+    pointer-events: none;
+    z-index: 998;
+  }
+
+  [data-theme="dark"] body::after {
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(26, 26, 46, 0.7) 35%,
+      rgba(26, 26, 46, 1) 70%
+    );
+  }
 }

@@ -43,6 +43,10 @@ function RecipeDetailsPage() {
     }
   }, [contextRecipe, localRecipe]);
 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [id]);
+
   // Track recently viewed recipes
   React.useEffect(() => {
     if (!recipe || !recipe.id) return;

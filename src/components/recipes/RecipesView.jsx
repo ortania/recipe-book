@@ -7,6 +7,7 @@ import { CiFilter } from "react-icons/ci";
 import { IoMdStarOutline } from "react-icons/io";
 import { IoChevronDown } from "react-icons/io5";
 import { BiSortAlt2 } from "react-icons/bi";
+import { BsList, BsGrid3X3Gap } from "react-icons/bs";
 import { IoBookOutline } from "react-icons/io5";
 import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
 import { GoHeart, GoHeartFill } from "react-icons/go";
@@ -38,6 +39,12 @@ function RecipesView({
   selectedGroup,
   onSelectGroup,
   showGreeting = false,
+  showAddAndFavorites = true,
+  showCategories = true,
+  recipesTabLabel,
+  emptyTitle,
+  hasMoreRecipes: hasMoreRecipesProp,
+  onLoadMore,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -65,12 +72,15 @@ function RecipesView({
   const [filterMenuStyle, setFilterMenuStyle] = useState({});
   const [sortMenuStyle, setSortMenuStyle] = useState({});
   const {
-    hasMoreRecipes,
-    loadMoreRecipes,
+    hasMoreRecipes: hasMoreRecipesCtx,
+    loadMoreRecipes: loadMoreRecipesCtx,
     selectedCategories,
     toggleCategory,
     clearCategorySelection,
   } = useRecipeBook();
+
+  const hasMoreRecipes = hasMoreRecipesProp ?? hasMoreRecipesCtx;
+  const loadMoreRecipes = onLoadMore || loadMoreRecipesCtx;
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchTerm), 250);
@@ -417,22 +427,25 @@ function RecipesView({
     return (
       <div className={classes.recipesContainer}>
         <div className={classes.viewToggleWrapper}>
+          {showAddAndFavorites && (
+            <div className={classes.iconButtons}>
+              <AddButton
+                type="circle"
+                onClick={() => setShowFavoritesOnly((prev) => !prev)}
+                title={t("recipes", "favorite")}
+                className={showFavoritesOnly ? classes.favoritesActive : ""}
+              >
+                {showFavoritesOnly ? <GoHeartFill color="red" /> : <GoHeart />}
+              </AddButton>
+              <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
+            </div>
+          )}
           <div className={classes.viewToggle}>
             <ViewToggle
               activeView={activeView}
               onViewChange={handleViewChange}
+              recipesLabel={recipesTabLabel}
             />
-          </div>
-          <div className={classes.iconButtons}>
-            <AddButton
-              type="circle"
-              onClick={() => setShowFavoritesOnly((prev) => !prev)}
-              title={t("recipes", "favorite")}
-              className={showFavoritesOnly ? classes.favoritesActive : ""}
-            >
-              {showFavoritesOnly ? <GoHeartFill color="red"/> : <GoHeart />}
-            </AddButton>
-            <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
           </div>
         </div>
 
@@ -450,13 +463,15 @@ function RecipesView({
           <div className={classes.emptyState}>
             <RecipeBookIcon width={72} height={72} />
             <p className={classes.emptyText}>
-              {t("recipesView", "emptyTitle")}
+              {emptyTitle || t("recipesView", "emptyTitle")}
             </p>
-            <AddRecipeDropdown onSelect={(method) => onAddPerson(method)}>
-              <span className={classes.emptyButton}>
-                {t("recipesView", "addNewRecipe")}
-              </span>
-            </AddRecipeDropdown>
+            {showAddAndFavorites && (
+              <AddRecipeDropdown onSelect={(method) => onAddPerson(method)}>
+                <span className={classes.emptyButton}>
+                  {t("recipesView", "addNewRecipe")}
+                </span>
+              </AddRecipeDropdown>
+            )}
           </div>
         </div>
       </div>
@@ -467,26 +482,42 @@ function RecipesView({
     <div className={classes.recipesContainer}>
       <div className={classes.stickyTop}>
         <div className={classes.viewToggleWrapper}>
+          {showAddAndFavorites && (
+            <div className={classes.iconButtons}>
+              <AddButton
+                type="circle"
+                onClick={() => setShowFavoritesOnly((prev) => !prev)}
+                title={t("recipes", "favorite")}
+                className={showFavoritesOnly ? classes.favoritesActive : ""}
+              >
+                {showFavoritesOnly ? <GoHeartFill color="red" /> : <GoHeart />}
+              </AddButton>
+              <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
+            </div>
+          )}
           <div className={classes.viewToggle}>
             <ViewToggle
               activeView={activeView}
               onViewChange={handleViewChange}
+              recipesLabel={recipesTabLabel}
             />
           </div>
-          <div className={classes.iconButtons}>
-            <AddButton
-              type="circle"
-              onClick={() => setShowFavoritesOnly((prev) => !prev)}
-              title={t("recipes", "favorite")}
-              className={showFavoritesOnly ? classes.favoritesActive : ""}
+          {persons.length > 0 && (
+            <button
+              className={classes.viewToggleIcon}
+              onClick={toggleView}
+              title={
+                isSimpleView
+                  ? t("recipesView", "gridView")
+                  : t("recipesView", "listView")
+              }
             >
-              {showFavoritesOnly ? <GoHeartFill color="red"/> : <GoHeart />}
-            </AddButton>
-            <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
-          </div>
+              {isSimpleView ? <BsGrid3X3Gap /> : <BsList />}
+            </button>
+          )}
         </div>
 
-        {!showChat && (
+        {!showChat && persons.length > 0 && (
           <div className={classes.searchHeader}>
             <div className={classes.searchBoxWrapper}>
               <SearchBox
@@ -952,26 +983,28 @@ function RecipesView({
             </div>
           )}
 
-          {!isAllSelected && selectedCategoryObjects.length > 0 && (
-            <div className={classes.filterChips}>
-              {selectedCategoryObjects.map((cat) => (
+          {showCategories &&
+            !isAllSelected &&
+            selectedCategoryObjects.length > 0 && (
+              <div className={classes.filterChips}>
+                {selectedCategoryObjects.map((cat) => (
+                  <button
+                    key={cat.id}
+                    className={classes.filterChip}
+                    style={{ borderColor: cat.color, color: cat.color }}
+                    onClick={() => toggleCategory(cat.id)}
+                  >
+                    {getTranslatedGroup(cat)} ✕
+                  </button>
+                ))}
                 <button
-                  key={cat.id}
-                  className={classes.filterChip}
-                  style={{ borderColor: cat.color, color: cat.color }}
-                  onClick={() => toggleCategory(cat.id)}
+                  className={classes.clearChips}
+                  onClick={clearCategorySelection}
                 >
-                  {getTranslatedGroup(cat)} ✕
+                  {t("categories", "clearAllFilters")}
                 </button>
-              ))}
-              <button
-                className={classes.clearChips}
-                onClick={clearCategorySelection}
-              >
-                {t("categories", "clearAllFilters")}
-              </button>
-            </div>
-          )}
+              </div>
+            )}
 
           {editingPerson && (
             <EditRecipe
@@ -988,7 +1021,7 @@ function RecipesView({
                 ? t("favorites", "noFavorites")
                 : t("recipesView", "noResults")}
             </div>
-          ) : selectedGroup === "all" ? (
+          ) : showCategories && selectedGroup === "all" ? (
             <div>
               {groups
                 .filter((group) => group.id !== "all" && group.id !== "general")
@@ -1016,22 +1049,61 @@ function RecipesView({
                           </button>
                         )}
                       </div>
-                      <div className={classes.recipeGrid}>
-                        {displayRecipes.map((person) => (
-                          <RecipeInfo
-                            key={person.id}
-                            person={person}
-                            groups={groups}
-                            onEdit={handleEditClick}
-                            onDelete={onDeletePerson}
-                            onToggleFavorite={handleToggleFavorite}
-                          />
-                        ))}
-                      </div>
+                      {isSimpleView ? (
+                        <div className={classes.compactList}>
+                          {displayRecipes.map((person) => (
+                            <div
+                              key={person.id}
+                              className={classes.compactItem}
+                              onClick={() => navigate(`/recipe/${person.id}`)}
+                            >
+                              <span className={classes.compactName}>
+                                {person.name}
+                              </span>
+                              {showCategories &&
+                                person.categories?.length > 0 && (
+                                  <div className={classes.compactCategories}>
+                                    {person.categories.map((catId) => {
+                                      const cat = groups.find(
+                                        (g) => g.id === catId,
+                                      );
+                                      return cat ? (
+                                        <span
+                                          key={catId}
+                                          className={
+                                            classes.compactCategoryBadge
+                                          }
+                                          style={{
+                                            borderColor: cat.color,
+                                            color: cat.color,
+                                          }}
+                                        >
+                                          {getTranslatedGroup(cat)}
+                                        </span>
+                                      ) : null;
+                                    })}
+                                  </div>
+                                )}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className={classes.recipeGrid}>
+                          {displayRecipes.map((person) => (
+                            <RecipeInfo
+                              key={person.id}
+                              person={person}
+                              groups={groups}
+                              onEdit={handleEditClick}
+                              onDelete={onDeletePerson}
+                              onToggleFavorite={handleToggleFavorite}
+                            />
+                          ))}
+                        </div>
+                      )}
                     </div>
                   );
                 })}
-              {/* Show uncategorized recipes */}
               {(() => {
                 const uncategorizedRecipes = filteredAndSortedPersons.filter(
                   (person) =>
@@ -1051,21 +1123,65 @@ function RecipesView({
                         </span>
                       )}
                     </div>
-                    <div className={classes.recipeGrid}>
-                      {displayRecipes.map((person) => (
-                        <RecipeInfo
-                          key={person.id}
-                          person={person}
-                          groups={groups}
-                          onEdit={handleEditClick}
-                          onDelete={onDeletePerson}
-                          onToggleFavorite={handleToggleFavorite}
-                        />
-                      ))}
-                    </div>
+                    {isSimpleView ? (
+                      <div className={classes.compactList}>
+                        {displayRecipes.map((person) => (
+                          <div
+                            key={person.id}
+                            className={classes.compactItem}
+                            onClick={() => navigate(`/recipe/${person.id}`)}
+                          >
+                            <span className={classes.compactName}>
+                              {person.name}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className={classes.recipeGrid}>
+                        {displayRecipes.map((person) => (
+                          <RecipeInfo
+                            key={person.id}
+                            person={person}
+                            groups={groups}
+                            onEdit={handleEditClick}
+                            onDelete={onDeletePerson}
+                            onToggleFavorite={handleToggleFavorite}
+                          />
+                        ))}
+                      </div>
+                    )}
                   </div>
                 );
               })()}
+            </div>
+          ) : isSimpleView ? (
+            <div className={classes.compactList}>
+              {filteredAndSortedPersons.map((person) => (
+                <div
+                  key={person.id}
+                  className={classes.compactItem}
+                  onClick={() => navigate(`/recipe/${person.id}`)}
+                >
+                  <span className={classes.compactName}>{person.name}</span>
+                  {showCategories && person.categories?.length > 0 && (
+                    <div className={classes.compactCategories}>
+                      {person.categories.map((catId) => {
+                        const cat = groups.find((g) => g.id === catId);
+                        return cat ? (
+                          <span
+                            key={catId}
+                            className={classes.compactCategoryBadge}
+                            style={{ borderColor: cat.color, color: cat.color }}
+                          >
+                            {getTranslatedGroup(cat)}
+                          </span>
+                        ) : null;
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
           ) : (
             <div className={classes.recipeGrid}>
@@ -1074,9 +1190,11 @@ function RecipesView({
                   key={person.id}
                   person={person}
                   groups={groups}
-                  onEdit={handleEditClick}
+                  onEdit={onEditPerson ? handleEditClick : undefined}
                   onDelete={onDeletePerson}
-                  onToggleFavorite={handleToggleFavorite}
+                  onToggleFavorite={
+                    showAddAndFavorites ? handleToggleFavorite : undefined
+                  }
                 />
               ))}
             </div>
