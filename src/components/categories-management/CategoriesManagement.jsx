@@ -123,7 +123,7 @@ function CategoriesManagement({
   const handleEditClick = (category) => {
     setShowAddForm(false);
     setEditingId(category.id);
-    setFormName(category.name);
+    setFormName(getTranslated(category));
     setFormColor(category.color);
     setFormIcon(category.icon || DEFAULT_ICON_ID);
     setShowIconPicker(false);

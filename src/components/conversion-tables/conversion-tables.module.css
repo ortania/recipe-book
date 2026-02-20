@@ -4,11 +4,12 @@
   padding: 2rem;
 }
 
-.stickyTop {
+.stickyBar {
   position: sticky;
   top: 0;
   z-index: 10;
   background: var(--bg-primary);
+  padding-bottom: 0.5rem;
 }
 
 .header {
@@ -220,11 +221,11 @@
 @media (max-width: 768px) {
   .container {
     padding: 1rem;
-    padding-top: 3.5rem;
-  }
-
-  .stickyTop {
-    top: 3.5rem;
+    padding-top: 0;
+    padding-bottom: 5rem;
+    height: calc(100dvh - 3.5rem);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 
   .header h1 {
@@ -235,13 +236,24 @@
     font-size: var(--basic-font);
   }
 
+  .stickyBar {
+    top: 0;
+    margin-inline: -1rem;
+    padding-inline: 1rem;
+    padding-top: 0.25rem;
+  }
+
+  .searchContainer {
+    margin-top: 0.75rem;
+  }
+
   .tabs {
     gap: 0.25rem;
   }
 
   .tab {
     padding: 0.5rem 0.75rem;
-    font-size: var(--very-small-font);
+    font-size: var(--small-font);
   }
 
   .tabIcon {

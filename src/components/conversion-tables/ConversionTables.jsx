@@ -68,20 +68,20 @@ function ConversionTables() {
 
   return (
     <div className={classes.container}>
-      <div className={classes.stickyTop}>
-        <div className={classes.header}>
-          <h1>{t("conversions", "title")}</h1>
-          <p className={classes.subtitle}>{t("conversions", "subtitle")}</p>
+      <div className={classes.header}>
+        <h1>{t("conversions", "title")}</h1>
+        <p className={classes.subtitle}>{t("conversions", "subtitle")}</p>
+      </div>
 
-          <div className={classes.searchContainer}>
-            <SearchBox
-              searchTerm={searchQuery}
-              onSearchChange={setSearchQuery}
-              placeholder={t("conversions", "searchPlaceholder")}
-              size="large"
-              className={classes.searchBoxWrap}
-            />
-          </div>
+      <div className={classes.stickyBar}>
+        <div className={classes.searchContainer}>
+          <SearchBox
+            searchTerm={searchQuery}
+            onSearchChange={setSearchQuery}
+            placeholder={t("conversions", "searchPlaceholder")}
+            size="large"
+            className={classes.searchBoxWrap}
+          />
         </div>
 
         <div className={classes.tabs}>

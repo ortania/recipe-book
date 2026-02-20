@@ -1,7 +1,7 @@
 const conversionData = {
   he: {
     cups: [
-      { item: "כוס קמח מלא (רגיל או תופח)", amount: "140 גרם" },
+      { item: "כוס קמח  (רגיל או תופח)", amount: "140 גרם" },
       { item: "כוס קמח מלא", amount: "125 גרם" },
       { item: "כוס סוכר", amount: "200 גרם" },
       { item: "כוס סוכר חום דחוס", amount: "225 גרם" },

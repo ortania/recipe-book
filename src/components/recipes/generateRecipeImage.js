@@ -360,7 +360,7 @@ export async function generateRecipeImage(recipe, t) {
   ctx.font = '18px "Raleway", sans-serif';
   ctx.fillStyle = "#aaa";
   ctx.textAlign = "center";
-  ctx.fillText("Cookbook App", WIDTH / 2, y);
+  ctx.fillText("CookiPal App", WIDTH / 2, y);
 
   // ─── Export ───
   return new Promise((resolve) => {

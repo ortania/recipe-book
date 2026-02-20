@@ -221,8 +221,8 @@ function Navigation({ onLogout, links }) {
             {isOpen ? <IoMdClose /> : <RxHamburgerMenu />}
           </button>
           <div className={classes.mobileLogo}>
-            <span className={classes.logo}>Cook</span>
-            <span className={classes.logoTail}>book</span>
+            <span className={classes.logo}>Cooki</span>
+            <span className={classes.logoTail}>Pal</span>
           </div>
         </div>
       )}
@@ -237,8 +237,8 @@ function Navigation({ onLogout, links }) {
             />
           </div>
           <div className={classes.desktopOnly}>
-            <span className={classes.logo}>Cook</span>
-            <span className={classes.logoTail}>book</span>
+            <span className={classes.logo}>Cooki</span>
+            <span className={classes.logoTail}>Pal</span>
           </div>
 
           <div className={classes.desktopOnly}>

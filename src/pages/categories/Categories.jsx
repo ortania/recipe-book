@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 
 import {
@@ -31,9 +31,20 @@ function Categories() {
   const [showAddPerson, setShowAddPerson] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
   const [showChat, setShowChat] = useState(false);
+  const [showGreetingOnce, setShowGreetingOnce] = useState(() => {
+    return sessionStorage.getItem("justLoggedIn") === "true";
+  });
   const [showTour, setShowTour] = useState(() => {
     return !localStorage.getItem("tourCompleted");
   });
+
+  useEffect(() => {
+    if (showGreetingOnce) {
+      sessionStorage.removeItem("justLoggedIn");
+      const timer = setTimeout(() => setShowGreetingOnce(false), 60000);
+      return () => clearTimeout(timer);
+    }
+  }, [showGreetingOnce]);
 
   const handleCloseTour = () => {
     setShowTour(false);
@@ -82,10 +93,12 @@ function Categories() {
           setShowAddPerson(true);
         }}
         selectedGroup={isAllSelected ? "all" : selectedCategories}
-        showGreeting
+        showGreeting={showGreetingOnce}
       />
 
-      {showChat && <ChatWindow recipeContext={filteredRecipes} showImageButton />}
+      {showChat && (
+        <ChatWindow recipeContext={filteredRecipes} showImageButton />
+      )}
 
       <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>
         <PiArrowFatLineUp />

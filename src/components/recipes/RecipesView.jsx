@@ -55,6 +55,9 @@ function RecipesView({
   hasMoreRecipes: hasMoreRecipesProp,
   onLoadMore,
   onCopyRecipe,
+  helpTitle: helpTitleProp,
+  helpDescription: helpDescriptionProp,
+  helpItems: helpItemsProp,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -549,39 +552,47 @@ function RecipesView({
           )}
           <div className={classes.helpBtnEnd}>
             <ChatHelpButton
-              title={t("recipesView", "helpTitle")}
-              description={t("recipesView", "helpIntro")}
-              items={[
-                <>
-                  <IoSearchOutline style={{ verticalAlign: "middle" }} />{" "}
-                  {t("recipesView", "helpSearch")}
-                </>,
-                <>
-                  <CiFilter style={{ verticalAlign: "middle" }} />{" "}
-                  {t("recipesView", "helpFilter")}
-                </>,
-                <>
-                  <BiSortAlt2 style={{ verticalAlign: "middle" }} />{" "}
-                  {t("recipesView", "helpSort")}
-                </>,
-                <>
-                  <GoHeart style={{ verticalAlign: "middle" }} />{" "}
-                  {t("recipesView", "helpFavorites")}
-                </>,
-                <>
-                  <span style={{ verticalAlign: "middle", fontWeight: 700 }}>
-                    +
-                  </span>{" "}
-                  {t("recipesView", "helpAdd")}
-                </>,
-                <>
-                  <BsGrid3X3Gap style={{ verticalAlign: "middle" }} />{" "}
-                  {t("recipesView", "helpView")}
-                </>,
-              ]}
+              title={helpTitleProp || t("recipesView", "helpTitle")}
+              description={helpDescriptionProp || t("recipesView", "helpIntro")}
+              items={
+                helpItemsProp || [
+                  <>
+                    <IoSearchOutline style={{ verticalAlign: "middle" }} />{" "}
+                    {t("recipesView", "helpSearch")}
+                  </>,
+                  <>
+                    <CiFilter style={{ verticalAlign: "middle" }} />{" "}
+                    {t("recipesView", "helpFilter")}
+                  </>,
+                  <>
+                    <BiSortAlt2 style={{ verticalAlign: "middle" }} />{" "}
+                    {t("recipesView", "helpSort")}
+                  </>,
+                  <>
+                    <GoHeart style={{ verticalAlign: "middle" }} />{" "}
+                    {t("recipesView", "helpFavorites")}
+                  </>,
+                  <>
+                    <span style={{ verticalAlign: "middle", fontWeight: 700 }}>
+                      +
+                    </span>{" "}
+                    {t("recipesView", "helpAdd")}
+                  </>,
+                  <>
+                    <BsGrid3X3Gap style={{ verticalAlign: "middle" }} />{" "}
+                    {t("recipesView", "helpView")}
+                  </>,
+                ]
+              }
             />
           </div>
         </div>
+
+        {showGreeting && !showChat && (
+          <div className={classes.headerTitle}>
+            <Greeting />
+          </div>
+        )}
 
         {!showChat && persons.length > 0 && (
           <div className={classes.searchHeader}>

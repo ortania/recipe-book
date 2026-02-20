@@ -92,6 +92,7 @@ function Login() {
         localStorage.removeItem("rememberedEmail");
       }
       await login(user.uid);
+      sessionStorage.setItem("justLoggedIn", "true");
       navigate("/categories");
     } catch (error) {
       if (
@@ -116,7 +117,7 @@ function Login() {
         {/* Landing card — always visible */}
         <div className={classes.landingCard}>
           <h1 className={classes.landingLogo}>
-            Cook<span className={classes.landingLogoBook}>book</span>
+            Cooki<span className={classes.landingLogoBook}>Pal</span>
           </h1>
           <p className={classes.landingSubtitle}>
             {t("onboarding", "welcomeSubtitle")}

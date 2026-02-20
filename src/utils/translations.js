@@ -1267,7 +1267,7 @@ const translations = {
   // ===================== RECIPES (continued) =====================
   recipesView: {
     emptyTitle: {
-      he: "אין לך עדיין מתכונים",
+      he: "אין עדיין מתכונים",
       en: "You don't have any recipes",
       ru: "У вас пока нет рецептов",
       de: "Sie haben noch keine Rezepte",
@@ -2258,11 +2258,11 @@ const translations = {
       mixed: "Scroll to top",
     },
     welcomeApp: {
-      he: "ברוכים הבאים ל-Cookbook! 👨‍🍳",
-      en: "Welcome to Cookbook! 👨‍🍳",
-      ru: "Добро пожаловать в Cookbook! 👨‍🍳",
-      de: "Willkommen bei Cookbook! 👨‍🍳",
-      mixed: "Welcome to Cookbook! 👨‍🍳",
+      he: "ברוכים הבאים ל-CookiPal! 👨‍🍳",
+      en: "Welcome to CookiPal! 👨‍🍳",
+      ru: "Добро пожаловать в CookiPal! 👨‍🍳",
+      de: "Willkommen bei CookiPal! 👨‍🍳",
+      mixed: "Welcome to CookiPal! 👨‍🍳",
     },
     allRecipes: {
       he: "כל המתכונים",
@@ -2341,6 +2341,50 @@ const translations = {
       ru: "Показать ещё",
       de: "Mehr anzeigen",
       mixed: "הצג עוד",
+    },
+    helpTitle: {
+      he: "מאגר מתכונים",
+      en: "Recipe Repository",
+      ru: "Банк рецептов",
+      de: "Rezeptsammlung",
+      mixed: "Recipe Repository",
+    },
+    helpIntro: {
+      he: "בדף זה מוצגים מתכונים ששיתפו משתמשים אחרים. ניתן לעיין בהם, לחפש ולסנן לפי קריטריונים שונים.",
+      en: "This page displays recipes shared by other users. You can browse, search, and filter them by various criteria.",
+      ru: "На этой странице отображаются рецепты, которыми поделились другие пользователи. Вы можете просматривать, искать и фильтровать их.",
+      de: "Auf dieser Seite werden Rezepte angezeigt, die andere Benutzer geteilt haben. Sie können sie durchsuchen und filtern.",
+      mixed:
+        "This page displays recipes shared by other users. You can browse, search, and filter them by various criteria.",
+    },
+    helpCopy: {
+      he: "העתקה — העתיקו מתכון למתכונים שלכם כדי לשמור אותו ולערוך אותו",
+      en: "Copy — copy a recipe to your collection to save and edit it",
+      ru: "Копировать — скопируйте рецепт в свою коллекцию, чтобы сохранить и редактировать",
+      de: "Kopieren — kopieren Sie ein Rezept in Ihre Sammlung zum Speichern und Bearbeiten",
+      mixed: "Copy — copy a recipe to your collection to save and edit it",
+    },
+    helpRating: {
+      he: "דירוג — לאחר העתקה, דרגו את המתכון. הדירוג שלכם יחושב יחד עם דירוגי משתמשים אחרים ויוצג כממוצע במאגר",
+      en: "Rating — after copying, rate the recipe. Your rating is averaged with other users' ratings and shown in the repository",
+      ru: "Рейтинг — после копирования оцените рецепт. Ваша оценка усредняется с оценками других пользователей и отображается в банке",
+      de: "Bewertung — nach dem Kopieren bewerten Sie das Rezept. Ihre Bewertung wird mit den Bewertungen anderer Benutzer gemittelt und in der Sammlung angezeigt",
+      mixed:
+        "Rating — after copying, rate the recipe. Your rating is averaged with other users' ratings and shown in the repository",
+    },
+    helpSearch: {
+      he: "חיפוש — חפשו לפי שם מתכון או מרכיב",
+      en: "Search — search by recipe name or ingredient",
+      ru: "Поиск — ищите по названию или ингредиенту",
+      de: "Suche — nach Rezeptname oder Zutat suchen",
+      mixed: "Search — search by recipe name or ingredient",
+    },
+    helpView: {
+      he: "תצוגה — החליפו בין תצוגת רשת לתצוגת רשימה",
+      en: "View — switch between grid and list view",
+      ru: "Вид — переключение между сеткой и списком",
+      de: "Ansicht — zwischen Raster- und Listenansicht wechseln",
+      mixed: "View — switch between grid and list view",
     },
   },
 
@@ -2584,7 +2628,7 @@ const translations = {
     },
     photoTip: {
       he: "צלם מתכון מספר בישול, מגזין, או צילום מסך מאתר מתכונים",
-      en: "Photograph a recipe from a cookbook, magazine, or screenshot from a recipe site",
+      en: "Photograph a recipe from a CookiPal, magazine, or screenshot from a recipe site",
       ru: "Сфотографируйте рецепт из кулинарной книги, журнала или скриншот с сайта рецептов",
       de: "Fotografieren Sie ein Rezept aus einem Kochbuch, Magazin oder Screenshot einer Rezeptseite",
       mixed: "צלם מתכון מספר בישול, מגזין, או צילום מסך מאתר מתכונים",

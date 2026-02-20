@@ -1,5 +1,8 @@
 import { useState, useCallback, useRef } from "react";
 import { PiArrowFatLineUp } from "react-icons/pi";
+import { IoCopyOutline, IoSearchOutline } from "react-icons/io5";
+import { IoMdStarOutline } from "react-icons/io";
+import { BsGrid3X3Gap } from "react-icons/bs";
 import { useRecipeBook, useLanguage } from "../../context";
 import {
   fetchGlobalRecipes,
@@ -50,7 +53,11 @@ function GlobalRecipes() {
   const handleCopyRecipe = useCallback(
     async (recipeId) => {
       if (!currentUser) return;
-      const copied = await copyRecipeToUser(recipeId, currentUser.uid, language);
+      const copied = await copyRecipeToUser(
+        recipeId,
+        currentUser.uid,
+        language,
+      );
       setRecipes((prev) => [...prev, copied]);
     },
     [currentUser, language, setRecipes],
@@ -73,6 +80,26 @@ function GlobalRecipes() {
         hasMoreRecipes={hasMore}
         onLoadMore={() => loadRecipes(false)}
         onCopyRecipe={handleCopyRecipe}
+        helpTitle={t("globalRecipes", "helpTitle")}
+        helpDescription={t("globalRecipes", "helpIntro")}
+        helpItems={[
+          <>
+            <IoCopyOutline style={{ verticalAlign: "middle" }} />{" "}
+            {t("globalRecipes", "helpCopy")}
+          </>,
+          <>
+            <IoMdStarOutline style={{ verticalAlign: "middle" }} />{" "}
+            {t("globalRecipes", "helpRating")}
+          </>,
+          <>
+            <IoSearchOutline style={{ verticalAlign: "middle" }} />{" "}
+            {t("globalRecipes", "helpSearch")}
+          </>,
+          <>
+            <BsGrid3X3Gap style={{ verticalAlign: "middle" }} />{" "}
+            {t("globalRecipes", "helpView")}
+          </>,
+        ]}
       />
 
       <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>
