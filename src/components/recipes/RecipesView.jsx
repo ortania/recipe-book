@@ -1,16 +1,24 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaFilter } from "react-icons/fa";
+import { FaFilter, FaRegEdit } from "react-icons/fa";
 import { FaHistory } from "react-icons/fa";
 import { PiStar, PiStarFill } from "react-icons/pi";
 import { CiFilter } from "react-icons/ci";
 import { IoMdStarOutline } from "react-icons/io";
-import { IoChevronDown } from "react-icons/io5";
+import { IoChevronDown, IoSearchOutline } from "react-icons/io5";
 import { BiSortAlt2 } from "react-icons/bi";
-import { BsList, BsGrid3X3Gap } from "react-icons/bs";
-import { IoBookOutline } from "react-icons/io5";
+import {
+  BsList,
+  BsListUl,
+  BsGrid3X3Gap,
+  BsSortDownAlt,
+  BsSortUpAlt,
+} from "react-icons/bs";
+// import { LuLayoutList } from "react-icons/lu";
+// import { CgLayoutList } from "react-icons/cg";
+import { IoBookOutline, IoCopyOutline } from "react-icons/io5";
 import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
-import { GoHeart, GoHeartFill } from "react-icons/go";
+import { GoHeart, GoHeartFill, GoTrash } from "react-icons/go";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 
@@ -29,6 +37,7 @@ import { Greeting } from "../greeting";
 import { search } from "./utils";
 import { AddButton, AddRecipeDropdown } from "../controls";
 import { CloseButton } from "../controls/close-button";
+import ChatHelpButton from "../controls/chat-help-button/ChatHelpButton";
 
 function RecipesView({
   persons,
@@ -45,6 +54,7 @@ function RecipesView({
   emptyTitle,
   hasMoreRecipes: hasMoreRecipesProp,
   onLoadMore,
+  onCopyRecipe,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -55,8 +65,11 @@ function RecipesView({
   const [editingPerson, setEditingPerson] = useState(null);
   const [localPersons, setLocalPersons] = useState(persons);
   const [isSimpleView, setIsSimpleView] = useState(() => {
-    try { return localStorage.getItem("recipesSimpleView") === "true"; }
-    catch { return false; }
+    try {
+      return localStorage.getItem("recipesSimpleView") === "true";
+    } catch {
+      return false;
+    }
   });
   const [showFilterMenu, setShowFilterMenu] = useState(false);
   const [showSortMenu, setShowSortMenu] = useState(false);
@@ -414,7 +427,9 @@ function RecipesView({
   const toggleView = () => {
     setIsSimpleView((prev) => {
       const next = !prev;
-      try { localStorage.setItem("recipesSimpleView", String(next)); } catch {}
+      try {
+        localStorage.setItem("recipesSimpleView", String(next));
+      } catch {}
       return next;
     });
   };
@@ -467,6 +482,16 @@ function RecipesView({
             </div>
           )}
 
+          {selectedCategoryObjects.length > 0 && (
+            <div className={classes.selectedCategoriesList}>
+              {selectedCategoryObjects.map((cat) => (
+                <span key={cat.id} className={classes.selectedCategoryTag}>
+                  {getTranslatedGroup(cat)}
+                </span>
+              ))}
+            </div>
+          )}
+
           <div className={classes.emptyState}>
             <RecipeBookIcon width={72} height={72} />
             <p className={classes.emptyText}>
@@ -509,7 +534,7 @@ function RecipesView({
               recipesLabel={recipesTabLabel}
             />
           </div>
-          {persons.length > 0 && (
+          {persons.length > 0 && !showChat && (
             <button
               className={classes.viewToggleIcon}
               onClick={toggleView}
@@ -519,9 +544,43 @@ function RecipesView({
                   : t("recipesView", "listView")
               }
             >
-              {isSimpleView ? <BsGrid3X3Gap /> : <BsList />}
+              {isSimpleView ? <BsGrid3X3Gap /> : <BsListUl />}
             </button>
           )}
+          <div className={classes.helpBtnEnd}>
+            <ChatHelpButton
+              title={t("recipesView", "helpTitle")}
+              description={t("recipesView", "helpIntro")}
+              items={[
+                <>
+                  <IoSearchOutline style={{ verticalAlign: "middle" }} />{" "}
+                  {t("recipesView", "helpSearch")}
+                </>,
+                <>
+                  <CiFilter style={{ verticalAlign: "middle" }} />{" "}
+                  {t("recipesView", "helpFilter")}
+                </>,
+                <>
+                  <BiSortAlt2 style={{ verticalAlign: "middle" }} />{" "}
+                  {t("recipesView", "helpSort")}
+                </>,
+                <>
+                  <GoHeart style={{ verticalAlign: "middle" }} />{" "}
+                  {t("recipesView", "helpFavorites")}
+                </>,
+                <>
+                  <span style={{ verticalAlign: "middle", fontWeight: 700 }}>
+                    +
+                  </span>{" "}
+                  {t("recipesView", "helpAdd")}
+                </>,
+                <>
+                  <BsGrid3X3Gap style={{ verticalAlign: "middle" }} />{" "}
+                  {t("recipesView", "helpView")}
+                </>,
+              ]}
+            />
+          </div>
         </div>
 
         {!showChat && persons.length > 0 && (
@@ -863,84 +922,89 @@ function RecipesView({
                     />
                     <div className={classes.dropdownMenu} style={sortMenuStyle}>
                       <div className={classes.dropdownClose}>
+                        <button
+                          className={classes.sortDirectionBtn}
+                          onClick={() =>
+                            setSortDirection((prev) =>
+                              prev === "asc" ? "desc" : "asc",
+                            )
+                          }
+                          title={
+                            sortDirection === "asc" ? "Ascending" : "Descending"
+                          }
+                        >
+                          {sortDirection === "asc" ? (
+                            <BsSortUpAlt size={20} />
+                          ) : (
+                            <BsSortDownAlt size={20} />
+                          )}
+                        </button>
                         <CloseButton onClick={() => setShowSortMenu(false)} />
                       </div>
                       <div className={classes.dropdownScrollable}>
                         <button
                           className={sortField === "name" ? classes.active : ""}
                           onClick={() => {
-                            handleSort("name");
+                            setSortField("name");
                             setShowSortMenu(false);
                           }}
                         >
-                          {t("recipesView", "sortByName")}{" "}
-                          {sortField === "name" &&
-                            (sortDirection === "asc" ? "↑" : "↓")}
+                          {t("recipesView", "sortByName")}
                         </button>
                         <button
                           className={
                             sortField === "prepTime" ? classes.active : ""
                           }
                           onClick={() => {
-                            handleSort("prepTime");
+                            setSortField("prepTime");
                             setShowSortMenu(false);
                           }}
                         >
-                          {t("recipesView", "sortByPrepTime")}{" "}
-                          {sortField === "prepTime" &&
-                            (sortDirection === "asc" ? "↑" : "↓")}
+                          {t("recipesView", "sortByPrepTime")}
                         </button>
                         <button
                           className={
                             sortField === "difficulty" ? classes.active : ""
                           }
                           onClick={() => {
-                            handleSort("difficulty");
+                            setSortField("difficulty");
                             setShowSortMenu(false);
                           }}
                         >
-                          {t("recipesView", "sortByDifficulty")}{" "}
-                          {sortField === "difficulty" &&
-                            (sortDirection === "asc" ? "↑" : "↓")}
+                          {t("recipesView", "sortByDifficulty")}
                         </button>
                         <button
                           className={
                             sortField === "rating" ? classes.active : ""
                           }
                           onClick={() => {
-                            handleSort("rating");
+                            setSortField("rating");
                             setShowSortMenu(false);
                           }}
                         >
-                          {t("recipesView", "sortByRating")}{" "}
-                          {sortField === "rating" &&
-                            (sortDirection === "asc" ? "↑" : "↓")}
+                          {t("recipesView", "sortByRating")}
                         </button>
                         <button
                           className={
                             sortField === "favorites" ? classes.active : ""
                           }
                           onClick={() => {
-                            handleSort("favorites");
+                            setSortField("favorites");
                             setShowSortMenu(false);
                           }}
                         >
-                          {t("recipesView", "sortByFavorites")}{" "}
-                          {sortField === "favorites" &&
-                            (sortDirection === "asc" ? "↑" : "↓")}
+                          {t("recipesView", "sortByFavorites")}
                         </button>
                         <button
                           className={
                             sortField === "recentlyViewed" ? classes.active : ""
                           }
                           onClick={() => {
-                            handleSort("recentlyViewed");
+                            setSortField("recentlyViewed");
                             setShowSortMenu(false);
                           }}
                         >
-                          {t("recipesView", "sortByRecentlyViewed")}{" "}
-                          {sortField === "recentlyViewed" &&
-                            (sortDirection === "asc" ? "↑" : "↓")}
+                          {t("recipesView", "sortByRecentlyViewed")}
                         </button>
                       </div>
                     </div>
@@ -1067,30 +1131,30 @@ function RecipesView({
                               <span className={classes.compactName}>
                                 {person.name}
                               </span>
-                              {showCategories &&
-                                person.categories?.length > 0 && (
-                                  <div className={classes.compactCategories}>
-                                    {person.categories.map((catId) => {
-                                      const cat = groups.find(
-                                        (g) => g.id === catId,
-                                      );
-                                      return cat ? (
-                                        <span
-                                          key={catId}
-                                          className={
-                                            classes.compactCategoryBadge
-                                          }
-                                          style={{
-                                            borderColor: cat.color,
-                                            color: cat.color,
-                                          }}
-                                        >
-                                          {getTranslatedGroup(cat)}
-                                        </span>
-                                      ) : null;
-                                    })}
-                                  </div>
-                                )}
+                              {showAddAndFavorites && (
+                                <div className={classes.compactActions}>
+                                  <button
+                                    className={classes.compactActionBtn}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleEditClick(person);
+                                    }}
+                                    title="Edit"
+                                  >
+                                    <FaRegEdit />
+                                  </button>
+                                  <button
+                                    className={`${classes.compactActionBtn} ${classes.compactDanger}`}
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      onDeletePerson(person.id);
+                                    }}
+                                    title="Delete"
+                                  >
+                                    <GoTrash />
+                                  </button>
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
@@ -1141,6 +1205,30 @@ function RecipesView({
                             <span className={classes.compactName}>
                               {person.name}
                             </span>
+                            {showAddAndFavorites && (
+                              <div className={classes.compactActions}>
+                                <button
+                                  className={classes.compactActionBtn}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleEditClick(person);
+                                  }}
+                                  title="Edit"
+                                >
+                                  <FaRegEdit />
+                                </button>
+                                <button
+                                  className={`${classes.compactActionBtn} ${classes.compactDanger}`}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    onDeletePerson(person.id);
+                                  }}
+                                  title="Delete"
+                                >
+                                  <GoTrash />
+                                </button>
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -1171,20 +1259,42 @@ function RecipesView({
                   onClick={() => navigate(`/recipe/${person.id}`)}
                 >
                   <span className={classes.compactName}>{person.name}</span>
-                  {showCategories && person.categories?.length > 0 && (
-                    <div className={classes.compactCategories}>
-                      {person.categories.map((catId) => {
-                        const cat = groups.find((g) => g.id === catId);
-                        return cat ? (
-                          <span
-                            key={catId}
-                            className={classes.compactCategoryBadge}
-                            style={{ borderColor: cat.color, color: cat.color }}
-                          >
-                            {getTranslatedGroup(cat)}
-                          </span>
-                        ) : null;
-                      })}
+                  {showAddAndFavorites && (
+                    <div className={classes.compactActions}>
+                      <button
+                        className={classes.compactActionBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditClick(person);
+                        }}
+                        title="Edit"
+                      >
+                        <FaRegEdit />
+                      </button>
+                      <button
+                        className={`${classes.compactActionBtn} ${classes.compactDanger}`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onDeletePerson(person.id);
+                        }}
+                        title="Delete"
+                      >
+                        <GoTrash />
+                      </button>
+                    </div>
+                  )}
+                  {onCopyRecipe && (
+                    <div className={classes.compactActions}>
+                      <button
+                        className={classes.compactActionBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onCopyRecipe(person.id);
+                        }}
+                        title={t("globalRecipes", "copyToMyRecipes")}
+                      >
+                        <IoCopyOutline />
+                      </button>
                     </div>
                   )}
                 </div>
@@ -1202,6 +1312,7 @@ function RecipesView({
                   onToggleFavorite={
                     showAddAndFavorites ? handleToggleFavorite : undefined
                   }
+                  onCopyRecipe={onCopyRecipe}
                 />
               ))}
             </div>

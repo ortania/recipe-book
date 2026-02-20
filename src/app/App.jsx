@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import React, { Suspense, useRef } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -50,13 +50,19 @@ function App() {
 
 function AppContent() {
   const { isLoggedIn, isLoading } = useRecipeBook();
+  const initialLoadDone = useRef(false);
 
-  if (isLoading) {
-    return <div className={classes.loading}>Loading recipes...</div>;
+  if (!isLoading) {
+    initialLoadDone.current = true;
   }
+
+  const showInitialLoading = isLoading && !initialLoadDone.current;
 
   return (
     <Router>
+      {showInitialLoading ? (
+        <div className={classes.loading}>Loading recipes...</div>
+      ) : (
       <Routes>
         {/* Onboarding (shown once before login) */}
         <Route
@@ -121,6 +127,7 @@ function AppContent() {
           element={<Navigate to={isLoggedIn ? "/categories" : "/login"} />}
         />
       </Routes>
+      )}
     </Router>
   );
 }

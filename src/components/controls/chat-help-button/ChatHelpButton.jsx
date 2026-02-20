@@ -1,7 +1,8 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import classes from "./chat-help-button.module.css";
 
-function ChatHelpButton({ items, title, onToggle }) {
+function ChatHelpButton({ items, title, description, onToggle }) {
   const [open, setOpen] = useState(false);
 
   const handleToggle = (val) => {
@@ -20,21 +21,35 @@ function ChatHelpButton({ items, title, onToggle }) {
       >
         ?
       </button>
-      {open && (
-        <div className={classes.dropdown}>
-          <button className={classes.close} onClick={() => handleToggle(false)}>
-            ✕
-          </button>
-          <div className={classes.content}>
-            {title && <strong>{title}</strong>}
-            <ul>
-              {items.map((item, i) => (
-                <li key={i}>{item}</li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      )}
+      {open &&
+        createPortal(
+          <>
+            <div
+              className={classes.overlay}
+              onClick={() => handleToggle(false)}
+            />
+            <div className={classes.dropdown}>
+              <button
+                className={classes.close}
+                onClick={() => handleToggle(false)}
+              >
+                ✕
+              </button>
+              <div className={classes.content}>
+                {title && <strong>{title}</strong>}
+                {description && (
+                  <p className={classes.description}>{description}</p>
+                )}
+                <ul>
+                  {items.map((item, i) => (
+                    <li key={i}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          </>,
+          document.body,
+        )}
     </div>
   );
 }

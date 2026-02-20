@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
   FaSignOutAlt,
@@ -81,6 +81,7 @@ function Navigation({ onLogout, links }) {
   const [showManagement, setShowManagement] = useState(false);
   const [showTour, setShowTour] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
+  const navScrollableRef = useRef(null);
 
   const getGroupContacts = (groupId) => {
     if (groupId === "all") return recipes;
@@ -180,6 +181,7 @@ function Navigation({ onLogout, links }) {
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("touchstart", handleTouchStart);
       document.removeEventListener("touchend", handleTouchEnd);
+      document.body.classList.remove("sidebar-open");
     };
   }, []);
 
@@ -226,7 +228,14 @@ function Navigation({ onLogout, links }) {
       )}
 
       <nav className={`${classes.nav} ${isOpen ? classes.open : ""}`}>
-        <div className={classes.navScrollable}>
+        <div ref={navScrollableRef} className={classes.navScrollable}>
+          <div className={classes.mobileCloseRow}>
+            <CloseButton
+              onClick={closeSidebar}
+              type="plain"
+              className={classes.sidebarCloseBtn}
+            />
+          </div>
           <div className={classes.desktopOnly}>
             <span className={classes.logo}>Cook</span>
             <span className={classes.logoTail}>book</span>
@@ -272,116 +281,119 @@ function Navigation({ onLogout, links }) {
                     </button>
                   </div>
 
-              <div className={classes.sectionHeader}>
-                <button
-                  className={classes.sectionHeaderBtn}
-                  onClick={() =>
-                    !isMobile && setCategoriesOpen(!categoriesOpen)
-                  }
-                >
-                  <span>
-                    {/* <CiGrid41 /> */}
-                    <BsGrid />
-                    {t("nav", "categories").toUpperCase()}
-                    {!categorySearch && selectedCount > 0 && (
-                      <span className={classes.sectionCount}>
-                        ({selectedCount})
+                  <div className={classes.sectionHeader}>
+                    <button
+                      className={classes.sectionHeaderBtn}
+                      onClick={() =>
+                        !isMobile && setCategoriesOpen(!categoriesOpen)
+                      }
+                    >
+                      <span>
+                        {/* <CiGrid41 /> */}
+                        <BsGrid />
+                        {t("nav", "categories").toUpperCase()}
+                        {!categorySearch && selectedCount > 0 && (
+                          <span className={classes.sectionCount}>
+                            ({selectedCount})
+                          </span>
+                        )}
                       </span>
+                      {!isMobile &&
+                        (categoriesOpen ? (
+                          <FaChevronUp className={classes.chevron} />
+                        ) : (
+                          <FaChevronDown className={classes.chevron} />
+                        ))}
+                    </button>
+                    {!isAllSelected && selectedCount > 0 && (
+                      <button
+                        className={classes.clearCategoriesBtn}
+                        onClick={clearCategorySelection}
+                        title={t("categories", "clearAllFilters")}
+                      >
+                        {t("categories", "clear")}
+                      </button>
                     )}
-                  </span>
-                  {!isMobile &&
-                    (categoriesOpen ? (
-                      <FaChevronUp className={classes.chevron} />
-                    ) : (
-                      <FaChevronDown className={classes.chevron} />
-                    ))}
-                </button>
-                {!isAllSelected && selectedCount > 0 && (
-                  <button
-                    className={classes.clearCategoriesBtn}
-                    onClick={clearCategorySelection}
-                    title={t("categories", "clearAllFilters")}
-                  >
-                    ✕
-                  </button>
-                )}
-              </div>
-
-              {(categoriesOpen || isMobile) && (
-                <div className={classes.categoryList}>
-                  <div className={classes.categorySearchWrap}>
-                    <SearchBox
-                      searchTerm={categorySearch}
-                      onSearchChange={(val) => {
-                        setCategorySearch(val);
-                        if (!val) clearCategorySelection();
-                      }}
-                      placeholder={t("categories", "searchCategory")}
-                      size="small"
-                      className={classes.categorySearchBox}
-                    />
                   </div>
-                  {categories
-                    .filter((group) => {
-                      if (!categorySearch.trim()) return true;
-                      const term = categorySearch.trim().toLowerCase();
-                      const name =
-                        group.id === "all"
-                          ? t("categories", "allRecipes").toLowerCase()
-                          : (getTranslated(group) || "").toLowerCase();
-                      return name.includes(term);
-                    })
-                    .map((group) => {
-                      const isSelected = selectedCategories.includes(group.id);
-                      return (
-                        <button
-                          key={group.id}
-                          className={`${classes.categoryItem} ${isSelected ? classes.categoryActive : ""}`}
-                          onClick={() => toggleCategory(group.id)}
-                          style={{
-                            borderColor: group.color,
-                            backgroundColor: isSelected
-                              ? `${group.color}22`
-                              : "transparent",
-                            color: isSelected ? group.color : undefined,
+
+                  {(categoriesOpen || isMobile) && (
+                    <div className={classes.categoryList}>
+                      <div className={classes.categorySearchWrap}>
+                        <SearchBox
+                          searchTerm={categorySearch}
+                          onSearchChange={(val) => {
+                            setCategorySearch(val);
+                            if (!val) clearCategorySelection();
                           }}
-                        >
-                          <span className={classes.categoryLabel}>
-                            {(() => {
-                              const IconComp =
-                                group.id === "all"
-                                  ? MdRestaurant
-                                  : getCategoryIcon(group.icon);
-                              return (
-                                <span
-                                  className={classes.categoryIconWrap}
-                                  style={{
-                                    backgroundColor: `${group.color}22`,
-                                    color: group.color,
-                                  }}
-                                >
-                                  <IconComp />
-                                </span>
-                              );
-                            })()}
-                            {group.id === "all"
-                              ? t("categories", "allRecipes")
-                              : getTranslated(group)}
-                          </span>
-                          <span className={classes.categoryCount}>
-                            {getGroupContacts(group.id).length}
-                          </span>
-                        </button>
-                      );
-                    })}
-                </div>
-              )}
+                          placeholder={t("categories", "searchCategory")}
+                          size="small"
+                          className={classes.categorySearchBox}
+                        />
+                      </div>
+                      {categories
+                        .filter((group) => {
+                          if (!categorySearch.trim()) return true;
+                          const term = categorySearch.trim().toLowerCase();
+                          const name =
+                            group.id === "all"
+                              ? t("categories", "allRecipes").toLowerCase()
+                              : (getTranslated(group) || "").toLowerCase();
+                          return name.includes(term);
+                        })
+                        .map((group) => {
+                          const isSelected = selectedCategories.includes(
+                            group.id,
+                          );
+                          return (
+                            <button
+                              key={group.id}
+                              className={`${classes.categoryItem} ${isSelected ? classes.categoryActive : ""}`}
+                              onClick={() => toggleCategory(group.id)}
+                              style={{
+                                borderColor: group.color,
+                                backgroundColor: isSelected
+                                  ? `${group.color}22`
+                                  : "transparent",
+                                color: isSelected ? group.color : undefined,
+                              }}
+                            >
+                              <span className={classes.categoryLabel}>
+                                {(() => {
+                                  const IconComp =
+                                    group.id === "all"
+                                      ? MdRestaurant
+                                      : getCategoryIcon(group.icon);
+                                  return (
+                                    <span
+                                      className={classes.categoryIconWrap}
+                                      style={{
+                                        backgroundColor: `${group.color}22`,
+                                        color: group.color,
+                                      }}
+                                    >
+                                      <IconComp />
+                                    </span>
+                                  );
+                                })()}
+                                {group.id === "all"
+                                  ? t("categories", "allRecipes")
+                                  : getTranslated(group)}
+                              </span>
+                              <span className={classes.categoryCount}>
+                                {getGroupContacts(group.id).length}
+                              </span>
+                            </button>
+                          );
+                        })}
+                    </div>
+                  )}
                 </>
               )}
             </>
           )}
         </div>
 
+        <div className={classes.navGradient} />
         <div className={classes.navBottom}>
           <div className={classes.separator}></div>
 

@@ -15,9 +15,9 @@ const iconMap = {
 };
 
 const navTranslationMap = {
-  Categories: "recipes",
-  MealPlanner: "mealPlanner",
-  ShoppingList: "shoppingList",
+  Categories: "recipesShort",
+  MealPlanner: "mealPlannerShort",
+  ShoppingList: "shoppingListShort",
   GlobalRecipes: "globalRecipes",
   Conversions: "conversions",
 };

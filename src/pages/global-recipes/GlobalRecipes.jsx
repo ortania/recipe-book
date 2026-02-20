@@ -10,7 +10,7 @@ import { scrollToTop } from "../utils";
 
 function GlobalRecipes() {
   const { t, language } = useLanguage();
-  const { currentUser, addRecipe } = useRecipeBook();
+  const { currentUser, addRecipe, setRecipes } = useRecipeBook();
 
   const [allRecipes, setAllRecipes] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -47,6 +47,15 @@ function GlobalRecipes() {
     [lastDoc, currentUser],
   );
 
+  const handleCopyRecipe = useCallback(
+    async (recipeId) => {
+      if (!currentUser) return;
+      const copied = await copyRecipeToUser(recipeId, currentUser.uid, language);
+      setRecipes((prev) => [...prev, copied]);
+    },
+    [currentUser, language, setRecipes],
+  );
+
   if (!hasFetched.current && currentUser) {
     hasFetched.current = true;
     loadRecipes(true);
@@ -63,6 +72,7 @@ function GlobalRecipes() {
         emptyTitle={t("recipesView", "emptyGlobalTitle")}
         hasMoreRecipes={hasMore}
         onLoadMore={() => loadRecipes(false)}
+        onCopyRecipe={handleCopyRecipe}
       />
 
       <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import { useRecipeBook } from "../../context";
 import { Navigation, Header, Footer } from "../../components";
@@ -7,6 +8,10 @@ import classes from "../app.module.css";
 
 function ProtectedLayout() {
   const { isLoggedIn, logout } = useRecipeBook();
+
+  useEffect(() => {
+    document.body.classList.remove("sidebar-open", "modal-open");
+  }, []);
 
   if (!isLoggedIn) {
     return <Navigate to="/login" />;

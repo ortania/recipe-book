@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import {
   transformRecipe,
   handleAddRecipe,
@@ -49,6 +49,7 @@ export const RecipeBookProvider = ({ children }) => {
   const [lastRecipeDoc, setLastRecipeDoc] = useState(null);
   const [hasMoreRecipes, setHasMoreRecipes] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState(["all"]);
+  const loginResolverRef = useRef(null);
 
   const toggleCategory = (categoryId) => {
     setSelectedCategories((prev) => {
@@ -87,6 +88,10 @@ export const RecipeBookProvider = ({ children }) => {
         // so the redirect to /categories happens only after data is ready
         await loadUserData(user.uid);
         setIsLoggedIn(true);
+        if (loginResolverRef.current) {
+          loginResolverRef.current();
+          loginResolverRef.current = null;
+        }
       } else {
         setCurrentUser(null);
         setIsAdmin(false);
@@ -343,9 +348,20 @@ export const RecipeBookProvider = ({ children }) => {
     }
   };
 
-  const login = async () => {
-    // onAuthStateChange handles loading user data and setting isLoggedIn.
-    // This function just ensures we wait for that to complete.
+  const login = () => {
+    return new Promise((resolve) => {
+      if (isLoggedIn) {
+        resolve();
+        return;
+      }
+      loginResolverRef.current = resolve;
+      setTimeout(() => {
+        if (loginResolverRef.current === resolve) {
+          loginResolverRef.current = null;
+          resolve();
+        }
+      }, 15000);
+    });
   };
 
   const loadMoreRecipes = async () => {

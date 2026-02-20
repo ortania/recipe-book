@@ -13,8 +13,9 @@ function Login() {
 
   const isReturningUser = !!localStorage.getItem("onboardingDone");
 
-  // State management
-  const [email, setEmail] = useState("");
+  const savedEmail = localStorage.getItem("rememberedEmail") || "";
+
+  const [email, setEmail] = useState(savedEmail);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -23,7 +24,7 @@ function Login() {
   const [resetEmail, setResetEmail] = useState("");
   const [resetMessage, setResetMessage] = useState("");
   const [isResetting, setIsResetting] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [rememberMe, setRememberMe] = useState(!!savedEmail || true);
 
   const navigate = useNavigate();
 
@@ -85,7 +86,13 @@ function Login() {
 
     try {
       const user = await loginUser(email, password, rememberMe);
+      if (rememberMe) {
+        localStorage.setItem("rememberedEmail", email);
+      } else {
+        localStorage.removeItem("rememberedEmail");
+      }
       await login(user.uid);
+      navigate("/categories");
     } catch (error) {
       if (
         error.code === "auth/invalid-credential" ||

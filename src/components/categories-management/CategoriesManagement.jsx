@@ -1,6 +1,6 @@
 import React, { useState, useRef, useCallback } from "react";
 import { FaRegEdit } from "react-icons/fa";
-import { BsTrash3 } from "react-icons/bs";
+import { GoTrash } from "react-icons/go";
 import { PiPlusLight } from "react-icons/pi";
 import { FiMenu } from "react-icons/fi";
 import { LuArrowUpDown } from "react-icons/lu";
@@ -15,6 +15,7 @@ import {
   DEFAULT_ICON_ID,
   getCategoryIcon,
 } from "../../utils/categoryIcons";
+import ChatHelpButton from "../controls/chat-help-button/ChatHelpButton";
 import classes from "./categories-management.module.css";
 
 const COLORS = [
@@ -280,6 +281,14 @@ function CategoriesManagement({
             {t("categories", "categoryManagement")}
           </h2>
           <div className={classes.headerActions}>
+            <ChatHelpButton
+              title={t("categories", "helpTitle")}
+              items={[
+                t("categories", "helpAdd"),
+                t("categories", "helpSort"),
+                t("categories", "helpDrag"),
+              ]}
+            />
             <button
               className={classes.sortBtn}
               onClick={() =>
@@ -342,7 +351,7 @@ function CategoriesManagement({
                       className={classes.deleteBtn}
                       onClick={() => handleDeleteClick(category)}
                     >
-                      <BsTrash3 />
+                      <GoTrash />
                     </button>
                   </div>
                 </>
@@ -350,19 +359,15 @@ function CategoriesManagement({
             </div>
           ))}
 
-          {showAddForm ? (
-            renderInlineForm(false)
-          ) : (
+          {showAddForm && renderInlineForm(false)}
+        </div>
+
+        <div className={classes.bottomBar}>
+          {!showAddForm && (
             <button className={classes.addNewBtn} onClick={handleAddClick}>
               <PiPlusLight /> {t("categories", "addNewCategory")}
             </button>
           )}
-        </div>
-
-        <div className={classes.footer}>
-          <button className={classes.doneBtn} onClick={onClose}>
-            {t("categories", "done")}
-          </button>
         </div>
 
         {categoryToDelete && (
@@ -370,6 +375,8 @@ function CategoriesManagement({
             message={`${t("categories", "deleteConfirm")} "${getTranslated(categoryToDelete)}"?`}
             onConfirm={handleConfirmDelete}
             onCancel={() => setCategoryToDelete(null)}
+            confirmText={t("confirm", "yesDelete")}
+            cancelText={t("common", "cancel")}
           />
         )}
       </div>

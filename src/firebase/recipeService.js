@@ -87,6 +87,18 @@ export const fetchRecipes = async (
   }
 };
 
+export const getRecipeById = async (recipeId) => {
+  try {
+    const docRef = doc(db, RECIPES_COLLECTION, recipeId);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) return null;
+    return { id: snap.id, ...snap.data() };
+  } catch (error) {
+    console.error("Error fetching recipe by ID:", error);
+    return null;
+  }
+};
+
 export const addRecipe = async (recipe, userId) => {
   try {
     const recipesRef = collection(db, RECIPES_COLLECTION);

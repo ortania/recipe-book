@@ -25,21 +25,12 @@
   position: relative;
 }
 
-.navScrollable::after {
-  content: "";
-  position: sticky;
-  bottom: 0;
-  display: block;
-  height: 50px;
-  margin-top: -50px;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    var(--bg-sidebar) 70%
-  );
-  pointer-events: none;
-  z-index: 5;
+.navGradient {
   flex-shrink: 0;
+  height: 0;
+  position: relative;
+  z-index: 5;
+  box-shadow: 0 -8px 16px -4px rgba(0, 0, 0, 0.1);
 }
 
 .navScrollable > a:first-of-type {
@@ -673,6 +664,14 @@
   display: none;
 }
 
+.mobileCloseRow {
+  display: none;
+}
+
+.sidebarCloseBtn {
+  font-size: 2.5rem !important;
+}
+
 /* Hide top bar when modal is open on any screen size */
 :global(body.modal-open) .mobileTopBar {
   display: none !important;
@@ -758,12 +757,13 @@
     position: sticky;
     bottom: 0;
     display: block;
-    height: 50px;
-    margin-top: -50px;
-    background: linear-gradient(to bottom, transparent, var(--bg-sidebar));
+    height: 2px;
+    margin-top: -2px;
+    background: transparent;
     pointer-events: none;
     z-index: 10;
     flex-shrink: 0;
+    box-shadow: 0 -8px 16px -4px rgba(0, 0, 0, 0.12);
   }
 
   .navScrollable {
@@ -771,7 +771,7 @@
     flex: 0 0 auto;
   }
 
-  .navScrollable::after {
+  .navGradient {
     display: none;
   }
 
@@ -785,5 +785,11 @@
 
   .navScrollable > a:first-of-type {
     margin-top: 1rem;
+  }
+
+  .mobileCloseRow {
+    display: flex;
+    justify-content: flex-end;
+    padding: 0.5rem 0.5rem 0;
   }
 }

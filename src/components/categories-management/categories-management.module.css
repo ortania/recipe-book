@@ -2,6 +2,11 @@
   width: 100%;
   background: var(--bg-card);
   border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  max-height: 100%;
+  overflow: hidden;
 }
 
 .header {
@@ -9,10 +14,9 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  position: sticky;
-  top: -2rem;
   background: var(--bg-card);
   z-index: 10;
+  flex-shrink: 0;
 }
 
 .title {
@@ -56,20 +60,10 @@
 }
 
 .listWrap {
-  padding: 0 0.5rem;
-  position: relative;
-}
-
-.listWrap::after {
-  content: "";
-  position: sticky;
-  bottom: 0;
-  display: block;
-  height: 40px;
-  margin-top: -40px;
-  background: linear-gradient(to bottom, transparent, var(--bg-card));
-  pointer-events: none;
-  z-index: 5;
+  padding: 0 0.5rem 1rem;
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 /* Category row */
@@ -139,12 +133,8 @@
 .catActions {
   display: flex;
   gap: 0.4rem;
-  opacity: 0;
-  transition: opacity 0.15s ease;
-}
-
-.catRow:hover .catActions {
-  opacity: 1;
+  flex-shrink: 0;
+  align-items: center;
 }
 
 .editBtn,
@@ -167,9 +157,13 @@
   background: var(--bg-hover);
 }
 
+.deleteBtn {
+  color: #e74c3c;
+}
+
 .deleteBtn:hover {
-  color: #ef4444;
-  background: #fee2e2;
+  color: #c0392b;
+  background: rgba(231, 76, 60, 0.1);
 }
 
 /* Add new category button */
@@ -185,6 +179,7 @@
   font-weight: 500;
   cursor: pointer;
   transition: color 0.15s ease;
+  width: 100%;
 }
 
 .addNewBtn:hover {
@@ -353,15 +348,20 @@
   cursor: not-allowed;
 }
 
+/* Fixed bottom bar with shadow above to indicate scrollable content */
+.bottomBar {
+  flex-shrink: 0;
+  background: var(--bg-card);
+  position: relative;
+  z-index: 5;
+  box-shadow: 0 -8px 16px -4px rgba(0, 0, 0, 0.1);
+}
+
 /* Footer */
 .footer {
   padding: 1rem 1.5rem;
   display: flex;
   justify-content: flex-end;
-  position: sticky;
-  bottom: 0;
-  background: var(--bg-card);
-  z-index: 6;
 }
 
 .doneBtn {

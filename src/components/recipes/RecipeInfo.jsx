@@ -12,6 +12,7 @@ import {
 import { GoHeart, GoHeartFill, GoTrash } from "react-icons/go";
 import { HiOutlineTrash } from "react-icons/hi2";
 import { BsTrash3 } from "react-icons/bs";
+import { IoCopyOutline } from "react-icons/io5";
 import { Button } from "../controls/button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { formatDifficulty, formatTime } from "./utils";
@@ -21,13 +22,15 @@ import useTranslatedText from "../../hooks/useTranslatedText";
 const DEFAULT_IMAGE =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='320'%3E%3Crect width='400' height='320' fill='%23e0e0e0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='%23666'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
+function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopyRecipe }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const translatedName = useTranslatedText(person.name);
   const [isFavorite, setIsFavorite] = useState(person.isFavorite || false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [isCopying, setIsCopying] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const getImageSrc = () => {
     if (
@@ -88,6 +91,21 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
     }
   };
 
+  const handleCopy = async (e) => {
+    e.stopPropagation();
+    if (isCopying || !onCopyRecipe) return;
+    setIsCopying(true);
+    try {
+      await onCopyRecipe(person.id);
+      setCopySuccess(true);
+      setTimeout(() => setCopySuccess(false), 3000);
+    } catch (error) {
+      console.error("Copy failed:", error);
+    } finally {
+      setIsCopying(false);
+    }
+  };
+
   return (
     <>
       <div
@@ -104,40 +122,58 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
               e.target.src = DEFAULT_IMAGE;
             }}
           />
-          <button
-            className={`${classes.favoriteButton} ${isFavorite ? classes.active : ""}`}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleFavoriteClick();
-            }}
-            aria-label={
-              isFavorite ? "Remove from favorites" : "Add to favorites"
-            }
-          >
-            {isFavorite ? <GoHeartFill color="red" /> : <GoHeart />}
-          </button>
-
-          <div className={classes.actionButtons}>
+          {!onCopyRecipe && (
             <button
-              onClick={handleEdit}
-              className={classes.actionButton}
-              title="Edit recipe"
-            >
-              <FaRegEdit />
-            </button>
-            <button
+              className={`${classes.favoriteButton} ${isFavorite ? classes.active : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
-                handleDeleteClick();
+                handleFavoriteClick();
               }}
-              className={`${classes.actionButton} ${classes.danger}`}
-              title="Delete recipe"
+              aria-label={
+                isFavorite ? "Remove from favorites" : "Add to favorites"
+              }
             >
-              {/* <BsTrash3  /> */}
-              {/* <FaTrash /> */}
-              <GoTrash color="red" />
+              {isFavorite ? <GoHeartFill color="red" /> : <GoHeart />}
             </button>
-          </div>
+          )}
+
+          {onCopyRecipe ? (
+            <button
+              onClick={handleCopy}
+              className={`${classes.copyButton} ${copySuccess ? classes.copied : ""}`}
+              disabled={isCopying || copySuccess}
+              title={t("globalRecipes", "copyToMyRecipes")}
+            >
+              <IoCopyOutline />
+              <span>
+                {copySuccess
+                  ? t("globalRecipes", "copied")
+                  : isCopying
+                    ? "..."
+                    : t("globalRecipes", "copyToMyRecipes")}
+              </span>
+            </button>
+          ) : (
+            <div className={classes.actionButtons}>
+              <button
+                onClick={handleEdit}
+                className={classes.actionButton}
+                title="Edit recipe"
+              >
+                <FaRegEdit />
+              </button>
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleDeleteClick();
+                }}
+                className={`${classes.actionButton} ${classes.danger}`}
+                title="Delete recipe"
+              >
+                <GoTrash color="red" />
+              </button>
+            </div>
+          )}
         </div>
 
         <div className={classes.recipeInfo}>
@@ -218,6 +254,11 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite }) {
             {t("confirm", "recipeDeleted")}
           </div>
         )}
+        {copySuccess && (
+          <div className={classes.successNotification}>
+            {t("globalRecipes", "copied")}
+          </div>
+        )}
       </div>
     </>
   );
@@ -229,7 +270,8 @@ const MemoizedRecipeInfo = React.memo(RecipeInfo, (prev, next) => {
     prev.groups === next.groups &&
     prev.onEdit === next.onEdit &&
     prev.onDelete === next.onDelete &&
-    prev.onToggleFavorite === next.onToggleFavorite
+    prev.onToggleFavorite === next.onToggleFavorite &&
+    prev.onCopyRecipe === next.onCopyRecipe
   );
 });
 

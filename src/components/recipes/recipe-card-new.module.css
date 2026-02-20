@@ -132,6 +132,43 @@
   transform: scale(1.05);
 }
 
+.copyButton {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  border-radius: 20px;
+  padding: 0.45em 1em;
+  font-size: var(--very-small-font);
+  font-weight: 500;
+  color: var(--clr-blue-3, #2563eb);
+  cursor: pointer;
+  transition: all 0.25s ease;
+  z-index: 2;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.copyButton:hover {
+  background: var(--clr-blue-3, #2563eb);
+  color: white;
+  transform: translateX(-50%) scale(1.04);
+}
+
+.copyButton:disabled {
+  cursor: default;
+}
+
+.copyButton.copied {
+  background: #4caf50;
+  color: white;
+}
+
 .reorderActions {
   position: absolute;
   bottom: 0.5rem;

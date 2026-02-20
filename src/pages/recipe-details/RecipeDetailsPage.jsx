@@ -6,6 +6,7 @@ import RecipeDetailsCookingMode from "../../components/recipes/RecipeDetailsCook
 import { EditRecipe } from "../../components/forms/edit-recipe";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
+import { getRecipeById } from "../../firebase/recipeService";
 import useTranslatedRecipe from "../../hooks/useTranslatedRecipe";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import classes from "./recipe-details-page.module.css";
@@ -27,9 +28,26 @@ function RecipeDetailsPage() {
 
   const contextRecipe = recipes.find((r) => r.id === id);
   const [localRecipe, setLocalRecipe] = useState(null);
+  const [fetchedRecipe, setFetchedRecipe] = useState(null);
+  const [fetchingRemote, setFetchingRemote] = useState(false);
 
-  // Use localRecipe override if set, otherwise use context recipe
-  const recipe = localRecipe || contextRecipe;
+  const recipe = localRecipe || contextRecipe || fetchedRecipe;
+
+  const isOwner = recipe && currentUser && recipe.userId === currentUser.uid;
+
+  // Fetch from Firebase if not found in context (e.g. global recipes)
+  useEffect(() => {
+    if (contextRecipe || !id) return;
+    let cancelled = false;
+    setFetchingRemote(true);
+    getRecipeById(id).then((r) => {
+      if (!cancelled) {
+        if (r) setFetchedRecipe(r);
+        setFetchingRemote(false);
+      }
+    });
+    return () => { cancelled = true; };
+  }, [id, contextRecipe]);
 
   // Clear local override when context catches up
   useEffect(() => {
@@ -123,6 +141,15 @@ function RecipeDetailsPage() {
   }, [cookingMode]);
 
   if (!recipe) {
+    if (fetchingRemote) {
+      return (
+        <div className={classes.pageContainer}>
+          <div className={classes.notFound}>
+            <p>{t("common", "loading") || "Loading..."}</p>
+          </div>
+        </div>
+      );
+    }
     return (
       <div className={classes.pageContainer}>
         <div className={classes.notFound}>
@@ -246,17 +273,17 @@ function RecipeDetailsPage() {
         originalRecipe={recipe}
         isTranslating={isTranslating}
         onClose={handleClose}
-        onEdit={handleEdit}
-        onDelete={handleDelete}
-        onDuplicate={handleDuplicate}
-        onSaveRecipe={editRecipe}
+        onEdit={isOwner ? handleEdit : undefined}
+        onDelete={isOwner ? handleDelete : undefined}
+        onDuplicate={isOwner ? handleDuplicate : undefined}
+        onSaveRecipe={isOwner ? editRecipe : undefined}
         getCategoryName={getCategoryName}
         onEnterCookingMode={handleCookingModeToggle}
-        onCopyRecipe={(recipe, targetUserId) =>
+        onCopyRecipe={isOwner ? (recipe, targetUserId) =>
           copyRecipeToUser(recipe, targetUserId, language)
-        }
+        : undefined}
         currentUserId={currentUser?.uid}
-        onToggleFavorite={handleToggleFavorite}
+        onToggleFavorite={isOwner ? handleToggleFavorite : undefined}
       />
 
       {editingRecipe && (
