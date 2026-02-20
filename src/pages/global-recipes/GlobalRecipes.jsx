@@ -80,6 +80,9 @@ function GlobalRecipes() {
         hasMoreRecipes={hasMore}
         onLoadMore={() => loadRecipes(false)}
         onCopyRecipe={handleCopyRecipe}
+        defaultSortField="rating"
+        defaultSortDirection="desc"
+        sortStorageKey="globalRecipesSortPreference"
         helpTitle={t("globalRecipes", "helpTitle")}
         helpDescription={t("globalRecipes", "helpIntro")}
         helpItems={[

@@ -58,13 +58,32 @@ function RecipesView({
   helpTitle: helpTitleProp,
   helpDescription: helpDescriptionProp,
   helpItems: helpItemsProp,
+  defaultSortField = "name",
+  defaultSortDirection = "asc",
+  sortStorageKey,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const [searchTerm, setSearchTerm] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
-  const [sortField, setSortField] = useState("name");
-  const [sortDirection, setSortDirection] = useState("asc");
+  const [sortField, setSortField] = useState(() => {
+    if (sortStorageKey) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(sortStorageKey));
+        if (saved?.field) return saved.field;
+      } catch {}
+    }
+    return defaultSortField;
+  });
+  const [sortDirection, setSortDirection] = useState(() => {
+    if (sortStorageKey) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(sortStorageKey));
+        if (saved?.direction) return saved.direction;
+      } catch {}
+    }
+    return defaultSortDirection;
+  });
   const [editingPerson, setEditingPerson] = useState(null);
   const [localPersons, setLocalPersons] = useState(persons);
   const [isSimpleView, setIsSimpleView] = useState(() => {
@@ -105,6 +124,15 @@ function RecipesView({
     const timer = setTimeout(() => setDebouncedSearch(searchTerm), 250);
     return () => clearTimeout(timer);
   }, [searchTerm]);
+
+  useEffect(() => {
+    if (sortStorageKey) {
+      localStorage.setItem(
+        sortStorageKey,
+        JSON.stringify({ field: sortField, direction: sortDirection }),
+      );
+    }
+  }, [sortField, sortDirection, sortStorageKey]);
 
   // Filtered persons based on favorites toggle
   const displayPersons = useMemo(() => {
