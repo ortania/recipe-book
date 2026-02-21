@@ -90,6 +90,11 @@ function Onboarding({ onFinish }) {
     finishOnboarding();
   };
 
+  const handleSkipToLogin = () => {
+    localStorage.setItem("onboardingDone", "true");
+    navigate("/login");
+  };
+
   const finishOnboarding = () => {
     localStorage.setItem("onboardingDone", "true");
     if (onFinish) {
@@ -158,6 +163,15 @@ function Onboarding({ onFinish }) {
           <button className={classes.nextBtn} onClick={handleNext}>
             {isLast ? t("onboarding", "getStarted") : t("onboarding", "next")}
           </button>
+
+          {current === 0 && (
+            <button
+              className={classes.skipToLoginBtn}
+              onClick={handleSkipToLogin}
+            >
+              {t("onboarding", "skipToLogin")}
+            </button>
+          )}
         </div>
       </div>
     </div>

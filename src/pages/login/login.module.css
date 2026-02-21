@@ -308,6 +308,20 @@
   cursor: not-allowed;
 }
 
+.tourLink {
+  color: var(--text-muted);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 0.5rem;
+  transition: color 0.2s ease;
+  align-self: flex-start;
+}
+
+.tourLink:hover {
+  color: var(--text-secondary);
+}
+
 .success {
   background: #d4edda;
   color: #155724;

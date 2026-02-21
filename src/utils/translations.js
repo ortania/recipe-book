@@ -3846,6 +3846,20 @@ const translations = {
       de: "Überspringen",
       mixed: "Skip",
     },
+    skipToLogin: {
+      he: "כבר יש לי חשבון",
+      en: "I already have an account",
+      ru: "У меня уже есть аккаунт",
+      de: "Ich habe bereits ein Konto",
+      mixed: "I already have an account",
+    },
+    viewTour: {
+      he: "צפייה בהדרכה",
+      en: "View tour",
+      ru: "Посмотреть обзор",
+      de: "Tour ansehen",
+      mixed: "View tour",
+    },
     next: {
       he: "הבא",
       en: "Next",

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 import FormInput from "./FormInput";
@@ -111,84 +111,120 @@ function Login() {
     }
   };
 
+  const emailInputRef = useRef(null);
+
+  useEffect(() => {
+    if (isReturningUser && emailInputRef.current) {
+      emailInputRef.current.focus();
+    }
+  }, []);
+
   return (
     <div className={classes.loginContainer}>
       <div className={classes.loginContent}>
-        {/* Landing card — always visible */}
-        <div className={classes.landingCard}>
-          <h1 className={classes.landingLogo}>
-            Cooki<span className={classes.landingLogoBook}>Pal</span>
-          </h1>
-          <p className={classes.landingSubtitle}>
-            {t("onboarding", "welcomeSubtitle")}
-          </p>
-          <button
-            className={classes.landingBtn}
-            onClick={() => navigate("/signup")}
-          >
-            {t("onboarding", "letsStart")}
-          </button>
-        </div>
+        {/* Returning user: login form first */}
+        {isReturningUser ? (
+          <>
+            <h1 className={classes.landingLogo}>
+              Cooki<span className={classes.landingLogoBook}>Pal</span>
+            </h1>
 
-        {/* Login form — only for returning users */}
-        {isReturningUser && (
-          <form className={classes.loginForm} onSubmit={handleSubmit}>
-            <p className={classes.title}>{t("auth", "login")}</p>
-            {error && <p className={classes.error}>{error}</p>}
+            <form className={classes.loginForm} onSubmit={handleSubmit}>
+              <p className={classes.title}>{t("auth", "login")}</p>
+              {error && <p className={classes.error}>{error}</p>}
 
-            <FormInput
-              type="email"
-              placeholder={t("auth", "email")}
-              value={email}
-              onChange={handleEmailChange}
-              isLoading={isLoading}
-              onFocus={handleFocus}
-            />
-
-            <FormInput
-              type="password"
-              placeholder={t("auth", "password")}
-              value={password}
-              onChange={handlePasswordChange}
-              isLoading={isLoading}
-              onFocus={handleFocus}
-              isPassword={true}
-              togglePassword={togglePassword}
-              showPassword={showPassword}
-            />
-
-            <label className={classes.rememberMe}>
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
+              <FormInput
+                type="email"
+                placeholder={t("auth", "email")}
+                value={email}
+                onChange={handleEmailChange}
+                isLoading={isLoading}
+                onFocus={handleFocus}
+                inputRef={emailInputRef}
               />
-              <span>{t("auth", "rememberMe")}</span>
-            </label>
 
-            <button type="submit" disabled={isLoading}>
-              {isLoading ? t("auth", "loggingIn") : t("auth", "login")}
+              <FormInput
+                type="password"
+                placeholder={t("auth", "password")}
+                value={password}
+                onChange={handlePasswordChange}
+                isLoading={isLoading}
+                onFocus={handleFocus}
+                isPassword={true}
+                togglePassword={togglePassword}
+                showPassword={showPassword}
+              />
+
+              <label className={classes.rememberMe}>
+                <input
+                  type="checkbox"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                <span>{t("auth", "rememberMe")}</span>
+              </label>
+
+              <button type="submit" disabled={isLoading}>
+                {isLoading ? t("auth", "loggingIn") : t("auth", "login")}
+              </button>
+
+              <p className={classes.forgotPassword}>
+                <span
+                  onClick={() => setShowForgotPassword(true)}
+                  className={classes.link}
+                >
+                  {t("auth", "forgotPassword")}
+                </span>
+              </p>
+
+              <p className={classes.signupLink}>
+                {t("auth", "noAccount")}{" "}
+                <span
+                  onClick={() => navigate("/signup")}
+                  className={classes.link}
+                >
+                  {t("auth", "signup")}
+                </span>
+              </p>
+            </form>
+
+            <span
+              onClick={() => {
+                localStorage.removeItem("onboardingDone");
+                navigate("/signup");
+              }}
+              className={classes.tourLink}
+            >
+              {t("onboarding", "viewTour")}
+            </span>
+          </>
+        ) : (
+          /* New user: landing card */
+          <div className={classes.landingCard}>
+            <h1 className={classes.landingLogo}>
+              Cooki<span className={classes.landingLogoBook}>Pal</span>
+            </h1>
+            <p className={classes.landingSubtitle}>
+              {t("onboarding", "welcomeSubtitle")}
+            </p>
+            <button
+              className={classes.landingBtn}
+              onClick={() => navigate("/signup")}
+            >
+              {t("onboarding", "letsStart")}
             </button>
-
-            <p className={classes.forgotPassword}>
-              <span
-                onClick={() => setShowForgotPassword(true)}
-                className={classes.link}
-              >
-                {t("auth", "forgotPassword")}
-              </span>
-            </p>
-
             <p className={classes.signupLink}>
-              {t("auth", "noAccount")}{" "}
               <span
-                onClick={() => navigate("/signup")}
+                onClick={() => {
+                  localStorage.setItem("onboardingDone", "true");
+                  window.location.reload();
+                }}
                 className={classes.link}
               >
-                {t("auth", "signup")}
+                {t("onboarding", "skipToLogin")}
               </span>
             </p>
-          </form>
+          </div>
         )}
       </div>
 

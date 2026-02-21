@@ -13,6 +13,7 @@ function FormInput({
   isPassword,
   togglePassword,
   showPassword,
+  inputRef,
 }) {
   if (isPassword) {
     return (
@@ -41,6 +42,7 @@ function FormInput({
 
   return (
     <input
+      ref={inputRef}
       type={type}
       placeholder={placeholder}
       value={value}
@@ -63,6 +65,7 @@ FormInput.propTypes = {
   isPassword: PropTypes.bool,
   togglePassword: PropTypes.func,
   showPassword: PropTypes.bool,
+  inputRef: PropTypes.object,
 };
 
 FormInput.defaultProps = {

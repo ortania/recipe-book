@@ -15,7 +15,9 @@ function Signup() {
   const [error, setError] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [onboardingDone, setOnboardingDone] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(
+    () => !!localStorage.getItem("onboardingDone"),
+  );
 
   const navigate = useNavigate();
 
