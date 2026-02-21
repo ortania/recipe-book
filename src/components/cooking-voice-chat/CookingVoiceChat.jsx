@@ -310,6 +310,41 @@ function CookingVoiceChat({
 
     try {
       const p = $.current;
+      const lower = text.toLowerCase();
+
+      // Client-side: detect "סיימתי שלב" and handle BEFORE calling AI
+      const finishedPatterns = [
+        "סיימתי שלב",
+        "סיימתי",
+        "סיים",
+        "שלב הבא",
+        "finished step",
+        "done",
+        "finished",
+      ];
+      const wantsNext = finishedPatterns.some((pat) => lower.includes(pat));
+
+      // Handle "סיימתי שלב" entirely client-side — skip AI
+      if (wantsNext) {
+        p.onNextStep?.();
+        const msg =
+          p.lang === "he" || p.lang === "mixed"
+            ? "עוברים לשלב הבא"
+            : "Moving to the next step";
+        setLastResponse(msg);
+        setStatusText("מדבר...");
+        await speakText(msg);
+        return;
+      }
+
+      // Only switch to ingredients if user explicitly says "מרכיבים" or "ingredients"
+      const wantsSwitchToIngredients = [
+        "מרכיבים",
+        "תעבור למרכיבים",
+        "switch to ingredients",
+        "show ingredients",
+      ].some((pat) => lower.includes(pat));
+
       const recipeData = {
         recipeName: p.recipe.name,
         ingredients: p.ingredients,
@@ -326,6 +361,14 @@ function CookingVoiceChat({
       setLastResponse(responseText);
       setStatusText("מדבר...");
       if (response.action) doAction(response.action);
+
+      // Only switch to ingredients if user EXPLICITLY asked (e.g. "תעבור למרכיבים")
+      if (wantsSwitchToIngredients && p.activeTab !== "ingredients") {
+        if (!response.action || response.action.type !== "switch_tab") {
+          p.onSwitchTab?.("ingredients");
+        }
+      }
+
       await speakText(responseText);
     } catch (error) {
       console.error("Voice chat error:", error);

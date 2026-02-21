@@ -230,8 +230,17 @@ You MUST respond with valid JSON in this exact format:
 };
 
 const NUTRITION_FIELDS = [
-  "calories", "protein", "fat", "carbs", "sugars",
-  "fiber", "sodium", "calcium", "iron", "cholesterol", "saturatedFat",
+  "calories",
+  "protein",
+  "fat",
+  "carbs",
+  "sugars",
+  "fiber",
+  "sodium",
+  "calcium",
+  "iron",
+  "cholesterol",
+  "saturatedFat",
 ];
 
 const lookupSingleIngredient = async (ingredient) => {
@@ -269,7 +278,10 @@ Rules:
 export const calculateNutrition = async (ingredients, servings) => {
   const ingredientArray = Array.isArray(ingredients)
     ? ingredients
-    : ingredients.split("\n").map((s) => s.trim()).filter(Boolean);
+    : ingredients
+        .split("\n")
+        .map((s) => s.trim())
+        .filter(Boolean);
   const numServings = parseInt(servings, 10) || 1;
 
   const cacheKey = `${ingredientArray.join("|")}|${numServings}`;
@@ -279,7 +291,7 @@ export const calculateNutrition = async (ingredients, servings) => {
 
   try {
     const results = await Promise.all(
-      ingredientArray.map((ing) => lookupSingleIngredient(ing))
+      ingredientArray.map((ing) => lookupSingleIngredient(ing)),
     );
 
     const totals = {};
@@ -341,45 +353,37 @@ export const sendCookingChatMessage = async (
 
   const systemMessage = {
     role: "system",
-    content: `You are a voice cooking assistant helping a user cook "${recipeName}" (${servings} servings).
+    content: `You are a helpful voice cooking assistant for "${recipeName}" (${servings} servings).
+Currently on ${tabLabel} tab. ${activeTab === "ingredients" ? `Ingredient ${currentStep + 1}/${ingredients.length}: "${currentItemText}"` : `Step ${currentStep + 1}/${instructions.length}: "${currentItemText}"`}
+Timer: ${isTimerRunning ? "running" : "off"}
 
-The user is currently viewing the ${tabLabel} tab.
-${activeTab === "ingredients" ? `Current ingredient: ${currentStep + 1} of ${ingredients.length} - "${currentItemText}"` : `Current instruction step: ${currentStep + 1} of ${instructions.length} - "${currentItemText}"`}
-Timer status: ${isTimerRunning ? "running" : "not running"}
-
-All ingredients (with quantities):
+INGREDIENTS:
 ${ingredients.map((ing, i) => `${i + 1}. ${ing}`).join("\n")}
 
-All instructions:
+INSTRUCTIONS:
 ${instructions.map((inst, i) => `${i + 1}. ${inst}`).join("\n")}
 
+You MUST respond with valid JSON: {"text": "your answer", "action": null}
+Possible actions: {"type":"next"}, {"type":"prev"}, {"type":"goto","step":N}, {"type":"timer","minutes":N}, {"type":"stop_timer"}, {"type":"switch_tab","tab":"ingredients"}, {"type":"switch_tab","tab":"instructions"}
+
 RULES:
-- Answer cooking questions about this recipe concisely (1-2 sentences max).
-- When answering about an instruction step, ALWAYS mention the specific ingredient quantities needed for that step.
-- If the user asks "what do I need for this step" or similar, list the relevant ingredients with their exact quantities.
-- If the user asks to go to next step, previous step, or a specific step, include the action in your response.
-- Always respond in ${langName}.
-- Keep answers SHORT - this will be read aloud.
-- CRITICAL: Write ALL numbers as Hebrew words, NEVER use digits. Examples: "שתיים" not "2", "מאה" not "100", "חצי" not "0.5", "שלוש כפות" not "3 כפות". This is required for text-to-speech.
-- You MUST respond with valid JSON in this exact format:
-{"text": "your spoken response here", "action": null}
+- Always respond in ${langName}, 1-2 sentences max (read aloud).
+- Write numbers as Hebrew words: "מאתיים" not "200", "שתי כפות" not "2 כפות".
+- When user asks about an ingredient (e.g. "כמה סוכר", "כמה תפוחים"), find ALL matching ingredients and quote their EXACT quantities.
+- When reading or describing an instruction step, ALWAYS mention the specific ingredient quantities needed for that step.
+- "סיימתי שלב" / "סיימתי" / "finished" / "done" → advance to next step with action {"type":"next"} and read the next step with its ingredient quantities.
+- "תגיד לי" / "מה השלב" / "tell me" → read the current step content with ingredient quantities.
+- "מה הבא" / "השלב הבא" / "next" / "הבא" → read next step with action {"type":"next"}.
+- Do NOT switch tabs automatically. Only use switch_tab action if user explicitly says "תעבור למרכיבים" or "תעבור להוראות". Answer ingredient questions without switching tabs.
+- ALWAYS try to answer. Never say you don't understand unless truly unrelated to cooking.
 
-Possible actions:
-- {"type": "next"} - go to next step
-- {"type": "prev"} - go to previous step  
-- {"type": "goto", "step": 3} - go to specific step (1-indexed)
-- {"type": "timer", "minutes": 5} - start a cooking timer for X minutes
-- {"type": "stop_timer"} - stop the currently running timer
-- {"type": "switch_tab", "tab": "ingredients"} - switch to ingredients tab
-- {"type": "switch_tab", "tab": "instructions"} - switch to instructions tab
-- null - no navigation action
-
-Examples:
-"מה השלב הבא?" → {"text": "השלב הבא הוא להוסיף שתי ביצים וחצי כוס חלב", "action": {"type": "next"}}
-"כמה מלח צריך?" → {"text": "צריך כפית מלח", "action": null}
-"תלך לשלב 3" → {"text": "עוברים לשלב שלוש", "action": {"type": "goto", "step": 3}}
-"תפעיל טיימר ל-10 דקות" → {"text": "מפעיל טיימר לעשר דקות", "action": {"type": "timer", "minutes": 10}}
-"תעבור להוראות" → {"text": "עוברים להוראות", "action": {"type": "switch_tab", "tab": "instructions"}}`,
+EXAMPLES:
+"כמה סוכר?" → {"text": "יש מאתיים גרם סוכר ושתי כפות סוכר חום", "action": null}
+"כמה תפוחים?" → {"text": "צריך ארבעה תפוחים", "action": null}
+"סיימתי שלב" → {"text": "מעולה! השלב הבא הוא להוסיף מאתיים גרם סוכר ושלוש ביצים לקערה ולערבב", "action": {"type": "next"}}
+"תגיד לי" → {"text": "בשלב הזה מוסיפים מאתיים גרם סוכר לקערה ומערבבים", "action": null}
+"מה השלב הבא?" → {"text": "בשלב הבא מוסיפים שלוש ביצים ומערבבים", "action": {"type": "next"}}
+"תפעיל טיימר ל-10 דקות" → {"text": "מפעיל טיימר לעשר דקות", "action": {"type": "timer", "minutes": 10}}`,
   };
 
   const result = await callOpenAI({
@@ -400,16 +404,23 @@ Examples:
       action: parsed.action || null,
     };
   } catch {
-    const textMatch = result.match(/"text"\s*:\s*"([^"]+)"/);
-    if (textMatch) {
-      return { text: textMatch[1], action: null };
+    // Try to extract "text" value from malformed JSON
+    const textMatch = result.match(/"text"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    let action = null;
+    // Try to extract action from malformed JSON
+    const actionMatch = result.match(/"action"\s*:\s*(\{[^}]+\})/);
+    if (actionMatch) {
+      try {
+        action = JSON.parse(actionMatch[1]);
+      } catch {
+        /* ignore */
+      }
     }
-    const cleanText = result
-      .replace(/[{}"]/g, "")
-      .replace(/\b(text|action|null|type)\b\s*:?\s*/gi, "")
-      .replace(/,\s*$/g, "")
-      .trim();
-    return { text: cleanText || "לא הצלחתי להבין", action: null };
+    if (textMatch && textMatch[1].length > 2) {
+      return { text: textMatch[1], action };
+    }
+    // If no valid text found, return a generic response instead of gibberish
+    return { text: "לא הצלחתי להבין, אנא נסה שוב", action: null };
   }
 };
 

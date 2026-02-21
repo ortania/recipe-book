@@ -1103,13 +1103,20 @@ function AddRecipeWizard({
     return (
       <div className={classes.previewOverlay}>
         <div className={classes.previewCard}>
-          <button
+          {/* <button
             type="button"
             className={classes.previewCloseBtn}
             onClick={() => setShowPreview(false)}
           >
-            <FiX size={20} />
-          </button>
+            <FiX size={25} />
+          </button> */}
+          <CloseButton
+            type="button"
+            className={classes.previewCloseBtn}
+            onClick={() => setShowPreview(false)}
+          >
+            {/* <FiX size={25} /> */}
+          </CloseButton>
           {recipe.image_src ? (
             <img
               src={recipe.image_src}

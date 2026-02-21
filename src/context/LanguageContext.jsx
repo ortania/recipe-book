@@ -1,11 +1,17 @@
-import { createContext, useContext, useState, useEffect, useCallback } from "react";
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
 import translations, { RTL_LANGUAGES } from "../utils/translations";
 
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState(() => {
-    return localStorage.getItem("language") || "mixed";
+    return localStorage.getItem("language") || "he";
   });
 
   useEffect(() => {

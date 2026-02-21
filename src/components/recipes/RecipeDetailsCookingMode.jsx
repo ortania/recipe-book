@@ -33,7 +33,7 @@ function RecipeDetailsCookingMode({
 }) {
   const { t } = useLanguage();
   // State management
-  const [activeTab, setActiveTab] = useState("ingredients");
+  const [activeTab, setActiveTab] = useState("instructions");
   const [servings, setServings] = useState(recipe.servings || 4);
   const [currentStep, setCurrentStep] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
@@ -43,6 +43,15 @@ function RecipeDetailsCookingMode({
   const [fontSizeLevel, setFontSizeLevel] = useState(1);
   const [showHelp, setShowHelp] = useState(false);
   const touchRef = useRef({ startX: 0, startY: 0 });
+  // Remember step position per tab so switching back restores position
+  const savedStepRef = useRef({ ingredients: 0, instructions: 0 });
+  const switchTab = (newTab) => {
+    if (newTab === activeTab) return;
+    savedStepRef.current[activeTab] = currentStep;
+    setActiveTab(newTab);
+    setCurrentStep(savedStepRef.current[newTab] || 0);
+    setShowCompletion(false);
+  };
 
   const handleTabSwipe = (e) => {
     const diffX = e.changedTouches[0].clientX - touchRef.current.startX;
@@ -55,20 +64,18 @@ function RecipeDetailsCookingMode({
     const tabs = ["ingredients", "instructions"];
     const currentIndex = tabs.indexOf(activeTab);
     if (direction < 0 && currentIndex < tabs.length - 1) {
-      setActiveTab(tabs[currentIndex + 1]);
-      setCurrentStep(0);
-      setShowCompletion(false);
+      switchTab(tabs[currentIndex + 1]);
     } else if (direction > 0 && currentIndex > 0) {
-      setActiveTab(tabs[currentIndex - 1]);
-      setCurrentStep(0);
-      setShowCompletion(false);
+      switchTab(tabs[currentIndex - 1]);
     }
   };
   const fontSizes = ["1.6rem", "2.2rem", "3rem", "4rem"];
   const cycleFontSize = () =>
     setFontSizeLevel((prev) => (prev + 1) % fontSizes.length);
 
-  const [showVolumeNotification, setShowVolumeNotification] = useState(true);
+  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
+  const [showVolumeNotification, setShowVolumeNotification] =
+    useState(isMobile);
 
   const originalServings = recipe.servings || 4;
   const handleNextStepRef = useRef();
@@ -76,8 +83,9 @@ function RecipeDetailsCookingMode({
   const timerStartTimeRef = useRef(null);
   const isFirstTickRef = useRef(false);
 
-  // Hide volume notification after 5 seconds
+  // Hide volume notification after 5 seconds (mobile only)
   useEffect(() => {
+    if (!showVolumeNotification) return;
     const timer = setTimeout(() => {
       setShowVolumeNotification(false);
     }, 5000);
@@ -250,12 +258,14 @@ function RecipeDetailsCookingMode({
 
   return (
     <div className={classes.recipeCardCooking}>
-      {/* Volume Notification */}
-      {/* {showVolumeNotification && (
-        <div className={classes.volumeNotification}>
-          💡 הורד את עוצמת ההתראות במובייל במצב בישול
+      {showVolumeNotification && (
+        <div
+          className={classes.volumeNotification}
+          onClick={() => setShowVolumeNotification(false)}
+        >
+          � {t("cookingMode", "volumeWarning")}
         </div>
-      )} */}
+      )}
 
       <div className={classes.headerButtonsCooking}>
         <div className={classes.headerLeft}>
@@ -263,6 +273,7 @@ function RecipeDetailsCookingMode({
             <ChatHelpButton
               title={t("cookingMode", "howToUse")}
               items={[
+                `🔊 ${t("cookingMode", "helpVolume")}`,
                 t("cookingMode", "navTabs"),
                 t("cookingMode", "navSteps"),
                 `⏱️ ${t("cookingMode", "timerTitle")} — ${t("cookingMode", "timerText")}`,
@@ -271,6 +282,7 @@ function RecipeDetailsCookingMode({
                 t("cookingMode", "chatFeature2"),
                 t("cookingMode", "chatFeature3"),
                 t("cookingMode", "chatFeature4"),
+                t("cookingMode", "chatFeature5"),
               ]}
               onToggle={setShowHelp}
             />
@@ -304,9 +316,7 @@ function RecipeDetailsCookingMode({
                 setCustomTimerInput("");
               }}
               onSwitchTab={(tab) => {
-                setActiveTab(tab);
-                setCurrentStep(0);
-                setShowCompletion(false);
+                switchTab(tab);
               }}
               isTimerRunning={isTimerRunning}
             />
@@ -354,8 +364,7 @@ function RecipeDetailsCookingMode({
           <button
             className={`${classes.tab} ${activeTab === "ingredients" ? classes.activeTab : ""}`}
             onClick={() => {
-              setActiveTab("ingredients");
-              setCurrentStep(0);
+              switchTab("ingredients");
             }}
           >
             <MdOutlineFormatListBulleted className={classes.tabIcon} />
@@ -372,8 +381,7 @@ function RecipeDetailsCookingMode({
           <button
             className={`${classes.tab} ${activeTab === "instructions" ? classes.activeTab : ""}`}
             onClick={() => {
-              setActiveTab("instructions");
-              setCurrentStep(0);
+              switchTab("instructions");
             }}
           >
             <MdOutlineFormatListNumbered className={classes.tabIcon} />
@@ -443,7 +451,10 @@ function RecipeDetailsCookingMode({
             <div className={classes.progressSection}>
               <div className={classes.progressHeader}>
                 <div className={classes.stepInfo}>
-                  {t("recipes", "step")} {currentStep + 1} {t("recipes", "of")}{" "}
+                  {activeTab === "ingredients"
+                    ? t("recipes", "ingredient")
+                    : t("recipes", "step")}{" "}
+                  {currentStep + 1} {t("recipes", "of")}{" "}
                   {activeTab === "ingredients"
                     ? ingredientsArray.length
                     : instructionsArray.length}
@@ -649,9 +660,7 @@ function RecipeDetailsCookingMode({
                 onClick={(e) => {
                   e.stopPropagation();
                   if (activeTab === "ingredients") {
-                    setActiveTab("instructions");
-                    setCurrentStep(0);
-                    setShowCompletion(false);
+                    switchTab("instructions");
                   } else {
                     onExitCookingMode();
                   }

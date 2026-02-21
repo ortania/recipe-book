@@ -48,12 +48,13 @@ function Settings() {
     theme === "dark" ? t("settings", "darkMode") : t("settings", "lightMode");
 
   const settingItems = [
-    {
-      id: "language",
-      icon: "🌐",
-      label: t("settings", "language"),
-      value: currentLang ? `${currentLang.flag} ${currentLang.label}` : "",
-    },
+    // Language selector hidden for now
+    // {
+    //   id: "language",
+    //   icon: "🌐",
+    //   label: t("settings", "language"),
+    //   value: currentLang ? `${currentLang.flag} ${currentLang.label}` : "",
+    // },
     {
       id: "appearance",
       icon: "🎨",

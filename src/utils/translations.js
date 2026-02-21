@@ -633,6 +633,13 @@ const translations = {
       mixed: "Cooking Mode",
     },
     step: { he: "שלב", en: "Step", ru: "Шаг", de: "Schritt", mixed: "שלב" },
+    ingredient: {
+      he: "מרכיב",
+      en: "Ingredient",
+      ru: "Ингредиент",
+      de: "Zutat",
+      mixed: "מרכיב",
+    },
     of: { he: "מתוך", en: "of", ru: "из", de: "von", mixed: "of" },
     prev: {
       he: "הקודם",
@@ -1818,6 +1825,13 @@ const translations = {
       de: "Erklärungen für jeden Kochschritt erhalten",
       mixed: "Get explanations for each cooking step",
     },
+    chatFeature5: {
+      he: '💡 מומלץ להגיד "סיימתי שלב" בסוף כל שלב כדי לעבור לשלב הבא',
+      en: '💡 Say "finished step" at the end of each step to advance to the next one',
+      ru: '💡 Скажите "готово" в конце каждого шага, чтобы перейти к следующему',
+      de: '💡 Sagen Sie "fertig" am Ende jedes Schritts, um zum nächsten zu gelangen',
+      mixed: '💡 מומלץ להגיד "סיימתי שלב" בסוף כל שלב כדי לעבור לשלב הבא',
+    },
     navTabs: {
       he: 'לחצו על "מרכיבים" או "הוראות" כדי לעבור בין תצוגת המרכיבים להוראות ההכנה',
       en: 'Press "Ingredients" or "Instructions" to switch between viewing ingredients and preparation steps',
@@ -1833,6 +1847,20 @@ const translations = {
       de: 'Verwenden Sie die Tasten "Weiter" und "Zurück", um zwischen Schritten zu wechseln, oder ziehen Sie den Fortschrittsregler',
       mixed:
         'Use the "Next" and "Previous" buttons to move between steps, or drag the progress slider',
+    },
+    volumeWarning: {
+      he: "מומלץ להנמיך את עוצמת הקול של המערכת לפני הפעלת הצ'אט הקולי",
+      en: "It is recommended to lower the system volume before activating voice chat",
+      ru: "Рекомендуется уменьшить громкость системы перед активацией голосового чата",
+      de: "Es wird empfohlen, die Systemlautstärke vor der Aktivierung des Sprachchats zu verringern",
+      mixed: "מומלץ להנמיך את עוצמת הקול של המערכת לפני הפעלת הצ'אט הקולי",
+    },
+    helpVolume: {
+      he: "מומלץ להנמיך את עוצמת הקול של המערכת לפני הפעלת הצ'אט הקולי",
+      en: "Lower the system volume before activating voice chat",
+      ru: "Уменьшите громкость системы перед активацией голосового чата",
+      de: "Verringern Sie die Systemlautstärke vor der Aktivierung des Sprachchats",
+      mixed: "Lower the system volume before activating voice chat",
     },
     helpGuideTitle: {
       he: "בישול ללא ידיים 👨‍🍳",

@@ -73,12 +73,12 @@ const FEATURES = [
     icon: FaUtensils,
     color: "#f59e0b",
   },
-  {
-    key: "languageSupport",
-    desc: "languageSupportDesc",
-    icon: IoLanguageOutline,
-    color: "#6d28d9",
-  },
+  // {
+  //   key: "languageSupport",
+  //   desc: "languageSupportDesc",
+  //   icon: IoLanguageOutline,
+  //   color: "#6d28d9",
+  // },
 ];
 
 /* ============ Onboarding Scenes (shown first in the tour) ============ */
