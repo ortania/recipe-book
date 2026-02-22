@@ -1945,12 +1945,12 @@ const translations = {
       mixed: '💡 מומלץ להגיד "סיימתי שלב" בסוף כל שלב כדי לעבור לשלב הבא',
     },
     radioFeature: {
-      he: '🎵 רדיו בישול — לחצו על אייקון המוסיקה לפתיחת הרדיו. בחרו תחנה ולחצו Play. פקודות קוליות: "תפעיל מוסיקה", "עצור מוסיקה", "שים ג\'אז", "תעבור לגלגלצ". התחנה האחרונה נשמרת אוטומטית',
-      en: '🎵 Cooking Radio — click the music icon to open radio. Pick a station and press Play. Voice: "play music", "stop music", "play jazz", "switch to lofi". Last station is saved automatically',
-      ru: '🎵 Радио — нажмите иконку музыки. Выберите станцию и нажмите Play. Голосом: "включи музыку", "останови музыку", "включи джаз". Последняя станция сохраняется',
-      de: '🎵 Koch-Radio — Musiksymbol klicken. Sender wählen und Play drücken. Sprachbefehle: "Musik spielen", "Musik stoppen", "Jazz spielen". Letzter Sender wird gespeichert',
+      he: '🎵 רדיו בישול — לחצו על אייקון המוסיקה לפתיחת הרדיו. בחרו תחנה ולחצו Play. פקודות קוליות: "תפעיל מוסיקה", "עצור מוסיקה", "שים ג\'אז", "תעבור לגלגלצ". התחנה האחרונה נשמרת אוטומטית. כאשר צ\'אט קולי פועל וגם רדיו — הרדיו יושתק אוטומטית; כאשר תסגרו את הצ\'אט הקולי הרדיו יחזור לנגן',
+      en: '🎵 Cooking Radio — click the music icon to open radio. Pick a station and press Play. Voice: "play music", "stop music", "play jazz", "switch to lofi". Last station is saved automatically. When voice chat is on and radio is playing, the radio is muted automatically; when you close voice chat, the radio will resume',
+      ru: '🎵 Радио — нажмите иконку музыки. Выберите станцию и нажмите Play. Голосом: "включи музыку", "останови музыку", "включи джаз". Последняя станция сохраняется. Когда голосовой чат включён и радио играет — радио автоматически приглушается; когда вы закроете голосовой чат, радио продолжит играть',
+      de: '🎵 Koch-Radio — Musiksymbol klicken. Sender wählen und Play drücken. Sprachbefehle: "Musik spielen", "Musik stoppen", "Jazz spielen". Letzter Sender wird gespeichert. Wenn Sprachchat aktiv ist und Radio läuft, wird das Radio automatisch stumm geschaltet; beim Schließen des Sprachchats spielt das Radio weiter',
       mixed:
-        '🎵 Cooking Radio — click the music icon to open radio. Pick a station and press Play. Voice: "play music", "stop music", "play jazz", "switch to lofi". Last station is saved automatically',
+        '🎵 Cooking Radio — click the music icon to open radio. Pick a station and press Play. Voice: "play music", "stop music", "play jazz", "switch to lofi". Last station is saved automatically. When voice chat is on and radio is playing, the radio is muted automatically; when you close voice chat, the radio will resume',
     },
     navTabs: {
       he: 'לחצו על "מרכיבים" או "הוראות" כדי לעבור בין תצוגת המרכיבים להוראות ההכנה',
@@ -2366,6 +2366,13 @@ const translations = {
       ru: "Назад",
       de: "Zurück",
       mixed: "Back",
+    },
+    dragToMove: {
+      he: "ניתן להזיז",
+      en: "Drag to move",
+      ru: "Перетащите для перемещения",
+      de: "Zum Verschieben ziehen",
+      mixed: "Drag to move",
     },
     save: {
       he: "שמור",
@@ -3189,6 +3196,20 @@ const translations = {
       ru: "Добавить ингредиент",
       de: "Zutat hinzufügen",
       mixed: "הוסף מרכיב",
+    },
+    addGroup: {
+      he: "הוסף קבוצה",
+      en: "Add Group",
+      ru: "Добавить группу",
+      de: "Gruppe hinzufügen",
+      mixed: "הוסף קבוצה",
+    },
+    groupPlaceholder: {
+      he: "שם קבוצה (למשל: יבשים, רטובים, ציפוי, מילוי...)",
+      en: "Group name (e.g., dry, wet, coating, filling...)",
+      ru: "Название группы (напр.: сухие, мокрые, глазурь, начинка...)",
+      de: "Gruppenname (z.B.: trocken, nass, Glasur, Füllung...)",
+      mixed: "שם קבוצה (e.g., dry, wet, coating, filling...)",
     },
     instructionsSubtitle: {
       he: "פרט את שלבי ההכנה לפי סדר",

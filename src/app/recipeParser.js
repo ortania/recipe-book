@@ -95,6 +95,18 @@ const cleanHtml = (text) => {
   return tmp.textContent.replace(/\s+/g, " ").trim();
 };
 
+const GROUP_LINE_PATTERNS = [
+  /^(for|for the|לציפוי|למילוי|לבצק|לקרם|לרוטב|לסירופ|להגשה|לקישוט|ל)\s/i,
+  /:$/,
+  /^(יבשים|רטובים|ציפוי|מילוי|בצק|קרם|רוטב|סירופ|תערובת|שכבה|תחתונה|עליונה|dry|wet|filling|coating|frosting|dough|sauce|syrup|topping|base|crust|batter|glaze|ganache|cream|decoration|garnish)\s*:?\s*$/i,
+];
+
+const isIngredientGroupLine = (line) => {
+  if (!line || line.length > 40) return false;
+  if (/^\d/.test(line)) return false;
+  return GROUP_LINE_PATTERNS.some((p) => p.test(line.trim()));
+};
+
 const extractOgImage = (doc) => {
   const ogImage =
     doc.querySelector('meta[property="og:image"]') ||
@@ -801,8 +813,11 @@ const parseStructuredText = (text, recipe) => {
     }
 
     if (currentSection === "ingredients" && ingredientsStart > 0) {
-      if (lines[i].match(/^[\d\-•\*]/) || lines[i].length > 5) {
-        recipe.ingredients.push(lines[i].replace(/^[\d\-•\*\.]\s*/, ""));
+      const stripped = lines[i].replace(/^[\d\-•\*\.]\s*/, "");
+      if (isIngredientGroupLine(stripped)) {
+        recipe.ingredients.push("::" + stripped.replace(/[:\-–—]+\s*$/, "").trim());
+      } else if (lines[i].match(/^[\d\-•\*]/) || lines[i].length > 5) {
+        recipe.ingredients.push(stripped);
       }
     } else if (currentSection === "instructions" && instructionsStart > 0) {
       if (lines[i].length > 3) {

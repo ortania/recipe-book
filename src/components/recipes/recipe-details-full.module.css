@@ -866,6 +866,19 @@
   margin: 0;
 }
 
+.ingredientGroupHeader {
+  padding: 0.6rem 0 0.3rem;
+  font-weight: 700;
+  color: #9810fa;
+  font-size: var(--basic-font);
+  border-bottom: 2px solid rgba(152, 16, 250, 0.15);
+  margin-top: 0.3rem;
+}
+
+.ingredientGroupHeader:first-child {
+  margin-top: 0;
+}
+
 .ingredientItem,
 .instructionItem {
   padding: 0.75rem 0;

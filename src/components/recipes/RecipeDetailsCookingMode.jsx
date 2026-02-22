@@ -18,6 +18,7 @@ import {
 import { IoMusicalNotesOutline } from "react-icons/io5";
 import { CookingVoiceChat } from "../cooking-voice-chat";
 import { RadioPlayer } from "../radio-player";
+import { isGroupHeader, getGroupName } from "../../utils/ingredientUtils";
 import { CloseButton } from "../controls/close-button";
 import { AddButton } from "../controls/add-button";
 import { ChatHelpButton } from "../controls/chat-help-button";
@@ -110,7 +111,7 @@ function RecipeDetailsCookingMode({
   }, []);
 
   // Parse ingredients and instructions
-  const ingredientsArray = useMemo(() => {
+  const ingredientsRaw = useMemo(() => {
     return Array.isArray(recipe.ingredients)
       ? recipe.ingredients
       : recipe.ingredients
@@ -118,6 +119,22 @@ function RecipeDetailsCookingMode({
           .map((item) => item.trim())
           .filter((item) => item) || [];
   }, [recipe.ingredients]);
+
+  // For cooking mode: build a list of actual ingredients with their group context
+  const cookingIngredients = useMemo(() => {
+    let currentGroup = "";
+    return ingredientsRaw.reduce((acc, item) => {
+      if (isGroupHeader(item)) {
+        currentGroup = getGroupName(item);
+      } else {
+        acc.push({ text: item, group: currentGroup });
+      }
+      return acc;
+    }, []);
+  }, [ingredientsRaw]);
+
+  // Keep ingredientsArray as the full raw array for voice chat context
+  const ingredientsArray = ingredientsRaw;
 
   const instructionsArray = useMemo(() => {
     return Array.isArray(recipe.instructions)
@@ -159,7 +176,7 @@ function RecipeDetailsCookingMode({
   const handleNextStep = useCallback(() => {
     const totalSteps =
       activeTab === "ingredients"
-        ? ingredientsArray.length
+        ? cookingIngredients.length
         : instructionsArray.length;
     if (currentStep < totalSteps - 1) {
       setCurrentStep(currentStep + 1);
@@ -169,7 +186,7 @@ function RecipeDetailsCookingMode({
     }
   }, [
     activeTab,
-    ingredientsArray.length,
+    cookingIngredients.length,
     instructionsArray.length,
     currentStep,
   ]);
@@ -193,7 +210,7 @@ function RecipeDetailsCookingMode({
         activeTab,
         setActiveTab,
         currentStep,
-        ingredientsArray.length,
+        cookingIngredients.length,
         setCurrentStep,
         setShowCompletion,
         showCompletion,
@@ -205,7 +222,7 @@ function RecipeDetailsCookingMode({
     onStepHandlersReady,
     activeTab,
     currentStep,
-    ingredientsArray.length,
+    cookingIngredients.length,
     setShowCompletion,
     showCompletion,
   ]);
@@ -408,7 +425,7 @@ function RecipeDetailsCookingMode({
             {t("recipes", "ingredients")}
             {activeTab === "ingredients" &&
               voiceEnabled &&
-              currentStep >= ingredientsArray.length - 1 && (
+              currentStep >= cookingIngredients.length - 1 && (
                 <span className={classes.voiceHint}>
                   {" "}
                   (Say "Start" to begin cooking)
@@ -437,8 +454,8 @@ function RecipeDetailsCookingMode({
         >
           {activeTab === "ingredients" && !showCompletion && (
             <ul className={classes.ingredientsList}>
-              {ingredientsArray.length > 0 ? (
-                ingredientsArray.map((ingredient, index) => (
+              {cookingIngredients.length > 0 ? (
+                cookingIngredients.map((item, index) => (
                   <li
                     key={index}
                     className={classes.ingredientItem}
@@ -446,11 +463,16 @@ function RecipeDetailsCookingMode({
                       display: index !== currentStep ? "none" : "flex",
                     }}
                   >
+                    {item.group && (
+                      <span className={classes.cookingGroupLabel}>
+                        {item.group}
+                      </span>
+                    )}
                     <span
                       className={classes.ingredientText}
                       style={{ fontSize: fontSizes[fontSizeLevel] }}
                     >
-                      {scaleIngredient(ingredient)}
+                      {scaleIngredient(item.text)}
                     </span>
                   </li>
                 ))
@@ -493,14 +515,14 @@ function RecipeDetailsCookingMode({
                     : t("recipes", "step")}{" "}
                   {currentStep + 1} {t("recipes", "of")}{" "}
                   {activeTab === "ingredients"
-                    ? ingredientsArray.length
+                    ? cookingIngredients.length
                     : instructionsArray.length}
                 </div>
                 <div className={classes.progressBadge}>
                   {Math.round(
                     ((currentStep + 1) /
                       (activeTab === "ingredients"
-                        ? ingredientsArray.length
+                        ? cookingIngredients.length
                         : instructionsArray.length)) *
                       100,
                   )}
@@ -515,7 +537,7 @@ function RecipeDetailsCookingMode({
                   min="0"
                   max={
                     (activeTab === "ingredients"
-                      ? ingredientsArray.length
+                      ? cookingIngredients.length
                       : instructionsArray.length) - 1
                   }
                   value={currentStep}
@@ -528,7 +550,7 @@ function RecipeDetailsCookingMode({
                   onMouseDown={(e) => e.stopPropagation()}
                   className={classes.progressSlider}
                   style={{
-                    background: `linear-gradient(to right, #10b981 0%, #10b981 ${((currentStep + 1) / (activeTab === "ingredients" ? ingredientsArray.length : instructionsArray.length)) * 100}%, #e5e7eb ${((currentStep + 1) / (activeTab === "ingredients" ? ingredientsArray.length : instructionsArray.length)) * 100}%, #e5e7eb 100%)`,
+                    background: `linear-gradient(to right, #10b981 0%, #10b981 ${((currentStep + 1) / (activeTab === "ingredients" ? cookingIngredients.length : instructionsArray.length)) * 100}%, #e5e7eb ${((currentStep + 1) / (activeTab === "ingredients" ? cookingIngredients.length : instructionsArray.length)) * 100}%, #e5e7eb 100%)`,
                   }}
                 />
               </div>

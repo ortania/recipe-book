@@ -24,6 +24,7 @@ import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./edit-recipe.module.css";
 import { CloseButton } from "../../controls";
 import { calculateNutrition, clearNutritionCache } from "../../../services/openai";
+import { isGroupHeader, getGroupName, makeGroupHeader, ingredientsOnly } from "../../../utils/ingredientUtils";
 
 const TABS = [
   { id: "basic", icon: BsFileText, labelKey: "basicInfo" },
@@ -194,6 +195,13 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     }));
   };
 
+  const addIngredientGroup = () => {
+    setEditedPerson((prev) => ({
+      ...prev,
+      ingredients: [...prev.ingredients, makeGroupHeader(""), ""],
+    }));
+  };
+
   const removeIngredient = (index) => {
     setEditedPerson((prev) => ({
       ...prev,
@@ -280,7 +288,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const handleSubmit = async () => {
     if (saving) return;
     setSaving(true);
-    const filledIngredients = editedPerson.ingredients
+    const filledIngredients = ingredientsOnly(
+      editedPerson.ingredients.map((i) => i.trim()).filter((i) => i)
+    );
+    const filledAll = editedPerson.ingredients
       .map((i) => i.trim())
       .filter((i) => i);
     let nutrition = { ...editedPerson.nutrition };
@@ -317,7 +328,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       ...person,
       name: editedPerson.name,
       image_src: editedPerson.image_src,
-      ingredients: filledIngredients,
+      ingredients: filledAll,
       instructions: editedPerson.instructions
         .map((i) => i.trim())
         .filter((i) => i),
@@ -540,69 +551,105 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     </>
   );
 
-  const renderIngredientsTab = () => (
-    <>
-      <h3 className={classes.sectionTitle}>{t("recipes", "ingredients")}</h3>
-      <div className={classes.dynamicList} ref={ingredientsListRef}>
-        {editedPerson.ingredients.map((ing, i) => (
-          <div
-            key={i}
-            data-drag-item
-            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""}`}
-            draggable
-            onDragStart={() => handleDragStart(i, "ingredients")}
-            onDragOver={handleDragOver}
-            onDrop={() => handleDrop(i, "ingredients")}
-            onDragEnd={handleDragEnd}
-          >
-            <span
-              className={classes.dragHandle}
-              onTouchStart={(e) =>
-                handleTouchStart(e, i, "ingredients", ingredientsListRef)
-              }
-            >
-              <FiMenu size={16} />
-            </span>
-            <div className={classes.inputBox}>
-              <textarea
-                className={classes.dynamicItemInput}
-                placeholder={`${t("addWizard", "ingredient")} ${i + 1}`}
-                value={ing}
-                rows={1}
-                onChange={(e) => handleIngredientChange(i, e.target.value)}
-                onInput={(e) => {
-                  e.target.style.height = "auto";
-                  e.target.style.height = e.target.scrollHeight + "px";
-                }}
-                ref={(el) => {
-                  if (el) {
-                    el.style.height = "auto";
-                    el.style.height = el.scrollHeight + "px";
+  const renderIngredientsTab = () => {
+    let ingredientCounter = 0;
+    return (
+      <>
+        <h3 className={classes.sectionTitle}>{t("recipes", "ingredients")}</h3>
+        <div className={classes.dynamicList} ref={ingredientsListRef}>
+          {editedPerson.ingredients.map((ing, i) => {
+            const isGroup = isGroupHeader(ing);
+            if (!isGroup) ingredientCounter++;
+            return (
+              <div
+                key={i}
+                data-drag-item
+                className={`${isGroup ? classes.groupItem : classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""}`}
+                draggable
+                onDragStart={() => handleDragStart(i, "ingredients")}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(i, "ingredients")}
+                onDragEnd={handleDragEnd}
+              >
+                <span
+                  className={classes.dragHandle}
+                  onTouchStart={(e) =>
+                    handleTouchStart(e, i, "ingredients", ingredientsListRef)
                   }
-                }}
-              />
-              {editedPerson.ingredients.length > 1 && (
-                <button
-                  type="button"
-                  className={classes.removeItemBtn}
-                  onClick={() => removeIngredient(i)}
                 >
-                  <FiX size={16} />
-                </button>
-              )}
-            </div>
+                  <FiMenu size={16} />
+                </span>
+                {isGroup ? (
+                  <div className={classes.groupInputBox}>
+                    <input
+                      className={classes.groupInput}
+                      placeholder={t("addWizard", "groupPlaceholder")}
+                      value={getGroupName(ing)}
+                      onChange={(e) =>
+                        handleIngredientChange(i, makeGroupHeader(e.target.value))
+                      }
+                    />
+                    <button
+                      type="button"
+                      className={classes.removeItemBtn}
+                      onClick={() => removeIngredient(i)}
+                    >
+                      <FiX size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className={classes.inputBox}>
+                    <textarea
+                      className={classes.dynamicItemInput}
+                      placeholder={`${t("addWizard", "ingredient")} ${ingredientCounter}`}
+                      value={ing}
+                      rows={1}
+                      onChange={(e) => handleIngredientChange(i, e.target.value)}
+                      onInput={(e) => {
+                        e.target.style.height = "auto";
+                        e.target.style.height = e.target.scrollHeight + "px";
+                      }}
+                      ref={(el) => {
+                        if (el) {
+                          el.style.height = "auto";
+                          el.style.height = el.scrollHeight + "px";
+                        }
+                      }}
+                    />
+                    {editedPerson.ingredients.length > 1 && (
+                      <button
+                        type="button"
+                        className={classes.removeItemBtn}
+                        onClick={() => removeIngredient(i)}
+                      >
+                        <FiX size={16} />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          <div className={classes.addItemRow}>
+            <button
+              type="button"
+              className={classes.addItemBtn}
+              onClick={addIngredient}
+            >
+              + {t("addWizard", "addIngredient")}
+            </button>
+            <button
+              type="button"
+              className={classes.addGroupBtn}
+              onClick={addIngredientGroup}
+            >
+              + {t("addWizard", "addGroup")}
+            </button>
           </div>
-        ))}
-        <button
-          type="button"
-          className={classes.addItemBtn}
-          onClick={addIngredient}
-        >
-          + {t("addWizard", "addIngredient")}
-        </button>
-      </div>
-    </>
-  );
+        </div>
+      </>
+    );
+  };
 
   const renderInstructionsTab = () => (
     <>

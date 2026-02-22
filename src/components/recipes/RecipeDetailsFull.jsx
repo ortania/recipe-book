@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import classes from "./recipe-details-full.module.css";
 import { formatDifficulty, formatTime } from "./utils";
 import { useLanguage } from "../../context";
+import { isGroupHeader, getGroupName } from "../../utils/ingredientUtils";
 import { FaRegEdit } from "react-icons/fa";
 import { BsTrash3, BsThreeDotsVertical } from "react-icons/bs";
 import { GoHeart, GoHeartFill } from "react-icons/go";
@@ -737,25 +738,31 @@ function RecipeDetailsFull({
           {activeTab === "ingredients" && (
             <ul className={classes.ingredientsList}>
               {ingredientsArray.length > 0 ? (
-                ingredientsArray.map((ingredient, index) => (
-                  <li key={index} className={classes.ingredientItem}>
-                    <label className={classes.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        checked={checkedIngredients[index] || false}
-                        onChange={() => toggleIngredient(index)}
-                        className={classes.checkbox}
-                      />
-                      <span
-                        className={
-                          checkedIngredients[index] ? classes.checkedText : ""
-                        }
-                      >
-                        {scaleIngredient(ingredient)}
-                      </span>
-                    </label>
-                  </li>
-                ))
+                ingredientsArray.map((ingredient, index) =>
+                  isGroupHeader(ingredient) ? (
+                    <li key={index} className={classes.ingredientGroupHeader}>
+                      {getGroupName(ingredient)}
+                    </li>
+                  ) : (
+                    <li key={index} className={classes.ingredientItem}>
+                      <label className={classes.checkboxLabel}>
+                        <input
+                          type="checkbox"
+                          checked={checkedIngredients[index] || false}
+                          onChange={() => toggleIngredient(index)}
+                          className={classes.checkbox}
+                        />
+                        <span
+                          className={
+                            checkedIngredients[index] ? classes.checkedText : ""
+                          }
+                        >
+                          {scaleIngredient(ingredient)}
+                        </span>
+                      </label>
+                    </li>
+                  )
+                )
               ) : (
                 <p>{t("recipes", "noIngredientsListed")}</p>
               )}

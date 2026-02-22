@@ -36,6 +36,7 @@ import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./add-recipe-wizard.module.css";
 import { CloseButton } from "../../controls";
 import { formatTime } from "../../recipes/utils";
+import { isGroupHeader, getGroupName, makeGroupHeader, ingredientsOnly } from "../../../utils/ingredientUtils";
 
 const INITIAL_RECIPE = {
   name: "",
@@ -593,6 +594,10 @@ function AddRecipeWizard({
     updateRecipe("ingredients", [...recipe.ingredients, ""]);
   };
 
+  const handleAddIngredientGroup = () => {
+    updateRecipe("ingredients", [...recipe.ingredients, makeGroupHeader(""), ""]);
+  };
+
   const handleRemoveIngredient = (index) => {
     updateRecipe(
       "ingredients",
@@ -663,7 +668,8 @@ function AddRecipeWizard({
   const handleSubmit = async () => {
     if (saving) return;
     setSaving(true);
-    const filledIngredients = recipe.ingredients.filter(Boolean);
+    const filledAll = recipe.ingredients.filter(Boolean);
+    const filledIngredients = ingredientsOnly(filledAll);
     let nutrition = recipe.nutrition || {};
     if (filledIngredients.length > 0) {
       try {
@@ -696,7 +702,7 @@ function AddRecipeWizard({
     }
     const newRecipe = {
       name: recipe.name,
-      ingredients: filledIngredients,
+      ingredients: filledAll,
       instructions: recipe.instructions.filter(Boolean),
       prepTime: recipe.prepTime,
       cookTime: recipe.cookTime,
@@ -862,75 +868,111 @@ function AddRecipeWizard({
   );
 
   // ========== Step 2: Ingredients ==========
-  const renderIngredients = () => (
-    <div className={classes.stepContent}>
-      <h3 className={classes.stepSectionTitle}>
-        {t("recipes", "ingredients")}
-      </h3>
-      <p className={classes.stepSectionSubtitle}>
-        {t("addWizard", "ingredientsSubtitle")}
-      </p>
+  const renderIngredients = () => {
+    let ingredientCounter = 0;
+    return (
+      <div className={classes.stepContent}>
+        <h3 className={classes.stepSectionTitle}>
+          {t("recipes", "ingredients")}
+        </h3>
+        <p className={classes.stepSectionSubtitle}>
+          {t("addWizard", "ingredientsSubtitle")}
+        </p>
 
-      <div className={classes.dynamicList} ref={ingredientsListRef}>
-        {recipe.ingredients.map((ing, i) => (
-          <div
-            key={i}
-            data-drag-item
-            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""}`}
-            draggable
-            onDragStart={() => handleDragStart(i, "ingredients")}
-            onDragOver={handleDragOver}
-            onDrop={() => handleDrop(i, "ingredients")}
-            onDragEnd={handleDragEnd}
-          >
-            <span
-              className={classes.dragHandle}
-              onTouchStart={(e) =>
-                handleTouchStart(e, i, "ingredients", ingredientsListRef)
-              }
-            >
-              <FiMenu size={16} />
-            </span>
-            <div className={classes.inputBox}>
-              <textarea
-                className={classes.dynamicItemInput}
-                placeholder={`${t("addWizard", "ingredient")} ${i + 1}`}
-                value={ing}
-                rows={1}
-                onChange={(e) => handleIngredientChange(i, e.target.value)}
-                onInput={(e) => {
-                  e.target.style.height = "auto";
-                  e.target.style.height = e.target.scrollHeight + "px";
-                }}
-                ref={(el) => {
-                  if (el) {
-                    el.style.height = "auto";
-                    el.style.height = el.scrollHeight + "px";
+        <div className={classes.dynamicList} ref={ingredientsListRef}>
+          {recipe.ingredients.map((ing, i) => {
+            const isGroup = isGroupHeader(ing);
+            if (!isGroup) ingredientCounter++;
+            return (
+              <div
+                key={i}
+                data-drag-item
+                className={`${isGroup ? classes.groupItem : classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""}`}
+                draggable
+                onDragStart={() => handleDragStart(i, "ingredients")}
+                onDragOver={handleDragOver}
+                onDrop={() => handleDrop(i, "ingredients")}
+                onDragEnd={handleDragEnd}
+              >
+                <span
+                  className={classes.dragHandle}
+                  onTouchStart={(e) =>
+                    handleTouchStart(e, i, "ingredients", ingredientsListRef)
                   }
-                }}
-              />
-              {recipe.ingredients.length > 1 && (
-                <button
-                  type="button"
-                  className={classes.removeItemBtn}
-                  onClick={() => handleRemoveIngredient(i)}
                 >
-                  <FiX />
-                </button>
-              )}
-            </div>
+                  <FiMenu size={16} />
+                </span>
+                {isGroup ? (
+                  <div className={classes.groupInputBox}>
+                    <input
+                      className={classes.groupInput}
+                      placeholder={t("addWizard", "groupPlaceholder")}
+                      value={getGroupName(ing)}
+                      onChange={(e) =>
+                        handleIngredientChange(i, makeGroupHeader(e.target.value))
+                      }
+                    />
+                    <button
+                      type="button"
+                      className={classes.removeItemBtn}
+                      onClick={() => handleRemoveIngredient(i)}
+                    >
+                      <FiX />
+                    </button>
+                  </div>
+                ) : (
+                  <div className={classes.inputBox}>
+                    <textarea
+                      className={classes.dynamicItemInput}
+                      placeholder={`${t("addWizard", "ingredient")} ${ingredientCounter}`}
+                      value={ing}
+                      rows={1}
+                      onChange={(e) => handleIngredientChange(i, e.target.value)}
+                      onInput={(e) => {
+                        e.target.style.height = "auto";
+                        e.target.style.height = e.target.scrollHeight + "px";
+                      }}
+                      ref={(el) => {
+                        if (el) {
+                          el.style.height = "auto";
+                          el.style.height = el.scrollHeight + "px";
+                        }
+                      }}
+                    />
+                    {recipe.ingredients.length > 1 && (
+                      <button
+                        type="button"
+                        className={classes.removeItemBtn}
+                        onClick={() => handleRemoveIngredient(i)}
+                      >
+                        <FiX />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          <div className={classes.addItemRow}>
+            <button
+              type="button"
+              className={classes.addItemBtn}
+              onClick={handleAddIngredient}
+            >
+              + {t("addWizard", "addIngredient")}
+            </button>
+            <button
+              type="button"
+              className={classes.addGroupBtn}
+              onClick={handleAddIngredientGroup}
+            >
+              + {t("addWizard", "addGroup")}
+            </button>
           </div>
-        ))}
-        <button
-          type="button"
-          className={classes.addItemBtn}
-          onClick={handleAddIngredient}
-        >
-          + {t("addWizard", "addIngredient")}
-        </button>
+        </div>
       </div>
-    </div>
-  );
+    );
+  };
 
   // ========== Step 3: Instructions ==========
   const renderInstructions = () => (
@@ -1153,9 +1195,15 @@ function AddRecipeWizard({
                   {t("recipes", "ingredients")}
                 </h4>
                 <ul className={classes.previewList}>
-                  {filledIngredients.map((ing, i) => (
-                    <li key={i}>{ing}</li>
-                  ))}
+                  {filledIngredients.map((ing, i) =>
+                    isGroupHeader(ing) ? (
+                      <li key={i} className={classes.previewGroupHeader}>
+                        {getGroupName(ing)}
+                      </li>
+                    ) : (
+                      <li key={i}>{ing}</li>
+                    )
+                  )}
                 </ul>
               </>
             )}

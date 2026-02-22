@@ -55,11 +55,20 @@ function Categories() {
 
   const filteredRecipes = useMemo(() => {
     if (isAllSelected) return recipes;
-    return recipes.filter(
-      (recipe) =>
+    const includesGeneral = selectedCategories.includes("general");
+    return recipes.filter((recipe) => {
+      if (includesGeneral) {
+        const uncategorized =
+          !recipe.categories || recipe.categories.length === 0;
+        const inGeneral =
+          recipe.categories && recipe.categories.includes("general");
+        if (uncategorized || inGeneral) return true;
+      }
+      return (
         recipe.categories &&
-        recipe.categories.some((catId) => selectedCategories.includes(catId)),
-    );
+        recipe.categories.some((catId) => selectedCategories.includes(catId))
+      );
+    });
   }, [recipes, selectedCategories, isAllSelected]);
 
   const defaultGroup = isAllSelected ? null : selectedCategories[0];

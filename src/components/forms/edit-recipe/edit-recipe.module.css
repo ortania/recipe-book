@@ -501,6 +501,65 @@
   color: #e53935;
 }
 
+/* ========== Ingredient Group ========== */
+.groupItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  transition: opacity 0.2s;
+  margin-top: 0.75rem;
+}
+
+.groupItem:first-child {
+  margin-top: 0;
+}
+
+.groupItem.dragging {
+  opacity: 0.4;
+}
+
+.groupInputBox {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid #9810fa;
+  border-radius: 12px;
+  background: linear-gradient(135deg, rgba(152, 16, 250, 0.05), rgba(152, 16, 250, 0.02));
+  position: relative;
+}
+
+.groupInputBox:focus-within {
+  border-color: #7b0dc9;
+}
+
+.groupInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  font-size: var(--basic-font);
+  font-weight: 700;
+  color: #9810fa;
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+}
+
+.groupInput::placeholder {
+  color: rgba(152, 16, 250, 0.4);
+  font-weight: 400;
+  font-style: italic;
+}
+
+.addItemRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
 .addItemBtn {
   display: flex;
   align-items: center;
@@ -514,12 +573,33 @@
   font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.2s;
-  margin-top: 0.5rem;
+  flex: 1;
 }
 
 .addItemBtn:hover {
   border-color: #1a9c5a;
   color: #1a9c5a;
+}
+
+.addGroupBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  border: 2px dashed rgba(152, 16, 250, 0.3);
+  border-radius: 12px;
+  background: none;
+  color: rgba(152, 16, 250, 0.6);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: all 0.2s;
+  flex: 1;
+}
+
+.addGroupBtn:hover {
+  border-color: #9810fa;
+  color: #9810fa;
 }
 
 .dragHandle {

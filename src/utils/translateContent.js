@@ -93,7 +93,15 @@ export async function translateRecipeContent(recipe, targetLang) {
 
   const translateArray = async (arr) => {
     if (!Array.isArray(arr) || arr.length === 0) return arr;
-    return Promise.all(arr.map((item) => translateText(item, targetLang)));
+    return Promise.all(arr.map(async (item) => {
+      if (typeof item === "string" && item.startsWith("::")) {
+        const name = item.slice(2).trim();
+        if (!name) return item;
+        const translated = await translateText(name, targetLang);
+        return "::" + translated;
+      }
+      return translateText(item, targetLang);
+    }));
   };
 
   const [name, ingredients, instructions, notes] = await Promise.all([

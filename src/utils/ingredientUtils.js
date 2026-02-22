@@ -2,6 +2,31 @@
  * Shared utilities for ingredient parsing and shopping list aggregation.
  */
 
+// ---- Ingredient Group Helpers ----
+const GROUP_PREFIX = "::";
+
+export function isGroupHeader(s) {
+  return typeof s === "string" && s.startsWith(GROUP_PREFIX);
+}
+
+export function getGroupName(s) {
+  return s.slice(GROUP_PREFIX.length).trim();
+}
+
+export function makeGroupHeader(name) {
+  return `${GROUP_PREFIX}${name.trim()}`;
+}
+
+/**
+ * Filter out group headers, returning only actual ingredient strings.
+ */
+export function ingredientsOnly(arr) {
+  if (!Array.isArray(arr)) return [];
+  return arr.filter((s) => s && !isGroupHeader(s));
+}
+
+// ---- End Group Helpers ----
+
 const junkPatterns =
   /related\s*articles|advertisement|sponsored|click\s*here|read\s*more|sign\s*up|subscribe|newsletter|copyright|©|http|www\.|ראה בקישור|לחצ[וי] כאן|see link|see recipe/i;
 
@@ -94,6 +119,7 @@ export function buildShoppingList(selectedIds, recipes) {
     ingredients.forEach((ing) => {
       const raw = ing.trim();
       if (!raw || raw.length < 2 || raw.length > 150) return;
+      if (isGroupHeader(raw)) return;
       if (junkPatterns.test(raw)) return;
 
       const key = normalizeKey(raw) || raw.toLowerCase();

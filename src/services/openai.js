@@ -91,7 +91,7 @@ export const extractRecipeFromImage = async (base64Image, language = "he") => {
 You MUST respond with valid JSON in this exact format:
 {
   "name": "recipe name",
-  "ingredients": ["ingredient 1 with quantity", "ingredient 2 with quantity"],
+  "ingredients": ["::group name", "ingredient 1 with quantity", "ingredient 2", "::another group", "ingredient 3"],
   "instructions": ["step 1", "step 2"],
   "prepTime": "15 min" or "",
   "cookTime": "30 min" or "",
@@ -99,6 +99,7 @@ You MUST respond with valid JSON in this exact format:
   "notes": "" 
 }
 - Extract ALL ingredients with their exact quantities.
+- If ingredients are organized in groups/sections (e.g., "For the dough:", "For the filling:"), prefix each group name with "::" (e.g., "::For the dough"). Ingredients following a group header belong to that group. If there are no groups, just list ingredients without group headers.
 - Extract ALL instructions as separate steps.
 - If you cannot read or identify a recipe in the image, return: {"error": "Could not extract recipe from image"}
 - Keep the original language of the recipe as-is. Do not translate.`,
@@ -146,13 +147,14 @@ export const extractRecipeFromText = async (text) => {
 You MUST respond with valid JSON in this exact format:
 {
   "name": "recipe name",
-  "ingredients": ["ingredient 1 with quantity", "ingredient 2 with quantity"],
+  "ingredients": ["::group name", "ingredient 1 with quantity", "ingredient 2", "::another group", "ingredient 3"],
   "instructions": ["step 1", "step 2"],
   "prepTime": "15" or "",
   "cookTime": "30" or "",
   "servings": "4" or ""
 }
 - Extract ALL ingredients with their exact quantities as separate array items.
+- If ingredients are organized in groups/sections (e.g., "For the dough:", "For the filling:"), prefix each group name with "::" (e.g., "::For the dough"). If there are no groups, just list ingredients without group headers.
 - Extract ALL instructions as separate steps in order.
 - prepTime and cookTime should be numbers in minutes only (no units).
 - Keep the original language of the recipe. Do not translate.
@@ -193,7 +195,7 @@ Parse the spoken text and extract the recipe information.
 You MUST respond with valid JSON in this exact format:
 {
   "name": "recipe name",
-  "ingredients": ["ingredient 1 with quantity", "ingredient 2 with quantity"],
+  "ingredients": ["::group name", "ingredient 1 with quantity", "ingredient 2", "::another group", "ingredient 3"],
   "instructions": ["step 1", "step 2"],
   "prepTime": "15" or "",
   "cookTime": "30" or "",
@@ -202,6 +204,7 @@ You MUST respond with valid JSON in this exact format:
   "category": "category name or empty string"
 }
 - Extract ALL ingredients with their exact quantities as separate array items.
+- If the user mentions ingredient groups/sections (e.g., "dry ingredients", "for the filling"), prefix each group name with "::" (e.g., "::dry ingredients"). If there are no groups, just list ingredients without group headers.
 - Extract ALL instructions as separate steps in order.
 - prepTime and cookTime should be numbers in minutes only (no units).
 - Keep the original language of the recipe. Do not translate.
@@ -276,12 +279,13 @@ Rules:
 };
 
 export const calculateNutrition = async (ingredients, servings) => {
-  const ingredientArray = Array.isArray(ingredients)
+  const ingredientArray = (Array.isArray(ingredients)
     ? ingredients
     : ingredients
         .split("\n")
         .map((s) => s.trim())
-        .filter(Boolean);
+        .filter(Boolean)
+  ).filter((s) => !s.startsWith("::"));
   const numServings = parseInt(servings, 10) || 1;
 
   const cacheKey = `${ingredientArray.join("|")}|${numServings}`;

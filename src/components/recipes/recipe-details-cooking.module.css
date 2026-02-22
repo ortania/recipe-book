@@ -844,6 +844,16 @@
   color: var(--text-primary);
   text-align: center;
   /* margin: 1.5rem 0; */
+  gap: 2rem;
+}
+
+.cookingGroupLabel {
+  display: block;
+  font-size: var(--huge-font);
+  font-weight: 700;
+  color: #9810fa;
+  /* margin-bottom: 0.3rem; */
+  text-align: center;
 }
 
 .ingredientText,
