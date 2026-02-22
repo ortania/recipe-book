@@ -160,7 +160,6 @@ function CookingVoiceChat({
   async function speakText(text) {
     if (!text) return;
     setIsSpeaking(true);
-    $.current.radioRef?.current?.duckVolume();
     try {
       const response = await fetch(
         "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts",
@@ -256,7 +255,6 @@ function CookingVoiceChat({
     } catch (e) {
       console.error("OpenAI TTS error:", e);
     }
-    $.current.radioRef?.current?.restoreVolume();
     setIsSpeaking(false);
   }
 
@@ -473,7 +471,7 @@ function CookingVoiceChat({
   };
 
   // ---- Start listening for speech ----
-  // Stored in a ref so processInput's restart always calls the latest version
+  // Uses continuous mode to avoid repeated start-beeps and audio-focus grabs on mobile
   const listenRef = useRef(null);
   listenRef.current = function startListening() {
     if (isProcessingRef.current) return;
@@ -487,61 +485,54 @@ function CookingVoiceChat({
     killRecognition();
 
     const recognition = new SR();
-    recognition.continuous = false;
+    recognition.continuous = true;
     recognition.interimResults = true;
     recognition.lang = $.current.speechLang;
     recognition.maxAlternatives = 1;
 
     let lastText = "";
     let debounceTimer = null;
-    let processed = false;
+    let processedIdx = -1;
 
     recognition.onstart = () => {
-      console.log("🎤 Recognition started");
+      console.log("🎤 Recognition started (continuous)");
       setStatusText("מקשיב...");
     };
 
     recognition.onresult = (event) => {
-      if (processed) return;
+      if (isProcessingRef.current) return;
       const last = event.results.length - 1;
-      const text = event.results[last][0].transcript.trim();
+      if (last <= processedIdx) return;
+
+      const result = event.results[last][0];
+      const text = result.transcript.trim();
       if (!text) return;
 
-      // If final, process immediately
       if (event.results[last].isFinal) {
-        processed = true;
-        if (debounceTimer) clearTimeout(debounceTimer);
-        try {
-          recognition.onend = null;
-          recognition.stop();
-        } catch (e) {
-          /* */
+        if (text.length < 2) {
+          processedIdx = last;
+          return;
         }
-        recognitionRef.current = null;
+        processedIdx = last;
+        if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null; }
+        killRecognition();
         setStatusText(`"${text}"`);
         processRef.current?.(text);
         return;
       }
 
-      // Interim: show text and debounce - process after 1.5s of no new results
       lastText = text;
       setStatusText(`"${text}"...`);
       if (debounceTimer) clearTimeout(debounceTimer);
       debounceTimer = setTimeout(() => {
-        if (processed) return;
-        processed = true;
-        if (lastText && isActiveRef.current && !isProcessingRef.current) {
-          try {
-            recognition.onend = null;
-            recognition.stop();
-          } catch (e) {
-            /* */
-          }
-          recognitionRef.current = null;
+        if (isProcessingRef.current || last <= processedIdx) return;
+        processedIdx = last;
+        if (lastText && lastText.length >= 2 && isActiveRef.current) {
+          killRecognition();
           setStatusText(`"${lastText}"`);
           processRef.current?.(lastText);
         }
-      }, 1500);
+      }, 2000);
     };
 
     recognition.onend = () => {
@@ -550,7 +541,7 @@ function CookingVoiceChat({
           if (isActiveRef.current && !isProcessingRef.current) {
             listenRef.current?.();
           }
-        }, 300);
+        }, 1000);
       }
     };
 
@@ -562,11 +553,7 @@ function CookingVoiceChat({
         isActiveRef.current = false;
         return;
       }
-      if (event.error === "no-speech") {
-        console.log("🎤 No speech detected, will restart");
-        return;
-      }
-      if (event.error === "aborted") return;
+      if (event.error === "no-speech" || event.error === "aborted") return;
     };
 
     recognitionRef.current = recognition;
@@ -580,7 +567,7 @@ function CookingVoiceChat({
         if (isActiveRef.current && !isProcessingRef.current) {
           listenRef.current?.();
         }
-      }, 500);
+      }, 1500);
     }
   };
 
@@ -606,11 +593,12 @@ function CookingVoiceChat({
       killRecognition();
       setStatusText("");
       setLastResponse("");
-      $.current.radioRef?.current?.restoreVolume();
+      $.current.radioRef?.current?.unmuteForMic();
     } else {
       isActiveRef.current = true;
       setIsActive(true);
       ensureAudioContext();
+      $.current.radioRef?.current?.muteForMic();
       listenRef.current?.();
     }
   }
@@ -621,6 +609,7 @@ function CookingVoiceChat({
       isActiveRef.current = false;
       window.speechSynthesis?.cancel();
       killRecognition();
+      $.current.radioRef?.current?.unmuteForMic();
     };
   }, []);
 

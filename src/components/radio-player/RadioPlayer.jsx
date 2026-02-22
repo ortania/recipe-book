@@ -21,6 +21,8 @@ function RadioPlayer({ open, onClose }, ref) {
   const { t, language } = useLanguage();
   const audioRef = useRef(getGlobalAudio());
   const fallbackHandlerRef = useRef(null);
+  const wantPlayingRef = useRef(false);
+  const micMutedRef = useRef(false);
 
   const [isPlaying, setIsPlaying] = useState(false);
   const [stationIndex, setStationIndex] = useState(() => {
@@ -98,24 +100,40 @@ function RadioPlayer({ open, onClose }, ref) {
 
     const onPlaying = () => { setLoading(false); setError(false); };
     const onWaiting = () => setLoading(true);
-    const onError = () => { setLoading(false); setError(true); setIsPlaying(false); };
+    const onError = () => { setLoading(false); setError(true); setIsPlaying(false); wantPlayingRef.current = false; };
+
+    let resumeTimer = null;
+    const onPause = () => {
+      if (wantPlayingRef.current && !micMutedRef.current && audio.src) {
+        if (resumeTimer) clearTimeout(resumeTimer);
+        resumeTimer = setTimeout(() => {
+          if (wantPlayingRef.current && !micMutedRef.current && audio.src) {
+            audio.play().catch(() => {});
+          }
+        }, 400);
+      }
+    };
 
     audio.addEventListener("playing", onPlaying);
     audio.addEventListener("waiting", onWaiting);
     audio.addEventListener("error", onError);
+    audio.addEventListener("pause", onPause);
 
     return () => {
+      if (resumeTimer) clearTimeout(resumeTimer);
       audio.removeEventListener("playing", onPlaying);
       audio.removeEventListener("waiting", onWaiting);
       audio.removeEventListener("error", onError);
+      audio.removeEventListener("pause", onPause);
       removeFallbackHandler();
+      wantPlayingRef.current = false;
       audio.pause();
       audio.src = "";
     };
   }, [removeFallbackHandler]);
 
   useEffect(() => {
-    if (audioRef.current) audioRef.current.volume = volume;
+    if (audioRef.current && !micMutedRef.current) audioRef.current.volume = volume;
     try { localStorage.setItem(VOLUME_STORAGE_KEY, String(volume)); } catch {}
   }, [volume]);
 
@@ -158,10 +176,12 @@ function RadioPlayer({ open, onClose }, ref) {
     fallbackHandlerRef.current = errorHandler;
     audio.addEventListener("error", errorHandler, { once: true });
 
+    wantPlayingRef.current = true;
     setIsPlaying(true);
   }, [stationIndex, removeFallbackHandler]);
 
   const pause = useCallback(() => {
+    wantPlayingRef.current = false;
     removeFallbackHandler();
     const audio = getGlobalAudio();
     audio.pause();
@@ -191,14 +211,24 @@ function RadioPlayer({ open, onClose }, ref) {
   }, [play]);
 
   const duckVolume = useCallback(() => {
-    getGlobalAudio().volume = volume * 0.15;
-  }, [volume]);
-
-  const softDuckVolume = useCallback(() => {
     getGlobalAudio().volume = volume * 0.08;
   }, [volume]);
 
+  const softDuckVolume = useCallback(() => {
+    getGlobalAudio().volume = volume * 0.2;
+  }, [volume]);
+
   const restoreVolume = useCallback(() => {
+    if (!micMutedRef.current) getGlobalAudio().volume = volume;
+  }, [volume]);
+
+  const muteForMic = useCallback(() => {
+    micMutedRef.current = true;
+    getGlobalAudio().volume = 0;
+  }, []);
+
+  const unmuteForMic = useCallback(() => {
+    micMutedRef.current = false;
     getGlobalAudio().volume = volume;
   }, [volume]);
 
@@ -235,13 +265,15 @@ function RadioPlayer({ open, onClose }, ref) {
     duckVolume,
     softDuckVolume,
     restoreVolume,
+    muteForMic,
+    unmuteForMic,
     volumeUp,
     volumeDown,
     changeStation,
     selectStation,
     selectStationByName,
     getStations: () => STATIONS,
-  }), [isPlaying, play, pause, togglePlay, duckVolume, softDuckVolume, restoreVolume, volumeUp, volumeDown, changeStation, selectStation, selectStationByName]);
+  }), [isPlaying, play, pause, togglePlay, duckVolume, softDuckVolume, restoreVolume, muteForMic, unmuteForMic, volumeUp, volumeDown, changeStation, selectStation, selectStationByName]);
 
   if (!open) return null;
 

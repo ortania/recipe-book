@@ -240,10 +240,13 @@
 
 @media (max-width: 768px) {
   .panel {
-    top: 3rem;
+    position: fixed;
+    top: 6rem;
+    left: 50%;
     width: 95%;
     max-width: 320px;
     padding: 0.75rem;
+    z-index: 10010;
   }
 
   .stationList {
