@@ -452,6 +452,32 @@
   transform: scale(0.9);
 }
 
+.radioBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 0.2em;
+  flex-shrink: 0;
+  border-radius: 50%;
+  transition:
+    color 0.2s,
+    background 0.2s;
+}
+
+.radioBtn:active {
+  transform: scale(0.9);
+}
+
+.radioBtnActive {
+  color: #667eea;
+  background: rgba(102, 126, 234, 0.12);
+}
+
 .voiceBar {
   display: flex;
   align-items: center;
@@ -617,6 +643,9 @@
 @media (max-width: 768px) {
   .helpDropdown {
     max-width: 95%;
+  }
+  .headerLeft {
+    gap: 0.2rem;
   }
 }
 
@@ -857,7 +886,7 @@
     height: 100vh;
     max-width: 100%;
     margin: 0;
-    padding-top: 5rem;
+    padding-top: 6rem;
     z-index: 10005;
     background: var(--clr-grey-10);
     overflow-y: auto;

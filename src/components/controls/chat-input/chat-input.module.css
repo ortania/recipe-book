@@ -8,7 +8,7 @@
 
 .inputWrap {
   display: flex;
-  align-items: center;
+  align-items: flex-end;
   border: 1px solid var(--border-color);
   border-radius: 24px;
   padding: 0.4rem 0.5rem 0.4rem 1rem;
@@ -25,10 +25,15 @@
   border: none;
   outline: none;
   font-size: var(--basic-font);
+  font-family: inherit;
   background: transparent;
   padding: 0.4rem 0;
   color: var(--text-primary);
   min-width: 0;
+  resize: none;
+  overflow-y: auto;
+  max-height: 120px;
+  line-height: 1.4;
 }
 
 .input::placeholder {
@@ -58,7 +63,7 @@
   height: 34px;
   border-radius: 50%;
   transition: all 0.15s ease;
-  font-size: var(--basic-font);
+  font-size: 2rem;
 }
 
 .imageBtn:hover:not(:disabled) {
@@ -71,8 +76,44 @@
   background: var(--bg-hover);
 }
 
+.micBtn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  transition: all 0.15s ease;
+  font-size: 2rem;
+}
+
+.micBtn:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.micActive {
+  color: #e53e3e;
+  animation: micPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes micPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
 .imageBtn:disabled,
-.sendBtn:disabled {
+.sendBtn:disabled,
+.micBtn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
 }

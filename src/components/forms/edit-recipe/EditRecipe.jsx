@@ -301,13 +301,16 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           nutritionCalculated = true;
         } else {
           console.warn("Nutrition calculation returned error:", result?.error);
-          setSavedMessage("⚠️ חישוב תזונתי נכשל: " + (result?.error || "unknown"));
-          await new Promise((r) => setTimeout(r, 2500));
+          const msg = result?.error === "QUOTA_EXCEEDED"
+            ? t("recipes", "nutritionQuotaError")
+            : `⚠️ ${t("recipes", "nutritionError")}`;
+          setSavedMessage(msg);
+          await new Promise((r) => setTimeout(r, 3000));
         }
       } catch (err) {
         console.error("Nutrition calculation failed:", err);
-        setSavedMessage("⚠️ חישוב תזונתי נכשל: " + err.message);
-        await new Promise((r) => setTimeout(r, 2500));
+        setSavedMessage(`⚠️ ${t("recipes", "nutritionError")}`);
+        await new Promise((r) => setTimeout(r, 3000));
       }
     }
     const updatedPerson = {

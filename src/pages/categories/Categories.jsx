@@ -41,7 +41,7 @@ function Categories() {
   useEffect(() => {
     if (showGreetingOnce) {
       sessionStorage.removeItem("justLoggedIn");
-      const timer = setTimeout(() => setShowGreetingOnce(false), 60000);
+      const timer = setTimeout(() => setShowGreetingOnce(false), 20000);
       return () => clearTimeout(timer);
     }
   }, [showGreetingOnce]);

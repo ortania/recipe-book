@@ -315,7 +315,17 @@ export const calculateNutrition = async (ingredients, servings) => {
     return perServing;
   } catch (err) {
     console.error("calculateNutrition failed:", err);
-    return { error: err.message };
+    const msg = err.message || "";
+    const isQuota =
+      msg.includes("quota") ||
+      msg.includes("insufficient") ||
+      msg.includes("billing") ||
+      msg.includes("rate limit") ||
+      msg.includes("429") ||
+      msg.includes("402");
+    return {
+      error: isQuota ? "QUOTA_EXCEEDED" : msg,
+    };
   }
 };
 
@@ -364,7 +374,7 @@ INSTRUCTIONS:
 ${instructions.map((inst, i) => `${i + 1}. ${inst}`).join("\n")}
 
 You MUST respond with valid JSON: {"text": "your answer", "action": null}
-Possible actions: {"type":"next"}, {"type":"prev"}, {"type":"goto","step":N}, {"type":"timer","minutes":N}, {"type":"stop_timer"}, {"type":"switch_tab","tab":"ingredients"}, {"type":"switch_tab","tab":"instructions"}
+Possible actions: {"type":"next"}, {"type":"prev"}, {"type":"goto","step":N}, {"type":"timer","minutes":N}, {"type":"stop_timer"}, {"type":"switch_tab","tab":"ingredients"}, {"type":"switch_tab","tab":"instructions"}, {"type":"play_music"}, {"type":"pause_music"}, {"type":"toggle_music"}, {"type":"volume_up"}, {"type":"volume_down"}
 
 RULES:
 - Always respond in ${langName}, 1-2 sentences max (read aloud).
@@ -375,6 +385,10 @@ RULES:
 - "תגיד לי" / "מה השלב" / "tell me" → read the current step content with ingredient quantities.
 - "מה הבא" / "השלב הבא" / "next" / "הבא" → read next step with action {"type":"next"}.
 - Do NOT switch tabs automatically. Only use switch_tab action if user explicitly says "תעבור למרכיבים" or "תעבור להוראות". Answer ingredient questions without switching tabs.
+- "תפעיל מוסיקה" / "play music" / "שים רדיו" → play music with action {"type":"play_music"}.
+- "עצור מוסיקה" / "stop music" / "הפסק מוסיקה" → pause music with action {"type":"pause_music"}.
+- "הגבר" / "תגביר" / "louder" / "volume up" → raise volume with action {"type":"volume_up"}.
+- "הנמך" / "תנמיך" / "quieter" / "volume down" → lower volume with action {"type":"volume_down"}.
 - ALWAYS try to answer. Never say you don't understand unless truly unrelated to cooking.
 
 EXAMPLES:

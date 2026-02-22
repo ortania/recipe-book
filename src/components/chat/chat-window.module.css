@@ -2,7 +2,7 @@
 .chatContainer {
   display: flex;
   flex-direction: column;
-  min-height: calc(100vh - 160px);
+  height: calc(100vh - 160px);
   max-width: 700px;
   margin: 0 auto;
   padding: 0 1rem;
@@ -27,6 +27,8 @@
   flex-direction: column;
   gap: 1rem;
   padding: 0.5rem 0;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .message {
@@ -34,6 +36,8 @@
   align-items: flex-start;
   gap: 0.6rem;
   animation: slideIn 0.3s ease;
+  width: 100%;
+  min-width: 0;
 }
 
 @keyframes slideIn {
@@ -74,12 +78,17 @@
 /* Bubbles */
 .bubble {
   max-width: 75%;
+  min-width: 0;
   padding: 0.75rem 1rem;
   border-radius: 14px;
   line-height: 1.6;
   font-size: var(--basic-font);
   white-space: pre-wrap;
+  word-wrap: break-word;
   word-break: break-word;
+  overflow-wrap: break-word;
+  hyphens: auto;
+  overflow-x: hidden;
 }
 
 .userMessage .bubble {
@@ -152,7 +161,7 @@
   border: 1px solid var(--border-color);
   border-radius: 8px;
   padding: 0.3em 0.7em;
-  font-size: var(--very-small-font);
+  font-size: var(--large-font);
   color: var(--text-muted);
   cursor: pointer;
   transition: all 0.15s;
@@ -276,7 +285,7 @@
   height: 34px;
   border-radius: 50%;
   transition: all 0.15s ease;
-  font-size: var(--basic-font);
+  font-size: 2rem;
 }
 
 .imageBtn:hover:not(:disabled) {
@@ -422,7 +431,7 @@
 /* Mobile */
 @media (max-width: 768px) {
   .chatContainer {
-    min-height: calc(100dvh - 120px);
+    height: calc(100dvh - 120px);
     padding: 0 0.75rem;
   }
 

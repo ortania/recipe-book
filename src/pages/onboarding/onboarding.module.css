@@ -118,13 +118,13 @@
 }
 
 .tipLabel {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   font-weight: 700;
   color: var(--clr-blue-3);
 }
 
 .tipText {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: var(--text-secondary);
   text-align: center;
   line-height: 1.5;
@@ -179,7 +179,7 @@
   background: none;
   border: none;
   color: var(--clr-blue-3);
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.3em 0.8em;
   text-decoration: underline;

@@ -1,0 +1,87 @@
+const STATIONS = [
+  {
+    id: "lofi",
+    name: { he: "לופי", en: "Lofi", ru: "Лофи", de: "Lofi", mixed: "Lofi" },
+    aliases: ["lofi", "לופי", "lo fi", "lo-fi"],
+    url: "https://play.streamafrica.net/lofiradio",
+    icon: "🎧",
+  },
+  {
+    id: "jazz",
+    name: { he: "ג'אז", en: "Jazz", ru: "Джаз", de: "Jazz", mixed: "Jazz" },
+    aliases: ["jazz", "ג'אז", "גאז", "ג'ז", "ג׳אז"],
+    url: "https://live.amperwave.net/direct/ppm-jazz24mp3-ibc1",
+    fallbackUrl: "https://knkx-live-a.edge.audiocdn.com/6285_128k",
+    icon: "🎷",
+  },
+  {
+    id: "classical",
+    name: {
+      he: "קלאסית",
+      en: "Classical",
+      ru: "Классика",
+      de: "Klassik",
+      mixed: "Classical",
+    },
+    aliases: ["קלאסית", "קלאסי", "classical", "classic", "classic fm"],
+    url: "http://media-ice.musicradio.com/ClassicFMMP3",
+    fallbackUrl: "http://relax.stream.publicradio.org/relax.mp3",
+    icon: "🎻",
+  },
+  {
+    id: "chillout",
+    name: {
+      he: "צ'ילאאוט",
+      en: "Chillout",
+      ru: "Чиллаут",
+      de: "Chillout",
+      mixed: "Chillout",
+    },
+    aliases: ["chillout", "chill", "צ'ילאאוט", "צילאאוט", "צ'יל", "גרוב"],
+    url: "https://ice2.somafm.com/groovesalad-128-mp3",
+    icon: "🌴",
+  },
+  {
+    id: "glglz",
+    name: {
+      he: "גלגלצ",
+      en: "Galgalatz",
+      ru: "Гальгалац",
+      de: "Galgalatz",
+      mixed: "Galgalatz",
+    },
+    aliases: ["גלגלצ", "גלגלץ", "גלגל", "galgalatz", "galatz"],
+    url: "https://glzwizzlv.bynetcdn.com/glglz_mp3",
+    icon: "🇮🇱",
+  },
+  {
+    id: "gimel",
+    name: {
+      he: "רשת ג",
+      en: "Reshet Gimel",
+      ru: "Решет Гимель",
+      de: "Reshet Gimel",
+      mixed: "Reshet Gimel",
+    },
+    aliases: ["רשת ג", "רשת גימל", "גימל", "gimel", "reshet gimel", "כאן ג"],
+    url: "https://27873.live.streamtheworld.com/KAN_GIMMEL.mp3",
+    fallbackUrl: "http://kanliveicy01.bynetcdn.com/icy/kangimmel_mp3",
+    icon: "🎶",
+  },
+  // {
+  //   id: "bet",
+  //   name: {
+  //     he: "רשת ב",
+  //     en: "Reshet Bet",
+  //     ru: "Решет Бет",
+  //     de: "Reshet Bet",
+  //     mixed: "Reshet Bet",
+  //   },
+  //   aliases: ["רשת ב", "רשת בית", "reshet bet", "bet", "כאן ב"],
+  //   url: "https://28563.live.streamtheworld.com/KAN_BET.mp3",
+  //   fallbackUrl: "https://25583.live.streamtheworld.com/KAN_BET.mp3",
+  //   icon: "📻",
+  // },
+];
+
+export default STATIONS;

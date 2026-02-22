@@ -30,6 +30,7 @@ function ChatWindow({
   onMessagesChange,
   appliedFields: externalAppliedFields,
   onAppliedFieldsChange,
+  showGreeting,
 }) {
   const { t, language } = useLanguage();
   const { currentUser } = useRecipeBook();
@@ -61,6 +62,7 @@ function ChatWindow({
   const [customUpdateIdx, setCustomUpdateIdx] = useState(null);
   const [customUpdateText, setCustomUpdateText] = useState("");
   const messagesEndRef = useRef(null);
+  const messagesAreaRef = useRef(null);
 
   const isRecipeMode = !!recipe;
 
@@ -90,6 +92,9 @@ function ChatWindow({
 
   /* ── scroll to bottom ── */
   const scrollToBottom = () => {
+    if (messagesAreaRef.current) {
+      messagesAreaRef.current.scrollTop = messagesAreaRef.current.scrollHeight;
+    }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
@@ -335,20 +340,22 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
   /* ── render ── */
   return (
     <div className={classes.chatContainer}>
-      {!isRecipeMode && (
+      {!isRecipeMode && (showGreeting === undefined ? true : showGreeting) && (
         <div className={classes.chatHeader}>
           <div className={classes.greeting}>
             <Greeting />
           </div>
-          <ChatHelpButton
-            title={t("chat", "helpTitle")}
-            items={[
-              t("chat", "helpFeature1"),
-              t("chat", "helpFeature2"),
-              t("chat", "helpFeature3"),
-              t("chat", "helpFeature4"),
-            ]}
-          />
+          {showGreeting === undefined && (
+            <ChatHelpButton
+              title={t("chat", "helpTitle")}
+              items={[
+                t("chat", "helpFeature1"),
+                t("chat", "helpFeature2"),
+                t("chat", "helpFeature3"),
+                t("chat", "helpFeature4"),
+              ]}
+            />
+          )}
         </div>
       )}
 
@@ -360,7 +367,7 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
         </div>
       )}
 
-      <div className={classes.messagesArea}>
+      <div className={classes.messagesArea} ref={messagesAreaRef}>
         {messages.length === 0 && (
           <div className={classes.ideasSection}>
             <h3 className={classes.ideasTitle}>

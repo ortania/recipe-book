@@ -104,6 +104,7 @@ function CookingVoiceChat({
   onStopTimer,
   onSwitchTab,
   isTimerRunning,
+  radioRef,
 }) {
   const { language } = useLanguage();
   const lang = language || "he";
@@ -140,6 +141,7 @@ function CookingVoiceChat({
     onStartTimer,
     onStopTimer,
     onSwitchTab,
+    radioRef,
   };
 
   // ---- Helper: ensure AudioContext is created & resumed (call on user gesture) ----
@@ -158,6 +160,7 @@ function CookingVoiceChat({
   async function speakText(text) {
     if (!text) return;
     setIsSpeaking(true);
+    $.current.radioRef?.current?.duckVolume();
     try {
       const response = await fetch(
         "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts",
@@ -253,6 +256,7 @@ function CookingVoiceChat({
     } catch (e) {
       console.error("OpenAI TTS error:", e);
     }
+    $.current.radioRef?.current?.restoreVolume();
     setIsSpeaking(false);
   }
 
@@ -278,6 +282,21 @@ function CookingVoiceChat({
         break;
       case "switch_tab":
         if (action.tab) p.onSwitchTab?.(action.tab);
+        break;
+      case "play_music":
+        p.radioRef?.current?.play();
+        break;
+      case "pause_music":
+        p.radioRef?.current?.pause();
+        break;
+      case "toggle_music":
+        p.radioRef?.current?.togglePlay();
+        break;
+      case "volume_up":
+        p.radioRef?.current?.volumeUp();
+        break;
+      case "volume_down":
+        p.radioRef?.current?.volumeDown();
         break;
       default:
         break;
@@ -335,6 +354,71 @@ function CookingVoiceChat({
         setStatusText("מדבר...");
         await speakText(msg);
         return;
+      }
+
+      // Volume commands first — speech recognition often confuses "תנמיך" with "תפעיל"
+      const volumeUpPatterns = ["הגבר", "תגביר", "תעלה", "העלה", "יותר חזק", "חזק יותר", "louder", "volume up", "הגבר מוסיקה", "תגביר מוסיקה", "הגבר רדיו"];
+      const volumeDownPatterns = ["הנמך", "תנמיך", "נמיך", "תוריד", "הוריד", "יותר נמוך", "נמוך יותר", "יותר שקט", "שקט יותר", "quieter", "lower", "volume down", "הנמך מוסיקה", "תנמיך מוסיקה", "הנמך רדיו", "נמוך", "תנמיך רדיו"];
+
+      const wantsVolumeUp = volumeUpPatterns.some((pat) => lower.includes(pat));
+      const wantsVolumeDown = volumeDownPatterns.some((pat) => lower.includes(pat));
+
+      if (wantsVolumeUp && p.radioRef?.current) {
+        p.radioRef.current.volumeUp();
+        setLastResponse(p.lang === "he" || p.lang === "mixed" ? "מגביר 🔊" : "Louder 🔊");
+        return;
+      }
+      if (wantsVolumeDown && p.radioRef?.current) {
+        p.radioRef.current.volumeDown();
+        setLastResponse(p.lang === "he" || p.lang === "mixed" ? "מנמיך 🔉" : "Quieter 🔉");
+        return;
+      }
+
+      // Play/pause music commands
+      const playPatterns = ["תפעיל מוסיקה", "שים מוסיקה", "play music", "הפעל רדיו", "תפעיל רדיו"];
+      const pausePatterns = ["עצור מוסיקה", "תעצור מוסיקה", "עצור רדיו", "הפסק מוסיקה", "stop music", "pause music", "השתק מוסיקה"];
+      const wantsPlayMusic = playPatterns.some((pat) => lower.includes(pat));
+      const wantsPauseMusic = pausePatterns.some((pat) => lower.includes(pat));
+
+      if (wantsPlayMusic) {
+        p.radioRef?.current?.play();
+        const msg = p.lang === "he" || p.lang === "mixed" ? "מפעיל מוסיקה" : "Playing music";
+        setLastResponse(msg);
+        setStatusText("מדבר...");
+        await speakText(msg);
+        return;
+      }
+      if (wantsPauseMusic) {
+        p.radioRef?.current?.pause();
+        const msg = p.lang === "he" || p.lang === "mixed" ? "עוצר מוסיקה" : "Music paused";
+        setLastResponse(msg);
+        setStatusText("מדבר...");
+        await speakText(msg);
+        return;
+      }
+
+      // Handle station selection by voice - search for station name/alias anywhere in text
+      if (p.radioRef?.current) {
+        const stations = p.radioRef.current.getStations?.() || [];
+        for (let i = 0; i < stations.length; i++) {
+          const s = stations[i];
+          const allNames = [
+            ...Object.values(s.name).map((n) => n.toLowerCase()),
+            s.id,
+            ...(s.aliases || []).map((a) => a.toLowerCase()),
+          ];
+          const matched = allNames.find((n) => n.length > 1 && lower.includes(n));
+          if (matched) {
+            p.radioRef.current.selectStation(i);
+            const displayName = s.name[p.lang] || s.name.he;
+            const isHe = p.lang === "he" || p.lang === "mixed";
+            const msg = isHe ? `מעביר ל${displayName}` : `Switching to ${displayName}`;
+            setLastResponse(msg);
+            setStatusText("מדבר...");
+            await speakText(msg);
+            return;
+          }
+        }
       }
 
       // Only switch to ingredients if user explicitly says "מרכיבים" or "ingredients"
@@ -522,6 +606,7 @@ function CookingVoiceChat({
       killRecognition();
       setStatusText("");
       setLastResponse("");
+      $.current.radioRef?.current?.restoreVolume();
     } else {
       isActiveRef.current = true;
       setIsActive(true);

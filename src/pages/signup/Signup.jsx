@@ -33,13 +33,24 @@ function Signup() {
     e.preventDefault();
     setError("");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match");
+    if (!displayName.trim()) {
+      setError(t("auth", "nameRequired"));
       return;
     }
 
-    if (password.length < 6) {
-      setError("Password must be at least 6 characters");
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email.trim())) {
+      setError(t("auth", "emailError"));
+      return;
+    }
+
+    if (!password || password.length < 6) {
+      setError(t("auth", "passwordError"));
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setError(t("auth", "passwordsDontMatch"));
       return;
     }
 
@@ -47,16 +58,17 @@ function Signup() {
 
     try {
       await signupUser(email, password, displayName);
-      // Navigation handled automatically by AppContent when isLoggedIn becomes true
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
-        setError("Email already in use");
+        setError(t("auth", "emailAlreadyInUse"));
       } else if (error.code === "auth/invalid-email") {
-        setError("Invalid email address");
+        setError(t("auth", "emailError"));
       } else if (error.code === "auth/weak-password") {
-        setError("Password is too weak");
+        setError(t("auth", "weakPassword"));
+      } else if (error.code === "auth/too-many-requests") {
+        setError(t("auth", "tooManyAttempts"));
       } else {
-        setError("An error occurred during signup. Please try again.");
+        setError(t("auth", "signupError"));
       }
       console.error("Signup error:", error);
     } finally {

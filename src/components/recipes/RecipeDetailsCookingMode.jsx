@@ -15,7 +15,9 @@ import {
   MdOutlineFormatListBulleted,
   MdOutlineFormatListNumbered,
 } from "react-icons/md";
+import { IoMusicalNotesOutline } from "react-icons/io5";
 import { CookingVoiceChat } from "../cooking-voice-chat";
+import { RadioPlayer } from "../radio-player";
 import { CloseButton } from "../controls/close-button";
 import { AddButton } from "../controls/add-button";
 import { ChatHelpButton } from "../controls/chat-help-button";
@@ -42,6 +44,8 @@ function RecipeDetailsCookingMode({
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [fontSizeLevel, setFontSizeLevel] = useState(1);
   const [showHelp, setShowHelp] = useState(false);
+  const [showRadio, setShowRadio] = useState(false);
+  const radioRef = useRef(null);
   const touchRef = useRef({ startX: 0, startY: 0 });
   // Remember step position per tab so switching back restores position
   const savedStepRef = useRef({ ingredients: 0, instructions: 0 });
@@ -83,7 +87,19 @@ function RecipeDetailsCookingMode({
   const timerStartTimeRef = useRef(null);
   const isFirstTickRef = useRef(false);
 
-  // Hide volume notification after 5 seconds (mobile only)
+  const stopRadio = useCallback(() => {
+    try { radioRef.current?.pause(); } catch {}
+  }, []);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => stopRadio();
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      stopRadio();
+    };
+  }, [stopRadio]);
+
   useEffect(() => {
     if (!showVolumeNotification) return;
     const timer = setTimeout(() => {
@@ -248,6 +264,7 @@ function RecipeDetailsCookingMode({
         e.preventDefault();
         handlePrevStep();
       } else if (e.key === "Escape") {
+        stopRadio();
         onExitCookingMode();
       }
     };
@@ -269,32 +286,23 @@ function RecipeDetailsCookingMode({
 
       <div className={classes.headerButtonsCooking}>
         <div className={classes.headerLeft}>
-          {!(showCompletion && activeTab === "instructions") && (
-            <ChatHelpButton
-              title={t("cookingMode", "howToUse")}
-              items={[
-                `🔊 ${t("cookingMode", "helpVolume")}`,
-                t("cookingMode", "navTabs"),
-                t("cookingMode", "navSteps"),
-                `⏱️ ${t("cookingMode", "timerTitle")} — ${t("cookingMode", "timerText")}`,
-                `${t("cookingMode", "chatTitle")} — ${t("cookingMode", "chatText")}`,
-                t("cookingMode", "chatFeature1"),
-                t("cookingMode", "chatFeature2"),
-                t("cookingMode", "chatFeature3"),
-                t("cookingMode", "chatFeature4"),
-                t("cookingMode", "chatFeature5"),
-              ]}
-              onToggle={setShowHelp}
-            />
-          )}
           <button
             className={classes.fontSizeBtn}
             onClick={cycleFontSize}
             title="גודל פונט"
           >
-            {/* <MdFormatSize /> */}
             <AiOutlineFontSize />
           </button>
+          <div className={classes.helpWrapper}>
+            <button
+              className={`${classes.radioBtn} ${showRadio ? classes.radioBtnActive : ""}`}
+              onClick={() => setShowRadio((v) => !v)}
+              title={t("radio", "title")}
+            >
+              <IoMusicalNotesOutline />
+            </button>
+            {showHelp && <div className={classes.helpArrow} />}
+          </div>
           <div className={classes.helpWrapper}>
             <CookingVoiceChat
               recipe={recipe}
@@ -319,14 +327,37 @@ function RecipeDetailsCookingMode({
                 switchTab(tab);
               }}
               isTimerRunning={isTimerRunning}
+              radioRef={radioRef}
             />
             {showHelp && <div className={classes.helpArrow} />}
           </div>
         </div>
         <h3 className={classes.headerTitle}>{t("recipes", "cookingMode")}</h3>
         <div className={classes.headerRight}>
+          {!(showCompletion && activeTab === "instructions") && (
+            <ChatHelpButton
+              title={t("cookingMode", "howToUse")}
+              items={[
+                `🔊 ${t("cookingMode", "helpVolume")}`,
+                t("cookingMode", "navTabs"),
+                t("cookingMode", "navSteps"),
+                `⏱️ ${t("cookingMode", "timerTitle")} — ${t("cookingMode", "timerText")}`,
+                `${t("cookingMode", "chatTitle")} — ${t("cookingMode", "chatText")}`,
+                t("cookingMode", "chatFeature1"),
+                t("cookingMode", "chatFeature2"),
+                t("cookingMode", "chatFeature3"),
+                t("cookingMode", "chatFeature4"),
+                t("cookingMode", "chatFeature5"),
+                t("cookingMode", "radioFeature"),
+              ]}
+              onToggle={setShowHelp}
+            />
+          )}
           <button
-            onClick={onClose}
+            onClick={() => {
+              stopRadio();
+              onClose();
+            }}
             className={classes.backButton}
             title={t("common", "back")}
           >
@@ -334,6 +365,12 @@ function RecipeDetailsCookingMode({
           </button>
         </div>
       </div>
+
+      <RadioPlayer
+        ref={radioRef}
+        open={showRadio}
+        onClose={() => setShowRadio(false)}
+      />
 
       <div className={classes.recipeContent}>
         {recipe.servings && (
@@ -662,6 +699,7 @@ function RecipeDetailsCookingMode({
                   if (activeTab === "ingredients") {
                     switchTab("instructions");
                   } else {
+                    stopRadio();
                     onExitCookingMode();
                   }
                 }}

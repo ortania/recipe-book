@@ -51,14 +51,14 @@ function Login() {
     setIsResetting(true);
 
     if (!resetEmail) {
-      setError("Please enter your email address");
+      setError(t("auth", "enterEmail"));
       setIsResetting(false);
       return;
     }
 
     try {
       await resetPassword(resetEmail);
-      setResetMessage("Password reset email sent! Check your inbox.");
+      setResetMessage(t("auth", "resetSent"));
       setTimeout(() => {
         setShowForgotPassword(false);
         setResetEmail("");
@@ -66,11 +66,11 @@ function Login() {
       }, 3000);
     } catch (error) {
       if (error.code === "auth/user-not-found") {
-        setError("No account found with this email");
+        setError(t("auth", "noAccountFound"));
       } else if (error.code === "auth/invalid-email") {
-        setError("Invalid email address");
+        setError(t("auth", "emailError"));
       } else {
-        setError("Failed to send reset email. Please try again.");
+        setError(t("auth", "resetError"));
       }
       console.error("Password reset error:", error);
     } finally {
@@ -82,6 +82,20 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+
+    // Simple email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!email || !emailRegex.test(email.trim())) {
+      setError(t("auth", "emailError"));
+      return;
+    }
+
+    // Password validation
+    if (!password || password.length < 6) {
+      setError(t("auth", "passwordError"));
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -93,19 +107,32 @@ function Login() {
       }
       await login(user.uid);
       sessionStorage.setItem("justLoggedIn", "true");
+      localStorage.setItem("tourCompleted", "true");
       navigate("/categories");
     } catch (error) {
-      if (
+      // Log the actual error for debugging
+      console.error(
+        "Login error - code:",
+        error.code,
+        "message:",
+        error.message,
+      );
+
+      if (error.code === "auth/invalid-email") {
+        setError(t("auth", "emailError"));
+      } else if (
         error.code === "auth/invalid-credential" ||
+        error.code === "auth/wrong-password" ||
         error.code === "auth/user-not-found"
       ) {
-        setError("Invalid email or password");
-      } else if (error.code === "auth/invalid-email") {
-        setError("Invalid email address");
+        setError(t("auth", "emailPswdError"));
+      } else if (error.code === "auth/too-many-requests") {
+        setError(t("auth", "tooManyAttempts"));
+      } else if (error.code === "auth/user-disabled") {
+        setError(t("auth", "accountDisabled"));
       } else {
-        setError("An error occurred during login. Please try again.");
+        setError(t("auth", "loginError"));
       }
-      console.error("Login error:", error);
     } finally {
       setIsLoading(false);
     }
@@ -145,7 +172,7 @@ function Login() {
 
               <FormInput
                 type="password"
-                placeholder={t("auth", "password")}
+                placeholder={t("auth", "passwordHint")}
                 value={password}
                 onChange={handlePasswordChange}
                 isLoading={isLoading}

@@ -503,7 +503,7 @@ function RecipesView({
         </div>
 
         <div style={{ display: showChat ? "block" : "none" }}>
-          <ChatWindow showImageButton />
+          <ChatWindow showImageButton showGreeting={showGreeting} />
         </div>
 
         <div style={{ display: showChat ? "none" : "block" }}>
@@ -580,44 +580,51 @@ function RecipesView({
           )}
           <div className={classes.helpBtnEnd}>
             <ChatHelpButton
-              title={helpTitleProp || t("recipesView", "helpTitle")}
-              description={helpDescriptionProp || t("recipesView", "helpIntro")}
+              title={showChat ? t("chat", "helpTitle") : (helpTitleProp || t("recipesView", "helpTitle"))}
+              description={showChat ? undefined : (helpDescriptionProp || t("recipesView", "helpIntro"))}
               items={
-                helpItemsProp || [
-                  <>
-                    <IoSearchOutline style={{ verticalAlign: "middle" }} />{" "}
-                    {t("recipesView", "helpSearch")}
-                  </>,
-                  <>
-                    <CiFilter style={{ verticalAlign: "middle" }} />{" "}
-                    {t("recipesView", "helpFilter")}
-                  </>,
-                  <>
-                    <BiSortAlt2 style={{ verticalAlign: "middle" }} />{" "}
-                    {t("recipesView", "helpSort")}
-                  </>,
-                  <>
-                    <GoHeart style={{ verticalAlign: "middle" }} />{" "}
-                    {t("recipesView", "helpFavorites")}
-                  </>,
-                  <>
-                    <span style={{ verticalAlign: "middle", fontWeight: 700 }}>
-                      +
-                    </span>{" "}
-                    {t("recipesView", "helpAdd")}
-                  </>,
-                  <>
-                    <BsGrid3X3Gap style={{ verticalAlign: "middle" }} />{" "}
-                    {t("recipesView", "helpView")}
-                  </>,
-                ]
+                showChat
+                  ? [
+                      t("chat", "helpFeature1"),
+                      t("chat", "helpFeature2"),
+                      t("chat", "helpFeature3"),
+                      t("chat", "helpFeature4"),
+                    ]
+                  : (helpItemsProp || [
+                      <>
+                        <IoSearchOutline style={{ verticalAlign: "middle" }} />{" "}
+                        {t("recipesView", "helpSearch")}
+                      </>,
+                      <>
+                        <CiFilter style={{ verticalAlign: "middle" }} />{" "}
+                        {t("recipesView", "helpFilter")}
+                      </>,
+                      <>
+                        <BiSortAlt2 style={{ verticalAlign: "middle" }} />{" "}
+                        {t("recipesView", "helpSort")}
+                      </>,
+                      <>
+                        <GoHeart style={{ verticalAlign: "middle" }} />{" "}
+                        {t("recipesView", "helpFavorites")}
+                      </>,
+                      <>
+                        <span style={{ verticalAlign: "middle", fontWeight: 700 }}>
+                          +
+                        </span>{" "}
+                        {t("recipesView", "helpAdd")}
+                      </>,
+                      <>
+                        <BsGrid3X3Gap style={{ verticalAlign: "middle" }} />{" "}
+                        {t("recipesView", "helpView")}
+                      </>,
+                    ])
               }
             />
           </div>
         </div>
 
-        {showGreeting && !showChat && (
-          <div className={classes.headerTitle}>
+        {showGreeting && (
+          <div className={classes.headerTitle} style={{ display: showChat ? "none" : undefined }}>
             <Greeting />
           </div>
         )}
@@ -1056,7 +1063,7 @@ function RecipesView({
       </div>
 
       {showChat ? (
-        <ChatWindow showImageButton />
+        <ChatWindow showImageButton showGreeting={showGreeting} />
       ) : (
         <div>
           {recentlyViewed.length > 0 && (
