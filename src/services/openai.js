@@ -137,13 +137,13 @@ You MUST respond with valid JSON in this exact format:
 };
 
 export const extractRecipeFromText = async (text) => {
-  const truncated = text.slice(0, 8000);
+  const truncated = text.slice(0, 15000);
   const result = await callOpenAI({
     model: "gpt-4o-mini",
     messages: [
       {
         role: "system",
-        content: `You are a recipe extraction expert. Given raw text from a webpage, extract the recipe information.
+        content: `You are a recipe extraction expert. Given raw text from a webpage, extract ONLY the recipe information.
 You MUST respond with valid JSON in this exact format:
 {
   "name": "recipe name",
@@ -153,20 +153,21 @@ You MUST respond with valid JSON in this exact format:
   "cookTime": "30" or "",
   "servings": "4" or ""
 }
-- Extract ALL ingredients with their exact quantities as separate array items.
+- Extract ALL ingredients with their exact quantities as separate array items. Do NOT skip any ingredient.
 - If ingredients are organized in groups/sections (e.g., "For the dough:", "For the filling:"), prefix each group name with "::" (e.g., "::For the dough"). If there are no groups, just list ingredients without group headers.
 - Extract ALL instructions as separate steps in order.
 - prepTime and cookTime should be numbers in minutes only (no units).
 - Keep the original language of the recipe. Do not translate.
+- IMPORTANT: ONLY extract the actual recipe content. Completely IGNORE any of these: advertisements, recommendations, "you might also like", related articles, comments, social media links, navigation, author bio, newsletter signup, or any other non-recipe content.
 - If you cannot find a recipe in the text, return: {"error": "No recipe found"}`,
       },
       {
         role: "user",
-        content: `Extract the recipe from this webpage text:\n\n${truncated}`,
+        content: `Extract the recipe from this webpage text. Include ALL ingredients and ALL steps. Ignore any ads, recommendations, or unrelated content:\n\n${truncated}`,
       },
     ],
     temperature: 0.1,
-    max_tokens: 2000,
+    max_tokens: 3000,
   });
 
   try {

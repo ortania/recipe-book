@@ -55,6 +55,8 @@ function RecipesView({
   hasMoreRecipes: hasMoreRecipesProp,
   onLoadMore,
   onCopyRecipe,
+  onRate,
+  userRatings = {},
   helpTitle: helpTitleProp,
   helpDescription: helpDescriptionProp,
   helpItems: helpItemsProp,
@@ -1388,6 +1390,8 @@ function RecipesView({
                     showAddAndFavorites ? handleToggleFavorite : undefined
                   }
                   onCopyRecipe={onCopyRecipe}
+                  onRate={onRate}
+                  userRating={userRatings[person.id] || 0}
                 />
               ))}
             </div>

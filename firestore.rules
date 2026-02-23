@@ -14,6 +14,15 @@ service cloud.firestore {
                     && request.resource.data.userId == request.auth.uid;
       allow update, delete: if request.auth != null
                             && resource.data.userId == request.auth.uid;
+
+      // Ratings subcollection: each user can rate any recipe
+      match /ratings/{ratingUserId} {
+        allow read: if request.auth != null;
+        allow write: if request.auth != null
+                     && request.auth.uid == ratingUserId
+                     && request.resource.data.rating >= 1
+                     && request.resource.data.rating <= 5;
+      }
     }
 
     // Categories: only the owner can read/write

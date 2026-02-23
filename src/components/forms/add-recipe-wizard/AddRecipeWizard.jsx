@@ -37,7 +37,12 @@ import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./add-recipe-wizard.module.css";
 import { CloseButton } from "../../controls";
 import { formatTime } from "../../recipes/utils";
-import { isGroupHeader, getGroupName, makeGroupHeader, ingredientsOnly } from "../../../utils/ingredientUtils";
+import {
+  isGroupHeader,
+  getGroupName,
+  makeGroupHeader,
+  ingredientsOnly,
+} from "../../../utils/ingredientUtils";
 
 const INITIAL_RECIPE = {
   name: "",
@@ -180,7 +185,7 @@ function AddRecipeWizard({
         name: parsed.name || prev.name,
         ingredients: parsed.ingredients
           ? parsed.ingredients
-              .split(",")
+              .split("\n")
               .map((i) => i.trim())
               .filter(Boolean)
           : prev.ingredients,
@@ -596,7 +601,11 @@ function AddRecipeWizard({
   };
 
   const handleAddIngredientGroup = () => {
-    updateRecipe("ingredients", [...recipe.ingredients, makeGroupHeader(""), ""]);
+    updateRecipe("ingredients", [
+      ...recipe.ingredients,
+      makeGroupHeader(""),
+      "",
+    ]);
   };
 
   const handleRemoveIngredient = (index) => {
@@ -822,7 +831,9 @@ function AddRecipeWizard({
             className={classes.formInput}
             placeholder="45"
             value={recipe.cookTime}
-            onChange={(e) => updateRecipe("cookTime", e.target.value.replace(/[^0-9]/g, ""))}
+            onChange={(e) =>
+              updateRecipe("cookTime", e.target.value.replace(/[^0-9]/g, ""))
+            }
           />
         </div>
         <div className={classes.formGroup}>
@@ -836,7 +847,9 @@ function AddRecipeWizard({
             className={classes.formInput}
             placeholder="30"
             value={recipe.prepTime}
-            onChange={(e) => updateRecipe("prepTime", e.target.value.replace(/[^0-9]/g, ""))}
+            onChange={(e) =>
+              updateRecipe("prepTime", e.target.value.replace(/[^0-9]/g, ""))
+            }
           />
         </div>
       </div>
@@ -910,7 +923,10 @@ function AddRecipeWizard({
                       placeholder={t("addWizard", "groupPlaceholder")}
                       value={getGroupName(ing)}
                       onChange={(e) =>
-                        handleIngredientChange(i, makeGroupHeader(e.target.value))
+                        handleIngredientChange(
+                          i,
+                          makeGroupHeader(e.target.value),
+                        )
                       }
                     />
                     <button
@@ -928,7 +944,9 @@ function AddRecipeWizard({
                       placeholder={`${t("addWizard", "ingredient")} ${ingredientCounter}`}
                       value={ing}
                       rows={1}
-                      onChange={(e) => handleIngredientChange(i, e.target.value)}
+                      onChange={(e) =>
+                        handleIngredientChange(i, e.target.value)
+                      }
                       onInput={(e) => {
                         e.target.style.height = "auto";
                         e.target.style.height = e.target.scrollHeight + "px";
@@ -1203,7 +1221,7 @@ function AddRecipeWizard({
                       </li>
                     ) : (
                       <li key={i}>{ing}</li>
-                    )
+                    ),
                   )}
                 </ul>
               </>
@@ -1350,17 +1368,40 @@ function AddRecipeWizard({
   // ========== Screens ==========
   const renderMethodSelection = () => (
     <div className={classes.wizardContainer}>
-      <button
+      {/* <button
         type="button"
         className={classes.methodCloseBtn}
         onClick={handleClose}
       >
         <FiX size={22} />
-      </button>
+      </button> */}
+      <CloseButton
+        
+        className={classes.methodCloseBtn}
+        onClick={handleClose}
+      />
+    
       <h1 className={classes.methodTitle}>{t("addWizard", "title")}</h1>
       <p className={classes.methodSubtitle}>{t("addWizard", "subtitle")}</p>
 
       <div className={classes.methodCards}>
+        <div
+          className={`${classes.methodCard} ${classes.methodCardPhoto}`}
+          onClick={() => setScreen("photo")}
+        >
+          <div className={`${classes.methodIcon} ${classes.methodIconPhoto}`}>
+            <FiCamera />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "fromPhoto")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "fromPhotoDesc")}
+            </p>
+          </div>
+          {/* <span className={classes.methodCardArrow}>›</span> */}
+        </div>
         <div
           className={`${classes.methodCard} ${classes.methodCardUrl}`}
           onClick={() => setScreen("url")}
@@ -1376,7 +1417,7 @@ function AddRecipeWizard({
               {t("addWizard", "fromUrlDesc")}
             </p>
           </div>
-          <span className={classes.methodCardArrow}>›</span>
+          {/* <span className={classes.methodCardArrow}>›</span> */}
         </div>
 
         <div
@@ -1394,25 +1435,7 @@ function AddRecipeWizard({
               {t("addWizard", "fromTextDesc")}
             </p>
           </div>
-          <span className={classes.methodCardArrow}>›</span>
-        </div>
-
-        <div
-          className={`${classes.methodCard} ${classes.methodCardPhoto}`}
-          onClick={() => setScreen("photo")}
-        >
-          <div className={`${classes.methodIcon} ${classes.methodIconPhoto}`}>
-            <FiCamera />
-          </div>
-          <div className={classes.methodCardContent}>
-            <h3 className={classes.methodCardTitle}>
-              {t("addWizard", "fromPhoto")}
-            </h3>
-            <p className={classes.methodCardDesc}>
-              {t("addWizard", "fromPhotoDesc")}
-            </p>
-          </div>
-          <span className={classes.methodCardArrow}>›</span>
+          {/* <span className={classes.methodCardArrow}>›</span> */}
         </div>
 
         <div
@@ -1422,7 +1445,7 @@ function AddRecipeWizard({
           <div
             className={`${classes.methodIcon} ${classes.methodIconRecording}`}
           >
-            <PiMicrophoneLight/>
+            <PiMicrophoneLight />
           </div>
           <div className={classes.methodCardContent}>
             <h3 className={classes.methodCardTitle}>
@@ -1432,7 +1455,7 @@ function AddRecipeWizard({
               {t("addWizard", "fromRecordingDesc")}
             </p>
           </div>
-          <span className={classes.methodCardArrow}>›</span>
+          {/* <span className={classes.methodCardArrow}>›</span> */}
         </div>
 
         <div
@@ -1454,7 +1477,7 @@ function AddRecipeWizard({
               {t("addWizard", "manualDesc")}
             </p>
           </div>
-          <span className={classes.methodCardArrow}>›</span>
+          {/* <span className={classes.methodCardArrow}>›</span> */}
         </div>
       </div>
     </div>
@@ -1471,7 +1494,7 @@ function AddRecipeWizard({
             setImportError("");
           }}
         >
-          <FiChevronLeft /> {t("addWizard", "backToMethod")}
+          <FiChevronRight /> {t("addWizard", "backToMethod")}
         </button>
         <CloseButton
           // type="button"
@@ -1539,7 +1562,7 @@ function AddRecipeWizard({
             setImportError("");
           }}
         >
-          <FiChevronLeft /> {t("addWizard", "backToMethod")}
+          <FiChevronRight /> {t("addWizard", "backToMethod")}
         </button>
         <CloseButton
           // type="button"
@@ -1601,7 +1624,7 @@ function AddRecipeWizard({
             setImportError("");
           }}
         >
-          <FiChevronLeft /> {t("addWizard", "backToMethod")}
+          <FiChevronRight /> {t("addWizard", "backToMethod")}
         </button>
         <CloseButton onClick={handleClose} />
       </div>
@@ -1736,7 +1759,7 @@ function AddRecipeWizard({
             setImportError("");
           }}
         >
-          <FiChevronLeft /> {t("addWizard", "backToMethod")}
+          <FiChevronRight /> {t("addWizard", "backToMethod")}
         </button>
         <CloseButton
           // type="button"
@@ -1829,7 +1852,7 @@ function AddRecipeWizard({
           className={classes.backLink}
           onClick={handleManualBack}
         >
-          <FiChevronLeft />{" "}
+          <FiChevronRight />{" "}
           {cameFromRecording
             ? t("addWizard", "backToRecording")
             : t("addWizard", "backToMethod")}
@@ -1838,6 +1861,13 @@ function AddRecipeWizard({
           onClick={cameFromRecording ? handleManualBack : handleClose}
         ></CloseButton>
       </div>
+
+      {recipe.sourceUrl && (
+        <div className={classes.tipBox}>
+          <span className={classes.tipIcon}>ℹ️</span>
+          <span>{t("addWizard", "importReviewNote")}</span>
+        </div>
+      )}
 
       {renderStepper()}
       {renderManualStep()}

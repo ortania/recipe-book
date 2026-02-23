@@ -22,7 +22,7 @@ import useTranslatedText from "../../hooks/useTranslatedText";
 const DEFAULT_IMAGE =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='320'%3E%3Crect width='400' height='320' fill='%23e0e0e0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='%23666'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopyRecipe }) {
+function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopyRecipe, userRating = 0, onRate }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const translatedName = useTranslatedText(person.name);
@@ -31,6 +31,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [hoverStar, setHoverStar] = useState(0);
 
   const getImageSrc = () => {
     if (
@@ -191,49 +192,71 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
               </span>
             )}
           </div>
-          {person.avgRating > 0 ? (
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "0.3rem",
-                margin: "0.3rem 0",
-              }}
-            >
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  style={{
-                    color: star <= Math.round(person.avgRating) ? "#ffc107" : "#e0e0e0",
-                    fontSize: "1.2rem",
-                  }}
-                >
-                  ★
-                </span>
-              ))}
-              <span style={{ fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-                ({person.avgRating} · {person.ratingCount})
-              </span>
+          {onRate ? (
+            <div className={classes.ratingSection}>
+              <div className={classes.ratingRow}>
+                <span className={classes.ratingLabel}>{t("globalRecipes", "myRating")}:</span>
+                <div className={classes.starsRow}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      className={classes.starClickable}
+                      style={{
+                        color: star <= (hoverStar || userRating) ? "#ffc107" : "#e0e0e0",
+                      }}
+                      onMouseEnter={() => setHoverStar(star)}
+                      onMouseLeave={() => setHoverStar(0)}
+                      onClick={(e) => { e.stopPropagation(); onRate(person.id, star); }}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+              </div>
+              {person.avgRating > 0 && (
+                <div className={classes.ratingAvgBlock}>
+                  <div className={classes.ratingRow}>
+                    <span className={classes.ratingLabel}>
+                      {t("globalRecipes", "avgRating")}:
+                    </span>
+                    <div className={classes.starsRow}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                          key={star}
+                          className={classes.star}
+                          style={{
+                            color: star <= Math.round(person.avgRating) ? "#ffc107" : "#e0e0e0",
+                          }}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                  <span className={classes.ratingMeta}>
+                    ({Number(person.avgRating).toFixed(1)} · {person.ratingCount})
+                  </span>
+                </div>
+              )}
             </div>
-          ) : person.rating > 0 && (
-            <div
-              style={{
-                display: "flex",
-                gap: "0.2rem",
-                margin: "0.3rem 0",
-              }}
-            >
+          ) : (person.avgRating > 0 || person.rating > 0) && (
+            <div className={classes.starsRow} style={{ margin: "0.3rem 0" }}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <span
                   key={star}
+                  className={classes.star}
                   style={{
-                    color: star <= person.rating ? "#ffc107" : "#e0e0e0",
-                    fontSize: "1.2rem",
+                    color: star <= Math.round(person.avgRating || person.rating) ? "#ffc107" : "#e0e0e0",
                   }}
                 >
                   ★
                 </span>
               ))}
+              {person.avgRating > 0 && (
+                <span className={classes.ratingMeta}>
+                  ({Number(person.avgRating).toFixed(1)} · {person.ratingCount})
+                </span>
+              )}
             </div>
           )}
         </div>

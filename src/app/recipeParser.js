@@ -1,5 +1,7 @@
 const CLOUD_FUNCTION_URL =
   "https://us-central1-recipe-book-82d57.cloudfunctions.net/fetchUrl";
+const CLOUD_FUNCTION_BROWSER_URL =
+  "https://us-central1-recipe-book-82d57.cloudfunctions.net/fetchUrlBrowser";
 
 const isBotBlocked = (html) => {
   const lower = html.toLowerCase();
@@ -25,7 +27,21 @@ const isBotBlocked = (html) => {
   return matchCount >= 2;
 };
 
+const hasRecipeJsonLd = (jsonLd) => {
+  if (!jsonLd || jsonLd.length === 0) return false;
+  for (const item of jsonLd) {
+    const data = Array.isArray(item) ? item[0] : item;
+    if (data?.["@type"] === "Recipe") return true;
+    if (Array.isArray(data?.["@graph"])) {
+      if (data["@graph"].some((g) => g["@type"] === "Recipe")) return true;
+    }
+  }
+  return false;
+};
+
 const fetchWithProxy = async (url) => {
+  let regularResult = null;
+
   // Try Firebase Cloud Function first — returns html + cleanText + jsonLd + ogImage
   try {
     console.log("[fetchProxy] Trying Cloud Function...");
@@ -34,18 +50,51 @@ const fetchWithProxy = async (url) => {
     console.log("[fetchProxy] CF status:", cfResponse.status);
     if (cfResponse.ok) {
       const data = await cfResponse.json();
+      const cleanLen = (data.cleanText || "").length;
       console.log(
         "[fetchProxy] CF html length:",
         (data.contents || "").length,
         "cleanText length:",
-        (data.cleanText || "").length,
+        cleanLen,
       );
-      if (data.contents && data.contents.length > 200) {
-        return data;
+      if (data.contents && data.contents.length > 200 && !isBotBlocked(data.contents)) {
+        if (hasRecipeJsonLd(data.jsonLd) || cleanLen > 2000) {
+          return data;
+        }
+        console.log("[fetchProxy] CF content seems thin, will try browser CF...");
+        regularResult = data;
       }
     }
   } catch (e) {
     console.warn("[fetchProxy] Cloud Function failed:", e.message);
+  }
+
+  // Try headless browser Cloud Function (bypasses bot protection + renders JS)
+  try {
+    console.log("[fetchProxy] Trying browser-based Cloud Function...");
+    const cfUrl = `${CLOUD_FUNCTION_BROWSER_URL}?url=${encodeURIComponent(url)}`;
+    const cfResponse = await fetch(cfUrl);
+    console.log("[fetchProxy] Browser CF status:", cfResponse.status);
+    if (cfResponse.ok) {
+      const data = await cfResponse.json();
+      console.log(
+        "[fetchProxy] Browser CF html length:",
+        (data.contents || "").length,
+        "cleanText length:",
+        (data.cleanText || "").length,
+      );
+      if (data.contents && data.contents.length > 200 && !isBotBlocked(data.contents)) {
+        return data;
+      }
+    }
+  } catch (e) {
+    console.warn("[fetchProxy] Browser Cloud Function failed:", e.message);
+  }
+
+  // If we got partial content from regular CF, use it
+  if (regularResult) {
+    console.log("[fetchProxy] Using partial regular CF result as fallback");
+    return regularResult;
   }
 
   // Fallback to free CORS proxies (return only html)
@@ -96,9 +145,9 @@ const cleanHtml = (text) => {
 };
 
 const GROUP_LINE_PATTERNS = [
-  /^(for|for the|לציפוי|למילוי|לבצק|לקרם|לרוטב|לסירופ|להגשה|לקישוט|ל)\s/i,
+  /^(for|for the|לציפוי|למילוי|לבצק|לקרם|לרוטב|לסירופ|להגשה|לקישוט|לבלילת?|לתערובת|לגלזורה|לעיטור|לגנאש|לציפוי|לשכבה|לתבנית|ל)\s/i,
   /:$/,
-  /^(יבשים|רטובים|ציפוי|מילוי|בצק|קרם|רוטב|סירופ|תערובת|שכבה|תחתונה|עליונה|dry|wet|filling|coating|frosting|dough|sauce|syrup|topping|base|crust|batter|glaze|ganache|cream|decoration|garnish)\s*:?\s*$/i,
+  /^(יבשים|רטובים|ציפוי|מילוי|בצק|קרם|רוטב|סירופ|תערובת|שכבה|תחתונה|עליונה|בלילה|בלילת|dry|wet|filling|coating|frosting|dough|sauce|syrup|topping|base|crust|batter|glaze|ganache|cream|decoration|garnish)\s*:?\s*$/i,
 ];
 
 const isIngredientGroupLine = (line) => {
@@ -139,6 +188,8 @@ export const parseRecipeFromUrl = async (url) => {
     const serverCleanText = fetchResult.cleanText || "";
     const serverJsonLd = fetchResult.jsonLd || [];
     const serverOgImage = fetchResult.ogImage || "";
+    const serverMicrodata = fetchResult.microdata || null;
+    let hadJsonLdRecipe = false;
 
     console.log(
       "[recipeParser] html:",
@@ -162,6 +213,17 @@ export const parseRecipeFromUrl = async (url) => {
       servings: "",
       image_src: serverOgImage,
     };
+
+    // --- Try microdata extracted by browser CF ---
+    if (serverMicrodata && serverMicrodata.ingredients && serverMicrodata.ingredients.length > 0) {
+      console.log("[recipeParser] Using microdata:", serverMicrodata.ingredients.length, "ingredients");
+      recipe.name = serverMicrodata.name || "";
+      recipe.ingredients = serverMicrodata.ingredients.join("\n");
+      if (serverMicrodata.instructions && serverMicrodata.instructions.length > 0) {
+        recipe.instructions = serverMicrodata.instructions.join(". ");
+      }
+      if (recipe.name && recipe.ingredients) return recipe;
+    }
 
     // --- Try JSON-LD structured data (from server or browser) ---
     let jsonLdItems = serverJsonLd;
@@ -193,6 +255,7 @@ export const parseRecipeFromUrl = async (url) => {
               : null;
 
         if (recipeData) {
+          hadJsonLdRecipe = true;
           console.log(
             "[recipeParser] Found Recipe in JSON-LD:",
             recipeData.name,
@@ -200,12 +263,20 @@ export const parseRecipeFromUrl = async (url) => {
           recipe.name = cleanHtml(recipeData.name || "");
 
           if (recipeData.recipeIngredient) {
-            recipe.ingredients = Array.isArray(recipeData.recipeIngredient)
-              ? recipeData.recipeIngredient
-                  .map(cleanHtml)
-                  .filter(Boolean)
-                  .join(", ")
-              : cleanHtml(recipeData.recipeIngredient);
+            const rawIngs = Array.isArray(recipeData.recipeIngredient)
+              ? recipeData.recipeIngredient.map(cleanHtml).filter(Boolean)
+              : [cleanHtml(recipeData.recipeIngredient)];
+            const isConcatenated =
+              rawIngs.length === 1 && rawIngs[0].length > 80;
+            if (isConcatenated) {
+              const parts = rawIngs[0]
+                .split(/(?=(?:\d+|[½¼¾⅓⅔])[\s])/)
+                .map((s) => s.trim())
+                .filter((s) => s.length > 2 && /^[\d½¼¾⅓⅔]/.test(s));
+              recipe.ingredients = parts.length > 1 ? parts.join("\n") : "";
+            } else {
+              recipe.ingredients = rawIngs.join("\n");
+            }
           }
 
           if (recipeData.recipeInstructions) {
@@ -258,7 +329,58 @@ export const parseRecipeFromUrl = async (url) => {
             }
           }
 
-          return recipe;
+          const jsonLdIngCount = recipe.ingredients
+            ? recipe.ingredients.split("\n").filter(Boolean).length
+            : 0;
+          const textForAI = serverCleanText || "";
+
+          if (jsonLdIngCount < 6 && textForAI.length > 500) {
+            console.log(
+              "[recipeParser] JSON-LD has only",
+              jsonLdIngCount,
+              "ingredients, trying OpenAI to find more...",
+            );
+            try {
+              const { extractRecipeFromText: aiExtract } = await import(
+                "../services/openai"
+              );
+              const aiResult = await aiExtract(textForAI);
+              if (
+                aiResult &&
+                !aiResult.error &&
+                Array.isArray(aiResult.ingredients) &&
+                aiResult.ingredients.length > jsonLdIngCount
+              ) {
+                console.log(
+                  "[recipeParser] OpenAI found more:",
+                  aiResult.ingredients.length,
+                  "ingredients",
+                );
+                recipe.ingredients = aiResult.ingredients.join("\n");
+                if (
+                  Array.isArray(aiResult.instructions) &&
+                  aiResult.instructions.length > 0
+                ) {
+                  recipe.instructions = aiResult.instructions.join(". ");
+                }
+                if (aiResult.prepTime) recipe.prepTime = aiResult.prepTime;
+                if (aiResult.cookTime) recipe.cookTime = aiResult.cookTime;
+                if (aiResult.servings) recipe.servings = aiResult.servings;
+              }
+            } catch (aiErr) {
+              console.warn("[recipeParser] OpenAI fallback failed:", aiErr);
+            }
+          }
+
+          const finalIngCount = recipe.ingredients
+            ? recipe.ingredients.split("\n").filter(Boolean).length
+            : 0;
+          if (finalIngCount >= 6) return recipe;
+          console.log(
+            "[recipeParser] JSON-LD ingredients insufficient (" +
+              finalIngCount +
+              "), trying other methods...",
+          );
         }
       } catch (e) {
         continue;
@@ -292,20 +414,20 @@ export const parseRecipeFromUrl = async (url) => {
       }
     }
 
-    if (articleHeadline) recipe.name = articleHeadline;
+    if (!hadJsonLdRecipe && articleHeadline) recipe.name = articleHeadline;
     if (articleImage && !recipe.image_src) recipe.image_src = articleImage;
 
-    // Use articleBody if available (cleaner than generic page text), otherwise use server cleanText
     const cleanText = articleBody || serverCleanText || "";
     console.log(
-      "[recipeParser] No JSON-LD Recipe found. articleBody:",
+      "[recipeParser] articleBody:",
       articleBody.length,
       "cleanText:",
       cleanText.length,
+      "hadJsonLdRecipe:",
+      hadJsonLdRecipe,
     );
 
     if (cleanText.length > 100) {
-      // Try OpenAI extraction
       try {
         console.log("[recipeParser] Trying OpenAI extraction...");
         const { extractRecipeFromText: aiExtract } =
@@ -314,28 +436,32 @@ export const parseRecipeFromUrl = async (url) => {
         console.log("[recipeParser] OpenAI result:", aiResult);
 
         if (aiResult && !aiResult.error) {
-          recipe.name = aiResult.name || "";
-          if (Array.isArray(aiResult.ingredients))
-            recipe.ingredients = aiResult.ingredients.join(", ");
-          if (Array.isArray(aiResult.instructions))
-            recipe.instructions = aiResult.instructions.join(". ");
-          recipe.prepTime = aiResult.prepTime || "";
-          recipe.cookTime = aiResult.cookTime || "";
-          recipe.servings = aiResult.servings || "";
+          if (hadJsonLdRecipe) {
+            if (Array.isArray(aiResult.ingredients) && aiResult.ingredients.length > 0)
+              recipe.ingredients = aiResult.ingredients.join("\n");
+          } else {
+            recipe.name = aiResult.name || "";
+            if (Array.isArray(aiResult.ingredients))
+              recipe.ingredients = aiResult.ingredients.join("\n");
+            if (Array.isArray(aiResult.instructions))
+              recipe.instructions = aiResult.instructions.join(". ");
+            recipe.prepTime = aiResult.prepTime || "";
+            recipe.cookTime = aiResult.cookTime || "";
+            recipe.servings = aiResult.servings || "";
+          }
           return recipe;
         }
       } catch (aiError) {
         console.error("[recipeParser] OpenAI extraction failed:", aiError);
       }
 
-      // Fallback: local text parsing
       try {
         console.log("[recipeParser] Trying local text parsing...");
         const textResult = parseRecipeFromText(cleanText);
-        if (textResult.name) recipe.name = textResult.name;
+        if (!hadJsonLdRecipe && textResult.name) recipe.name = textResult.name;
         if (textResult.ingredients.length > 0)
-          recipe.ingredients = textResult.ingredients.join(", ");
-        if (textResult.instructions.length > 0)
+          recipe.ingredients = textResult.ingredients.join("\n");
+        if (!hadJsonLdRecipe && textResult.instructions.length > 0)
           recipe.instructions = textResult.instructions.join(". ");
         if (recipe.name && recipe.ingredients) return recipe;
       } catch (textError) {

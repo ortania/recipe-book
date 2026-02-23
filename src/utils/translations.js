@@ -2559,12 +2559,26 @@ const translations = {
       mixed: "Copy — copy a recipe to your collection to save and edit it",
     },
     helpRating: {
-      he: "דירוג — לאחר העתקה, דרגו את המתכון. הדירוג שלכם יחושב יחד עם דירוגי משתמשים אחרים ויוצג כממוצע במאגר",
-      en: "Rating — after copying, rate the recipe. Your rating is averaged with other users' ratings and shown in the repository",
-      ru: "Рейтинг — после копирования оцените рецепт. Ваша оценка усредняется с оценками других пользователей и отображается в банке",
-      de: "Bewertung — nach dem Kopieren bewerten Sie das Rezept. Ihre Bewertung wird mit den Bewertungen anderer Benutzer gemittelt und in der Sammlung angezeigt",
+      he: "דירוג — דרגו מתכונים ישירות במאגר. הדירוג שלכם יחושב יחד עם דירוגי משתמשים אחרים ויוצג כממוצע",
+      en: "Rating — rate recipes directly in the repository. Your rating is averaged with other users' ratings",
+      ru: "Рейтинг — оценивайте рецепты прямо в банке. Ваша оценка усредняется с оценками других пользователей",
+      de: "Bewertung — bewerten Sie Rezepte direkt in der Sammlung. Ihre Bewertung wird mit anderen gemittelt",
       mixed:
-        "Rating — after copying, rate the recipe. Your rating is averaged with other users' ratings and shown in the repository",
+        "Rating — rate recipes directly in the repository. Your rating is averaged with other users' ratings",
+    },
+    myRating: {
+      he: "הדירוג שלי",
+      en: "My rating",
+      ru: "Мой рейтинг",
+      de: "Meine Bewertung",
+      mixed: "My rating",
+    },
+    avgRating: {
+      he: "ממוצע",
+      en: "Average",
+      ru: "Среднее",
+      de: "Durchschnitt",
+      mixed: "Average",
     },
     helpSearch: {
       he: "חיפוש — חפשו לפי שם מתכון או מרכיב",
@@ -3012,6 +3026,13 @@ const translations = {
       ru: "Поддерживаются популярные сайты",
       de: "Unterstützt beliebte Websites",
       mixed: "נתמך באתרים פופולריים כמו ynet, haaretz, mako ועוד",
+    },
+    importReviewNote: {
+      he: "המתכון יובא בהצלחה! מומלץ לבדוק את המרכיבים וההוראות לפני השמירה",
+      en: "Recipe imported successfully! Please review the ingredients and instructions before saving",
+      ru: "Рецепт успешно импортирован! Проверьте ингредиенты и инструкции перед сохранением",
+      de: "Rezept erfolgreich importiert! Bitte überprüfen Sie die Zutaten und Anleitung vor dem Speichern",
+      mixed: "המתכון יובא בהצלחה! מומלץ לבדוק את המרכיבים וההוראות לפני השמירה",
     },
     continue: {
       he: "המשך",

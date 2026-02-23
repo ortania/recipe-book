@@ -242,3 +242,64 @@
     opacity: 0;
   }
 }
+
+/* ── Rating section ── */
+.ratingSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0.3rem 0;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ratingLabel {
+  font-size: var(--verysmall-font);
+  color: var(--text-secondary);
+  min-width: 3.5rem;
+}
+
+.starsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.ratingAvgBlock {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.star {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.starClickable {
+  font-size: 1.4rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.starClickable:hover {
+  transform: scale(1.25);
+}
+
+.ratingMeta {
+  font-size: var(--small-font);
+  color: var(--text-secondary);
+}
+
+@media (max-width: 600px) {
+  .ratingAvgBlock {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.1rem;
+  }
+}

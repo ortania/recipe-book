@@ -8,6 +8,7 @@ import {
   fetchGlobalRecipes,
   copyRecipeToUser,
 } from "../../firebase/globalRecipeService";
+import { getUserRatingsBatch, setUserRating } from "../../firebase/ratingService";
 import { RecipesView, UpButton } from "../../components";
 import { scrollToTop } from "../utils";
 import classes from "./global-recipes.module.css";
@@ -21,6 +22,7 @@ function GlobalRecipes() {
   const [lastDoc, setLastDoc] = useState(null);
   const [hasMore, setHasMore] = useState(false);
   const [ready, setReady] = useState(false);
+  const [userRatings, setUserRatings] = useState({});
   const lastDocRef = useRef(null);
 
   const loadRecipes = useCallback(
@@ -61,6 +63,29 @@ function GlobalRecipes() {
     }
   }, [currentUser]);
 
+  useEffect(() => {
+    if (!currentUser || allRecipes.length === 0) return;
+    const ids = allRecipes.map((r) => r.id);
+    getUserRatingsBatch(ids, currentUser.uid).then((ratingsMap) => {
+      const obj = {};
+      ratingsMap.forEach((val, key) => { obj[key] = val; });
+      setUserRatings((prev) => ({ ...prev, ...obj }));
+    });
+  }, [currentUser, allRecipes]);
+
+  const handleRate = useCallback(
+    async (recipeId, rating) => {
+      if (!currentUser) return;
+      setUserRatings((prev) => ({ ...prev, [recipeId]: rating }));
+      try {
+        await setUserRating(recipeId, currentUser.uid, rating);
+      } catch (err) {
+        console.error("Failed to save rating:", err);
+      }
+    },
+    [currentUser],
+  );
+
   const handleCopyRecipe = useCallback(
     async (recipeId) => {
       if (!currentUser) return;
@@ -94,6 +119,8 @@ function GlobalRecipes() {
         hasMoreRecipes={hasMore}
         onLoadMore={() => loadRecipes(false)}
         onCopyRecipe={handleCopyRecipe}
+        onRate={handleRate}
+        userRatings={userRatings}
         defaultSortField="rating"
         defaultSortDirection="desc"
         sortStorageKey="globalRecipesSortPreference"
