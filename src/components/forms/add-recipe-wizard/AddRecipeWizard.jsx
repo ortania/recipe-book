@@ -1678,6 +1678,9 @@ function AddRecipeWizard({
             onChange={(e) => setRecordingText(e.target.value)}
             rows={6}
           />
+          <p className={classes.fieldHint}>
+            {t("addWizard", "recordedTextHint")}
+          </p>
         </div>
       )}
 

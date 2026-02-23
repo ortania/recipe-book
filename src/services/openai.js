@@ -99,10 +99,11 @@ You MUST respond with valid JSON in this exact format:
   "notes": "" 
 }
 - Extract ALL ingredients with their exact quantities.
-- If ingredients are organized in groups/sections (e.g., "For the dough:", "For the filling:"), prefix each group name with "::" (e.g., "::For the dough"). Ingredients following a group header belong to that group. If there are no groups, just list ingredients without group headers.
+- Always write quantities as digits, not words. For example: "3 ביצים" not "שלוש ביצים", "2 cups" not "two cups". Always put the number BEFORE the ingredient.
+- ONLY use "::" group prefixes for SPECIFIC named sub-sections like "::לבצק", "::למילוי", "::לציפוי", "::For the dough", "::For the filling". Do NOT create groups for generic words like "מרכיבים" (ingredients) or "הוראות" (instructions) - these are NOT groups. If there are no specific named sub-sections, just list all ingredients without any group headers.
 - Extract ALL instructions as separate steps.
 - If you cannot read or identify a recipe in the image, return: {"error": "Could not extract recipe from image"}
-- Keep the original language of the recipe as-is. Do not translate.`,
+- CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part.`,
       },
       {
         role: "user",
@@ -154,10 +155,11 @@ You MUST respond with valid JSON in this exact format:
   "servings": "4" or ""
 }
 - Extract ALL ingredients with their exact quantities as separate array items. Do NOT skip any ingredient.
-- If ingredients are organized in groups/sections (e.g., "For the dough:", "For the filling:"), prefix each group name with "::" (e.g., "::For the dough"). If there are no groups, just list ingredients without group headers.
+- Always write quantities as digits, not words. For example: "3 ביצים" not "שלוש ביצים", "2 cups" not "two cups". Always put the number BEFORE the ingredient.
+- ONLY use "::" group prefixes for SPECIFIC named sub-sections like "::לבצק", "::למילוי", "::לציפוי", "::For the dough", "::For the filling". Do NOT create groups for generic words like "מרכיבים" (ingredients) or "הוראות" (instructions) - these are NOT groups. If there are no specific named sub-sections, just list all ingredients without any group headers.
 - Extract ALL instructions as separate steps in order.
 - prepTime and cookTime should be numbers in minutes only (no units).
-- Keep the original language of the recipe. Do not translate.
+- CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
 - IMPORTANT: ONLY extract the actual recipe content. Completely IGNORE any of these: advertisements, recommendations, "you might also like", related articles, comments, social media links, navigation, author bio, newsletter signup, or any other non-recipe content.
 - If you cannot find a recipe in the text, return: {"error": "No recipe found"}`,
       },
@@ -205,10 +207,11 @@ You MUST respond with valid JSON in this exact format:
   "category": "category name or empty string"
 }
 - Extract ALL ingredients with their exact quantities as separate array items.
-- If the user mentions ingredient groups/sections (e.g., "dry ingredients", "for the filling"), prefix each group name with "::" (e.g., "::dry ingredients"). If there are no groups, just list ingredients without group headers.
+- IMPORTANT: Always write quantities as digits, not words. For example: "3 ביצים" instead of "שלוש ביצים", "2 cups flour" instead of "two cups flour". Always put the number BEFORE the ingredient.
+- ONLY use "::" group prefixes for SPECIFIC named sub-sections like "::לבצק", "::למילוי", "::לציפוי", "::For the dough", "::For the filling". Do NOT create groups for generic words like "מרכיבים" (ingredients) or "הוראות" (instructions) - these are NOT groups. If there are no specific named sub-sections, just list all ingredients without any group headers.
 - Extract ALL instructions as separate steps in order.
 - prepTime and cookTime should be numbers in minutes only (no units).
-- Keep the original language of the recipe. Do not translate.
+- CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
 - If difficulty is mentioned, map it to: VeryEasy, Easy, Medium, or Hard.
 - Even if difficulty is NOT explicitly mentioned, try to estimate it from the recipe complexity.${categoriesHint}
 - If you cannot find a recipe in the text, return: {"error": "No recipe found"}`,

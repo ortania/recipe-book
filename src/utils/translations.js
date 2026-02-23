@@ -2919,6 +2919,13 @@ const translations = {
       de: "Aufgenommener Text",
       mixed: "טקסט שהוקלט",
     },
+    recordedTextHint: {
+      he: "ניתן לערוך את הטקסט לפני ההמרה באמצעות הכפתורים למטה",
+      en: "You can edit the text before converting using the buttons below",
+      ru: "Вы можете отредактировать текст перед преобразованием с помощью кнопок ниже",
+      de: "Sie können den Text vor der Konvertierung mit den Schaltflächen unten bearbeiten",
+      mixed: "ניתן לערוך את הטקסט לפני ההמרה באמצעות הכפתורים למטה",
+    },
     recordingTip: {
       he: 'אמרו מילת מפתח לפני כל פריט:\n"שם" — שם המתכון\n"מרכיב" / "חומר" — לפני כל מרכיב\n"הוראה" / "שלב" — לפני כל שלב הכנה\n"מנות" — מספר מנות\n"זמן הכנה" — זמן ההכנה\n"קושי" — רמת קושי\n"קטגוריה" — שיוך לקטגוריה',
       en: 'Say a keyword before each item:\n"name" — recipe name\n"ingredient" — before each ingredient\n"step" — before each instruction\n"servings" — number of servings\n"prep time" — preparation time\n"difficulty" — difficulty level\n"category" — assign to category',

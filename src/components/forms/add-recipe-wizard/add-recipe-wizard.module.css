@@ -248,6 +248,12 @@
   display: block;
 }
 
+.fieldHint {
+  font-size: var(--small-font);
+  color: var(--text-muted);
+  margin: 0.4rem 0 0;
+}
+
 .urlInput {
   width: 100%;
   padding: 0.9rem 1rem;
