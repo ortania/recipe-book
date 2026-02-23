@@ -2388,13 +2388,6 @@ const translations = {
       de: "Zurück",
       mixed: "Back",
     },
-    dragToMove: {
-      he: "ניתן להזיז",
-      en: "Drag to move",
-      ru: "Перетащите для перемещения",
-      de: "Zum Verschieben ziehen",
-      mixed: "Drag to move",
-    },
     save: {
       he: "שמור",
       en: "Save",

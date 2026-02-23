@@ -61,6 +61,7 @@ function RecipesView({
   defaultSortField = "name",
   defaultSortDirection = "asc",
   sortStorageKey,
+  loading = false,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -140,20 +141,16 @@ function RecipesView({
     return localPersons.filter((p) => p.isFavorite);
   }, [localPersons, showFavoritesOnly]);
 
-  // Recently viewed recipes (filtered by favorites mode)
-  const recentlyViewed = useMemo(() => {
+  // Recently viewed recipes – placeholder, computed after filters are applied
+  const recentlyViewedStoredIds = useMemo(() => {
     try {
-      const stored = JSON.parse(
+      return JSON.parse(
         localStorage.getItem("recentlyViewedRecipes") || "[]",
       );
-      return stored
-        .map((id) => localPersons.find((p) => p.id === id))
-        .filter((p) => p && (!showFavoritesOnly || p.isFavorite))
-        .slice(0, 6);
     } catch {
       return [];
     }
-  }, [localPersons, showFavoritesOnly]);
+  }, [localPersons]);
 
   const handleViewChange = (view) => {
     setActiveView(view);
@@ -384,6 +381,15 @@ function RecipesView({
     filterIngredients,
   ]);
 
+  const recentlyViewed = useMemo(() => {
+    const filteredIds = new Set(filteredAndSortedPersons.map((p) => p.id));
+    return recentlyViewedStoredIds
+      .filter((id) => filteredIds.has(id))
+      .map((id) => filteredAndSortedPersons.find((p) => p.id === id))
+      .filter(Boolean)
+      .slice(0, 6);
+  }, [filteredAndSortedPersons, recentlyViewedStoredIds]);
+
   const handleSort = (field) => {
     if (field === sortField) {
       setSortDirection((prev) => (prev === "asc" ? "desc" : "asc"));
@@ -523,19 +529,28 @@ function RecipesView({
             </div>
           )}
 
-          <div className={classes.emptyState}>
-            <RecipeBookIcon width={72} height={72} />
-            <p className={classes.emptyText}>
-              {emptyTitle || t("recipesView", "emptyTitle")}
-            </p>
-            {showAddAndFavorites && (
-              <AddRecipeDropdown onSelect={(method) => onAddPerson(method)}>
-                <span className={classes.emptyButton}>
-                  {t("recipesView", "addNewRecipe")}
-                </span>
-              </AddRecipeDropdown>
-            )}
-          </div>
+          {loading ? (
+            <div className={classes.loadingState}>
+              <span className={classes.loadingSpinner} />
+              <p className={classes.loadingText}>
+                {t("common", "loading") || "Loading..."}
+              </p>
+            </div>
+          ) : (
+            <div className={classes.emptyState}>
+              <RecipeBookIcon width={72} height={72} />
+              <p className={classes.emptyText}>
+                {emptyTitle || t("recipesView", "emptyTitle")}
+              </p>
+              {showAddAndFavorites && (
+                <AddRecipeDropdown onSelect={(method) => onAddPerson(method)}>
+                  <span className={classes.emptyButton}>
+                    {t("recipesView", "addNewRecipe")}
+                  </span>
+                </AddRecipeDropdown>
+              )}
+            </div>
+          )}
         </div>
       </div>
     );
@@ -580,8 +595,17 @@ function RecipesView({
           )}
           <div className={classes.helpBtnEnd}>
             <ChatHelpButton
-              title={showChat ? t("chat", "helpTitle") : (helpTitleProp || t("recipesView", "helpTitle"))}
-              description={showChat ? undefined : (helpDescriptionProp || t("recipesView", "helpIntro"))}
+              key={activeView}
+              title={
+                showChat
+                  ? t("chat", "helpTitle")
+                  : helpTitleProp || t("recipesView", "helpTitle")
+              }
+              description={
+                showChat
+                  ? undefined
+                  : helpDescriptionProp || t("recipesView", "helpIntro")
+              }
               items={
                 showChat
                   ? [
@@ -590,7 +614,7 @@ function RecipesView({
                       t("chat", "helpFeature3"),
                       t("chat", "helpFeature4"),
                     ]
-                  : (helpItemsProp || [
+                  : helpItemsProp || [
                       <>
                         <IoSearchOutline style={{ verticalAlign: "middle" }} />{" "}
                         {t("recipesView", "helpSearch")}
@@ -608,7 +632,9 @@ function RecipesView({
                         {t("recipesView", "helpFavorites")}
                       </>,
                       <>
-                        <span style={{ verticalAlign: "middle", fontWeight: 700 }}>
+                        <span
+                          style={{ verticalAlign: "middle", fontWeight: 700 }}
+                        >
                           +
                         </span>{" "}
                         {t("recipesView", "helpAdd")}
@@ -617,14 +643,17 @@ function RecipesView({
                         <BsGrid3X3Gap style={{ verticalAlign: "middle" }} />{" "}
                         {t("recipesView", "helpView")}
                       </>,
-                    ])
+                    ]
               }
             />
           </div>
         </div>
 
         {showGreeting && (
-          <div className={classes.headerTitle} style={{ display: showChat ? "none" : undefined }}>
+          <div
+            className={classes.headerTitle}
+            style={{ display: showChat ? "none" : undefined }}
+          >
             <Greeting />
           </div>
         )}

@@ -203,6 +203,10 @@
   color: var(--accent-color, #0066cc);
 }
 
+:global([dir="rtl"]) .backButton {
+  transform: scaleX(-1);
+}
+
 .headerTitle {
   font-size: var(--huge-font);
   font-weight: 700;

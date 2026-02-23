@@ -304,6 +304,38 @@ function RecipeDetailsCookingMode({
       <div className={classes.headerButtonsCooking}>
         <div className={classes.headerLeft}>
           <button
+            onClick={() => {
+              stopRadio();
+              onClose();
+            }}
+            className={classes.backButton}
+            title={t("common", "back")}
+          >
+            <IoChevronBackOutline />
+          </button>
+          {!(showCompletion && activeTab === "instructions") && (
+            <ChatHelpButton
+              title={t("cookingMode", "howToUse")}
+              items={[
+                `🔊 ${t("cookingMode", "helpVolume")}`,
+                t("cookingMode", "navTabs"),
+                t("cookingMode", "navSteps"),
+                `⏱️ ${t("cookingMode", "timerTitle")} — ${t("cookingMode", "timerText")}`,
+                `${t("cookingMode", "chatTitle")} — ${t("cookingMode", "chatText")}`,
+                t("cookingMode", "chatFeature1"),
+                t("cookingMode", "chatFeature2"),
+                t("cookingMode", "chatFeature3"),
+                t("cookingMode", "chatFeature4"),
+                t("cookingMode", "chatFeature5"),
+                t("cookingMode", "radioFeature"),
+              ]}
+              onToggle={setShowHelp}
+            />
+          )}
+        </div>
+        <h3 className={classes.headerTitle}>{t("recipes", "cookingMode")}</h3>
+        <div className={classes.headerRight}>
+          <button
             className={classes.fontSizeBtn}
             onClick={cycleFontSize}
             title="גודל פונט"
@@ -348,38 +380,6 @@ function RecipeDetailsCookingMode({
             />
             {showHelp && <div className={classes.helpArrow} />}
           </div>
-        </div>
-        <h3 className={classes.headerTitle}>{t("recipes", "cookingMode")}</h3>
-        <div className={classes.headerRight}>
-          {!(showCompletion && activeTab === "instructions") && (
-            <ChatHelpButton
-              title={t("cookingMode", "howToUse")}
-              items={[
-                `🔊 ${t("cookingMode", "helpVolume")}`,
-                t("cookingMode", "navTabs"),
-                t("cookingMode", "navSteps"),
-                `⏱️ ${t("cookingMode", "timerTitle")} — ${t("cookingMode", "timerText")}`,
-                `${t("cookingMode", "chatTitle")} — ${t("cookingMode", "chatText")}`,
-                t("cookingMode", "chatFeature1"),
-                t("cookingMode", "chatFeature2"),
-                t("cookingMode", "chatFeature3"),
-                t("cookingMode", "chatFeature4"),
-                t("cookingMode", "chatFeature5"),
-                t("cookingMode", "radioFeature"),
-              ]}
-              onToggle={setShowHelp}
-            />
-          )}
-          <button
-            onClick={() => {
-              stopRadio();
-              onClose();
-            }}
-            className={classes.backButton}
-            title={t("common", "back")}
-          >
-            <IoChevronBackOutline />
-          </button>
         </div>
       </div>
 
@@ -571,7 +571,7 @@ function RecipeDetailsCookingMode({
                     opacity: currentStep === 0 ? 0.6 : 1,
                   }}
                 >
-                  ← {t("recipes", "prev")}
+                  → {t("recipes", "prev")}
                 </button>
                 <button
                   onClick={(e) => {
@@ -590,7 +590,7 @@ function RecipeDetailsCookingMode({
                   }}
                   className={classes.nextButton}
                 >
-                  {t("recipes", "next")} →
+                  {t("recipes", "next")} ←
                 </button>
               </div>
 

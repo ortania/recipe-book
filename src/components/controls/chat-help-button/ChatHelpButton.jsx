@@ -1,10 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
-import { useLanguage } from "../../../context";
 import classes from "./chat-help-button.module.css";
 
 function ChatHelpButton({ items, title, description, onToggle }) {
-  const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const dragState = useRef({ dragging: false, startX: 0, startY: 0 });
@@ -67,10 +65,7 @@ function ChatHelpButton({ items, title, description, onToggle }) {
                 onMouseDown={(e) => { e.preventDefault(); onDragStart(e.clientX, e.clientY); }}
                 onTouchStart={(e) => { onDragStart(e.touches[0].clientX, e.touches[0].clientY); }}
               >
-                <span className={classes.dragHint}>
-                  <span className={classes.dragIndicator} aria-hidden>⠿</span>
-                  <span className={classes.dragLabel}>{t("common", "dragToMove")}</span>
-                </span>
+                <span className={classes.dragIndicator}>⠿</span>
                 <button
                   className={classes.close}
                   onClick={() => handleToggle(false)}

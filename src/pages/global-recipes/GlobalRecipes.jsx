@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { PiArrowFatLineUp } from "react-icons/pi";
 import { IoCopyOutline, IoSearchOutline } from "react-icons/io5";
 import { IoMdStarOutline } from "react-icons/io";
@@ -10,6 +10,7 @@ import {
 } from "../../firebase/globalRecipeService";
 import { RecipesView, UpButton } from "../../components";
 import { scrollToTop } from "../utils";
+import classes from "./global-recipes.module.css";
 
 function GlobalRecipes() {
   const { t, language } = useLanguage();
@@ -19,7 +20,8 @@ function GlobalRecipes() {
   const [loading, setLoading] = useState(false);
   const [lastDoc, setLastDoc] = useState(null);
   const [hasMore, setHasMore] = useState(false);
-  const hasFetched = useRef(false);
+  const [ready, setReady] = useState(false);
+  const lastDocRef = useRef(null);
 
   const loadRecipes = useCallback(
     async (reset = false) => {
@@ -28,7 +30,7 @@ function GlobalRecipes() {
       try {
         const result = await fetchGlobalRecipes(
           currentUser.uid,
-          reset ? null : lastDoc,
+          reset ? null : lastDocRef.current,
         );
         setAllRecipes((prev) => {
           const next = reset ? result.recipes : [...prev, ...result.recipes];
@@ -39,16 +41,25 @@ function GlobalRecipes() {
             return true;
           });
         });
+        lastDocRef.current = result.lastVisible;
         setLastDoc(result.lastVisible);
         setHasMore(result.hasMore);
       } catch (err) {
         console.error("Failed to load global recipes:", err);
       } finally {
         setLoading(false);
+        setReady(true);
       }
     },
-    [lastDoc, currentUser],
+    [currentUser],
   );
+
+  useEffect(() => {
+    if (currentUser) {
+      setReady(false);
+      loadRecipes(true);
+    }
+  }, [currentUser]);
 
   const handleCopyRecipe = useCallback(
     async (recipeId) => {
@@ -63,9 +74,12 @@ function GlobalRecipes() {
     [currentUser, language, setRecipes],
   );
 
-  if (!hasFetched.current && currentUser) {
-    hasFetched.current = true;
-    loadRecipes(true);
+  if (!ready) {
+    return (
+      <div className={classes.loading}>
+        {t("common", "loading")}
+      </div>
+    );
   }
 
   return (

@@ -405,6 +405,10 @@
   opacity: 0.7;
 }
 
+:global([dir="rtl"]) .backButton {
+  transform: scaleX(-1);
+}
+
 .helpWrapper {
   position: relative;
   display: flex;

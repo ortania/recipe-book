@@ -265,6 +265,14 @@ function RecipeDetailsFull({
       )}
 
       <div ref={stickyHeaderRef} className={classes.stickyHeader}>
+        <button
+          onClick={onClose}
+          className={classes.backButton}
+          title={t("common", "back")}
+        >
+          <IoChevronBackOutline />
+        </button>
+        <h2 className={classes.headerTitle}>{recipe.name}</h2>
         <div className={classes.cookingBtnWrapper}>
           <button
             className={`${classes.headerCookingBtn} ${showCookingHelp ? classes.cookingModeBtnHighlight : ""}`}
@@ -278,14 +286,6 @@ function RecipeDetailsFull({
           </button>
           {showCookingHelp && <div className={classes.cookingArrow} />}
         </div>
-        <h2 className={classes.headerTitle}>{recipe.name}</h2>
-        <button
-          onClick={onClose}
-          className={classes.backButton}
-          title={t("common", "back")}
-        >
-          <IoChevronBackOutline />
-        </button>
       </div>
       <div className={classes.imageContainer}>
         {recipe.image_src && (

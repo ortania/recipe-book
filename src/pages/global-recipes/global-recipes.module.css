@@ -49,10 +49,29 @@
 }
 
 .loading {
-  text-align: center;
-  padding: 3rem 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 4rem 1rem;
   color: var(--text-muted);
   font-size: var(--basic-font);
+  gap: 0.5rem;
+}
+
+.loading::before {
+  content: "";
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 3px solid var(--border-color, #e0e0e0);
+  border-top-color: #9810fa;
+  border-radius: 50%;
+  animation: globalSpin 0.8s linear infinite;
+}
+
+@keyframes globalSpin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .grid {

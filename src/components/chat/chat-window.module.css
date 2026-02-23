@@ -244,7 +244,7 @@
   align-items: center;
   border: 1px solid var(--border-color);
   border-radius: 24px;
-  padding: 0.4rem 0.5rem 0.4rem 1rem;
+  padding: 0.4rem;
   background: var(--bg-input);
   transition: border-color 0.2s ease;
 }
@@ -259,7 +259,7 @@
   outline: none;
   font-size: var(--basic-font);
   background: transparent;
-  padding: 0.4rem 0;
+  padding: 0.4rem;
 }
 
 .input:disabled {

@@ -14,10 +14,16 @@
 }
 
 @media (max-width: 768px) {
-  .contentWrapper {
-    margin-inline-start: 0;
+  .app {
+    min-height: 0;
     height: 100vh;
     height: 100dvh;
+    overflow: hidden;
+  }
+
+  .contentWrapper {
+    margin-inline-start: 0;
+    height: 100%;
     overflow: hidden;
   }
 }
@@ -50,7 +56,6 @@
   .main::-webkit-scrollbar {
     display: none;
   }
-
 }
 
 .loading {

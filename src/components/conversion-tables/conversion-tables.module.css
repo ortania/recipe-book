@@ -201,7 +201,7 @@
 .faqItem {
   padding: 1.5rem;
   background: var(--bg-tertiary);
-  border-radius: 8px;
+  /* border-radius: 8px; */
   border-inline-start: 4px solid #667eea;
 }
 
