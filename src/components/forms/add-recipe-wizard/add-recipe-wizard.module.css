@@ -158,7 +158,8 @@
 }
 
 .methodIconRecording {
-  color: #e74c3c;
+  /* color: #e74c3c; */
+  font-size: 2.5rem;
 }
 
 .photoUploadArea {

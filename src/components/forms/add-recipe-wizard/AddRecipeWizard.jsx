@@ -26,6 +26,7 @@ import {
   FiChevronDown,
   FiGlobe,
 } from "react-icons/fi";
+import { PiMicrophoneLight, PiMicrophoneSlash } from "react-icons/pi";
 import { GoHeart } from "react-icons/go";
 import { PiPencilSimpleLineLight } from "react-icons/pi";
 import { BsClipboardData } from "react-icons/bs";
@@ -1421,7 +1422,7 @@ function AddRecipeWizard({
           <div
             className={`${classes.methodIcon} ${classes.methodIconRecording}`}
           >
-            <FaMicrophone />
+            <PiMicrophoneLight/>
           </div>
           <div className={classes.methodCardContent}>
             <h3 className={classes.methodCardTitle}>
@@ -1522,7 +1523,7 @@ function AddRecipeWizard({
         disabled={isImporting || !recipeUrl.trim()}
       >
         {isImporting ? t("addWizard", "importing") : t("addWizard", "continue")}
-        {!isImporting && <FiChevronRight />}
+        {/* {!isImporting && <FiChevronRight />} */}
       </button>
     </div>
   );
@@ -1582,7 +1583,7 @@ function AddRecipeWizard({
         {isImporting
           ? t("addWizard", "importing")
           : t("addWizard", "parseAndImport")}
-        {!isImporting && <FiChevronRight />}
+        {/* {!isImporting && <FiChevronRight />} */}
       </button>
     </div>
   );
@@ -1693,7 +1694,7 @@ function AddRecipeWizard({
             {isImporting
               ? t("addWizard", "importing")
               : t("addWizard", "parseAndImport")}
-            {!isImporting && <FiChevronRight />}
+            {/* {!isImporting && <FiChevronRight />} */}
           </button>
           <button
             type="button"

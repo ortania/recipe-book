@@ -2064,6 +2064,27 @@ const translations = {
       de: "Fragen Sie nach Rezepten, Kochtipps...",
       mixed: "Ask about recipes, cooking tips...",
     },
+    uploadImage: {
+      he: "העלאת תמונת מזון",
+      en: "Upload food image",
+      ru: "Загрузить фото еды",
+      de: "Essensbild hochladen",
+      mixed: "Upload food image",
+    },
+    voiceInput: {
+      he: "קלט קולי",
+      en: "Voice input",
+      ru: "Голосовой ввод",
+      de: "Spracheingabe",
+      mixed: "Voice input",
+    },
+    voiceStop: {
+      he: "עצור",
+      en: "Stop",
+      ru: "Стоп",
+      de: "Stopp",
+      mixed: "Stop",
+    },
     question: {
       he: "שאלה:",
       en: "Question:",

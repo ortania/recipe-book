@@ -21,7 +21,7 @@ function ChatInput({
   showImageButton = false,
   onImageSelect,
 }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const fileInputRef = useRef(null);
   const textareaRef = useRef(null);
   const recognitionRef = useRef(null);
@@ -148,7 +148,7 @@ function ChatInput({
               className={classes.imageBtn}
               onClick={() => fileInputRef.current?.click()}
               disabled={disabled}
-              title="Upload food image"
+              title={t("chat", "uploadImage")}
             >
               <FaImage />
             </button>
@@ -158,7 +158,7 @@ function ChatInput({
             className={`${classes.micBtn} ${isListening ? classes.micActive : ""}`}
             onClick={toggleSpeech}
             disabled={disabled}
-            title={isListening ? "Stop" : "Voice input"}
+            title={isListening ? t("chat", "voiceStop") : t("chat", "voiceInput")}
           >
             {isListening ? <PiMicrophoneLight /> : <PiMicrophoneSlash />}
           </button>
