@@ -18,7 +18,7 @@ import {
 import { IoMusicalNotesOutline } from "react-icons/io5";
 import { CookingVoiceChat } from "../cooking-voice-chat";
 import { RadioPlayer } from "../radio-player";
-import { isGroupHeader, getGroupName } from "../../utils/ingredientUtils";
+import { isGroupHeader, getGroupName, parseIngredients } from "../../utils/ingredientUtils";
 import { CloseButton } from "../controls/close-button";
 import { AddButton } from "../controls/add-button";
 import { ChatHelpButton } from "../controls/chat-help-button";
@@ -111,14 +111,7 @@ function RecipeDetailsCookingMode({
   }, []);
 
   // Parse ingredients and instructions
-  const ingredientsRaw = useMemo(() => {
-    return Array.isArray(recipe.ingredients)
-      ? recipe.ingredients
-      : recipe.ingredients
-          ?.split(",")
-          .map((item) => item.trim())
-          .filter((item) => item) || [];
-  }, [recipe.ingredients]);
+  const ingredientsRaw = useMemo(() => parseIngredients(recipe), [recipe]);
 
   // For cooking mode: build a list of actual ingredients with their group context
   const cookingIngredients = useMemo(() => {

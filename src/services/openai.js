@@ -137,14 +137,24 @@ You MUST respond with valid JSON in this exact format:
   }
 };
 
+/**
+ * Multi-section Hebrew recipe extraction.
+ * Headers: "לבלילה:", "לבלילת העוגה:", "למלית:", "לקישוט העוגה:", etc.
+ * Prompt and rules tuned so the model returns ALL sections, not only the first.
+ * Stability: temperature 0 + optional retry when result has very few ingredients.
+ * Model: gpt-4o for better instruction-following on multi-section recipes.
+ */
 export const extractRecipeFromText = async (text) => {
   const truncated = text.slice(0, 15000);
-  const result = await callOpenAI({
-    model: "gpt-4o-mini",
-    messages: [
-      {
-        role: "system",
-        content: `You are a recipe extraction expert. Given raw text from a webpage, extract ONLY the recipe information.
+  const hasMultipleSectionMarkers =
+    /לבלילה|לבלילת|למלית|מלית|לקישוט|לציפוי|לעיטור|להגשה|למילוי|לבצק/.test(truncated);
+
+  const buildUserMessage = (retry = false) =>
+    retry
+      ? `Second attempt: the text has multiple ingredient sections (e.g. לבלילה:, למלית:, לבלילת העוגה, לקישוט העוגה). List EVERY section and ALL ingredients for each. Output full JSON:\n\n${truncated}`
+      : `Extract the recipe from this webpage text. IMPORTANT: If the text has section headers like "לבלילה:", "למלית:", "לבלילת העוגה:", "לקישוט העוגה:" (or similar), you MUST list ingredients for EVERY section - do not stop after the first. Include ALL ingredients from every section (לבלילה, למלית, לקישוט, לציפוי, לעיטור, להגשה, etc.) and ALL steps. Ignore ads:\n\n${truncated}`;
+
+  const systemContent = `You are a recipe extraction expert. Given raw text from a webpage, extract ONLY the recipe information.
 You MUST respond with valid JSON in this exact format:
 {
   "name": "recipe name",
@@ -154,33 +164,73 @@ You MUST respond with valid JSON in this exact format:
   "cookTime": "30" or "",
   "servings": "4" or ""
 }
-- Extract ALL ingredients with their exact quantities as separate array items. Do NOT skip any ingredient.
+- Extract ALL ingredients with their exact quantities as separate array items. Do NOT skip any ingredient. Scan the ENTIRE text from start to end.
 - Always write quantities as digits, not words. For example: "3 ביצים" not "שלוש ביצים", "2 cups" not "two cups". Always put the number BEFORE the ingredient.
-- ONLY use "::" group prefixes for SPECIFIC named sub-sections like "::לבצק", "::למילוי", "::לציפוי", "::For the dough", "::For the filling". Do NOT create groups for generic words like "מרכיבים" (ingredients) or "הוראות" (instructions) - these are NOT groups. If there are no specific named sub-sections, just list all ingredients without any group headers.
+- ONLY use "::" group prefixes for SPECIFIC named sub-sections like "::לבלילה", "::למלית", "::לבצק", "::למילוי", "::לציפוי", "::לעיטור", "::להגשה", "::לקישוט", "::For the dough", "::For the filling". Do NOT create groups for generic words like "מרכיבים" (ingredients) or "הוראות" (instructions) - these are NOT groups. If there are no specific named sub-sections, just list all ingredients without any group headers.
+- CRITICAL - Multiple Hebrew sections: The page often has headers like "לבלילה:" (for batter), "למלית:" (for filling), "לציפוי", "לעיטור" (decoration), "לבלילת העוגה:", "לקישוט העוגה:", "להגשה", etc. You MUST output ingredients for EVERY such section. Never output only the first section and stop. Always scan the full text for every section header (e.g. לבלילה:, למלית:, לציפוי, לעיטור, לבלילת העוגה, לקישוט העוגה, להגשה) and add "::header" plus that section's ingredients. If you see "לבלילה:" you must also find and output "למלית:" (or whatever comes after) with its ingredients.
+- Explicit rule: When the source text contains multiple sections (e.g. "לבלילה:" and "למלית:", or "לבלילת העוגה:" and "לקישוט העוגה:"), your ingredients array MUST include a group and ingredients for EACH section (e.g. "::לבלילה" and "::למלית"). One section alone is wrong.
 - Extract ALL instructions as separate steps in order.
 - prepTime and cookTime should be numbers in minutes only (no units).
 - CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
 - IMPORTANT: ONLY extract the actual recipe content. Completely IGNORE any of these: advertisements, recommendations, "you might also like", related articles, comments, social media links, navigation, author bio, newsletter signup, or any other non-recipe content.
-- If you cannot find a recipe in the text, return: {"error": "No recipe found"}`,
-      },
-      {
-        role: "user",
-        content: `Extract the recipe from this webpage text. Include ALL ingredients and ALL steps. Ignore any ads, recommendations, or unrelated content:\n\n${truncated}`,
-      },
-    ],
-    temperature: 0.1,
-    max_tokens: 3000,
-  });
+- If you cannot find a recipe in the text, return: {"error": "No recipe found"}`;
 
-  try {
-    const cleaned = result
+  const parseResponse = (raw) => {
+    const cleaned = raw
       .replace(/```json\n?/g, "")
       .replace(/```\n?/g, "")
       .trim();
     return JSON.parse(cleaned);
+  };
+
+  const model = "gpt-4o";
+  let result = await callOpenAI({
+    model,
+    messages: [
+      { role: "system", content: systemContent },
+      { role: "user", content: buildUserMessage(false) },
+    ],
+    temperature: 0,
+    max_tokens: 3000,
+  });
+
+  let data;
+  try {
+    data = parseResponse(result);
   } catch {
     return { error: result };
   }
+
+  const ingCount = Array.isArray(data.ingredients) ? data.ingredients.length : 0;
+  const shouldRetry =
+    hasMultipleSectionMarkers &&
+    ingCount <= 5 &&
+    !data.error;
+
+  if (shouldRetry) {
+    try {
+      const retryResult = await callOpenAI({
+        model,
+        messages: [
+          { role: "system", content: systemContent },
+          { role: "user", content: buildUserMessage(true) },
+        ],
+        temperature: 0,
+        max_tokens: 3000,
+      });
+      const retryData = parseResponse(retryResult);
+      const retryIngCount = Array.isArray(retryData.ingredients)
+        ? retryData.ingredients.length
+        : 0;
+      if (!retryData.error && retryIngCount > ingCount) {
+        return retryData;
+      }
+    } catch (_) {
+      /* retry failed or invalid JSON – use first result */
+    }
+  }
+
+  return data;
 };
 
 export const parseFreeSpeechRecipe = async (text, categoryNames = []) => {

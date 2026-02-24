@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import classes from "./recipe-details-full.module.css";
 import { formatDifficulty, formatTime } from "./utils";
 import { useLanguage } from "../../context";
-import { isGroupHeader, getGroupName } from "../../utils/ingredientUtils";
+import { isGroupHeader, getGroupName, parseIngredients } from "../../utils/ingredientUtils";
 import { FaRegEdit } from "react-icons/fa";
 import { BsTrash3, BsThreeDotsVertical } from "react-icons/bs";
 import { GoHeart, GoHeartFill } from "react-icons/go";
@@ -168,14 +168,7 @@ function RecipeDetailsFull({
   const originalServings = recipe.servings || 4;
 
   // Parse ingredients and instructions
-  const ingredientsArray = useMemo(() => {
-    return Array.isArray(recipe.ingredients)
-      ? recipe.ingredients
-      : recipe.ingredients
-          ?.split(",")
-          .map((item) => item.trim())
-          .filter((item) => item) || [];
-  }, [recipe.ingredients]);
+  const ingredientsArray = useMemo(() => parseIngredients(recipe), [recipe]);
 
   const instructionsArray = useMemo(() => {
     return Array.isArray(recipe.instructions)

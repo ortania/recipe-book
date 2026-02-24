@@ -783,6 +783,75 @@
   color: #9810fa;
 }
 
+/* Parse ingredients (when not everything was split automatically) */
+.parseIngredientsBox {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  padding-bottom: 1.25rem;
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  background: var(--bg-tertiary);
+}
+.parseIngredientsTitle {
+  font-size: var(--basic-font);
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.5rem 0;
+}
+.parseIngredientsInstructions {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  margin: 0 0 0.75rem 0;
+  line-height: 1.4;
+}
+.parseIngredientsExampleLabel {
+  display: block;
+  font-size: 0.85rem;
+  font-style: italic;
+  color: var(--text-muted);
+  margin: 0 0 0.35rem 0;
+  opacity: 0.9;
+}
+.parseIngredientsTextarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem;
+  font-size: var(--basic-font);
+  font-family: inherit;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  resize: vertical;
+  margin-bottom: 0.5rem;
+  box-sizing: border-box;
+}
+.parseIngredientsTextarea::placeholder {
+  font-style: italic;
+  color: var(--text-muted);
+  opacity: 0.8;
+}
+.parseIngredientsActions {
+  margin-top: 0.75rem;
+}
+/* Same dark style as nextBtn / main site buttons */
+.parseIngredientsApplyBtn {
+  padding: 0.6em 1.25em;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  background: var(--text-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.parseIngredientsApplyBtn:hover:not(:disabled) {
+  background: var(--text-secondary);
+}
+.parseIngredientsApplyBtn:disabled {
+  background: var(--border-color);
+  cursor: not-allowed;
+  opacity: 0.8;
+}
+
 /* ========== Image Upload ========== */
 .imageUploadArea {
   border: 2px dashed var(--border-color);
@@ -1255,7 +1324,7 @@
   .stepContent {
     width: 100%;
     box-sizing: border-box;
-    overflow: hidden;
+    overflow: visible;
   }
 
   .dragHandle {

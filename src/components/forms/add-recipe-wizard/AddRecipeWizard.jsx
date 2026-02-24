@@ -42,6 +42,7 @@ import {
   getGroupName,
   makeGroupHeader,
   ingredientsOnly,
+  parseIngredients,
 } from "../../../utils/ingredientUtils";
 
 const INITIAL_RECIPE = {
@@ -882,6 +883,19 @@ function AddRecipeWizard({
   );
 
   // ========== Step 2: Ingredients ==========
+  // Parse ingredients box: APPEND only – do not replace existing ingredients (user request).
+  const [parseIngredientsPaste, setParseIngredientsPaste] = useState("");
+  const applyParsedIngredients = () => {
+    const text = parseIngredientsPaste.trim();
+    if (!text) return;
+    const parsed = parseIngredients({ ingredients: text });
+    if (parsed.length > 0) {
+      const existing = recipe.ingredients.filter(Boolean);
+      updateRecipe("ingredients", [...existing, ...parsed]);
+      setParseIngredientsPaste("");
+    }
+  };
+
   const renderIngredients = () => {
     let ingredientCounter = 0;
     return (
@@ -987,6 +1001,36 @@ function AddRecipeWizard({
             >
               + {t("addWizard", "addGroup")}
             </button>
+          </div>
+
+          {/* Parse ingredients: APPEND only (do not replace existing). Button style: dark like site main buttons. */}
+          <div className={classes.parseIngredientsBox}>
+            <div className={classes.parseIngredientsTitle}>
+              {t("addWizard", "parseIngredientsTitle")}
+            </div>
+            <p className={classes.parseIngredientsInstructions}>
+              {t("addWizard", "parseIngredientsInstructions")}
+            </p>
+            <label className={classes.parseIngredientsExampleLabel}>
+              {t("addWizard", "parseIngredientsExampleLabel")}
+            </label>
+            <textarea
+              className={classes.parseIngredientsTextarea}
+              placeholder={t("addWizard", "parseIngredientsPlaceholder")}
+              value={parseIngredientsPaste}
+              onChange={(e) => setParseIngredientsPaste(e.target.value)}
+              rows={5}
+            />
+            <div className={classes.parseIngredientsActions}>
+              <button
+                type="button"
+                className={classes.parseIngredientsApplyBtn}
+                onClick={applyParsedIngredients}
+                disabled={!parseIngredientsPaste.trim()}
+              >
+                {t("addWizard", "parseIngredientsApply")}
+              </button>
+            </div>
           </div>
         </div>
       </div>

@@ -88,17 +88,31 @@ export function extractQty(s) {
   return isNaN(num) ? 1 : num;
 }
 
+// Lines that look like group headers when ingredients are newline-separated (display only)
+const DISPLAY_GROUP_LINE = /^(לבצק|למילוי|לציפוי|לעיטור|לבלילה|למלית|להגשה|לסירופ|לקרם|לקישוט|לקוביות|לתערובת|לשכבה)(\s|:|\s*$)/i;
+
+function looksLikeGroupHeader(line) {
+  const t = line.replace(/[:\-–—]\s*$/, "").trim();
+  return t.length > 0 && t.length <= 50 && !/^\d/.test(t) && DISPLAY_GROUP_LINE.test(t);
+}
+
 /**
  * Parse a recipe's ingredients field into an array of strings.
+ * When the string contains newlines, splits by newline and marks group-like lines with "::" for display.
  */
 export function parseIngredients(recipe) {
   if (!recipe || !recipe.ingredients) return [];
   if (Array.isArray(recipe.ingredients)) return recipe.ingredients;
   if (typeof recipe.ingredients === "string") {
-    return recipe.ingredients
-      .split(",")
-      .map((s) => s.trim())
-      .filter(Boolean);
+    const s = recipe.ingredients.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
+    if (!s) return [];
+    const byNewline = s.split(/\n/).map((l) => l.trim()).filter(Boolean);
+    if (byNewline.length > 1) {
+      return byNewline.map((line) =>
+        looksLikeGroupHeader(line) ? "::" + line.replace(/[:\-–—]+\s*$/, "").trim() : line,
+      );
+    }
+    return s.split(",").map((part) => part.trim()).filter(Boolean);
   }
   return [];
 }
