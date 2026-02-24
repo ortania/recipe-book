@@ -83,9 +83,14 @@ function ChatHelpButton({ items, title, description, onToggle }) {
                     const hasContent = typeof item === "object" && item?.content != null;
                     const text = typeof item === "string" ? item : item?.text ?? "";
                     const indent = typeof item === "object" && item?.indent;
+                    let body;
+                    if (hasContent) body = item.content;
+                    else if (typeof item === "string") body = item;
+                    else if (text) body = text;
+                    else body = item;
                     return (
                       <li key={i} className={indent ? classes.indent : undefined}>
-                        {hasContent ? item.content : text}
+                        {body}
                       </li>
                     );
                   })}
