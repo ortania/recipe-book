@@ -5,7 +5,12 @@ import { FaHistory } from "react-icons/fa";
 import { PiStar, PiStarFill } from "react-icons/pi";
 import { CiFilter } from "react-icons/ci";
 import { IoMdStarOutline } from "react-icons/io";
-import { IoChevronDown, IoSearchOutline } from "react-icons/io5";
+import {
+  IoChevronDown,
+  IoSearchOutline,
+  IoChatbubbleOutline,
+  IoMenuOutline,
+} from "react-icons/io5";
 import { BiSortAlt2 } from "react-icons/bi";
 import {
   BsList,
@@ -617,6 +622,18 @@ function RecipesView({
                       t("chat", "helpFeature4"),
                     ]
                   : helpItemsProp || [
+                      <>
+                        <IoMenuOutline style={{ verticalAlign: "middle" }} />{" "}
+                        {t("recipesView", "helpSideMenu")}
+                      </>,
+                      <>
+                        <IoChatbubbleOutline style={{ verticalAlign: "middle" }} />{" "}
+                        {t("recipesView", "helpTabChat")}
+                      </>,
+                      <>
+                        <IoBookOutline style={{ verticalAlign: "middle" }} />{" "}
+                        {t("recipesView", "helpTabRecipes")}
+                      </>,
                       <>
                         <IoSearchOutline style={{ verticalAlign: "middle" }} />{" "}
                         {t("recipesView", "helpSearch")}
