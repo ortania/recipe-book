@@ -6,6 +6,7 @@
   max-width: 700px;
   margin: 0 auto;
   padding: 0 1rem;
+  padding-bottom: 5rem;
 }
 
 .chatHeader {
@@ -429,14 +430,11 @@
 @media (max-width: 768px) {
   .chatContainer {
     padding: 0 0.75rem;
+    padding-bottom: 5rem;
   }
 
   .greeting {
     padding: 3rem 0 0.5rem;
-  }
-
-  .inputForm {
-    padding: 0.75rem 0 calc(0.75rem + env(safe-area-inset-bottom, 0px));
   }
 
   .bubble {

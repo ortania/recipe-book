@@ -65,11 +65,11 @@ const translations = {
       mixed: "Logout",
     },
     recipesShort: {
-      he: "שלי",
-      en: "Mine",
-      ru: "Мои",
-      de: "Meine",
-      mixed: "שלי",
+      he: "מתכונים",
+      en: "Recipes",
+      ru: "Рецепты",
+      de: "Rezepte",
+      mixed: "מתכונים",
     },
     shoppingListShort: {
       he: "קניות",

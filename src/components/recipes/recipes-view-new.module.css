@@ -984,6 +984,13 @@
   background: var(--bg-hover);
 }
 
+/* Hide add-recipe dropdown on mobile (FAB replaces it) */
+@media (max-width: 768px) {
+  .desktopOnly {
+    display: none !important;
+  }
+}
+
 .helpBtnEnd {
   position: absolute;
   inset-block-start: 50%;

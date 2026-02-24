@@ -42,6 +42,7 @@ import ChatWindow from "../chat/ChatWindow";
 import { Greeting } from "../greeting";
 import { search } from "./utils";
 import { AddButton, AddRecipeDropdown } from "../controls";
+import { Fab } from "../controls/fab";
 import { CloseButton } from "../controls/close-button";
 import ChatHelpButton from "../controls/chat-help-button/ChatHelpButton";
 
@@ -508,7 +509,9 @@ function RecipesView({
                   <Heart size="1em" strokeWidth={1.5} />
                 )}
               </AddButton>
-              <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
+              <span className={classes.desktopOnly}>
+                <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
+              </span>
             </div>
           )}
           <div className={classes.viewToggle}>
@@ -564,6 +567,10 @@ function RecipesView({
             </div>
           )}
         </div>
+
+        {showAddAndFavorites && !showChat && (
+          <Fab onSelect={(method) => onAddPerson(method)} />
+        )}
       </div>
     );
   }
@@ -586,7 +593,9 @@ function RecipesView({
                   <Heart size="1em" strokeWidth={1.5} />
                 )}
               </AddButton>
-              <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
+              <span className={classes.desktopOnly}>
+                <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
+              </span>
             </div>
           )}
           <div className={classes.viewToggle}>
@@ -1446,6 +1455,10 @@ function RecipesView({
             </div>
           )}
         </div>
+      )}
+
+      {showAddAndFavorites && !showChat && (
+        <Fab onSelect={(method) => onAddPerson(method)} />
       )}
     </div>
   );

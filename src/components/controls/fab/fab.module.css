@@ -1,0 +1,112 @@
+/* ── Floating Action Button (mobile only) ──────────── */
+.fab {
+  position: fixed;
+  inset-inline-end: 2rem;
+  bottom: calc(7rem + env(safe-area-inset-bottom, 0));
+  height: 5.6rem;
+  border-radius: 2.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0 2rem;
+  background: var(--text-primary);
+  color: var(--bg-primary);
+  border: none;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  cursor: pointer;
+  z-index: 1000;
+  transition: width 220ms ease-out, height 220ms ease-out,
+    padding 220ms ease-out, border-radius 220ms ease-out,
+    box-shadow 220ms ease-out, gap 220ms ease-out;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.fab:active {
+  transform: scale(0.96);
+}
+
+/* Collapsed state (scroll down → icon only) */
+.collapsed {
+  width: 4.4rem;
+  height: 4.4rem;
+  padding: 0;
+  border-radius: 50%;
+  gap: 0;
+}
+
+.fabIcon {
+  font-size: 2.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.fabLabel {
+  display: inline-block;
+  max-width: 20rem;
+  overflow: hidden;
+  opacity: 1;
+  transition: max-width 220ms ease-out, opacity 180ms ease-out,
+    margin 220ms ease-out;
+  margin-inline-start: 0.2rem;
+}
+
+.collapsed .fabLabel {
+  max-width: 0;
+  opacity: 0;
+  margin-inline-start: 0;
+}
+
+/* ── Bottom-sheet menu items ───────────────────────── */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.2rem;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border: none;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  width: 100%;
+  font-size: var(--basic-font);
+  color: var(--text-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  text-align: start;
+}
+
+.menuItem:hover {
+  background: var(--bg-hover);
+}
+
+.menuLabel {
+  flex: 1;
+  font-weight: 500;
+}
+
+.menuIcon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+/* Desktop → hide FAB */
+@media (min-width: 769px) {
+  .fab {
+    display: none;
+  }
+}
