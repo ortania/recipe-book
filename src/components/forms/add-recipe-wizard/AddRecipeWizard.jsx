@@ -44,6 +44,8 @@ import {
   makeGroupHeader,
   ingredientsOnly,
   parseIngredients,
+  expandGroupHeadersInIngredients,
+  stripTrailingSectionHeaderFromName,
 } from "../../../utils/ingredientUtils";
 
 const INITIAL_RECIPE = {
@@ -384,18 +386,30 @@ function AddRecipeWizard({
       const parsed = parseRecipeFromText(text);
       const diff = matchDifficulty(parsed.difficulty);
       const cats = matchCategories(parsed.category);
+      const rawIngredients =
+        Array.isArray(parsed.ingredients) && parsed.ingredients.length > 0
+          ? parsed.ingredients
+          : typeof parsed.ingredients === "string" && parsed.ingredients
+            ? parsed.ingredients
+                .split(",")
+                .map((i) => i.trim())
+                .filter(Boolean)
+            : null;
+      const { name: nameAfterStrip, header: firstGroupHeader } =
+        stripTrailingSectionHeaderFromName(parsed.name || "");
+      const ingredientsToExpand =
+        rawIngredients !== null && rawIngredients.length > 0
+          ? firstGroupHeader
+            ? [makeGroupHeader(firstGroupHeader), ...rawIngredients]
+            : rawIngredients
+          : null;
       setRecipe((prev) => ({
         ...prev,
-        name: parsed.name || prev.name,
+        name: nameAfterStrip || parsed.name || prev.name,
         ingredients:
-          Array.isArray(parsed.ingredients) && parsed.ingredients.length > 0
-            ? parsed.ingredients
-            : typeof parsed.ingredients === "string" && parsed.ingredients
-              ? parsed.ingredients
-                  .split(",")
-                  .map((i) => i.trim())
-                  .filter(Boolean)
-              : prev.ingredients,
+          ingredientsToExpand !== null && ingredientsToExpand.length > 0
+            ? expandGroupHeadersInIngredients(ingredientsToExpand)
+            : prev.ingredients,
         instructions:
           Array.isArray(parsed.instructions) && parsed.instructions.length > 0
             ? parsed.instructions

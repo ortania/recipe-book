@@ -25,6 +25,64 @@ export function ingredientsOnly(arr) {
   return arr.filter((s) => s && !isGroupHeader(s));
 }
 
+// Section header words used in speech (e.g. "לבלילה", "לציפוי") – split ingredient strings by these
+const SECTION_HEADER_WORDS =
+  /(לבצק|למילוי|לציפוי|לעיטור|לבלילה|למלית|להגשה|לסירופ|לקרם|לקישוט|לקוביות|לתערובת|לשכבה)/i;
+
+// Same section-header words for name stripping (when "שם עוגת גבינה לבלילה" puts לבלילה in the name)
+const TRAILING_SECTION_HEADER = /\s+(לבצק|למילוי|לציפוי|לעיטור|לבלילה|למלית|להגשה|לסירופ|לקרם|לקישוט|לקוביות|לתערובת|לשכבה)\s*$/i;
+
+/**
+ * If the recipe name ends with a section header (e.g. "עוגת גבינה לבלילה"), returns
+ * the name without it and the header, so the wizard can put "::לבלילה" at the start of ingredients.
+ */
+export function stripTrailingSectionHeaderFromName(nameStr) {
+  if (typeof nameStr !== "string" || !nameStr.trim()) return { name: nameStr || "", header: null };
+  const trimmed = nameStr.trim();
+  const match = trimmed.match(TRAILING_SECTION_HEADER);
+  if (!match) return { name: trimmed, header: null };
+  const header = match[1];
+  const nameWithout = trimmed.replace(new RegExp("\\s+" + header.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*$", "i"), "").trim();
+  return { name: nameWithout, header };
+}
+
+/**
+ * For "ניתוח רגיל" (parseRecipeFromText): ingredient strings may contain section headers
+ * in the middle (e.g. "שתי כפות סוכר לבלילה גבינה 5%"). This splits such strings and
+ * inserts "::header" lines so the UI shows separate groups.
+ */
+export function expandGroupHeadersInIngredients(ingredientsArray) {
+  if (!Array.isArray(ingredientsArray)) return ingredientsArray;
+  const out = [];
+  for (const item of ingredientsArray) {
+    if (typeof item !== "string" || !item.trim()) continue;
+    if (item.startsWith(GROUP_PREFIX)) {
+      out.push(item);
+      continue;
+    }
+    const parts = item.split(SECTION_HEADER_WORDS);
+    if (parts.length === 1) {
+      if (looksLikeGroupHeader(item)) {
+        out.push(GROUP_PREFIX + item.replace(/[:\-–—]\s*$/, "").trim());
+      } else {
+        out.push(item);
+      }
+      continue;
+    }
+    for (let i = 0; i < parts.length; i++) {
+      const p = parts[i];
+      const trimmed = p.trim();
+      if (!trimmed) continue;
+      if (looksLikeGroupHeader(trimmed)) {
+        out.push(GROUP_PREFIX + trimmed.replace(/[:\-–—]\s*$/, "").trim());
+      } else {
+        out.push(trimmed);
+      }
+    }
+  }
+  return out;
+}
+
 // ---- End Group Helpers ----
 
 const junkPatterns =
