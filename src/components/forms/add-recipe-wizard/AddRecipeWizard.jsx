@@ -62,7 +62,7 @@ const INITIAL_RECIPE = {
   isFavorite: false,
   notes: "",
   rating: 0,
-  shareToGlobal: true,
+  shareToGlobal: false,
   nutrition: {
     calories: "",
     protein: "",

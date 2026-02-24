@@ -16,6 +16,7 @@ import {
   MdOutlineFormatListNumbered,
 } from "react-icons/md";
 import { IoMusicalNotesOutline } from "react-icons/io5";
+import { PiMicrophoneLight } from "react-icons/pi";
 import { CookingVoiceChat } from "../cooking-voice-chat";
 import { RadioPlayer } from "../radio-player";
 import { isGroupHeader, getGroupName, parseIngredients } from "../../utils/ingredientUtils";
@@ -314,13 +315,28 @@ function RecipeDetailsCookingMode({
                 t("cookingMode", "navTabs"),
                 t("cookingMode", "navSteps"),
                 `⏱️ ${t("cookingMode", "timerTitle")} — ${t("cookingMode", "timerText")}`,
-                `${t("cookingMode", "chatTitle")} — ${t("cookingMode", "chatText")}`,
-                t("cookingMode", "chatFeature1"),
-                t("cookingMode", "chatFeature2"),
-                t("cookingMode", "chatFeature3"),
-                t("cookingMode", "chatFeature4"),
-                t("cookingMode", "chatFeature5"),
-                t("cookingMode", "radioFeature"),
+                {
+                  content: (
+                    <>
+                      <PiMicrophoneLight size={16} style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
+                      {t("cookingMode", "chatTitle")} — {t("cookingMode", "chatText")}
+                    </>
+                  ),
+                },
+                t("cookingMode", "chatExamplesLabel"),
+                { text: t("cookingMode", "chatFeature1"), indent: true },
+                { text: t("cookingMode", "chatFeature2"), indent: true },
+                { text: t("cookingMode", "chatFeature3"), indent: true },
+                { text: t("cookingMode", "chatFeature4"), indent: true },
+                { text: t("cookingMode", "chatFeature5"), indent: true },
+                {
+                  content: (
+                    <>
+                      <IoMusicalNotesOutline size={16} style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
+                      {t("cookingMode", "radioFeature")}
+                    </>
+                  ),
+                },
               ]}
               onToggle={setShowHelp}
             />

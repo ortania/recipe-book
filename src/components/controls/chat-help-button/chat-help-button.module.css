@@ -140,6 +140,16 @@
   line-height: 1.5;
 }
 
+.content li.indent {
+  margin-inline-start: 1rem;
+  list-style: none;
+}
+
+.content li.indent::before {
+  content: "− ";
+  margin-inline-end: 0.25rem;
+}
+
 @media (max-width: 768px) {
   .dropdown {
     max-width: 95%;

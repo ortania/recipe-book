@@ -79,9 +79,16 @@ function ChatHelpButton({ items, title, description, onToggle }) {
                   <p className={classes.description}>{description}</p>
                 )}
                 <ul>
-                  {items.map((item, i) => (
-                    <li key={i}>{item}</li>
-                  ))}
+                  {items.map((item, i) => {
+                    const hasContent = typeof item === "object" && item?.content != null;
+                    const text = typeof item === "string" ? item : item?.text ?? "";
+                    const indent = typeof item === "object" && item?.indent;
+                    return (
+                      <li key={i} className={indent ? classes.indent : undefined}>
+                        {hasContent ? item.content : text}
+                      </li>
+                    );
+                  })}
                 </ul>
               </div>
             </div>
