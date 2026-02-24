@@ -142,7 +142,7 @@ You MUST respond with valid JSON in this exact format:
  * Headers: "לבלילה:", "לבלילת העוגה:", "למלית:", "לקישוט העוגה:", etc.
  * Prompt and rules tuned so the model returns ALL sections, not only the first.
  * Stability: temperature 0 + optional retry when result has very few ingredients.
- * Model: gpt-4o for better instruction-following on multi-section recipes.
+ * Model: gpt-4o for reliable multi-section extraction (4o-mini caused regression).
  */
 export const extractRecipeFromText = async (text) => {
   const truncated = text.slice(0, 15000);
@@ -258,7 +258,8 @@ You MUST respond with valid JSON in this exact format:
 }
 - Extract ALL ingredients with their exact quantities as separate array items.
 - IMPORTANT: Always write quantities as digits, not words. For example: "3 ביצים" instead of "שלוש ביצים", "2 cups flour" instead of "two cups flour". Always put the number BEFORE the ingredient.
-- ONLY use "::" group prefixes for SPECIFIC named sub-sections like "::לבצק", "::למילוי", "::לציפוי", "::For the dough", "::For the filling". Do NOT create groups for generic words like "מרכיבים" (ingredients) or "הוראות" (instructions) - these are NOT groups. If there are no specific named sub-sections, just list all ingredients without any group headers.
+- ONLY use "::" group prefixes for SPECIFIC named sub-sections like "::לבלילה", "::למלית", "::לציפוי", "::לעיטור", "::לקישוט", "::לבצק", "::למילוי", "::For the dough", "::For the filling". Do NOT create groups for generic words like "מרכיבים" (ingredients) or "הוראות" (instructions) - these are NOT groups.
+- CRITICAL for Hebrew: If the user said "לבלילה", "למלית", "לציפוי", "לעיטור", "לקישוט" or similar before a set of ingredients, you MUST output a "::group name" line and then the ingredients for that group. For example: if they said "לבלילה מרכיב 2 ביצים למלית מרכיב 500 גרם גבינה", output ["::לבלילה", "2 ביצים", "::למלית", "500 גרם גבינה"]. Never merge multiple sections into one.
 - Extract ALL instructions as separate steps in order.
 - prepTime and cookTime should be numbers in minutes only (no units).
 - CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
@@ -268,7 +269,7 @@ You MUST respond with valid JSON in this exact format:
       },
       {
         role: "user",
-        content: `Parse this spoken recipe:\n\n${text}`,
+        content: `Parse this spoken recipe. If the text has sections like לבלילה, למלית, לציפוי, לקישוט – output each as a "::section name" group with its ingredients.\n\n${text}`,
       },
     ],
     temperature: 0.1,

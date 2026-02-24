@@ -25,6 +25,7 @@ import {
   FiChevronUp,
   FiChevronDown,
   FiGlobe,
+  FiHelpCircle,
 } from "react-icons/fi";
 import { PiMicrophoneLight, PiMicrophoneSlash } from "react-icons/pi";
 import { GoHeart } from "react-icons/go";
@@ -449,16 +450,31 @@ function AddRecipeWizard({
       }
       const diff = matchDifficulty(parsed.difficulty);
       const cats = matchCategories(parsed.category);
+      const ingredientsFromParse = Array.isArray(parsed.ingredients)
+        ? parsed.ingredients
+        : typeof parsed.ingredients === "string" && parsed.ingredients.trim()
+          ? parsed.ingredients
+              .replace(/\r\n/g, "\n")
+              .split(/\n/)
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [];
+      const instructionsFromParse = Array.isArray(parsed.instructions)
+        ? parsed.instructions
+        : typeof parsed.instructions === "string" && parsed.instructions.trim()
+          ? parsed.instructions
+              .split(/[.\n]+/)
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [];
       setRecipe((prev) => ({
         ...prev,
-        name: parsed.name || prev.name,
+        name: parsed.name?.trim() || prev.name,
         ingredients:
-          Array.isArray(parsed.ingredients) && parsed.ingredients.length > 0
-            ? parsed.ingredients
-            : prev.ingredients,
+          ingredientsFromParse.length > 0 ? ingredientsFromParse : prev.ingredients,
         instructions:
-          Array.isArray(parsed.instructions) && parsed.instructions.length > 0
-            ? parsed.instructions
+          instructionsFromParse.length > 0
+            ? instructionsFromParse
             : prev.instructions,
         prepTime: parsed.prepTime ? `${parsed.prepTime}min` : prev.prepTime,
         cookTime: parsed.cookTime ? `${parsed.cookTime}min` : prev.cookTime,
@@ -885,6 +901,8 @@ function AddRecipeWizard({
   // ========== Step 2: Ingredients ==========
   // Parse ingredients box: APPEND only – do not replace existing ingredients (user request).
   const [parseIngredientsPaste, setParseIngredientsPaste] = useState("");
+  const [parseIngredientsOpen, setParseIngredientsOpen] = useState(false);
+  const [parseIngredientsHelpOpen, setParseIngredientsHelpOpen] = useState(false);
   const applyParsedIngredients = () => {
     const text = parseIngredientsPaste.trim();
     if (!text) return;
@@ -1003,34 +1021,111 @@ function AddRecipeWizard({
             </button>
           </div>
 
-          {/* Parse ingredients: APPEND only (do not replace existing). Button style: dark like site main buttons. */}
+          {/* Parse ingredients: collapsible; APPEND only. Help icon shows explanation. */}
           <div className={classes.parseIngredientsBox}>
-            <div className={classes.parseIngredientsTitle}>
-              {t("addWizard", "parseIngredientsTitle")}
+            <div
+              className={classes.parseIngredientsHeader}
+              role="button"
+              tabIndex={0}
+              onClick={() => setParseIngredientsOpen((o) => !o)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setParseIngredientsOpen((o) => !o);
+                }
+              }}
+              aria-expanded={parseIngredientsOpen}
+            >
+              <span className={classes.parseIngredientsTitle}>
+                {t("addWizard", "parseIngredientsTitle")}
+              </span>
+              <span className={classes.parseIngredientsHeaderIcons}>
+                <button
+                  type="button"
+                  className={classes.parseIngredientsHelpBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setParseIngredientsHelpOpen((h) => !h);
+                  }}
+                  title={t("addWizard", "parseIngredientsWhenToUse")}
+                  aria-label={t("addWizard", "parseIngredientsHelpLabel")}
+                >
+                  <FiHelpCircle size={18} />
+                </button>
+                {parseIngredientsOpen ? (
+                  <FiChevronUp size={20} />
+                ) : (
+                  <FiChevronDown size={20} />
+                )}
+              </span>
             </div>
-            <p className={classes.parseIngredientsInstructions}>
-              {t("addWizard", "parseIngredientsInstructions")}
-            </p>
-            <label className={classes.parseIngredientsExampleLabel}>
-              {t("addWizard", "parseIngredientsExampleLabel")}
-            </label>
-            <textarea
-              className={classes.parseIngredientsTextarea}
-              placeholder={t("addWizard", "parseIngredientsPlaceholder")}
-              value={parseIngredientsPaste}
-              onChange={(e) => setParseIngredientsPaste(e.target.value)}
-              rows={5}
-            />
-            <div className={classes.parseIngredientsActions}>
-              <button
-                type="button"
-                className={classes.parseIngredientsApplyBtn}
-                onClick={applyParsedIngredients}
-                disabled={!parseIngredientsPaste.trim()}
+            {parseIngredientsHelpOpen && (
+              <div
+                className={classes.parseIngredientsHelpPopover}
+                role="region"
+                aria-label={t("addWizard", "parseIngredientsHelpLabel")}
               >
-                {t("addWizard", "parseIngredientsApply")}
-              </button>
-            </div>
+                <button
+                  type="button"
+                  className={classes.parseIngredientsHelpClose}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setParseIngredientsHelpOpen(false);
+                  }}
+                  aria-label={t("common", "close")}
+                >
+                  <FiX size={18} />
+                </button>
+                <div className={classes.parseIngredientsHelpBody}>
+                  {t("addWizard", "parseIngredientsHelpText")
+                    .split("\n")
+                    .filter(Boolean)
+                    .map((line, i) => {
+                      const colon = line.indexOf(":");
+                      const label = colon >= 0 ? line.slice(0, colon + 1) : "";
+                      const rest = colon >= 0 ? line.slice(colon + 1).trim() : line;
+                      return (
+                        <div key={i} className={classes.parseIngredientsHelpBlock}>
+                          {label && (
+                            <span className={classes.parseIngredientsHelpLabel}>
+                              {label}
+                            </span>
+                          )}
+                          {(rest || !label) && (
+                            <span className={classes.parseIngredientsHelpContent}>
+                              {rest || line}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
+            {parseIngredientsOpen && (
+              <>
+                <label className={classes.parseIngredientsExampleLabel}>
+                  {t("addWizard", "parseIngredientsExampleLabel")}
+                </label>
+                <textarea
+                  className={classes.parseIngredientsTextarea}
+                  placeholder={t("addWizard", "parseIngredientsPlaceholder")}
+                  value={parseIngredientsPaste}
+                  onChange={(e) => setParseIngredientsPaste(e.target.value)}
+                  rows={5}
+                />
+                <div className={classes.parseIngredientsActions}>
+                  <button
+                    type="button"
+                    className={classes.parseIngredientsApplyBtn}
+                    onClick={applyParsedIngredients}
+                    disabled={!parseIngredientsPaste.trim()}
+                  >
+                    {t("addWizard", "parseIngredientsApply")}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
       </div>

@@ -783,7 +783,7 @@
   color: #9810fa;
 }
 
-/* Parse ingredients (when not everything was split automatically) */
+/* Parse ingredients: collapsible; help icon shows explanation */
 .parseIngredientsBox {
   margin-top: 1.5rem;
   padding: 1rem;
@@ -792,11 +792,102 @@
   border-radius: 12px;
   background: var(--bg-tertiary);
 }
+.parseIngredientsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+  padding: 0;
+}
+.parseIngredientsHeader:hover {
+  color: var(--text-secondary);
+}
 .parseIngredientsTitle {
   font-size: var(--basic-font);
   font-weight: 600;
   color: var(--text-primary);
+  margin: 0;
+}
+.parseIngredientsHeaderIcons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.parseIngredientsHelpBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 50%;
+}
+.parseIngredientsHelpBtn:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+.parseIngredientsHelpPopover {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  padding-top: 2rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-primary);
+  position: relative;
+}
+.parseIngredientsHelpClose {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  padding: 0.25rem;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.parseIngredientsHelpClose:hover {
+  color: var(--text-primary);
+  background: var(--bg-hover);
+}
+.parseIngredientsHelpBody {
+  font-size: var(--basic-font);
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+.parseIngredientsHelpBlock {
+  margin-bottom: 0.75rem;
+}
+.parseIngredientsHelpBlock:last-child {
+  margin-bottom: 0;
+}
+.parseIngredientsHelpLabel {
+  font-weight: 600;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.parseIngredientsHelpContent {
+  display: block;
+  padding-left: 1rem;
+}
+.parseIngredientsHelpText {
+  font-size: var(--basic-font);
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.5;
+  white-space: pre-line;
+}
+.parseIngredientsWhenToUse {
+  font-size: 0.9rem;
+  color: var(--text-muted);
   margin: 0 0 0.5rem 0;
+  line-height: 1.4;
 }
 .parseIngredientsInstructions {
   font-size: 0.9rem;
@@ -806,7 +897,7 @@
 }
 .parseIngredientsExampleLabel {
   display: block;
-  font-size: 0.85rem;
+  font-size: var(--small-font);
   font-style: italic;
   color: var(--text-muted);
   margin: 0 0 0.35rem 0;

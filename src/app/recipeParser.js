@@ -168,6 +168,56 @@ const extractOgImage = (doc) => {
   return "";
 };
 
+/**
+ * If ingredients string has "למלית:" etc. in the middle of a line, put header on its own line
+ * so parseIngredients (ingredientUtils) shows it as a group. Does not change content otherwise.
+ */
+const normalizeIngredientsSections = (str) => {
+  if (!str || typeof str !== "string") return str;
+  let s = str.replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const sectionHeaders = [
+    "למלית",
+    "לציפוי",
+    "לעיטור",
+    "לקישוט",
+    "להגשה",
+    "לבלילה",
+    "לבלילת",
+    "לבצק",
+    "למילוי",
+  ];
+  for (const h of sectionHeaders) {
+    const re = new RegExp(`\\s+(${h}\\s*:\\s*)`, "g");
+    s = s.replace(re, "\n$1\n");
+  }
+  return s.replace(/\n{3,}/g, "\n\n").trim();
+};
+
+/**
+ * Only for mako.co.il: when cleanText is truncated before "למלית" but html has it,
+ * append that section so AI gets full ingredients. Skip for other sites to avoid regression.
+ */
+const ensureMultiSectionFromHtml = (html, currentText, pageUrl) => {
+  if (!pageUrl || !pageUrl.includes("mako.co.il")) return currentText;
+  if (!currentText || !html || currentText.length < 100) return currentText;
+  if (/למלית|לציפוי|לקישוט|לעיטור/.test(currentText)) return currentText;
+  const needle = "למלית";
+  const idx = html.indexOf(needle);
+  if (idx === -1) return currentText;
+  const maxLen = 1800;
+  const stop = ["אופן ההכנה", "הוראות", "הכנה"];
+  let end = idx + maxLen;
+  const chunk = html.slice(idx, idx + maxLen + 200);
+  for (const s of stop) {
+    const i = chunk.indexOf(s);
+    if (i !== -1) end = Math.min(end, idx + i);
+  }
+  const raw = html.slice(idx, end);
+  const text = cleanHtml(raw);
+  if (!text || text.length < 15) return currentText;
+  return currentText + "\n\n" + text;
+};
+
 export const parseRecipeFromUrl = async (url) => {
   try {
     console.log("[recipeParser] Parsing URL:", url);
@@ -332,7 +382,11 @@ export const parseRecipeFromUrl = async (url) => {
           const jsonLdIngCount = recipe.ingredients
             ? recipe.ingredients.split("\n").filter(Boolean).length
             : 0;
-          const textForAI = serverCleanText || "";
+          const textForAI = ensureMultiSectionFromHtml(
+            html,
+            serverCleanText || "",
+            url,
+          );
 
           if (jsonLdIngCount < 6 && textForAI.length > 500) {
             console.log(
@@ -417,7 +471,8 @@ export const parseRecipeFromUrl = async (url) => {
     if (!hadJsonLdRecipe && articleHeadline) recipe.name = articleHeadline;
     if (articleImage && !recipe.image_src) recipe.image_src = articleImage;
 
-    const cleanText = articleBody || serverCleanText || "";
+    let cleanText = articleBody || serverCleanText || "";
+    cleanText = ensureMultiSectionFromHtml(html, cleanText, url);
     console.log(
       "[recipeParser] articleBody:",
       articleBody.length,
@@ -471,6 +526,10 @@ export const parseRecipeFromUrl = async (url) => {
 
     if (!recipe.name || !recipe.ingredients) {
       throw new Error("Could not extract enough recipe data.");
+    }
+
+    if (typeof recipe.ingredients === "string") {
+      recipe.ingredients = normalizeIngredientsSections(recipe.ingredients);
     }
 
     return recipe;
