@@ -23,7 +23,8 @@ import {
 // import { CgLayoutList } from "react-icons/cg";
 import { IoBookOutline, IoCopyOutline } from "react-icons/io5";
 import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
-import { GoHeart, GoHeartFill, GoTrash } from "react-icons/go";
+import { GoTrash } from "react-icons/go";
+import { Heart } from "lucide-react";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 
@@ -501,7 +502,11 @@ function RecipesView({
                 title={t("recipes", "favorite")}
                 className={showFavoritesOnly ? classes.favoritesActive : ""}
               >
-                {showFavoritesOnly ? <GoHeartFill color="red" /> : <GoHeart />}
+                {showFavoritesOnly ? (
+                  <Heart size="1em" strokeWidth={1.5} fill="red" stroke="red" />
+                ) : (
+                  <Heart size="1em" strokeWidth={1.5} />
+                )}
               </AddButton>
               <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
             </div>
@@ -575,7 +580,11 @@ function RecipesView({
                 title={t("recipes", "favorite")}
                 className={showFavoritesOnly ? classes.favoritesActive : ""}
               >
-                {showFavoritesOnly ? <GoHeartFill color="red" /> : <GoHeart />}
+                {showFavoritesOnly ? (
+                  <Heart size="1em" strokeWidth={1.5} fill="red" stroke="red" />
+                ) : (
+                  <Heart size="1em" strokeWidth={1.5} />
+                )}
               </AddButton>
               <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
             </div>
@@ -647,7 +656,7 @@ function RecipesView({
                         {t("recipesView", "helpSort")}
                       </>,
                       <>
-                        <GoHeart style={{ verticalAlign: "middle" }} />{" "}
+                        <Heart size={16} style={{ verticalAlign: "middle" }} />{" "}
                         {t("recipesView", "helpFavorites")}
                       </>,
                       <>

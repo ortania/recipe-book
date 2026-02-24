@@ -7,16 +7,26 @@
   transition: all 0.2s ease;
   padding: 0;
   line-height: 1;
-  font-size: 1.5rem;
   color: var(--text-primary);
   background: none;
 }
 
+/* Regular circle (heart, menu, etc.) */
 .circle {
   border-radius: 50%;
-  width: 2.5rem;
-  height: 2.5rem;
-  border: 1px solid var(--text-primary);
+  width: var(--btn-circle);
+  height: var(--btn-circle);
+  font-size: var(--btn-icon);
+  border: 1.5px solid var(--text-primary);
+}
+
+/* Primary circle (+ add) */
+.circlePrimary {
+  border-radius: 50%;
+  width: var(--btn-circle-primary);
+  height: var(--btn-circle-primary);
+  font-size: var(--btn-icon-primary);
+  border: 1.5px solid var(--text-primary);
 }
 
 .withText {
@@ -28,10 +38,11 @@
   font-size: var(--basic-font);
 }
 
-/* .withText:hover {
-  background: #e2e8f0;
-} */
-
 .addButton:hover {
   transform: scale(1.05);
+}
+
+.addButton:focus,
+.addButton:focus-visible {
+  outline: none;
 }

@@ -1,0 +1,96 @@
+/* ── Root container ──────────────────────────────────── */
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 10199;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* ── Dark overlay ────────────────────────────────────── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+}
+
+/* ── Sheet panel ─────────────────────────────────────── */
+.sheet {
+  position: relative;
+  z-index: 1;
+  background: var(--bg-primary);
+  border-radius: 16px 16px 0 0;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: env(safe-area-inset-bottom, 0);
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
+  will-change: transform;
+  direction: rtl;
+  text-align: right;
+}
+
+/* ── Drag handle ─────────────────────────────────────── */
+.handleArea {
+  display: flex;
+  justify-content: center;
+  padding: 0.65rem 0 0.2rem;
+  touch-action: none;
+  user-select: none;
+  flex-shrink: 0;
+  cursor: grab;
+}
+
+.handleArea:active {
+  cursor: grabbing;
+}
+
+.handle {
+  width: 2.25rem;
+  height: 0.25rem;
+  background: var(--text-muted, #aaa);
+  border-radius: 9999px;
+  opacity: 0.45;
+}
+
+/* ── Header (title + close) ──────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.1rem 1.2rem 0.5rem;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: var(--basic-font, 1rem);
+  font-weight: 700;
+  color: var(--accent-color);
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.2em;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.closeBtn:hover {
+  color: var(--text-primary);
+}
+
+/* ── Scrollable content ──────────────────────────────── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 1.4rem 1.2rem;
+}

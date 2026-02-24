@@ -9,7 +9,7 @@ import { AddButton } from "../add-button";
 import { GalleryIcon } from "../../icons/GalleryIcon";
 import classes from "./add-recipe-dropdown.module.css";
 
-function AddRecipeDropdown({ onSelect, buttonType = "circle", children }) {
+function AddRecipeDropdown({ onSelect, buttonType = "circlePrimary", children }) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);

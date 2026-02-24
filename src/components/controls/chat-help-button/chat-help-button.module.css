@@ -1,4 +1,4 @@
-/* Reusable purple ? help button with dropdown */
+/* ── Help icon button ────────────────────────────────── */
 .wrapper {
   position: relative;
 }
@@ -7,41 +7,52 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: var(--btn-circle);
+  height: var(--btn-circle);
+  font-size: var(--btn-icon);
+  font-weight: 600;
+  line-height: 1;
   border-radius: 50%;
-  border: 2px solid #9810fa;
+  border: 1.5px solid var(--accent-color);
   background: transparent;
-  color: #9810fa;
-  font-size: 1rem;
-  font-weight: 700;
+  color: var(--accent-color);
   cursor: pointer;
-  transition: all 0.2s ease;
+  padding: 0;
+  transition: opacity 0.2s ease, transform 0.2s ease;
   flex-shrink: 0;
 }
 
+.btn:focus,
+.btn:focus-visible {
+  outline: none;
+}
+
 .btn:hover {
-  background: #9810fa;
-  color: white;
+  opacity: 0.7;
   transform: scale(1.1);
 }
 
+/* ── Desktop overlay ──────────────────────────────────── */
 .overlay {
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
   z-index: 10199;
 }
 
+/* ── Desktop floating popup ──────────────────────────── */
 .dropdown {
   position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: var(--bg-card);
-  border: 2px solid #9810fa;
+  background: var(--bg-primary);
+  border: none;
   border-radius: 14px;
   padding: 1.2rem 1.4rem;
   width: 95vw;
@@ -49,7 +60,7 @@
   max-height: 80vh;
   max-height: calc(100dvh - 2rem);
   overflow-y: auto;
-  box-shadow: 0 8px 28px rgba(152, 16, 250, 0.18);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
   z-index: 10200;
   animation: helpFadeIn 0.25s ease forwards;
   direction: rtl;
@@ -65,6 +76,7 @@
   }
 }
 
+/* ── Desktop drag header ─────────────────────────────── */
 .dragHeader {
   display: flex;
   align-items: center;
@@ -102,6 +114,7 @@
   color: var(--text-primary);
 }
 
+/* ── Shared content styles (desktop popup + bottom sheet) */
 .content {
   font-size: var(--basic-font);
   color: var(--text-primary);
@@ -111,7 +124,7 @@
 .content strong {
   display: block;
   font-size: var(--basic-font);
-  color: #9810fa;
+  color: var(--accent-color);
   margin-bottom: 0.3rem;
 }
 
@@ -154,10 +167,4 @@
 .content li.indent::before {
   content: "− ";
   margin-inline-end: 0.25rem;
-}
-
-@media (max-width: 768px) {
-  .dropdown {
-    max-width: 95%;
-  }
 }

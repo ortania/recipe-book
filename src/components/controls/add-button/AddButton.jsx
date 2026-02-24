@@ -1,5 +1,7 @@
 import classes from "./add-button.module.css";
-import { PiPlusLight, PiMinusLight } from "react-icons/pi";
+import { Plus, Minus } from "lucide-react";
+
+const STROKE = 1.5;
 
 const AddButton = ({
   onClick,
@@ -17,7 +19,11 @@ const AddButton = ({
       disabled={disabled}
       title={title}
     >
-      {sign === "-" ? <PiMinusLight /> : sign === "+" ? <PiPlusLight /> : null}
+      {sign === "-" ? (
+        <Minus size="1em" strokeWidth={STROKE} />
+      ) : sign === "+" ? (
+        <Plus size="1em" strokeWidth={STROKE} />
+      ) : null}
       {children}
     </button>
   );

@@ -58,6 +58,12 @@ Variables
 
   --max-width: 900px;
 
+  /* ===== Circle-button sizing (mobile-first) ===== */
+  --btn-circle-primary: 2.75rem;
+  --btn-icon-primary: 1.4rem;
+  --btn-circle: 2.5rem;
+  --btn-icon: 1.25rem;
+
   --huge-font: 2.2rem;
   --very-large-font: 1.9rem;
   --large-font: 1.7rem;
@@ -66,7 +72,7 @@ Variables
   --very-small-font: 1rem;
 
   /* ===== Semantic theme tokens (light = default) ===== */
-  --bg-primary: #f2f2f2;
+  --bg-primary: #f7f5f4;
   --bg-secondary: #ffffff;
   --bg-tertiary: #f8f9fa;
   --bg-input: #ffffff;
@@ -87,6 +93,8 @@ Variables
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  --accent-color: #000000;
 
   --bubble-user: #e8e8e8;
   --bubble-assistant: #ffffff;
@@ -117,6 +125,8 @@ Variables
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
 
+  --accent-color: #000000;
+
   --bubble-user: #2a3550;
   --bubble-assistant: #1e2a45;
   --bubble-user-text: #e0e0e0;
@@ -125,6 +135,15 @@ Variables
   --clr-grey-10: #1a1a2e;
   --clr-black: #e8e8e8;
   --clr-white: #16213e;
+}
+
+@media (min-width: 769px) {
+  :root {
+    --btn-circle-primary: 2.5rem;
+    --btn-icon-primary: 1.3rem;
+    --btn-circle: 2.25rem;
+    --btn-icon: 1.15rem;
+  }
 }
 
 /* #endregion variables */
