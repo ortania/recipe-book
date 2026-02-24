@@ -669,7 +669,7 @@
 }
 
 .sidebarCloseBtn {
-  font-size: 2.5rem !important;
+  color: var(--text-muted);
 }
 
 /* Hide top bar when modal is open on any screen size */
