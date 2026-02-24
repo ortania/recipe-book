@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useMemo } from "react";
+import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { FiTrash2 } from "react-icons/fi";
 import {
   sendChatMessage,
@@ -63,8 +63,13 @@ function ChatWindow({
   const [customUpdateText, setCustomUpdateText] = useState("");
   const messagesEndRef = useRef(null);
   const messagesAreaRef = useRef(null);
+  const abortRef = useRef(null);
 
   const isRecipeMode = !!recipe;
+
+  const handleStop = useCallback(() => {
+    abortRef.current?.abort();
+  }, []);
 
   /* ── build context for OpenAI ── */
   const recipeContext = useMemo(() => {
@@ -130,11 +135,11 @@ function ChatWindow({
   const handleImageFile = (file) => {
     if (!file) return;
     if (!file.type.startsWith("image/")) {
-      setError("Please select an image file.");
+      setError(t("chat", "selectImageFile"));
       return;
     }
     if (file.size > 5 * 1024 * 1024) {
-      setError("Image must be smaller than 5MB.");
+      setError(t("chat", "imageTooLarge"));
       return;
     }
     const reader = new FileReader();
@@ -145,20 +150,24 @@ function ChatWindow({
   const handleImageAnalysis = async (imageBase64) => {
     const userImageMsg = {
       role: "user",
-      content: "🖼️ Analyze nutritional values",
+      content: t("chat", "analyzeImageLabel"),
       image: imageBase64,
     };
     setMessages((prev) => [...prev, userImageMsg]);
     setIsLoading(true);
     setError("");
+    abortRef.current = new AbortController();
     try {
-      const response = await analyzeImageForNutrition(imageBase64);
+      const response = await analyzeImageForNutrition(imageBase64, {
+        signal: abortRef.current.signal,
+      });
       setMessages((prev) => [
         ...prev,
         { role: "assistant", content: response },
       ]);
     } catch (err) {
-      setError(err.message || "Failed to analyze image. Please try again.");
+      if (err.name === "AbortError") return;
+      setError(err.message || t("chat", "analyzeImageError"));
       console.error("Image analysis error:", err);
     } finally {
       setIsLoading(false);
@@ -174,17 +183,20 @@ function ChatWindow({
     setInput("");
     setIsLoading(true);
     setError("");
+    abortRef.current = new AbortController();
     try {
       const response = await sendChatMessage(
         updatedMessages,
         recipeContext,
         language,
+        { signal: abortRef.current.signal },
       );
       setMessages([
         ...updatedMessages,
         { role: "assistant", content: response },
       ]);
     } catch (err) {
+      if (err.name === "AbortError") return;
       setError(err.message || "Failed to get response. Please try again.");
       console.error("Chat error:", err);
     } finally {
@@ -547,6 +559,8 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
             : t("chat", "placeholder")
         }
         disabled={isLoading}
+        isLoading={isLoading}
+        onStop={handleStop}
         showImageButton={showImageButton}
         onImageSelect={handleImageFile}
       />

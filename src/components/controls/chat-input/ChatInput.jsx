@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useEffect } from "react";
 import { FaImage } from "react-icons/fa";
+import { FaStop } from "react-icons/fa6";
 import { IoCloseCircle } from "react-icons/io5";
 import { PiMicrophoneLight, PiMicrophoneSlash } from "react-icons/pi";
 import { useLanguage } from "../../../context";
@@ -19,6 +20,8 @@ function ChatInput({
   onSubmit,
   placeholder,
   disabled = false,
+  isLoading = false,
+  onStop,
   showImageButton = false,
   onImageSelect,
 }) {
@@ -143,7 +146,16 @@ function ChatInput({
           rows={1}
         />
         <div className={classes.inputActions}>
-          {value.trim() ? (
+          {isLoading && onStop ? (
+            <button
+              type="button"
+              className={classes.stopBtn}
+              onClick={onStop}
+              title={t("chat", "voiceStop")}
+            >
+              <FaStop />
+            </button>
+          ) : value.trim() ? (
             <>
               <button
                 type="button"

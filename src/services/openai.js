@@ -27,11 +27,13 @@ export const speakWithOpenAI = async (text, voice = "nova") => {
   return URL.createObjectURL(blob);
 };
 
-export const callOpenAI = async (requestBody) => {
+export const callOpenAI = async (requestBody, options = {}) => {
+  const { signal } = options;
   const response = await fetch(CLOUD_CHAT_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(requestBody),
+    signal,
   });
 
   if (!response.ok) {
@@ -50,7 +52,7 @@ export const callOpenAI = async (requestBody) => {
   return data.choices[0].message.content;
 };
 
-export const analyzeImageForNutrition = async (base64Image) => {
+export const analyzeImageForNutrition = async (base64Image, options = {}) => {
   return callOpenAI({
     model: "gpt-4o",
     messages: [
@@ -78,7 +80,7 @@ export const analyzeImageForNutrition = async (base64Image) => {
     ],
     temperature: 0.5,
     max_tokens: 800,
-  });
+  }, options);
 };
 
 export const extractRecipeFromImage = async (base64Image, language = "he") => {
@@ -501,6 +503,7 @@ export const sendChatMessage = async (
   messages,
   recipeContext = null,
   language = "he",
+  options = {},
 ) => {
   const langName = LANG_NAMES[language] || "Hebrew";
 
@@ -526,10 +529,13 @@ Help the user with questions about THIS recipe - substitutions, adjustments, tec
 
   const recentMessages = messages.slice(-5).map(({ image, ...msg }) => msg);
 
-  return callOpenAI({
-    model: "gpt-4o-mini",
-    messages: [systemMessage, ...recentMessages],
-    temperature: 0.7,
-    max_tokens: 500,
-  });
+  return callOpenAI(
+    {
+      model: "gpt-4o-mini",
+      messages: [systemMessage, ...recentMessages],
+      temperature: 0.7,
+      max_tokens: 500,
+    },
+    options,
+  );
 };
