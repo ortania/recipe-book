@@ -97,9 +97,6 @@ function ChatWindow({
 
   /* ── scroll to bottom ── */
   const scrollToBottom = () => {
-    if (messagesAreaRef.current) {
-      messagesAreaRef.current.scrollTop = messagesAreaRef.current.scrollHeight;
-    }
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 

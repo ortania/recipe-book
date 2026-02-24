@@ -2225,6 +2225,13 @@ const translations = {
       de: "Was kann man hier machen?",
       mixed: "What can you do here?",
     },
+    helpIntro: {
+      he: "עוזר הבישול שלכם.\nשאלו, קבלו רעיונות, וחשבו ערכים תזונתיים.",
+      en: "Your cooking assistant.\nAsk questions, get ideas, and calculate nutritional values.",
+      ru: "Ваш кулинарный помощник.\nЗадавайте вопросы, получайте идеи и считайте калории.",
+      de: "Ihr Kochassistent.\nStellen Sie Fragen, lassen Sie sich inspirieren und berechnen Sie Nährwerte.",
+      mixed: "Your cooking assistant.\nAsk questions, get ideas, and calculate nutritional values.",
+    },
     helpFeature1: {
       he: "שאלו שאלות על בישול ומתכונים",
       en: "Ask questions about cooking and recipes",
@@ -2240,11 +2247,11 @@ const translations = {
       mixed: "Ask for recipe ideas based on ingredients you have",
     },
     helpFeature3: {
-      he: "📷 העלו תמונה של מנה לחישוב ערכים תזונתיים",
-      en: "📷 Upload a food photo to calculate nutritional values",
-      ru: "📷 Загрузите фото блюда для расчёта пищевой ценности",
-      de: "📷 Laden Sie ein Foto hoch, um Nährwerte zu berechnen",
-      mixed: "📷 Upload a food photo to calculate nutritional values",
+      he: "העלו תמונה של מנה לחישוב ערכים תזונתיים",
+      en: "Upload a food photo to calculate nutritional values",
+      ru: "Загрузите фото блюда для расчёта пищевой ценности",
+      de: "Laden Sie ein Foto hoch, um Nährwerte zu berechnen",
+      mixed: "Upload a food photo to calculate nutritional values",
     },
     helpFeature4: {
       he: "קבלו טיפים והמלצות לשיפור מתכונים",

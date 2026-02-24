@@ -24,7 +24,7 @@ import {
 import { IoBookOutline, IoCopyOutline } from "react-icons/io5";
 import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
 import { GoTrash } from "react-icons/go";
-import { Heart } from "lucide-react";
+import { Heart, MessageCircle, Lightbulb, Camera, Sparkles } from "lucide-react";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 
@@ -619,16 +619,28 @@ function RecipesView({
               }
               description={
                 showChat
-                  ? undefined
+                  ? t("chat", "helpIntro")
                   : helpDescriptionProp || t("recipesView", "helpIntro")
               }
               items={
                 showChat
                   ? [
-                      t("chat", "helpFeature1"),
-                      t("chat", "helpFeature2"),
-                      t("chat", "helpFeature3"),
-                      t("chat", "helpFeature4"),
+                      <>
+                        <MessageCircle size={16} style={{ verticalAlign: "middle" }} />{" "}
+                        {t("chat", "helpFeature1")}
+                      </>,
+                      <>
+                        <Lightbulb size={16} style={{ verticalAlign: "middle" }} />{" "}
+                        {t("chat", "helpFeature2")}
+                      </>,
+                      <>
+                        <Camera size={16} style={{ verticalAlign: "middle" }} />{" "}
+                        {t("chat", "helpFeature3")}
+                      </>,
+                      <>
+                        <Sparkles size={16} style={{ verticalAlign: "middle" }} />{" "}
+                        {t("chat", "helpFeature4")}
+                      </>,
                     ]
                   : helpItemsProp || [
                       <>

@@ -6,9 +6,9 @@
   transition: box-shadow 0.3s ease;
 }
 
-.recipeCard:hover {
+/* .recipeCard:hover {
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
+} */
 
 .imageContainer {
   width: 100%;
@@ -26,6 +26,11 @@
   height: 100%;
   object-fit: cover;
   border-radius: 25px;
+  transition: transform 0.3s ease;
+}
+
+.recipeImage:hover {
+  transform: scale(1.1);
 }
 
 .recipeInfo {
@@ -38,6 +43,7 @@
   color: var(--text-primary);
   margin: 0 0 0.25rem 0;
   line-height: 1.3;
+  letter-spacing: 0;
   text-align: start;
 }
 
