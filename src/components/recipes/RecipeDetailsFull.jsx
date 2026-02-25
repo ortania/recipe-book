@@ -462,21 +462,33 @@ function RecipeDetailsFull({
       </div>
 
       <div className={classes.recipeContent}>
-        {recipe.rating > 0 && (
-          <div className={classes.rating}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                style={{
-                  color: star <= recipe.rating ? "#ffc107" : "#e0e0e0",
-                  fontSize: "1.5rem",
-                }}
-              >
-                ★
-              </span>
-            ))}
-          </div>
-        )}
+        <div className={classes.rating}>
+          {[1, 2, 3, 4, 5].map((star) => (
+            <span
+              key={star}
+              className={classes.ratingStar}
+              role="button"
+              tabIndex={0}
+              style={{
+                color: star <= (recipe.rating || 0) ? "#ffc107" : "#e0e0e0",
+              }}
+              onClick={() => {
+                if (!onSaveRecipe) return;
+                const newRating = star === recipe.rating ? 0 : star;
+                onSaveRecipe({ ...recipe, rating: newRating });
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  if (!onSaveRecipe) return;
+                  const newRating = star === recipe.rating ? 0 : star;
+                  onSaveRecipe({ ...recipe, rating: newRating });
+                }
+              }}
+            >
+              ★
+            </span>
+          ))}
+        </div>
 
         {((recipe.difficulty && recipe.difficulty !== "Unknown") ||
           hasTime(recipe.prepTime) ||

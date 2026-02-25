@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from "react";
-import { Image, Square, XCircle, Mic, MicOff, Send } from "lucide-react";
+import { Image, Square, XCircle, Mic, MicOff, Send, CircleX } from "lucide-react";
 import { useLanguage } from "../../../context";
 import classes from "./chat-input.module.css";
 
@@ -163,7 +163,10 @@ function ChatInput({
                 }}
                 title={t("common", "clear") || "Clear"}
               >
-                <XCircle size={18} />
+                <XCircle strokeWidth={1} size={18} />
+
+  
+                {/* <CircleX strokeWidth={1} size={18} /> */}
               </button>
               <button
                 type="submit"
@@ -191,7 +194,9 @@ function ChatInput({
                 className={`${classes.micBtn} ${isListening ? classes.micActive : ""}`}
                 onClick={toggleSpeech}
                 disabled={disabled}
-                title={isListening ? t("chat", "voiceStop") : t("chat", "voiceInput")}
+                title={
+                  isListening ? t("chat", "voiceStop") : t("chat", "voiceInput")
+                }
               >
                 {isListening ? <Mic size={18} /> : <MicOff size={18} />}
               </button>
