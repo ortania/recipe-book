@@ -1,30 +1,33 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaFilter, FaRegEdit } from "react-icons/fa";
-import { FaHistory } from "react-icons/fa";
-import { PiStar, PiStarFill } from "react-icons/pi";
-import { CiFilter } from "react-icons/ci";
-import { IoMdStarOutline } from "react-icons/io";
 import {
-  IoChevronDown,
-  IoSearchOutline,
-  IoChatbubbleOutline,
-  IoMenuOutline,
-} from "react-icons/io5";
-import { BiSortAlt2 } from "react-icons/bi";
-import {
-  BsList,
-  BsListUl,
-  BsGrid3X3Gap,
-  BsSortDownAlt,
-  BsSortUpAlt,
-} from "react-icons/bs";
-// import { LuLayoutList } from "react-icons/lu";
-// import { CgLayoutList } from "react-icons/cg";
-import { IoBookOutline, IoCopyOutline } from "react-icons/io5";
+  Heart,
+  MessageCircle,
+  Lightbulb,
+  Camera,
+  Sparkles,
+  ChevronDown,
+  Search,
+  MessageSquare,
+  Menu,
+  ArrowUpDown,
+  LayoutGrid,
+  List as ListIcon,
+  ArrowDownAZ,
+  ArrowUpAZ,
+  BookOpen,
+  Copy,
+  Trash2,
+  Pencil,
+  History,
+  Filter,
+  Link,
+  ClipboardList,
+  PenLine,
+  Mic,
+  ImagePlus,
+} from "lucide-react";
 import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
-import { GoTrash } from "react-icons/go";
-import { Heart, MessageCircle, Lightbulb, Camera, Sparkles } from "lucide-react";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 
@@ -44,10 +47,6 @@ import { search } from "./utils";
 import { AddButton, AddRecipeDropdown } from "../controls";
 import { Fab } from "../controls/fab";
 import fabClasses from "../controls/fab/fab.module.css";
-import { FiLink } from "react-icons/fi";
-import { BsClipboardData } from "react-icons/bs";
-import { PiPencilSimpleLineLight, PiMicrophoneLight } from "react-icons/pi";
-import { GalleryIcon } from "../icons/GalleryIcon";
 import { BottomSheet } from "../controls/bottom-sheet";
 import { CloseButton } from "../controls/close-button";
 import ChatHelpButton from "../controls/chat-help-button/ChatHelpButton";
@@ -577,7 +576,7 @@ function RecipesView({
     <div className={classes.dropdownScrollable}>
       <div className={classes.filterSection}>
         <button className={classes.sortDirectionBtn} onClick={() => setSortDirection((prev) => prev === "asc" ? "desc" : "asc")} title={sortDirection === "asc" ? "Ascending" : "Descending"}>
-          {sortDirection === "asc" ? <BsSortUpAlt size={20} /> : <BsSortDownAlt size={20} />}
+          {sortDirection === "asc" ? <ArrowUpAZ size={20} /> : <ArrowDownAZ size={20} />}
           {sortDirection === "asc" ? t("recipesView", "ascending") || "↑" : t("recipesView", "descending") || "↓"}
         </button>
       </div>
@@ -606,7 +605,7 @@ function RecipesView({
     return (
       <div className={classes.recipesContainer}>
         <div className={classes.viewToggleWrapper}>
-          {showAddAndFavorites && (
+          {showAddAndFavorites && !showChat && (
             <div className={classes.iconButtons}>
               <AddButton
                 type="circle"
@@ -692,7 +691,7 @@ function RecipesView({
     <div className={classes.recipesContainer}>
       <div className={classes.stickyTop}>
         <div className={classes.viewToggleWrapper}>
-          {showAddAndFavorites && (
+          {showAddAndFavorites && !showChat && (
             <div className={classes.iconButtons}>
               <AddButton
                 type="circle"
@@ -728,7 +727,7 @@ function RecipesView({
                   : t("recipesView", "listView")
               }
             >
-              {isSimpleView ? <BsGrid3X3Gap /> : <BsListUl />}
+              {isSimpleView ? <LayoutGrid size={18} /> : <ListIcon size={18} />}
             </button>
           )}
           <div className={classes.helpBtnEnd}>
@@ -766,27 +765,27 @@ function RecipesView({
                     ]
                   : helpItemsProp || [
                       <>
-                        <IoMenuOutline style={{ verticalAlign: "middle" }} />{" "}
+                        <Menu size={16} style={{ verticalAlign: "middle" }} />{" "}
                         {t("recipesView", "helpSideMenu")}
                       </>,
                       <>
-                        <IoChatbubbleOutline style={{ verticalAlign: "middle" }} />{" "}
+                        <MessageSquare size={16} style={{ verticalAlign: "middle" }} />{" "}
                         {t("recipesView", "helpTabChat")}
                       </>,
                       <>
-                        <IoBookOutline style={{ verticalAlign: "middle" }} />{" "}
+                        <BookOpen size={16} style={{ verticalAlign: "middle" }} />{" "}
                         {t("recipesView", "helpTabRecipes")}
                       </>,
                       <>
-                        <IoSearchOutline style={{ verticalAlign: "middle" }} />{" "}
+                        <Search size={16} style={{ verticalAlign: "middle" }} />{" "}
                         {t("recipesView", "helpSearch")}
                       </>,
                       <>
-                        <CiFilter style={{ verticalAlign: "middle" }} />{" "}
+                        <Filter size={16} style={{ verticalAlign: "middle" }} />{" "}
                         {t("recipesView", "helpFilter")}
                       </>,
                       <>
-                        <BiSortAlt2 style={{ verticalAlign: "middle" }} />{" "}
+                        <ArrowUpDown size={16} style={{ verticalAlign: "middle" }} />{" "}
                         {t("recipesView", "helpSort")}
                       </>,
                       <>
@@ -802,7 +801,7 @@ function RecipesView({
                         {t("recipesView", "helpAdd")}
                       </>,
                       <>
-                        <BsGrid3X3Gap style={{ verticalAlign: "middle" }} />{" "}
+                        <LayoutGrid size={16} style={{ verticalAlign: "middle" }} />{" "}
                         {t("recipesView", "helpView")}
                       </>,
                     ]
@@ -841,11 +840,11 @@ function RecipesView({
                   className={classes.filterButton}
                   onClick={toggleFilterMenu}
                 >
-                  <CiFilter />{" "}
+                  <Filter size={16} />{" "}
                   <span className={classes.hideOnMobile}>
                     {t("recipesView", "filter")}
                   </span>{" "}
-                  <IoChevronDown />
+                  <ChevronDown size={16} />
                 </button>
                 {!isMobile && showFilterMenu && (
                   <>
@@ -872,11 +871,11 @@ function RecipesView({
                   className={classes.sortingButton}
                   onClick={toggleSortMenu}
                 >
-                  <BiSortAlt2 />{" "}
+                  <ArrowUpDown size={16} />{" "}
                   <span className={classes.hideOnMobile}>
                     {t("recipesView", "sorting")}
                   </span>{" "}
-                  <IoChevronDown />
+                  <ChevronDown size={16} />
                 </button>
                 {!isMobile && showSortMenu && (
                   <>
@@ -884,7 +883,7 @@ function RecipesView({
                     <div className={classes.dropdownMenu} style={sortMenuStyle}>
                       <div className={classes.dropdownClose}>
                         <button className={classes.sortDirectionBtn} onClick={() => setSortDirection((prev) => prev === "asc" ? "desc" : "asc")} title={sortDirection === "asc" ? "Ascending" : "Descending"}>
-                          {sortDirection === "asc" ? <BsSortUpAlt size={20} /> : <BsSortDownAlt size={20} />}
+                          {sortDirection === "asc" ? <ArrowUpAZ size={20} /> : <ArrowDownAZ size={20} />}
                         </button>
                         <CloseButton onClick={() => setShowSortMenu(false)} />
                       </div>
@@ -911,8 +910,9 @@ function RecipesView({
             <div className={classes.recentlyViewedSection}>
               <div className={classes.sectionHeader}>
                 <h2 className={classes.sectionTitle}>
-                  <FaHistory
-                    style={{ marginInlineEnd: "0.4rem", fontSize: "0.85em" }}
+                  <History
+                    size={16}
+                    style={{ marginInlineEnd: "0.4rem" }}
                   />
                   {t("recipesView", "recentlyViewed")}
                 </h2>
@@ -1028,7 +1028,7 @@ function RecipesView({
                                     }}
                                     title="Edit"
                                   >
-                                    <FaRegEdit />
+                                    <Pencil size={16} />
                                   </button>
                                   <button
                                     className={`${classes.compactActionBtn} ${classes.compactDanger}`}
@@ -1038,7 +1038,7 @@ function RecipesView({
                                     }}
                                     title="Delete"
                                   >
-                                    <GoTrash />
+                                    <Trash2 size={16} />
                                   </button>
                                 </div>
                               )}
@@ -1102,7 +1102,7 @@ function RecipesView({
                                   }}
                                   title="Edit"
                                 >
-                                  <FaRegEdit />
+                                  <Pencil size={16} />
                                 </button>
                                 <button
                                   className={`${classes.compactActionBtn} ${classes.compactDanger}`}
@@ -1112,7 +1112,7 @@ function RecipesView({
                                   }}
                                   title="Delete"
                                 >
-                                  <GoTrash />
+                                  <Trash2 size={16} />
                                 </button>
                               </div>
                             )}
@@ -1156,7 +1156,7 @@ function RecipesView({
                         }}
                         title="Edit"
                       >
-                        <FaRegEdit />
+                        <Pencil size={16} />
                       </button>
                       <button
                         className={`${classes.compactActionBtn} ${classes.compactDanger}`}
@@ -1166,7 +1166,7 @@ function RecipesView({
                         }}
                         title="Delete"
                       >
-                        <GoTrash />
+                        <Trash2 size={16} />
                       </button>
                     </div>
                   )}
@@ -1180,7 +1180,7 @@ function RecipesView({
                         }}
                         title={t("globalRecipes", "copyToMyRecipes")}
                       >
-                        <IoCopyOutline />
+                        <Copy size={16} />
                       </button>
                     </div>
                   )}
@@ -1234,23 +1234,23 @@ function AddRecipeMenu({ onSelect, t }) {
     <div className={fabClasses.menu}>
       <button className={fabClasses.menuItem} onClick={() => onSelect("photo")}>
         <span className={fabClasses.menuLabel}>{t("addWizard", "fromPhoto")}</span>
-        <span className={fabClasses.menuIcon}><GalleryIcon width={20} height={20} /></span>
+        <span className={fabClasses.menuIcon}><ImagePlus size={20} /></span>
       </button>
       <button className={fabClasses.menuItem} onClick={() => onSelect("url")}>
         <span className={fabClasses.menuLabel}>{t("addWizard", "fromUrl")}</span>
-        <span className={fabClasses.menuIcon}><FiLink /></span>
+        <span className={fabClasses.menuIcon}><Link size={20} /></span>
       </button>
       <button className={fabClasses.menuItem} onClick={() => onSelect("text")}>
         <span className={fabClasses.menuLabel}>{t("addWizard", "fromText")}</span>
-        <span className={fabClasses.menuIcon}><BsClipboardData /></span>
+        <span className={fabClasses.menuIcon}><ClipboardList size={20} /></span>
       </button>
       <button className={fabClasses.menuItem} onClick={() => onSelect("recording")}>
         <span className={fabClasses.menuLabel}>{t("addWizard", "fromRecording")}</span>
-        <span className={fabClasses.menuIcon}><PiMicrophoneLight size="1.2em" /></span>
+        <span className={fabClasses.menuIcon}><Mic size={20} /></span>
       </button>
       <button className={fabClasses.menuItem} onClick={() => onSelect("manual")}>
         <span className={fabClasses.menuLabel}>{t("addWizard", "manual")}</span>
-        <span className={fabClasses.menuIcon}><PiPencilSimpleLineLight /></span>
+        <span className={fabClasses.menuIcon}><PenLine size={20} /></span>
       </button>
     </div>
   );

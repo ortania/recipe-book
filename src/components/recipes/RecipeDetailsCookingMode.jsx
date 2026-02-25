@@ -5,22 +5,22 @@ import React, {
   useRef,
   useMemo,
 } from "react";
-import { VscDebugRestart } from "react-icons/vsc";
-import { FaStop } from "react-icons/fa";
-import { TbUsers } from "react-icons/tb";
-import { IoChevronBackOutline } from "react-icons/io5";
-import { AiOutlineFontSize } from "react-icons/ai";
 import {
-  MdFormatSize,
-  MdOutlineFormatListBulleted,
-  MdOutlineFormatListNumbered,
-} from "react-icons/md";
-import { IoMusicalNotesOutline } from "react-icons/io5";
-import { PiMicrophoneLight } from "react-icons/pi";
+  RotateCcw,
+  Square,
+  Users,
+  Type,
+  List,
+  ListOrdered,
+  Music,
+  Mic,
+  Timer,
+} from "lucide-react";
 import { CookingVoiceChat } from "../cooking-voice-chat";
 import { RadioPlayer } from "../radio-player";
 import { isGroupHeader, getGroupName, parseIngredients } from "../../utils/ingredientUtils";
 import { CloseButton } from "../controls/close-button";
+import { BackButton } from "../controls/back-button";
 import { AddButton } from "../controls/add-button";
 import { ChatHelpButton } from "../controls/chat-help-button";
 import { useLanguage } from "../../context";
@@ -297,16 +297,12 @@ function RecipeDetailsCookingMode({
 
       <div className={classes.headerButtonsCooking}>
         <div className={classes.headerLeft}>
-          <button
+          <BackButton
             onClick={() => {
               stopRadio();
               onClose();
             }}
-            className={classes.backButton}
-            title={t("common", "back")}
-          >
-            <IoChevronBackOutline />
-          </button>
+          />
           {!(showCompletion && activeTab === "instructions") && (
             <ChatHelpButton
               title={t("cookingMode", "howToUse")}
@@ -318,7 +314,7 @@ function RecipeDetailsCookingMode({
                 {
                   content: (
                     <>
-                      <PiMicrophoneLight size={16} style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
+                      <Mic size={16} style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
                       {t("cookingMode", "chatTitle")} — {t("cookingMode", "chatText")}
                     </>
                   ),
@@ -332,7 +328,7 @@ function RecipeDetailsCookingMode({
                 {
                   content: (
                     <>
-                      <IoMusicalNotesOutline size={16} style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
+                      <Music size={16} style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
                       {t("cookingMode", "radioFeature")}
                     </>
                   ),
@@ -349,7 +345,7 @@ function RecipeDetailsCookingMode({
             onClick={cycleFontSize}
             title="גודל פונט"
           >
-            <AiOutlineFontSize />
+            <Type size={20} />
           </button>
           <div className={classes.helpWrapper}>
             <button
@@ -357,7 +353,7 @@ function RecipeDetailsCookingMode({
               onClick={() => setShowRadio((v) => !v)}
               title={t("radio", "title")}
             >
-              <IoMusicalNotesOutline />
+              <Music size={20} />
             </button>
             {showHelp && <div className={classes.helpArrow} />}
           </div>
@@ -417,7 +413,7 @@ function RecipeDetailsCookingMode({
               />
             </div>
             <span className={classes.servingLabelCooking}>
-              <TbUsers className={classes.servingIcon} />
+              <Users className={classes.servingIcon} size={16} />
               {t("recipes", "servings")}
             </span>
           </div>
@@ -430,7 +426,7 @@ function RecipeDetailsCookingMode({
               switchTab("ingredients");
             }}
           >
-            <MdOutlineFormatListBulleted className={classes.tabIcon} />
+            <List className={classes.tabIcon} size={18} />
             {t("recipes", "ingredients")}
             {activeTab === "ingredients" &&
               voiceEnabled &&
@@ -447,7 +443,7 @@ function RecipeDetailsCookingMode({
               switchTab("instructions");
             }}
           >
-            <MdOutlineFormatListNumbered className={classes.tabIcon} />
+            <ListOrdered className={classes.tabIcon} size={18} />
             {t("recipes", "instructions")}
           </button>
         </div>
@@ -590,7 +586,7 @@ function RecipeDetailsCookingMode({
                   }}
                   className={classes.restartButton}
                 >
-                  <VscDebugRestart /> {t("recipes", "resetTimer")}
+                  <RotateCcw size={16} /> {t("recipes", "resetTimer")}
                 </button>
                 <button
                   onClick={(e) => {
@@ -608,7 +604,7 @@ function RecipeDetailsCookingMode({
                 <div className={classes.timerSection}>
                   <div className={classes.timerContent}>
                     <div className={classes.timerTitle}>
-                      <span>🔥</span>
+                      <Timer size={18} />
                       {t("recipes", "timer")}
                     </div>
 
@@ -701,7 +697,7 @@ function RecipeDetailsCookingMode({
                         }}
                         className={classes.stopButton}
                       >
-                        <FaStop />
+                        <Square size={14} fill="currentColor" />
                         {t("recipes", "stopTimer")}
                       </button>
                     )}

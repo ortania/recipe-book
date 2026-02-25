@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { generateRecipeImage } from "../generateRecipeImage";
 import classes from "./export-image-button.module.css";
 import { useLanguage } from "../../../context";
-import { FiCamera } from "react-icons/fi";
+import { Image as ImageIcon } from "lucide-react";
 
 function ExportImageButton({ recipe, asMenuItem = false }) {
   const { t } = useLanguage();
@@ -33,7 +33,12 @@ function ExportImageButton({ recipe, asMenuItem = false }) {
             : t("recipes", "exportToImage")}
         </span>
         <span className={classes.menuItemIcon}>
-          {isGenerating ? <span className={classes.spinner} /> : <FiCamera />}
+          {/* {isGenerating ? <span className={classes.spinner} /> : <FiCamera />} */}
+          {isGenerating ? (
+            <span className={classes.spinner} />
+          ) : (
+            <ImageIcon size={18} />
+          )}
         </span>
       </button>
     );
@@ -49,7 +54,8 @@ function ExportImageButton({ recipe, asMenuItem = false }) {
       {isGenerating ? (
         <span className={classes.spinner} />
       ) : (
-        <FiCamera size={18} />
+        // <FiCamera size={18} />
+        <ImageIcon size={18} />
       )}
       <span className={classes.label}>
         {isGenerating

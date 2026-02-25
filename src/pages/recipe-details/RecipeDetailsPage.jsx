@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { IoArrowBack } from "react-icons/io5";
-import { TbChefHat } from "react-icons/tb";
+import { ChefHat } from "lucide-react";
 import RecipeDetailsFull from "../../components/recipes/RecipeDetailsFull";
 import RecipeDetailsCookingMode from "../../components/recipes/RecipeDetailsCookingMode";
 import { EditRecipe } from "../../components/forms/edit-recipe";
 import { Fab } from "../../components/controls/fab";
+import { BackButton } from "../../components/controls/back-button";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
 import { getRecipeById } from "../../firebase/recipeService";
@@ -161,13 +161,7 @@ function RecipeDetailsPage() {
       <div className={classes.pageContainer}>
         <div className={classes.notFound}>
           <p>{t("common", "notFound") || "Recipe not found"}</p>
-          <button
-            className={classes.backButton}
-            onClick={() => navigate("/categories")}
-          >
-            <IoArrowBack />
-            {t("common", "back") || "Back"}
-          </button>
+          <BackButton onClick={() => navigate("/categories")} />
         </div>
       </div>
     );
@@ -285,6 +279,7 @@ function RecipeDetailsPage() {
         onDuplicate={isOwner ? handleDuplicate : undefined}
         onSaveRecipe={isOwner ? editRecipe : undefined}
         getCategoryName={getCategoryName}
+        onEnterCookingMode={handleCookingModeToggle}
         onCopyRecipe={isOwner ? (recipe, targetUserId) =>
           copyRecipeToUser(recipe, targetUserId, language)
         : undefined}
@@ -302,7 +297,7 @@ function RecipeDetailsPage() {
       )}
 
       <Fab
-        icon={<TbChefHat size="1em" />}
+        icon={<ChefHat size="1em" />}
         label={t("recipes", "cookingMode")}
         onClick={handleCookingModeToggle}
       />

@@ -1,12 +1,7 @@
 import { useState, useRef, useEffect } from "react";
-import { FiLink, FiCamera } from "react-icons/fi";
-import { BsClipboardData } from "react-icons/bs";
-import { HiOutlinePencilSquare } from "react-icons/hi2";
-import { PiPencilSimpleLineLight } from "react-icons/pi";
-import { PiMicrophoneLight } from "react-icons/pi";
+import { Link, ClipboardList, PenLine, Mic, ImagePlus } from "lucide-react";
 import { useLanguage } from "../../../context";
 import { AddButton } from "../add-button";
-import { GalleryIcon } from "../../icons/GalleryIcon";
 import classes from "./add-recipe-dropdown.module.css";
 
 function AddRecipeDropdown({ onSelect, buttonType = "circlePrimary", children }) {
@@ -102,10 +97,7 @@ function AddRecipeDropdown({ onSelect, buttonType = "circlePrimary", children })
               {t("addWizard", "fromPhoto")}
             </span>
             <span className={classes.dropdownIcon}>
-              {/* <FiCamera /> */}
-
-              <GalleryIcon width={20} height={20} />
-              {/* <img src={photo} alt="" /> */}
+              <ImagePlus size={20} />
             </span>
           </button>
           <button
@@ -116,7 +108,7 @@ function AddRecipeDropdown({ onSelect, buttonType = "circlePrimary", children })
               {t("addWizard", "fromUrl")}
             </span>
             <span className={classes.dropdownIcon}>
-              <FiLink />
+              <Link size={20} />
             </span>
           </button>
           <button
@@ -127,7 +119,7 @@ function AddRecipeDropdown({ onSelect, buttonType = "circlePrimary", children })
               {t("addWizard", "fromText")}
             </span>
             <span className={classes.dropdownIcon}>
-              <BsClipboardData />
+              <ClipboardList size={20} />
             </span>
           </button>
           <button
@@ -138,7 +130,7 @@ function AddRecipeDropdown({ onSelect, buttonType = "circlePrimary", children })
               {t("addWizard", "fromRecording")}
             </span>
             <span className={classes.dropdownIcon}>
-              <PiMicrophoneLight size="1.2em" />
+              <Mic size={20} />
             </span>
           </button>
           <button
@@ -149,7 +141,7 @@ function AddRecipeDropdown({ onSelect, buttonType = "circlePrimary", children })
               {t("addWizard", "manual")}
             </span>
             <span className={classes.dropdownIcon}>
-              <PiPencilSimpleLineLight />
+              <PenLine size={20} />
             </span>
           </button>
         </div>

@@ -2,17 +2,7 @@ import React from "react";
 import classes from "./recipe-card-new.module.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  FaHeart,
-  FaRegHeart,
-  FaEdit,
-  FaTrash,
-  FaRegEdit,
-} from "react-icons/fa";
-import { GoHeart, GoHeartFill, GoTrash } from "react-icons/go";
-import { HiOutlineTrash } from "react-icons/hi2";
-import { BsTrash3 } from "react-icons/bs";
-import { IoCopyOutline } from "react-icons/io5";
+import { Heart, Pencil, Trash2, Copy } from "lucide-react";
 import { Button } from "../controls/button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { formatDifficulty, formatTime } from "./utils";
@@ -134,7 +124,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
                 isFavorite ? "Remove from favorites" : "Add to favorites"
               }
             >
-              {isFavorite ? <GoHeartFill color="red" /> : <GoHeart />}
+              {isFavorite ? <Heart size={18} fill="red" color="red" /> : <Heart size={18} />}
             </button>
           )}
 
@@ -145,7 +135,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
               disabled={isCopying || copySuccess}
               title={t("globalRecipes", "copyToMyRecipes")}
             >
-              <IoCopyOutline />
+              <Copy size={16} />
               <span>
                 {copySuccess
                   ? t("globalRecipes", "copied")
@@ -161,7 +151,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
                 className={classes.actionButton}
                 title="Edit recipe"
               >
-                <FaRegEdit />
+                <Pencil size={16} />
               </button>
               <button
                 onClick={(e) => {
@@ -171,7 +161,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
                 className={`${classes.actionButton} ${classes.danger}`}
                 title="Delete recipe"
               >
-                <GoTrash color="red" />
+                <Trash2 size={16} color="red" />
               </button>
             </div>
           )}

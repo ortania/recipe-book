@@ -1,29 +1,25 @@
 import { useState, useEffect, useRef } from "react";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import {
-  FaSignOutAlt,
-  FaChevronDown,
-  FaChevronUp,
-  FaCalculator,
-} from "react-icons/fa";
-import { IoSettingsOutline } from "react-icons/io5";
-import { IoMdClose } from "react-icons/io";
-import { RxHamburgerMenu } from "react-icons/rx";
-import {
-  FiHome,
-  FiHelpCircle,
-  FiCalendar,
-  FiShoppingCart,
-  FiGlobe,
-} from "react-icons/fi";
-import { MdRestaurant, MdMenuBook } from "react-icons/md";
-import { CiGrid41 } from "react-icons/ci";
-import { BsGrid } from "react-icons/bs";
-import { ChatLogIcon } from "../icons/ChatLogIcon";
-
+  LogOut,
+  ChevronDown,
+  ChevronUp,
+  Calculator,
+  Settings,
+  Home,
+  HelpCircle,
+  CalendarDays,
+  ShoppingCart,
+  Globe,
+  BookOpen,
+  UtensilsCrossed,
+  LayoutGrid,
+  Menu,
+  MessageSquareMore,
+  Settings2,
+} from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { ProductTour } from "../product-tour";
-import { PiPlusLight } from "react-icons/pi";
 import { useRecipeBook, useLanguage } from "../../context";
 import { CategoriesManagement } from "../categories-management";
 import useTranslatedList from "../../hooks/useTranslatedList";
@@ -31,16 +27,15 @@ import { CloseButton } from "../controls/close-button";
 import { getCategoryIcon } from "../../utils/categoryIcons";
 import { SearchBox } from "../controls/search";
 import classes from "./navigation.module.css";
-import { ManageCategoriesIcon } from "../icons/ManageCategoriesIcon";
 
 const iconMap = {
-  Home: FiHome,
-  Categories: MdMenuBook,
-  MealPlanner: FiCalendar,
-  ShoppingList: FiShoppingCart,
-  GlobalRecipes: FiGlobe,
-  Conversions: FaCalculator,
-  Settings: IoSettingsOutline,
+  Home: Home,
+  Categories: BookOpen,
+  MealPlanner: CalendarDays,
+  ShoppingList: ShoppingCart,
+  GlobalRecipes: Globe,
+  Conversions: Calculator,
+  Settings: Settings,
 };
 
 const navTranslationMap = {
@@ -218,7 +213,7 @@ function Navigation({ onLogout, links }) {
       {!isRecipeDetailsPage && (
         <div className={classes.mobileTopBar}>
           <button className={classes.hamburger} onClick={toggleSidebar}>
-            {isOpen ? <IoMdClose /> : <RxHamburgerMenu />}
+            {isOpen ? null : <Menu size={22} />}
           </button>
           <div className={classes.mobileLogo}>
             <span className={classes.logo}>Cooki</span>
@@ -253,7 +248,7 @@ function Navigation({ onLogout, links }) {
                     `${classes.navLink} ${isActive ? classes.active : ""}`
                   }
                 >
-                  {Icon && <Icon className={classes.icon} />}
+                  {Icon && <Icon size={18} className={classes.icon} />}
                   {t(
                     "nav",
                     navTranslationMap[el.name] || el.name.toLowerCase(),
@@ -275,7 +270,7 @@ function Navigation({ onLogout, links }) {
                       onClick={() => setShowManagement(true)}
                       title={t("categories", "manage")}
                     >
-                      <ManageCategoriesIcon width={16} height={16} />
+                      <Settings2 size={16} className={classes.icon} />
 
                       {t("categories", "manage")}
                     </button>
@@ -289,8 +284,7 @@ function Navigation({ onLogout, links }) {
                       }
                     >
                       <span>
-                        {/* <CiGrid41 /> */}
-                        <BsGrid />
+                        <LayoutGrid size={16} />
                         {t("nav", "categories").toUpperCase()}
                         {!categorySearch && selectedCount > 0 && (
                           <span className={classes.sectionCount}>
@@ -300,9 +294,9 @@ function Navigation({ onLogout, links }) {
                       </span>
                       {!isMobile &&
                         (categoriesOpen ? (
-                          <FaChevronUp className={classes.chevron} />
+                          <ChevronUp size={14} className={classes.chevron} />
                         ) : (
-                          <FaChevronDown className={classes.chevron} />
+                          <ChevronDown size={14} className={classes.chevron} />
                         ))}
                     </button>
                     {!isAllSelected && selectedCount > 0 && (
@@ -361,7 +355,7 @@ function Navigation({ onLogout, links }) {
                                 {(() => {
                                   const IconComp =
                                     group.id === "all"
-                                      ? MdRestaurant
+                                      ? UtensilsCrossed
                                       : getCategoryIcon(group.icon);
                                   return (
                                     <span
@@ -402,70 +396,17 @@ function Navigation({ onLogout, links }) {
             className={classes.navLink}
             onClick={() => setChatLogOpen(!chatLogOpen)}
           >
-            {/* 
-            <svg
-              width="24"
-              height="20"
-              viewBox="0 0 24 20"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className={classes.icon}
-            >
-              <path
-                d="M20 12.2V13.9C20 17.05 18.2 18.4 15.5 18.4H6.5C3.8 18.4 2 17.05 2 13.9V8.5C2 5.35 3.8 4 6.5 4H9.2C9.07 4.38 9 4.8 9 5.25V9.15002C9 10.12 9.32 10.94 9.89 11.51C10.46 12.08 11.28 12.4 12.25 12.4V13.79C12.25 14.3 12.83 14.61 13.26 14.33L16.15 12.4H18.75C19.2 12.4 19.62 12.33 20 12.2Z"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeMiterlimit="10"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M22 5.25V9.15002C22 10.64 21.24 11.76 20 12.2C19.62 12.33 19.2 12.4 18.75 12.4H16.15L13.26 14.33C12.83 14.61 12.25 14.3 12.25 13.79V12.4C11.28 12.4 10.46 12.08 9.89 11.51C9.32 10.94 9 10.12 9 9.15002V5.25C9 4.8 9.07 4.38 9.2 4C9.64 2.76 10.76 2 12.25 2H18.75C20.7 2 22 3.3 22 5.25Z"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeMiterlimit="10"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M11 18.4004V22.0004"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeMiterlimit="10"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M18.4961 7.25H18.5051"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M15.6953 7.25H15.7043"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-              <path
-                d="M12.8945 7.25H12.9035"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg> */}
-            <ChatLogIcon width={17} height={17} />
+            <MessageSquareMore size={18} className={classes.icon} />
             {t("nav", "chatLog")}
             {chatLogOpen ? (
-              <FaChevronUp
+              <ChevronUp
+                size={14}
                 className={classes.chevron}
                 style={{ marginInlineStart: "auto" }}
               />
             ) : (
-              <FaChevronDown
+              <ChevronDown
+                size={14}
                 className={classes.chevron}
                 style={{ marginInlineStart: "auto" }}
               />
@@ -493,7 +434,7 @@ function Navigation({ onLogout, links }) {
               setShowTour(true);
             }}
           >
-            <FiHelpCircle className={classes.icon} />
+            <HelpCircle size={18} className={classes.icon} />
             {t("home", "showTutorial")}
           </button>
           <NavLink
@@ -503,12 +444,12 @@ function Navigation({ onLogout, links }) {
               `${classes.navLink} ${isActive ? classes.active : ""}`
             }
           >
-            <IoSettingsOutline className={classes.icon} />
+            <Settings size={18} className={classes.icon} />
             {t("nav", "settings")}
           </NavLink>
           <div className={classes.separator}></div>
           <button className={classes.logoutButton} onClick={handleLogout}>
-            <FaSignOutAlt className={classes.icon} />
+            <LogOut size={18} className={classes.icon} />
             <span className={classes.logoutText}>
               {t("nav", "logout")}
               {currentUser && (

@@ -2156,11 +2156,11 @@ const translations = {
       mixed: "Conversations",
     },
     ideaTitle: {
-      he: "💡 רעיונות למתכונים",
-      en: "💡 Recipe Ideas",
-      ru: "💡 Идеи рецептов",
-      de: "💡 Rezeptideen",
-      mixed: "💡 Recipe Ideas",
+      he: "רעיונות למתכונים",
+      en: "Recipe Ideas",
+      ru: "Идеи рецептов",
+      de: "Rezeptideen",
+      mixed: "Recipe Ideas",
     },
     ideaSubtitle: {
       he: "שאל אותי מה לבשל!",

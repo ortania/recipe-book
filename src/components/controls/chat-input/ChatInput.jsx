@@ -1,8 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from "react";
-import { FaImage } from "react-icons/fa";
-import { FaStop } from "react-icons/fa6";
-import { IoCloseCircle } from "react-icons/io5";
-import { PiMicrophoneLight, PiMicrophoneSlash } from "react-icons/pi";
+import { Image, Square, XCircle, Mic, MicOff, SendHorizontal } from "lucide-react";
 import { useLanguage } from "../../../context";
 import classes from "./chat-input.module.css";
 
@@ -153,7 +150,7 @@ function ChatInput({
               onClick={onStop}
               title={t("chat", "voiceStop")}
             >
-              <FaStop />
+              <Square size={14} fill="currentColor" />
             </button>
           ) : value.trim() ? (
             <>
@@ -166,35 +163,14 @@ function ChatInput({
                 }}
                 title={t("common", "clear") || "Clear"}
               >
-                <IoCloseCircle />
+                <XCircle size={18} />
               </button>
               <button
                 type="submit"
                 className={classes.sendBtn}
                 disabled={disabled}
               >
-                <svg
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    d="M22 2L11 13"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                  <path
-                    d="M22 2L15 22L11 13L2 9L22 2Z"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <SendHorizontal size={16} />
               </button>
             </>
           ) : (
@@ -207,7 +183,7 @@ function ChatInput({
                   disabled={disabled}
                   title={t("chat", "uploadImage")}
                 >
-                  <FaImage />
+                  <Image size={18} />
                 </button>
               )}
               <button
@@ -217,7 +193,7 @@ function ChatInput({
                 disabled={disabled}
                 title={isListening ? t("chat", "voiceStop") : t("chat", "voiceInput")}
               >
-                {isListening ? <PiMicrophoneLight /> : <PiMicrophoneSlash />}
+                {isListening ? <Mic size={18} /> : <MicOff size={18} />}
               </button>
             </>
           )}

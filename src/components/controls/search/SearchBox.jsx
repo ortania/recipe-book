@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { IoSearch } from "react-icons/io5";
+import { Search } from "lucide-react";
 import classes from "./search-box.module.css";
 
 function SearchBox({
@@ -28,7 +28,7 @@ function SearchBox({
 
   return (
     <div className={`${classes.searchBox} ${sizeClass} ${className}`.trim()}>
-      <IoSearch className={classes.searchIcon} />
+      <Search size={18} className={classes.searchIcon} />
       <input
         type="text"
         placeholder={displayPlaceholder}

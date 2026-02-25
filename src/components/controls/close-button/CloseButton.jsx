@@ -1,4 +1,4 @@
-import { IoMdClose } from "react-icons/io";
+import { X } from "lucide-react";
 import classes from "./close-button.module.css";
 
 const CloseButton = ({ onClick, type = "plain", className, title }) => {
@@ -9,7 +9,7 @@ const CloseButton = ({ onClick, type = "plain", className, title }) => {
       title={title}
       type="button"
     >
-      <IoMdClose />
+      <X size={20} />
     </button>
   );
 };

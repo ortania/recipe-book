@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { FiTrash2 } from "react-icons/fi";
+import { Trash2, Lightbulb } from "lucide-react";
 import {
   sendChatMessage,
   analyzeImageForNutrition,
@@ -371,7 +371,7 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
       {messages.length > 0 && (
         <div className={classes.chatToolbar}>
           <button className={classes.clearBtn} onClick={clearChat}>
-            <FiTrash2 /> {t("chat", "clearChat")}
+            <Trash2 size={16} /> {t("chat", "clearChat")}
           </button>
         </div>
       )}
@@ -380,9 +380,14 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
         {messages.length === 0 && (
           <div className={classes.ideasSection}>
             <h3 className={classes.ideasTitle}>
-              {isRecipeMode
-                ? t("recipeChat", "emptyMessage")
-                : t("chat", "ideaTitle")}
+              {isRecipeMode ? (
+                t("recipeChat", "emptyMessage")
+              ) : (
+                <>
+                  <Lightbulb size={18} style={{ verticalAlign: "middle", marginInlineEnd: "0.3rem" }} />
+                  {t("chat", "ideaTitle")}
+                </>
+              )}
             </h3>
             <p className={classes.ideasSubtitle}>
               {isRecipeMode

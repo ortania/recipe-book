@@ -4,31 +4,32 @@ import classes from "./recipe-details-full.module.css";
 import { formatDifficulty, formatTime } from "./utils";
 import { useLanguage } from "../../context";
 import { isGroupHeader, getGroupName, parseIngredients } from "../../utils/ingredientUtils";
-import { Share, ExternalLink } from "lucide-react";
-import { FaRegEdit } from "react-icons/fa";
-import { BsTrash3, BsThreeDotsVertical } from "react-icons/bs";
-import { GoHeart, GoHeartFill } from "react-icons/go";
 import {
-  MdExpandMore,
-  MdExpandLess,
-  MdOutlineFormatListBulleted,
-  MdOutlineFormatListNumbered,
-  MdOutlineTipsAndUpdates,
-  MdOutlineChat,
-} from "react-icons/md";
-import { GiMeal } from "react-icons/gi";
-import { FaNutritionix } from "react-icons/fa";
-import {
-  IoCopyOutline,
-  IoTimeOutline,
-  IoPrintOutline,
-  IoChevronBackOutline,
-} from "react-icons/io5";
-import { HiOutlineDocumentDuplicate } from "react-icons/hi2";
-import { TbChefHat, TbUsers } from "react-icons/tb";
+  Share2,
+  Link,
+  Heart,
+  EllipsisVertical,
+  FilePenLine,
+  Copy,
+  Forward,
+  Printer,
+  Trash2,
+  Clock,
+  ChefHat,
+  Users,
+  ChevronDown,
+  ChevronUp,
+  List,
+  ListOrdered,
+  Lightbulb,
+  MessageCircle,
+  Apple,
+  Files,
+} from "lucide-react";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
 import { CloseButton } from "../controls/close-button";
+import { BackButton } from "../controls/back-button";
 import { AddButton } from "../controls/add-button";
 import { ExportImageButton } from "./export-image-button";
 import ChatWindow from "../chat/ChatWindow";
@@ -43,6 +44,7 @@ function RecipeDetailsFull({
   onDuplicate,
   onSaveRecipe,
   getCategoryName,
+  onEnterCookingMode,
   onCopyRecipe,
   currentUserId,
   onToggleFavorite,
@@ -247,13 +249,7 @@ function RecipeDetailsFull({
       )}
 
       <div ref={stickyHeaderRef} className={classes.stickyHeader}>
-        <button
-          onClick={onClose}
-          className={classes.backButton}
-          title={t("common", "back")}
-        >
-          <IoChevronBackOutline />
-        </button>
+        <BackButton onClick={onClose}/>
         <h2 className={classes.headerTitle}>{recipe.name}</h2>
         <span className={classes.headerSpacer} />
       </div>
@@ -293,24 +289,30 @@ function RecipeDetailsFull({
       <div
         ref={actionBarSentinelRef}
         className={classes.actionBarSentinel}
-        style={actionBarFixed && actionBarRef.current
-          ? { height: actionBarRef.current.offsetHeight }
-          : undefined}
+        style={
+          actionBarFixed && actionBarRef.current
+            ? { height: actionBarRef.current.offsetHeight }
+            : undefined
+        }
       />
       <div
         ref={actionBarRef}
         className={classes.actionBar}
-        style={actionBarFixed ? {
-          position: "fixed",
-          top: stickyHeaderRef.current
-            ? `${stickyHeaderRef.current.offsetHeight}px`
-            : "3.5rem",
-          left: 0,
-          right: 0,
-          zIndex: 99,
-          background: "var(--bg-primary)",
-          boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-        } : undefined}
+        style={
+          actionBarFixed
+            ? {
+                position: "fixed",
+                top: stickyHeaderRef.current
+                  ? `${stickyHeaderRef.current.offsetHeight}px`
+                  : "3.5rem",
+                left: 0,
+                right: 0,
+                zIndex: 99,
+                background: "var(--bg-primary)",
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+              }
+            : undefined
+        }
       >
         <div className={classes.actionBarStart}>
           <div className={classes.moreMenuWrapper} ref={moreMenuRef}>
@@ -319,7 +321,7 @@ function RecipeDetailsFull({
               onClick={() => setShowMoreMenu((prev) => !prev)}
               title={t("common", "more")}
             >
-              <BsThreeDotsVertical size={20} />
+              <EllipsisVertical size={20} />
             </button>
             {showMoreMenu && (
               <div className={classes.moreMenu}>
@@ -335,7 +337,7 @@ function RecipeDetailsFull({
                       {t("recipes", "edit")}
                     </span>
                     <span className={classes.moreMenuIcon}>
-                      <FaRegEdit />
+                      <FilePenLine size={18} />
                     </span>
                   </button>
                 )}
@@ -344,14 +346,18 @@ function RecipeDetailsFull({
                     className={classes.moreMenuItem}
                     onClick={() => {
                       setShowMoreMenu(false);
-                      window.open(recipe.sourceUrl, "_blank", "noopener,noreferrer");
+                      window.open(
+                        recipe.sourceUrl,
+                        "_blank",
+                        "noopener,noreferrer",
+                      );
                     }}
                   >
                     <span className={classes.moreMenuLabel}>
                       {t("recipes", "sourceUrl")}
                     </span>
                     <span className={classes.moreMenuIcon}>
-                      <ExternalLink size={18} />
+                      <Link size={18} />
                     </span>
                   </button>
                 )}
@@ -367,7 +373,7 @@ function RecipeDetailsFull({
                       {t("recipes", "duplicate")}
                     </span>
                     <span className={classes.moreMenuIcon}>
-                      <HiOutlineDocumentDuplicate />
+                      <Files size={18} />
                     </span>
                   </button>
                 )}
@@ -382,7 +388,7 @@ function RecipeDetailsFull({
                     {t("recipes", "copyToAnotherUser")}
                   </span>
                   <span className={classes.moreMenuIcon}>
-                    <IoCopyOutline />
+                    <Forward size={18} />
                   </span>
                 </button>
                 <ExportImageButton recipe={recipe} asMenuItem />
@@ -397,7 +403,7 @@ function RecipeDetailsFull({
                     {t("mealPlanner", "print")}
                   </span>
                   <span className={classes.moreMenuIcon}>
-                    <IoPrintOutline />
+                    <Printer size={18} />
                   </span>
                 </button>
                 {onDelete && (
@@ -412,7 +418,7 @@ function RecipeDetailsFull({
                       {t("recipes", "delete")}
                     </span>
                     <span className={classes.moreMenuIcon}>
-                      <BsTrash3 />
+                      <Trash2 size={18} />
                     </span>
                   </button>
                 )}
@@ -427,9 +433,9 @@ function RecipeDetailsFull({
               title={t("recipes", "favorite")}
             >
               {recipe.isFavorite ? (
-                <GoHeartFill color="red" size={22} />
+                <Heart size={22} fill="red" color="red" />
               ) : (
-                <GoHeart size={22} />
+                <Heart size={22} />
               )}
             </button>
           )}
@@ -439,9 +445,19 @@ function RecipeDetailsFull({
             onClick={handleShare}
             title={t("recipes", "share")}
           >
-            <Share size={20} />
+            <Share2 size={20} />
           </button>
         </div>
+
+        {onEnterCookingMode && (
+          <button
+            className={classes.cookingBtn}
+            onClick={onEnterCookingMode}
+          >
+            <ChefHat size={18} />
+            <span>{t("recipes", "cookingMode")}</span>
+          </button>
+        )}
       </div>
 
       <div className={classes.recipeContent}>
@@ -464,7 +480,7 @@ function RecipeDetailsFull({
         <div className={classes.recipeInfo}>
           {recipe.difficulty && recipe.difficulty !== "Unknown" && (
             <span className={classes.infoItem}>
-              <TbChefHat className={classes.infoIcon} />
+              <ChefHat className={classes.infoIcon} size={16} />
               {t("difficulty", recipe.difficulty)}
             </span>
           )}
@@ -473,7 +489,7 @@ function RecipeDetailsFull({
             recipe.prepTime && <span className={classes.infoDot}>•</span>}
           {recipe.prepTime && (
             <span className={classes.infoItem}>
-              <IoTimeOutline className={classes.infoIcon} />
+              <Clock className={classes.infoIcon} size={16} />
               {language === "he" || language === "mixed" ? "הכנה" : "Prep"}{" "}
               {formatTime(recipe.prepTime, t("recipes", "minutes"))}
             </span>
@@ -489,7 +505,7 @@ function RecipeDetailsFull({
             )}
           {recipe.cookTime && (
             <span className={classes.infoItem}>
-              <IoTimeOutline className={classes.infoIcon} />
+              <Clock className={classes.infoIcon} size={16} />
               {language === "he" || language === "mixed"
                 ? "בישול"
                 : "Cook"}{" "}
@@ -510,7 +526,6 @@ function RecipeDetailsFull({
           </div>
         )}
 
-
         <div className={classes.servingSelector}>
           <div className={classes.servingControls}>
             <AddButton
@@ -528,7 +543,7 @@ function RecipeDetailsFull({
             />
           </div>
           <span className={classes.servingLabel}>
-            <TbUsers className={classes.servingLabelIcon} />
+            <Users className={classes.servingLabelIcon} size={16} />
             {t("recipes", "servings")} ({servings})
           </span>
         </div>
@@ -544,11 +559,11 @@ function RecipeDetailsFull({
                 title={t("recipeDetails", "nutritionTitle")}
               >
                 <div className={classes.nutritionTitleWrapper}>
-                  <FaNutritionix className={classes.nutritionIcon} />
+                  <Apple className={classes.nutritionIcon} size={16} />
                   <span>{t("recipes", "nutrition")}</span>
                 </div>
                 <span className={classes.expandIcon}>
-                  {showNutrition ? <MdExpandLess /> : <MdExpandMore />}
+                  {showNutrition ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
                 </span>
               </button>
               {showNutrition && (
@@ -671,14 +686,14 @@ function RecipeDetailsFull({
             className={`${classes.tab} ${activeTab === "ingredients" ? classes.activeTab : ""}`}
             onClick={() => setActiveTab("ingredients")}
           >
-            <MdOutlineFormatListBulleted className={classes.tabIcon} />
+            <List className={classes.tabIcon} size={18} />
             {t("recipes", "ingredients")}
           </button>
           <button
             className={`${classes.tab} ${activeTab === "instructions" ? classes.activeTab : ""}`}
             onClick={() => setActiveTab("instructions")}
           >
-            <MdOutlineFormatListNumbered className={classes.tabIcon} />
+            <ListOrdered className={classes.tabIcon} size={18} />
             {t("recipes", "instructions")}
           </button>
           {recipe.notes && (
@@ -686,7 +701,7 @@ function RecipeDetailsFull({
               className={`${classes.tab} ${activeTab === "tips" ? classes.activeTab : ""}`}
               onClick={() => setActiveTab("tips")}
             >
-              <MdOutlineTipsAndUpdates className={classes.tabIcon} />
+              <Lightbulb className={classes.tabIcon} size={18} />
               {t("recipes", "notes")}
             </button>
           )}
@@ -694,7 +709,7 @@ function RecipeDetailsFull({
             className={`${classes.tab} ${activeTab === "chat" ? classes.activeTab : ""}`}
             onClick={() => setActiveTab("chat")}
           >
-            <MdOutlineChat className={classes.tabIcon} />
+            <MessageCircle className={classes.tabIcon} size={18} />
             {t("recipeChat", "tabLabel")}
           </button>
         </div>
@@ -733,7 +748,7 @@ function RecipeDetailsFull({
                         </span>
                       </label>
                     </li>
-                  )
+                  ),
                 )
               ) : (
                 <p>{t("recipes", "noIngredientsListed")}</p>

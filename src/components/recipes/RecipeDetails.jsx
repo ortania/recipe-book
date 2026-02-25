@@ -5,7 +5,6 @@ import RecipeDetailsCookingMode from "./RecipeDetailsCookingMode";
 import { Button } from "../controls/button";
 import classes from "./recipe-details.module.css";
 import { formatDifficulty } from "./utils";
-import { FaRegEdit } from "react-icons/fa";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
 import useTranslatedRecipe from "../../hooks/useTranslatedRecipe";

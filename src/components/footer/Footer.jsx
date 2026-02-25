@@ -1,17 +1,15 @@
 import { NavLink } from "react-router-dom";
-import { FaCalculator } from "react-icons/fa";
-import { FiCalendar, FiShoppingCart, FiGlobe } from "react-icons/fi";
-import { MdMenuBook } from "react-icons/md";
+import { Calculator, CalendarDays, ShoppingCart, Globe, BookOpen } from "lucide-react";
 import { useLanguage } from "../../context";
 import { links } from "../../app/data/navLinks";
 import classes from "./footer.module.css";
 
 const iconMap = {
-  Categories: MdMenuBook,
-  MealPlanner: FiCalendar,
-  ShoppingList: FiShoppingCart,
-  GlobalRecipes: FiGlobe,
-  Conversions: FaCalculator,
+  Categories: BookOpen,
+  MealPlanner: CalendarDays,
+  ShoppingList: ShoppingCart,
+  GlobalRecipes: Globe,
+  Conversions: Calculator,
 };
 
 const navTranslationMap = {
@@ -42,7 +40,7 @@ export default function Footer() {
                 `${classes.footerLink} ${isActive ? classes.active : ""}`
               }
             >
-              {Icon && <Icon className={classes.footerIcon} />}
+              {Icon && <Icon size={20} className={classes.footerIcon} />}
               <span className={classes.footerLabel}>
                 {t("nav", navTranslationMap[el.name] || el.name.toLowerCase())}
               </span>
