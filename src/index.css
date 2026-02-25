@@ -295,6 +295,17 @@ html {
     z-index: 99;
   }
 
+  body.chat-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100%;
+    height: 100%;
+  }
+
+  body.chat-open main {
+    overflow: hidden !important;
+  }
+
   body.hide-footer footer {
     display: none !important;
   }

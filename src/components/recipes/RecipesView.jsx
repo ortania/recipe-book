@@ -186,6 +186,17 @@ function RecipesView({
     }
   };
 
+  useEffect(() => {
+    if (showChat) {
+      document.body.classList.add("chat-open");
+      window.scrollTo({ top: 0 });
+      document.querySelector("main")?.scrollTo({ top: 0 });
+    } else {
+      document.body.classList.remove("chat-open");
+    }
+    return () => document.body.classList.remove("chat-open");
+  }, [showChat]);
+
   // Update local persons when the prop changes
   useEffect(() => {
     setLocalPersons(persons);
@@ -603,7 +614,7 @@ function RecipesView({
 
   if (!persons || persons.length === 0) {
     return (
-      <div className={classes.recipesContainer}>
+      <div className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}>
         <div className={classes.viewToggleWrapper}>
           {showAddAndFavorites && !showChat && (
             <div className={classes.iconButtons}>
@@ -688,7 +699,7 @@ function RecipesView({
   }
 
   return (
-    <div className={classes.recipesContainer}>
+    <div className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}>
       <div className={classes.stickyTop}>
         <div className={classes.viewToggleWrapper}>
           {showAddAndFavorites && !showChat && (

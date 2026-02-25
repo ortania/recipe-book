@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import classes from "./recipe-details-full.module.css";
-import { formatDifficulty, formatTime } from "./utils";
+import { formatDifficulty, formatTime, hasTime } from "./utils";
 import { useLanguage } from "../../context";
 import { isGroupHeader, getGroupName, parseIngredients } from "../../utils/ingredientUtils";
 import {
@@ -310,6 +310,7 @@ function RecipeDetailsFull({
                 zIndex: 99,
                 background: "var(--bg-primary)",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                paddingInline: "1rem",
               }
             : undefined
         }
@@ -477,42 +478,46 @@ function RecipeDetailsFull({
           </div>
         )}
 
-        <div className={classes.recipeInfo}>
-          {recipe.difficulty && recipe.difficulty !== "Unknown" && (
-            <span className={classes.infoItem}>
-              <ChefHat className={classes.infoIcon} size={16} />
-              {t("difficulty", recipe.difficulty)}
-            </span>
-          )}
-          {recipe.difficulty &&
-            recipe.difficulty !== "Unknown" &&
-            recipe.prepTime && <span className={classes.infoDot}>•</span>}
-          {recipe.prepTime && (
-            <span className={classes.infoItem}>
-              <Clock className={classes.infoIcon} size={16} />
-              {language === "he" || language === "mixed" ? "הכנה" : "Prep"}{" "}
-              {formatTime(recipe.prepTime, t("recipes", "minutes"))}
-            </span>
-          )}
-          {recipe.cookTime && recipe.prepTime && (
-            <span className={classes.infoDot}>•</span>
-          )}
-          {recipe.cookTime &&
-            !recipe.prepTime &&
-            recipe.difficulty &&
-            recipe.difficulty !== "Unknown" && (
+        {((recipe.difficulty && recipe.difficulty !== "Unknown") ||
+          hasTime(recipe.prepTime) ||
+          hasTime(recipe.cookTime)) && (
+          <div className={classes.recipeInfo}>
+            {recipe.difficulty && recipe.difficulty !== "Unknown" && (
+              <span className={classes.infoItem}>
+                <ChefHat className={classes.infoIcon} size={16} />
+                {t("difficulty", recipe.difficulty)}
+              </span>
+            )}
+            {recipe.difficulty &&
+              recipe.difficulty !== "Unknown" &&
+              hasTime(recipe.prepTime) && <span className={classes.infoDot}>•</span>}
+            {hasTime(recipe.prepTime) && (
+              <span className={classes.infoItem}>
+                <Clock className={classes.infoIcon} size={16} />
+                {language === "he" || language === "mixed" ? "הכנה" : "Prep"}{" "}
+                {formatTime(recipe.prepTime, t("recipes", "minutes"))}
+              </span>
+            )}
+            {hasTime(recipe.cookTime) && hasTime(recipe.prepTime) && (
               <span className={classes.infoDot}>•</span>
             )}
-          {recipe.cookTime && (
-            <span className={classes.infoItem}>
-              <Clock className={classes.infoIcon} size={16} />
-              {language === "he" || language === "mixed"
-                ? "בישול"
-                : "Cook"}{" "}
-              {formatTime(recipe.cookTime, t("recipes", "minutes"))}
-            </span>
-          )}
-        </div>
+            {hasTime(recipe.cookTime) &&
+              !hasTime(recipe.prepTime) &&
+              recipe.difficulty &&
+              recipe.difficulty !== "Unknown" && (
+                <span className={classes.infoDot}>•</span>
+              )}
+            {hasTime(recipe.cookTime) && (
+              <span className={classes.infoItem}>
+                <Clock className={classes.infoIcon} size={16} />
+                {language === "he" || language === "mixed"
+                  ? "בישול"
+                  : "Cook"}{" "}
+                {formatTime(recipe.cookTime, t("recipes", "minutes"))}
+              </span>
+            )}
+          </div>
+        )}
 
         {recipe.categories && recipe.categories.length > 0 && (
           <div className={classes.categoryTags}>

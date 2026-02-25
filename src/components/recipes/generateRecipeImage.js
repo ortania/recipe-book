@@ -188,8 +188,8 @@ export async function generateRecipeImage(recipe, t) {
   // ─── Meta Info Bar ───
   y += 10;
   const metaParts = [];
-  if (recipe.prepTime) metaParts.push(`⏱ Prep: ${recipe.prepTime}`);
-  if (recipe.cookTime) metaParts.push(`🔥 Cook: ${recipe.cookTime}`);
+  if (recipe.prepTime && String(recipe.prepTime).trim() !== "0") metaParts.push(`⏱ Prep: ${recipe.prepTime}`);
+  if (recipe.cookTime && String(recipe.cookTime).trim() !== "0") metaParts.push(`🔥 Cook: ${recipe.cookTime}`);
   if (recipe.difficulty && recipe.difficulty !== "Unknown") {
     const diffMap = {
       VeryEasy: "Very Easy",

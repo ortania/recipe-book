@@ -17,9 +17,9 @@
   font-weight: 600;
   cursor: pointer;
   z-index: 1000;
-  transition: width 220ms ease-out, height 220ms ease-out,
-    padding 220ms ease-out, border-radius 220ms ease-out,
-    box-shadow 220ms ease-out, gap 220ms ease-out;
+  transition: height 220ms ease-out, padding 220ms ease-out,
+    border-radius 220ms ease-out, box-shadow 220ms ease-out,
+    gap 220ms ease-out;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
   white-space: nowrap;
   overflow: hidden;
@@ -31,9 +31,8 @@
 
 /* Collapsed state (scroll down → icon only) */
 .collapsed {
-  width: 4.4rem;
   height: 4.4rem;
-  padding: 0;
+  padding: 0 1rem;
   border-radius: 50%;
   gap: 0;
 }

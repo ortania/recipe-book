@@ -114,7 +114,7 @@
   background: var(--bg-card);
   border-radius: 18px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
-  z-index: 1000;
+  z-index: 1100;
   min-width: 260px;
   overflow: hidden;
   animation: moreMenuFadeIn 0.15s ease;
@@ -1100,6 +1100,7 @@
     left: 0;
     right: 0;
     z-index: 100;
+    padding-inline: 1rem;
   }
 
   .recipeCard {
@@ -1150,7 +1151,7 @@
     position: static;
     z-index: auto;
     gap: 0.5rem;
-    padding: 0.5rem 0;
+    padding: 0.5rem 1rem;
   }
 
   .cookingBtn {

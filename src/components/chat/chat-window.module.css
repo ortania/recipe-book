@@ -2,11 +2,10 @@
 .chatContainer {
   display: flex;
   flex-direction: column;
-  min-height: calc(100dvh - 4rem);
+  height: calc(100dvh - 14rem);
   max-width: 700px;
   margin: 0 auto;
   padding: 0 1rem;
-  padding-bottom: 0;
 }
 
 .chatHeader {
@@ -26,8 +25,10 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 0.5rem 0;
+  padding: 0.5rem 0 4rem;
   flex: 1;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .message {
@@ -427,16 +428,64 @@
   overflow-y: auto;
 }
 
+/* Fixed input wrapper (main chat page, desktop only) */
+.fixedInputWrapper {
+  position: fixed;
+  bottom: 1rem;
+  inset-inline-start: 220px;
+  inset-inline-end: 0;
+  z-index: 100;
+  background: var(--bg-primary);
+  display: flex;
+  justify-content: center;
+}
+
+.fixedInputWrapper > * {
+  width: 100%;
+  max-width: 700px;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .chatContainer {
-    padding: 0 0.75rem;
-    padding-bottom: 0;
-    min-height: calc(100dvh - 10rem);
+    position: fixed;
+    top: 8.2rem;
+    bottom: 6.5rem;
+    left: 0;
+    right: 0;
+    height: auto;
+    max-width: none;
+    padding: 0.5rem 1rem 0;
+    z-index: 100;
+    background: var(--bg-primary);
+    overscroll-behavior: contain;
+  }
+
+  .fixedInputWrapper {
+    position: static;
+    inset-inline-start: auto;
+    inset-inline-end: auto;
+    display: block;
+    padding: 0;
+    padding-bottom: 0.5rem;
+    z-index: 100;
+    background: var(--bg-primary);
+  }
+
+  .fixedInputWrapper > * {
+    width: auto;
+    max-width: none;
+    padding: 0;
+  }
+
+  .messagesArea {
+    padding-bottom: 0.5rem;
   }
 
   .greeting {
-    padding: 3rem 0 0.5rem;
+    padding: 1rem 0 0.5rem;
   }
 
   .bubble {

@@ -109,6 +109,11 @@
     padding-bottom: 4rem;
   }
 
+  .recipesContainer.chatMode {
+    padding-top: 7rem;
+    padding-bottom: 0;
+  }
+
   .stickyTop {
     position: sticky;
     top: 6.8rem;

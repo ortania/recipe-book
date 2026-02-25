@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from "react";
-import { Image, Square, XCircle, Mic, MicOff, SendHorizontal } from "lucide-react";
+import { Image, Square, XCircle, Mic, MicOff, Send } from "lucide-react";
 import { useLanguage } from "../../../context";
 import classes from "./chat-input.module.css";
 
@@ -170,7 +170,7 @@ function ChatInput({
                 className={classes.sendBtn}
                 disabled={disabled}
               >
-                <SendHorizontal size={16} />
+                <Send size={16} />
               </button>
             </>
           ) : (

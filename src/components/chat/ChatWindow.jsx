@@ -101,7 +101,9 @@ function ChatWindow({
   };
 
   useEffect(() => {
-    scrollToBottom();
+    if (messages.length > 0) {
+      scrollToBottom();
+    }
   }, [messages, customUpdateIdx]);
 
   /* ── persist internal messages to localStorage ── */
@@ -551,21 +553,23 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
         <div ref={messagesEndRef} />
       </div>
 
-      <ChatInput
-        value={input}
-        onChange={setInput}
-        onSubmit={(text) => sendMessage(text)}
-        placeholder={
-          isRecipeMode
-            ? t("recipeChat", "placeholder")
-            : t("chat", "placeholder")
-        }
-        disabled={isLoading}
-        isLoading={isLoading}
-        onStop={handleStop}
-        showImageButton={showImageButton}
-        onImageSelect={handleImageFile}
-      />
+      <div className={!isRecipeMode ? classes.fixedInputWrapper : undefined}>
+        <ChatInput
+          value={input}
+          onChange={setInput}
+          onSubmit={(text) => sendMessage(text)}
+          placeholder={
+            isRecipeMode
+              ? t("recipeChat", "placeholder")
+              : t("chat", "placeholder")
+          }
+          disabled={isLoading}
+          isLoading={isLoading}
+          onStop={handleStop}
+          showImageButton={showImageButton}
+          onImageSelect={handleImageFile}
+        />
+      </div>
     </div>
   );
 }

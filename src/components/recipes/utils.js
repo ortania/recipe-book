@@ -1,3 +1,9 @@
+export function hasTime(value) {
+  if (!value) return false;
+  const str = String(value).trim();
+  return str !== "" && str !== "0";
+}
+
 export function formatTime(value, minutesLabel) {
   if (!value) return "";
   const str = String(value).trim();
