@@ -285,7 +285,6 @@ function RecipeDetailsPage() {
         onDuplicate={isOwner ? handleDuplicate : undefined}
         onSaveRecipe={isOwner ? editRecipe : undefined}
         getCategoryName={getCategoryName}
-        onEnterCookingMode={handleCookingModeToggle}
         onCopyRecipe={isOwner ? (recipe, targetUserId) =>
           copyRecipeToUser(recipe, targetUserId, language)
         : undefined}

@@ -134,6 +134,14 @@
   background: var(--bg-hover);
 }
 
+.moreMenuItemDanger {
+  color: var(--clr-red, #d32f2f);
+}
+
+.moreMenuItemDanger .moreMenuIcon {
+  color: var(--clr-red, #d32f2f);
+}
+
 .moreMenuLabel {
   flex: 1;
   font-weight: 500;
@@ -205,6 +213,11 @@
 
 :global([dir="rtl"]) .backButton {
   transform: scaleX(-1);
+}
+
+.headerSpacer {
+  width: 2.5rem;
+  flex-shrink: 0;
 }
 
 .headerTitle {

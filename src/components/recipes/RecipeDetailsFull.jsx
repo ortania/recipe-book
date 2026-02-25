@@ -4,6 +4,7 @@ import classes from "./recipe-details-full.module.css";
 import { formatDifficulty, formatTime } from "./utils";
 import { useLanguage } from "../../context";
 import { isGroupHeader, getGroupName, parseIngredients } from "../../utils/ingredientUtils";
+import { Share, ExternalLink } from "lucide-react";
 import { FaRegEdit } from "react-icons/fa";
 import { BsTrash3, BsThreeDotsVertical } from "react-icons/bs";
 import { GoHeart, GoHeartFill } from "react-icons/go";
@@ -19,11 +20,8 @@ import { GiMeal } from "react-icons/gi";
 import { FaNutritionix } from "react-icons/fa";
 import {
   IoCopyOutline,
-  IoShareSocialOutline,
   IoTimeOutline,
   IoPrintOutline,
-  IoStarOutline,
-  IoStar,
   IoChevronBackOutline,
 } from "react-icons/io5";
 import { HiOutlineDocumentDuplicate } from "react-icons/hi2";
@@ -34,7 +32,6 @@ import { CloseButton } from "../controls/close-button";
 import { AddButton } from "../controls/add-button";
 import { ExportImageButton } from "./export-image-button";
 import ChatWindow from "../chat/ChatWindow";
-import { ChatHelpButton } from "../controls/chat-help-button";
 
 function RecipeDetailsFull({
   recipe,
@@ -46,7 +43,6 @@ function RecipeDetailsFull({
   onDuplicate,
   onSaveRecipe,
   getCategoryName,
-  onEnterCookingMode,
   onCopyRecipe,
   currentUserId,
   onToggleFavorite,
@@ -89,14 +85,7 @@ function RecipeDetailsFull({
   const [chatMessages, setChatMessages] = useState([]);
   const [chatAppliedFields, setChatAppliedFields] = useState({});
   const [showMoreMenu, setShowMoreMenu] = useState(false);
-  const [showCookingHelp, setShowCookingHelp] = useState(false);
   const [showImageLightbox, setShowImageLightbox] = useState(false);
-
-  const cookingHelpItems = [
-    t("cookingMode", "helpGuideFeature1"),
-    t("cookingMode", "helpGuideFeature2"),
-    t("cookingMode", "helpGuideFeature3"),
-  ];
   const moreMenuRef = useRef(null);
   const stickyHeaderRef = useRef(null);
   const actionBarSentinelRef = useRef(null);
@@ -266,19 +255,7 @@ function RecipeDetailsFull({
           <IoChevronBackOutline />
         </button>
         <h2 className={classes.headerTitle}>{recipe.name}</h2>
-        <div className={classes.cookingBtnWrapper}>
-          <button
-            className={`${classes.headerCookingBtn} ${showCookingHelp ? classes.cookingModeBtnHighlight : ""}`}
-            onClick={onEnterCookingMode}
-            title={t("recipes", "cookingMode")}
-          >
-            <TbChefHat />
-            <span>
-              {language === "he" || language === "mixed" ? "בישול" : "Cook"}
-            </span>
-          </button>
-          {showCookingHelp && <div className={classes.cookingArrow} />}
-        </div>
+        <span className={classes.headerSpacer} />
       </div>
       <div className={classes.imageContainer}>
         {recipe.image_src && (
@@ -346,19 +323,35 @@ function RecipeDetailsFull({
             </button>
             {showMoreMenu && (
               <div className={classes.moreMenu}>
-                {onDelete && (
+                {onEdit && (
                   <button
                     className={classes.moreMenuItem}
                     onClick={() => {
                       setShowMoreMenu(false);
-                      handleDeleteClick();
+                      onEdit(recipe);
                     }}
                   >
                     <span className={classes.moreMenuLabel}>
-                      {t("recipes", "delete")}
+                      {t("recipes", "edit")}
                     </span>
                     <span className={classes.moreMenuIcon}>
-                      <BsTrash3 />
+                      <FaRegEdit />
+                    </span>
+                  </button>
+                )}
+                {recipe.sourceUrl && (
+                  <button
+                    className={classes.moreMenuItem}
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      window.open(recipe.sourceUrl, "_blank", "noopener,noreferrer");
+                    }}
+                  >
+                    <span className={classes.moreMenuLabel}>
+                      {t("recipes", "sourceUrl")}
+                    </span>
+                    <span className={classes.moreMenuIcon}>
+                      <ExternalLink size={18} />
                     </span>
                   </button>
                 )}
@@ -407,6 +400,22 @@ function RecipeDetailsFull({
                     <IoPrintOutline />
                   </span>
                 </button>
+                {onDelete && (
+                  <button
+                    className={`${classes.moreMenuItem} ${classes.moreMenuItemDanger}`}
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      handleDeleteClick();
+                    }}
+                  >
+                    <span className={classes.moreMenuLabel}>
+                      {t("recipes", "delete")}
+                    </span>
+                    <span className={classes.moreMenuIcon}>
+                      <BsTrash3 />
+                    </span>
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -418,10 +427,8 @@ function RecipeDetailsFull({
               title={t("recipes", "favorite")}
             >
               {recipe.isFavorite ? (
-                // <IoStar size={22} />
                 <GoHeartFill color="red" size={22} />
               ) : (
-                // <IoStarOutline size={22} />
                 <GoHeart size={22} />
               )}
             </button>
@@ -432,22 +439,9 @@ function RecipeDetailsFull({
             onClick={handleShare}
             title={t("recipes", "share")}
           >
-            <IoShareSocialOutline size={20} />
+            <Share size={20} />
           </button>
-
-          <ChatHelpButton
-            title={t("cookingMode", "helpGuideTitle")}
-            items={cookingHelpItems}
-            onToggle={setShowCookingHelp}
-          />
         </div>
-
-        {onEdit && (
-          <button className={classes.editBtn} onClick={() => onEdit(recipe)}>
-            <FaRegEdit size={16} />
-            <span>{t("recipes", "edit")}</span>
-          </button>
-        )}
       </div>
 
       <div className={classes.recipeContent}>
@@ -516,21 +510,6 @@ function RecipeDetailsFull({
           </div>
         )}
 
-        {recipe.sourceUrl && (
-          <div className={classes.sourceUrl}>
-            <span className={classes.sourceLabel}>
-              {t("recipes", "sourceUrl")}:
-            </span>
-            <a
-              href={recipe.sourceUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={classes.sourceLink}
-            >
-              {recipe.sourceUrl}
-            </a>
-          </div>
-        )}
 
         <div className={classes.servingSelector}>
           <div className={classes.servingControls}>
