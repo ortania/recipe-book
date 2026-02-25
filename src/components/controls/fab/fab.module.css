@@ -104,6 +104,10 @@
   align-items: center;
 }
 
+:global(body.hide-footer) .fab {
+  bottom: calc(2rem + env(safe-area-inset-bottom, 0));
+}
+
 /* Desktop → hide FAB */
 @media (min-width: 769px) {
   .fab {

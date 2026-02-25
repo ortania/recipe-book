@@ -1,10 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Plus } from "lucide-react";
-import { FiLink } from "react-icons/fi";
-import { BsClipboardData } from "react-icons/bs";
-import { PiPencilSimpleLineLight, PiMicrophoneLight } from "react-icons/pi";
-import { useLanguage } from "../../../context";
-import { GalleryIcon } from "../../icons/GalleryIcon";
 import { BottomSheet } from "../bottom-sheet";
 import classes from "./fab.module.css";
 
@@ -21,8 +16,13 @@ function findScrollParent(el) {
   return window;
 }
 
-function Fab({ onSelect }) {
-  const { t } = useLanguage();
+function Fab({
+  icon = <Plus size="1em" strokeWidth={STROKE} />,
+  label,
+  onClick,
+  children,
+  sheetTitle,
+}) {
   const [collapsed, setCollapsed] = useState(false);
   const [sheetOpen, setSheetOpen] = useState(false);
   const fabRef = useRef(null);
@@ -50,7 +50,8 @@ function Fab({ onSelect }) {
   useEffect(() => {
     const scrollEl = findScrollParent(fabRef.current);
     scrollParentRef.current = scrollEl;
-    lastScrollY.current = scrollEl === window ? window.scrollY : scrollEl.scrollTop;
+    lastScrollY.current =
+      scrollEl === window ? window.scrollY : scrollEl.scrollTop;
 
     let ticking = false;
     const handler = () => {
@@ -67,9 +68,12 @@ function Fab({ onSelect }) {
     return () => target.removeEventListener("scroll", handler);
   }, [onScroll]);
 
-  const handleSelect = (method) => {
-    setSheetOpen(false);
-    onSelect(method);
+  const handleClick = () => {
+    if (children) {
+      setSheetOpen(true);
+    } else if (onClick) {
+      onClick();
+    }
   };
 
   return (
@@ -77,80 +81,24 @@ function Fab({ onSelect }) {
       <button
         ref={fabRef}
         className={`${classes.fab} ${collapsed ? classes.collapsed : ""}`}
-        onClick={() => setSheetOpen(true)}
-        aria-label={t("recipesView", "addNewRecipe")}
+        onClick={handleClick}
+        aria-label={label}
       >
-        <span className={classes.fabIcon}>
-          <Plus size="1em" strokeWidth={STROKE} />
-        </span>
-        <span className={classes.fabLabel}>
-          {t("recipesView", "addNewRecipe")}
-        </span>
+        <span className={classes.fabIcon}>{icon}</span>
+        {label && (
+          <span className={classes.fabLabel}>{label}</span>
+        )}
       </button>
 
-      <BottomSheet
-        open={sheetOpen}
-        onClose={() => setSheetOpen(false)}
-        title={t("recipesView", "addNewRecipe")}
-      >
-        <div className={classes.menu}>
-          <button
-            className={classes.menuItem}
-            onClick={() => handleSelect("photo")}
-          >
-            <span className={classes.menuLabel}>
-              {t("addWizard", "fromPhoto")}
-            </span>
-            <span className={classes.menuIcon}>
-              <GalleryIcon width={20} height={20} />
-            </span>
-          </button>
-          <button
-            className={classes.menuItem}
-            onClick={() => handleSelect("url")}
-          >
-            <span className={classes.menuLabel}>
-              {t("addWizard", "fromUrl")}
-            </span>
-            <span className={classes.menuIcon}>
-              <FiLink />
-            </span>
-          </button>
-          <button
-            className={classes.menuItem}
-            onClick={() => handleSelect("text")}
-          >
-            <span className={classes.menuLabel}>
-              {t("addWizard", "fromText")}
-            </span>
-            <span className={classes.menuIcon}>
-              <BsClipboardData />
-            </span>
-          </button>
-          <button
-            className={classes.menuItem}
-            onClick={() => handleSelect("recording")}
-          >
-            <span className={classes.menuLabel}>
-              {t("addWizard", "fromRecording")}
-            </span>
-            <span className={classes.menuIcon}>
-              <PiMicrophoneLight size="1.2em" />
-            </span>
-          </button>
-          <button
-            className={classes.menuItem}
-            onClick={() => handleSelect("manual")}
-          >
-            <span className={classes.menuLabel}>
-              {t("addWizard", "manual")}
-            </span>
-            <span className={classes.menuIcon}>
-              <PiPencilSimpleLineLight />
-            </span>
-          </button>
-        </div>
-      </BottomSheet>
+      {children && (
+        <BottomSheet
+          open={sheetOpen}
+          onClose={() => setSheetOpen(false)}
+          title={sheetTitle || label}
+        >
+          {children}
+        </BottomSheet>
+      )}
     </>
   );
 }

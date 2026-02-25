@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { IoArrowBack } from "react-icons/io5";
+import { TbChefHat } from "react-icons/tb";
 import RecipeDetailsFull from "../../components/recipes/RecipeDetailsFull";
 import RecipeDetailsCookingMode from "../../components/recipes/RecipeDetailsCookingMode";
 import { EditRecipe } from "../../components/forms/edit-recipe";
+import { Fab } from "../../components/controls/fab";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
 import { getRecipeById } from "../../firebase/recipeService";
@@ -25,6 +27,11 @@ function RecipeDetailsPage() {
     currentUser,
     setRecipes,
   } = useRecipeBook();
+
+  useEffect(() => {
+    document.body.classList.add("hide-footer");
+    return () => document.body.classList.remove("hide-footer");
+  }, []);
 
   const contextRecipe = recipes.find((r) => r.id === id);
   const [localRecipe, setLocalRecipe] = useState(null);
@@ -294,6 +301,12 @@ function RecipeDetailsPage() {
           groups={categories}
         />
       )}
+
+      <Fab
+        icon={<TbChefHat size="1em" />}
+        label={t("recipes", "cookingMode")}
+        onClick={handleCookingModeToggle}
+      />
     </div>
   );
 }

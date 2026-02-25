@@ -50,36 +50,6 @@
   font-size: var(--basic-font);
 }
 
-.floatingCookButton {
-  position: fixed;
-  bottom: 1.5rem;
-  left: 1.5rem;
-  width: 3.2rem;
-  height: 3.2rem;
-  border-radius: 50%;
-  border: none;
-  background: #9810fa;
-  color: white;
-  font-size: 1.6rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  box-shadow: 0 3px 12px rgba(152, 16, 250, 0.35);
-  transition: all 0.2s ease;
-  z-index: 50;
-}
-
-.floatingCookButton:hover {
-  background: #7a0dcc;
-  transform: scale(1.08);
-  box-shadow: 0 4px 16px rgba(152, 16, 250, 0.45);
-}
-
-.floatingCookButton:active {
-  transform: scale(0.95);
-}
-
 @media (max-width: 768px) {
   .pageContainer {
     padding: 0;
