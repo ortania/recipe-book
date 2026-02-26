@@ -9,6 +9,7 @@ import { BackButton } from "../../components/controls/back-button";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
 import { getRecipeById } from "../../firebase/recipeService";
+import { getUserRating, setUserRating } from "../../firebase/ratingService";
 import useTranslatedRecipe from "../../hooks/useTranslatedRecipe";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import classes from "./recipe-details-page.module.css";
@@ -41,6 +42,25 @@ function RecipeDetailsPage() {
   const recipe = localRecipe || contextRecipe || fetchedRecipe;
 
   const isOwner = recipe && currentUser && recipe.userId === currentUser.uid;
+  const isGlobalRecipe = recipe && !isOwner;
+
+  const [globalUserRating, setGlobalUserRating] = useState(0);
+
+  // Load user rating for global recipes
+  useEffect(() => {
+    if (!isGlobalRecipe || !currentUser || !id) return;
+    getUserRating(id, currentUser.uid).then((r) => setGlobalUserRating(r));
+  }, [isGlobalRecipe, currentUser, id]);
+
+  const handleGlobalRate = async (recipeId, rating) => {
+    if (!currentUser) return;
+    setGlobalUserRating(rating);
+    try {
+      await setUserRating(recipeId, currentUser.uid, rating);
+    } catch (err) {
+      console.error("Failed to save rating:", err);
+    }
+  };
 
   // Fetch from Firebase if not found in context (e.g. global recipes)
   useEffect(() => {
@@ -53,7 +73,9 @@ function RecipeDetailsPage() {
         setFetchingRemote(false);
       }
     });
-    return () => { cancelled = true; };
+    return () => {
+      cancelled = true;
+    };
   }, [id, contextRecipe]);
 
   // Clear local override when context catches up
@@ -280,11 +302,16 @@ function RecipeDetailsPage() {
         onSaveRecipe={isOwner ? editRecipe : undefined}
         getCategoryName={getCategoryName}
         onEnterCookingMode={handleCookingModeToggle}
-        onCopyRecipe={isOwner ? (recipe, targetUserId) =>
-          copyRecipeToUser(recipe, targetUserId, language)
-        : undefined}
+        onCopyRecipe={
+          isOwner
+            ? (recipe, targetUserId) =>
+                copyRecipeToUser(recipe, targetUserId, language)
+            : undefined
+        }
         currentUserId={currentUser?.uid}
         onToggleFavorite={isOwner ? handleToggleFavorite : undefined}
+        onRate={isGlobalRecipe ? handleGlobalRate : undefined}
+        userRating={isGlobalRecipe ? globalUserRating : undefined}
       />
 
       {editingRecipe && (

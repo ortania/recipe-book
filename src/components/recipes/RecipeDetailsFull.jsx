@@ -3,7 +3,11 @@ import { useNavigate } from "react-router-dom";
 import classes from "./recipe-details-full.module.css";
 import { formatDifficulty, formatTime, hasTime } from "./utils";
 import { useLanguage } from "../../context";
-import { isGroupHeader, getGroupName, parseIngredients } from "../../utils/ingredientUtils";
+import {
+  isGroupHeader,
+  getGroupName,
+  parseIngredients,
+} from "../../utils/ingredientUtils";
 import {
   Share2,
   Link,
@@ -48,11 +52,14 @@ function RecipeDetailsFull({
   onCopyRecipe,
   currentUserId,
   onToggleFavorite,
+  onRate,
+  userRating = 0,
 }) {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   // State management
   const [activeTab, setActiveTab] = useState("ingredients");
+  const [hoverStar, setHoverStar] = useState(0);
   const touchRef = useRef({ startX: 0, startY: 0 });
 
   const tabOrder = useMemo(() => {
@@ -249,7 +256,7 @@ function RecipeDetailsFull({
       )}
 
       <div ref={stickyHeaderRef} className={classes.stickyHeader}>
-        <BackButton onClick={onClose}/>
+        <BackButton onClick={onClose} />
         <h2 className={classes.headerTitle}>{recipe.name}</h2>
         <span className={classes.headerSpacer} />
       </div>
@@ -451,10 +458,7 @@ function RecipeDetailsFull({
         </div>
 
         {onEnterCookingMode && (
-          <button
-            className={classes.cookingBtn}
-            onClick={onEnterCookingMode}
-          >
+          <button className={classes.cookingBtn} onClick={onEnterCookingMode}>
             <ChefHat size={18} />
             <span>{t("recipes", "cookingMode")}</span>
           </button>
@@ -462,33 +466,100 @@ function RecipeDetailsFull({
       </div>
 
       <div className={classes.recipeContent}>
-        <div className={classes.rating}>
-          {[1, 2, 3, 4, 5].map((star) => (
-            <span
-              key={star}
-              className={classes.ratingStar}
-              role="button"
-              tabIndex={0}
-              style={{
-                color: star <= (recipe.rating || 0) ? "#ffc107" : "#e0e0e0",
-              }}
-              onClick={() => {
-                if (!onSaveRecipe) return;
-                const newRating = star === recipe.rating ? 0 : star;
-                onSaveRecipe({ ...recipe, rating: newRating });
-              }}
-              onKeyDown={(e) => {
-                if (e.key === "Enter" || e.key === " ") {
+        {onRate ? (
+          <div className={classes.ratingSection}>
+            <div className={classes.ratingRow}>
+              <span className={classes.ratingLabel}>
+                {t("globalRecipes", "myRating")}:
+              </span>
+              <div className={classes.rating}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={classes.ratingStar}
+                    role="button"
+                    tabIndex={0}
+                    style={{
+                      color:
+                        star <= (hoverStar || userRating)
+                          ? "#ffc107"
+                          : "#e0e0e0",
+                    }}
+                    onMouseEnter={() => setHoverStar(star)}
+                    onMouseLeave={() => setHoverStar(0)}
+                    onClick={() => onRate(recipe.id, star)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ")
+                        onRate(recipe.id, star);
+                    }}
+                  >
+                    ★
+                  </span>
+                ))}
+              </div>
+            </div>
+            {recipe.avgRating > 0 && (
+              <div className={classes.ratingRow}>
+                <span className={classes.ratingLabel}>
+                  {t("globalRecipes", "avgRating")}:
+                </span>
+                <div className={classes.rating}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      className={classes.ratingStar}
+                      style={{
+                        color:
+                          star <= Math.round(recipe.avgRating)
+                            ? "#ffc107"
+                            : "#e0e0e0",
+                        cursor: "default",
+                      }}
+                    >
+                      ★
+                    </span>
+                  ))}
+                </div>
+                <span className={classes.ratingMeta}>
+                  ({Number(recipe.avgRating).toFixed(1)} · {recipe.ratingCount})
+                </span>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className={classes.rating}>
+            {[1, 2, 3, 4, 5].map((star) => (
+              <span
+                key={star}
+                className={classes.ratingStar}
+                role="button"
+                tabIndex={0}
+                style={{
+                  color:
+                    star <= (hoverStar || recipe.rating || 0)
+                      ? "#ffc107"
+                      : "#e0e0e0",
+                }}
+                onMouseEnter={() => setHoverStar(star)}
+                onMouseLeave={() => setHoverStar(0)}
+                onClick={() => {
                   if (!onSaveRecipe) return;
                   const newRating = star === recipe.rating ? 0 : star;
                   onSaveRecipe({ ...recipe, rating: newRating });
-                }
-              }}
-            >
-              ★
-            </span>
-          ))}
-        </div>
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === " ") {
+                    if (!onSaveRecipe) return;
+                    const newRating = star === recipe.rating ? 0 : star;
+                    onSaveRecipe({ ...recipe, rating: newRating });
+                  }
+                }}
+              >
+                ★
+              </span>
+            ))}
+          </div>
+        )}
 
         {((recipe.difficulty && recipe.difficulty !== "Unknown") ||
           hasTime(recipe.prepTime) ||
@@ -502,11 +573,15 @@ function RecipeDetailsFull({
             )}
             {recipe.difficulty &&
               recipe.difficulty !== "Unknown" &&
-              hasTime(recipe.prepTime) && <span className={classes.infoDot}>•</span>}
+              hasTime(recipe.prepTime) && (
+                <span className={classes.infoDot}>•</span>
+              )}
             {hasTime(recipe.prepTime) && (
               <span className={classes.infoItem}>
                 <Clock className={classes.infoIcon} size={16} />
-                {language === "he" || language === "mixed" ? "הכנה" : "Prep"}{" "}
+                {language === "he" || language === "mixed"
+                  ? "הכנה"
+                  : "Prep"}{" "}
                 {formatTime(recipe.prepTime, t("recipes", "minutes"))}
               </span>
             )}
@@ -580,7 +655,11 @@ function RecipeDetailsFull({
                   <span>{t("recipes", "nutrition")}</span>
                 </div>
                 <span className={classes.expandIcon}>
-                  {showNutrition ? <ChevronUp size={18} /> : <ChevronDown size={18} />}
+                  {showNutrition ? (
+                    <ChevronUp size={18} />
+                  ) : (
+                    <ChevronDown size={18} />
+                  )}
                 </span>
               </button>
               {showNutrition && (

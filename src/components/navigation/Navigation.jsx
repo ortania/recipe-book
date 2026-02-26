@@ -27,6 +27,7 @@ import useTranslatedList from "../../hooks/useTranslatedList";
 import { CloseButton } from "../controls/close-button";
 import { getCategoryIcon } from "../../utils/categoryIcons";
 import { SearchBox } from "../controls/search";
+import { BottomSheet } from "../controls/bottom-sheet";
 import classes from "./navigation.module.css";
 
 const iconMap = {
@@ -44,7 +45,7 @@ const navTranslationMap = {
   Categories: "recipes",
   MealPlanner: "mealPlanner",
   ShoppingList: "shoppingList",
-  GlobalRecipes: "globalRecipes",
+  GlobalRecipes: "globalRecipesFull",
   Conversions: "conversions",
   Settings: "settings",
 };
@@ -77,6 +78,8 @@ function Navigation({ onLogout, links }) {
   const [showManagement, setShowManagement] = useState(false);
   const [showTour, setShowTour] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
+  const [showHelp, setShowHelp] = useState(false);
+  const [isMobileNav, setIsMobileNav] = useState(window.innerWidth <= 768);
   const navScrollableRef = useRef(null);
 
   const getGroupContacts = (groupId) => {
@@ -121,7 +124,10 @@ function Navigation({ onLogout, links }) {
 
     const interval = setInterval(loadChatHistory, 1000);
 
-    const handleResize = () => setIsMobile(window.innerWidth <= 768);
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 768);
+      setIsMobileNav(window.innerWidth <= 768);
+    };
     window.addEventListener("resize", handleResize);
 
     // Swipe gesture for hamburger menu on mobile
@@ -438,6 +444,10 @@ function Navigation({ onLogout, links }) {
             <HelpCircle size={18} className={classes.icon} />
             {t("home", "showTutorial")}
           </button>
+          <button className={classes.navLink} onClick={() => setShowHelp(true)}>
+            <HelpCircle size={18} className={classes.icon} />
+            {t("nav", "help")}
+          </button>
           <NavLink
             to="/settings"
             onClick={closeSidebar}
@@ -488,6 +498,84 @@ function Navigation({ onLogout, links }) {
           />
         )}
       </AnimatePresence>
+
+      {isMobileNav ? (
+        <BottomSheet
+          open={showHelp}
+          onClose={() => setShowHelp(false)}
+          title={t("sidebarHelp", "title")}
+        >
+          <div
+            style={{ padding: "1rem", direction: "rtl", textAlign: "right" }}
+          >
+            <p>{t("sidebarHelp", "description")}</p>
+          </div>
+        </BottomSheet>
+      ) : (
+        showHelp && (
+          <>
+            <div
+              style={{
+                position: "fixed",
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                background: "rgba(0,0,0,0.5)",
+                zIndex: 10199,
+              }}
+              onClick={() => setShowHelp(false)}
+            />
+            <div
+              style={{
+                position: "fixed",
+                top: "50%",
+                left: "50%",
+                transform: "translate(-50%, -50%)",
+                background: "var(--bg-primary)",
+                borderRadius: "14px",
+                padding: "1.5rem",
+                width: "95vw",
+                maxWidth: "400px",
+                maxHeight: "80vh",
+                overflowY: "auto",
+                boxShadow: "0 8px 28px rgba(0,0,0,0.18)",
+                zIndex: 10200,
+                direction: "rtl",
+                textAlign: "right",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginBottom: "0.75rem",
+                }}
+              >
+                <strong style={{ fontSize: "var(--large-font)" }}>
+                  {t("sidebarHelp", "title")}
+                </strong>
+                <button
+                  onClick={() => setShowHelp(false)}
+                  style={{
+                    background: "none",
+                    border: "none",
+                    fontSize: "1.5rem",
+                    color: "var(--text-muted)",
+                    cursor: "pointer",
+                    padding: "0.2em",
+                    lineHeight: 1,
+                  }}
+                >
+                  ✕
+                </button>
+              </div>
+              <p>{t("sidebarHelp", "description")}</p>
+            </div>
+          </>
+        )
+      )}
 
       {selectedChat && (
         <div

@@ -8,7 +8,10 @@ import {
   fetchGlobalRecipes,
   copyRecipeToUser,
 } from "../../firebase/globalRecipeService";
-import { getUserRatingsBatch, setUserRating } from "../../firebase/ratingService";
+import {
+  getUserRatingsBatch,
+  setUserRating,
+} from "../../firebase/ratingService";
 import { RecipesView, UpButton } from "../../components";
 import { scrollToTop } from "../utils";
 import classes from "./global-recipes.module.css";
@@ -68,7 +71,9 @@ function GlobalRecipes() {
     const ids = allRecipes.map((r) => r.id);
     getUserRatingsBatch(ids, currentUser.uid).then((ratingsMap) => {
       const obj = {};
-      ratingsMap.forEach((val, key) => { obj[key] = val; });
+      ratingsMap.forEach((val, key) => {
+        obj[key] = val;
+      });
       setUserRatings((prev) => ({ ...prev, ...obj }));
     });
   }, [currentUser, allRecipes]);
@@ -100,11 +105,7 @@ function GlobalRecipes() {
   );
 
   if (!ready) {
-    return (
-      <div className={classes.loading}>
-        {t("common", "loading")}
-      </div>
-    );
+    return <div className={classes.loading}>{t("common", "loading")}</div>;
   }
 
   return (
@@ -114,7 +115,7 @@ function GlobalRecipes() {
         groups={[]}
         showAddAndFavorites={false}
         showCategories={false}
-        recipesTabLabel={t("nav", "globalRecipes")}
+        recipesTabLabel={t("nav", "globalRecipesFull")}
         emptyTitle={t("recipesView", "emptyGlobalTitle")}
         hasMoreRecipes={hasMore}
         onLoadMore={() => loadRecipes(false)}

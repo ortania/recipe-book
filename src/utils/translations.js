@@ -44,11 +44,18 @@ const translations = {
       mixed: "Shopping List",
     },
     globalRecipes: {
-      he: "מאגר",
+      he: "קהילה",
       en: "Recipe Hub",
       ru: "Банк рецептов",
       de: "Rezeptsammlung",
-      mixed: "מאגר",
+      mixed: "קהילה",
+    },
+    globalRecipesFull: {
+      he: "מתכוני קהילה",
+      en: "Community Recipes",
+      ru: "Рецепты сообщества",
+      de: "Community-Rezepte",
+      mixed: "מתכוני קהילה",
     },
     settings: {
       he: "הגדרות",
@@ -65,11 +72,8 @@ const translations = {
       mixed: "Logout",
     },
     recipesShort: {
-      he: "מתכונים",
-      en: "Recipes",
-      ru: "Рецепты",
-      de: "Rezepte",
-      mixed: "מתכונים",
+      he: "בית",
+      mixed: "בית",
     },
     shoppingListShort: {
       he: "קניות",
@@ -85,6 +89,9 @@ const translations = {
       de: "Planer",
       mixed: "תכנון",
     },
+    help: {
+      he: "עזרה",
+    },
     chatLog: {
       he: "היסטוריית צ'אט",
       en: "Chat Log",
@@ -98,6 +105,16 @@ const translations = {
       ru: "История чата",
       de: "Chat-Verlauf",
       mixed: "Chat History",
+    },
+  },
+
+  // ===================== SIDEBAR HELP =====================
+  sidebarHelp: {
+    title: {
+      he: "עזרה",
+    },
+    description: {
+      he: "בטיפול",
     },
   },
 
@@ -1599,11 +1616,11 @@ const translations = {
     },
     chat: { he: "צ'אט", en: "Chat", ru: "Чат", de: "Chat", mixed: "Chat" },
     recipesTab: {
-      he: "מתכונים",
-      en: "Recipes",
-      ru: "Рецепты",
-      de: "Rezepte",
-      mixed: "Recipes",
+      he: "מתכונים שלי",
+      en: "My Recipes",
+      ru: "Мои рецепты",
+      de: "Meine Rezepte",
+      mixed: "מתכונים שלי",
     },
     goodMorning: {
       he: "בוקר טוב",
@@ -1719,7 +1736,8 @@ const translations = {
       en: "Search recipes by name or ingredient.\nYou can filter, sort and see suggestions while typing.",
       ru: "Ищите рецепты по названию или ингредиенту.\nМожно фильтровать, сортировать и видеть подсказки при вводе.",
       de: "Suchen Sie Rezepte nach Name oder Zutat.\nSie können filtern, sortieren und Vorschläge beim Tippen sehen.",
-      mixed: "Search recipes by name or ingredient.\nYou can filter, sort and see suggestions while typing.",
+      mixed:
+        "Search recipes by name or ingredient.\nYou can filter, sort and see suggestions while typing.",
     },
     searchHelpSearch: {
       he: "חיפוש — הקלידו שם מתכון או מרכיב",
@@ -2321,7 +2339,8 @@ const translations = {
       en: "Your cooking assistant.\nAsk questions, get ideas, and calculate nutritional values.",
       ru: "Ваш кулинарный помощник.\nЗадавайте вопросы, получайте идеи и считайте калории.",
       de: "Ihr Kochassistent.\nStellen Sie Fragen, lassen Sie sich inspirieren und berechnen Sie Nährwerte.",
-      mixed: "Your cooking assistant.\nAsk questions, get ideas, and calculate nutritional values.",
+      mixed:
+        "Your cooking assistant.\nAsk questions, get ideas, and calculate nutritional values.",
     },
     helpFeature1: {
       he: "שאלו שאלות על בישול ומתכונים",

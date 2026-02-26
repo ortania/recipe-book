@@ -46,7 +46,10 @@
 }
 
 .footerLink.active {
-  color: var(--clr-blue-3);
+  color: var(--active-color);
+  background-color: var(--bg-hover);
+  font-weight: 799;
+  color: var(--active-color);
 }
 
 .footerIcon {

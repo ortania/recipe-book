@@ -83,7 +83,6 @@ Variables
   --bg-chip: #ffffff;
   --bg-chip-hover: #f0e6ff;
 
-
   /* --text-primary: #222222; */
   --text-primary: #635555;
   --text-secondary: #555555;
@@ -99,6 +98,8 @@ Variables
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   --accent-color: #000000;
+  --active-color: #2e7d32;
+  --font-heading: "Noto Sans Hebrew", sans-serif;
   --font-heading: "Noto Sans Hebrew", sans-serif;
 
   --bubble-user: #e8e8e8;
@@ -131,6 +132,7 @@ Variables
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
 
   --accent-color: #000000;
+  --active-color: green;
 
   --bubble-user: #2a3550;
   --bubble-assistant: #1e2a45;
