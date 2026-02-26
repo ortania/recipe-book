@@ -161,11 +161,26 @@
   background: var(--bg-hover);
 }
 
+.sidebarTabDelete {
+  color: var(--text-muted);
+  margin-top: auto;
+  padding-bottom: 1rem;
+}
+
+.sidebarTabDelete:hover {
+  background: var(--bg-hover);
+}
+
 .sidebarTabActive {
-  color: #1a9c5a;
+  color: var(--active-color);
   background: var(--bg-card);
-  border-right-color: #1a9c5a;
+  border-right-color: var(--active-color);
   font-weight: 600;
+}
+
+.sidebarTabActive:hover {
+  color: var(--active-color);
+  background: var(--bg-card);
 }
 
 .sidebarTabIcon {
@@ -173,16 +188,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.sidebarTabDelete {
-  color: #e53935;
-  margin-top: auto;
-  padding-bottom: 1rem;
-}
-
-.sidebarTabDelete:hover {
-  background: var(--bg-hover);
 }
 
 /* ========== Content Area ========== */
@@ -528,7 +533,11 @@
   padding: 0.6rem 1rem;
   border: 2px solid #9810fa;
   border-radius: 12px;
-  background: linear-gradient(135deg, rgba(152, 16, 250, 0.05), rgba(152, 16, 250, 0.02));
+  background: linear-gradient(
+    135deg,
+    rgba(152, 16, 250, 0.05),
+    rgba(152, 16, 250, 0.02)
+  );
   position: relative;
 }
 
@@ -810,25 +819,72 @@
   }
 
   .editBody {
-    flex-direction: row;
+    flex-direction: column;
     flex: 1;
     min-height: 0;
     overflow: hidden;
   }
 
   .sidebar {
-    width: 90px;
-    min-width: 90px;
-    padding: 0.5rem 0 1rem;
+    width: 100%;
+    min-width: unset;
+    flex-direction: row;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0;
+    gap: 0;
+    border-left: none;
+    border-bottom: 1px solid var(--border-light);
+    position: sticky;
+    top: 0;
+    z-index: 9;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .sidebar::-webkit-scrollbar {
+    display: none;
   }
 
   .sidebarTab {
-    padding: 0.6rem 0.3rem;
-    font-size: var(--basic-font);
+    flex: 1;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 0.5rem 0.25rem;
+    font-size: var(--small-font);
+    white-space: nowrap;
+    border-right: none;
+    border-bottom: 3px solid transparent;
+    font-weight: 600;
+    color: var(--text-muted);
+    transition: border-color 0.2s;
+  }
+
+  .sidebarTab:hover {
+    color: var(--text-muted);
+    background: none;
+  }
+
+  .sidebarTabActive,
+  .sidebarTabActive:hover {
+    border-right-color: transparent;
+    border-bottom-color: var(--active-color);
+    color: var(--active-color);
+    background: none;
   }
 
   .sidebarTabIcon {
-    font-size: 2rem;
+    font-size: 1.4rem;
+  }
+
+  .sidebarTabDelete {
+    margin-top: 0;
+    padding-bottom: 0;
+  }
+
+  .sidebarTabDelete:hover {
+    background: none;
   }
 
   .dynamicItemTextarea {

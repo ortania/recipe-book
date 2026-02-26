@@ -615,11 +615,7 @@ const translations = {
       mixed: "Source URL",
     },
     shareToGlobal: {
-      he: "שתף במאגר המתכונים",
-      en: "Share to recipe collection",
-      ru: "Поделиться в коллекции рецептов",
-      de: "In Rezeptsammlung teilen",
-      mixed: "שתף במאגר המתכונים",
+      he: "שתף במתכוני קהילה",
     },
     notes: {
       he: "הערות",
@@ -1817,6 +1813,13 @@ const translations = {
       ru: "Удалить рецепт",
       de: "Rezept löschen",
       mixed: "Delete Recipe",
+    },
+    deleteRecipeShort: {
+      he: "מחיקה",
+      en: "Delete",
+      ru: "Удалить",
+      de: "Löschen",
+      mixed: "Delete",
     },
     deleteRecipeMsg: {
       he: "האם אתה בטוח שברצונך למחוק את",
@@ -3321,6 +3324,13 @@ const translations = {
       de: "Grundinfo",
       mixed: "מידע בסיסי",
     },
+    basicInfoShort: {
+      he: "בסיסי",
+      en: "Basic",
+      ru: "Основное",
+      de: "Basis",
+      mixed: "בסיסי",
+    },
     ingredients: {
       he: "מרכיבים",
       en: "Ingredients",
@@ -3334,6 +3344,13 @@ const translations = {
       ru: "Инструкции",
       de: "Anleitung",
       mixed: "הוראות הכנה",
+    },
+    instructionsShort: {
+      he: "הוראות",
+      en: "Steps",
+      ru: "Шаги",
+      de: "Schritte",
+      mixed: "הוראות",
     },
     imageCategories: {
       he: "תמונה וקטגוריות",
@@ -3506,6 +3523,13 @@ const translations = {
       de: "Rezeptbild",
       mixed: "תמונת המתכון",
     },
+    recipeImageShort: {
+      he: "תמונה",
+      en: "Image",
+      ru: "Фото",
+      de: "Bild",
+      mixed: "תמונה",
+    },
     uploadImage: {
       he: "לחץ להעלאת תמונה או גרור לכאן",
       en: "Click to upload image or drag here",
@@ -3641,11 +3665,11 @@ const translations = {
       mixed: "בדוק את הפרטים ושמור את המתכון",
     },
     recipeReady: {
-      he: "!המתכון מוכן",
+      he: "המתכון מוכן!",
       en: "Recipe is ready!",
       ru: "Рецепт готов!",
       de: "Rezept ist fertig!",
-      mixed: "!המתכון מוכן",
+      mixed: "המתכון מוכן!",
     },
     savePrompt: {
       he: 'לחץ על "שמור מתכון" כדי להוסיף אותו לספר המתכונים שלך',

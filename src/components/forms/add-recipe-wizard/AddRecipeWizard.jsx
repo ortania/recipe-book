@@ -490,7 +490,9 @@ function AddRecipeWizard({
         ...prev,
         name: parsed.name?.trim() || prev.name,
         ingredients:
-          ingredientsFromParse.length > 0 ? ingredientsFromParse : prev.ingredients,
+          ingredientsFromParse.length > 0
+            ? ingredientsFromParse
+            : prev.ingredients,
         instructions:
           instructionsFromParse.length > 0
             ? instructionsFromParse
@@ -788,16 +790,21 @@ function AddRecipeWizard({
         </span>
       </div>
       <div className={classes.segmentedBar}>
-        {STEP_LABELS.map((_, i) => (
-          <div
-            key={i}
-            className={`${classes.segment} ${
-              i <= manualStep ? classes.segmentActive : ""
-            } ${i === manualStep ? classes.segmentCurrent : ""}`}
-            onClick={() => visitedSteps.has(i) && handleStepClick(i)}
-            style={{ cursor: visitedSteps.has(i) ? "pointer" : "default" }}
-          />
-        ))}
+        {STEP_LABELS.map((_, i) => {
+          const canClick =
+            i <= manualStep || visitedSteps.has(i) || canNavigateToStep(i);
+          return (
+            <div
+              key={i}
+              className={`${classes.segment} ${
+                i <= manualStep ? classes.segmentActive : ""
+              } ${i === manualStep ? classes.segmentCurrent : ""} ${
+                canClick ? classes.segmentClickable : ""
+              }`}
+              onClick={() => canClick && handleStepClick(i)}
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -921,7 +928,8 @@ function AddRecipeWizard({
   // Parse ingredients box: APPEND only – do not replace existing ingredients (user request).
   const [parseIngredientsPaste, setParseIngredientsPaste] = useState("");
   const [parseIngredientsOpen, setParseIngredientsOpen] = useState(false);
-  const [parseIngredientsHelpOpen, setParseIngredientsHelpOpen] = useState(false);
+  const [parseIngredientsHelpOpen, setParseIngredientsHelpOpen] =
+    useState(false);
   const applyParsedIngredients = () => {
     const text = parseIngredientsPaste.trim();
     if (!text) return;
@@ -1102,16 +1110,22 @@ function AddRecipeWizard({
                     .map((line, i) => {
                       const colon = line.indexOf(":");
                       const label = colon >= 0 ? line.slice(0, colon + 1) : "";
-                      const rest = colon >= 0 ? line.slice(colon + 1).trim() : line;
+                      const rest =
+                        colon >= 0 ? line.slice(colon + 1).trim() : line;
                       return (
-                        <div key={i} className={classes.parseIngredientsHelpBlock}>
+                        <div
+                          key={i}
+                          className={classes.parseIngredientsHelpBlock}
+                        >
                           {label && (
                             <span className={classes.parseIngredientsHelpLabel}>
                               {label}
                             </span>
                           )}
                           {(rest || !label) && (
-                            <span className={classes.parseIngredientsHelpContent}>
+                            <span
+                              className={classes.parseIngredientsHelpContent}
+                            >
                               {rest || line}
                             </span>
                           )}
@@ -1351,17 +1365,20 @@ function AddRecipeWizard({
               <div className={classes.previewMeta}>
                 {recipe.prepTime && (
                   <span>
-                    <Clock size={14} /> {formatTime(recipe.prepTime, t("recipes", "minutes"))}
+                    <Clock size={14} />{" "}
+                    {formatTime(recipe.prepTime, t("recipes", "minutes"))}
                   </span>
                 )}
                 {recipe.cookTime && (
                   <span>
-                    <Flame size={14} /> {formatTime(recipe.cookTime, t("recipes", "minutes"))}
+                    <Flame size={14} />{" "}
+                    {formatTime(recipe.cookTime, t("recipes", "minutes"))}
                   </span>
                 )}
                 {recipe.servings && (
                   <span>
-                    <Utensils size={14} /> {recipe.servings} {t("recipes", "servings")}
+                    <Utensils size={14} /> {recipe.servings}{" "}
+                    {t("recipes", "servings")}
                   </span>
                 )}
               </div>
@@ -1504,6 +1521,13 @@ function AddRecipeWizard({
     return true;
   };
 
+  const canNavigateToStep = (targetStep) => {
+    for (let s = 0; s < targetStep; s++) {
+      if (s === 0 && recipe.name.trim().length === 0) return false;
+    }
+    return true;
+  };
+
   const handleNext = async () => {
     if (manualStep === 4) {
       await handleSubmit();
@@ -1533,12 +1557,8 @@ function AddRecipeWizard({
       >
         <X size={22} />
       </button> */}
-      <CloseButton
-        
-        className={classes.methodCloseBtn}
-        onClick={handleClose}
-      />
-    
+      <CloseButton className={classes.methodCloseBtn} onClick={handleClose} />
+
       <h1 className={classes.methodTitle}>{t("addWizard", "title")}</h1>
       <p className={classes.methodSubtitle}>{t("addWizard", "subtitle")}</p>
 
@@ -1679,7 +1699,9 @@ function AddRecipeWizard({
       />
 
       <div className={classes.tipBox}>
-        <span className={classes.tipIcon}><Lightbulb size={16} /></span>
+        <span className={classes.tipIcon}>
+          <Lightbulb size={16} />
+        </span>
         <span>
           <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
           {t("addWizard", "urlTip")}
@@ -1746,7 +1768,9 @@ function AddRecipeWizard({
       />
 
       <div className={`${classes.tipBox} ${classes.tipBoxPurple}`}>
-        <span className={classes.tipIcon}><Lightbulb size={16} /></span>
+        <span className={classes.tipIcon}>
+          <Lightbulb size={16} />
+        </span>
         <span>
           <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
           {t("addWizard", "textTip")}
@@ -1842,7 +1866,9 @@ function AddRecipeWizard({
       )}
 
       <div className={`${classes.tipBox} ${classes.tipBoxPurple}`}>
-        <span className={classes.tipIcon}><Mic size={16} /></span>
+        <span className={classes.tipIcon}>
+          <Mic size={16} />
+        </span>
         <span>
           <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
           {t("addWizard", "recordingTip")
@@ -1984,7 +2010,9 @@ function AddRecipeWizard({
       )}
 
       <div className={`${classes.tipBox} ${classes.tipBoxGreen}`}>
-        <span className={classes.tipIcon}><Camera size={16} /></span>
+        <span className={classes.tipIcon}>
+          <Camera size={16} />
+        </span>
         <span>
           <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
           {t("addWizard", "photoTip")}
@@ -2024,7 +2052,9 @@ function AddRecipeWizard({
 
       {recipe.sourceUrl && (
         <div className={classes.tipBox}>
-          <span className={classes.tipIcon}><Info size={16} /></span>
+          <span className={classes.tipIcon}>
+            <Info size={16} />
+          </span>
           <span>{t("addWizard", "importReviewNote")}</span>
         </div>
       )}
@@ -2048,11 +2078,16 @@ function AddRecipeWizard({
           onClick={handleNext}
           disabled={!canProceed() || saving}
         >
-          {saving
-            ? <><Loader2 size={16} className={classes.spinning} /> {t("common", "loading") || "..."}</>
-            : manualStep === 4
-              ? t("addWizard", "saveRecipe")
-              : t("addWizard", "continue")}
+          {saving ? (
+            <>
+              <Loader2 size={16} className={classes.spinning} />{" "}
+              {t("common", "loading") || "..."}
+            </>
+          ) : manualStep === 4 ? (
+            t("addWizard", "saveRecipe")
+          ) : (
+            t("addWizard", "continue")
+          )}
           {/* <ChevronRight /> */}
         </button>
       </div>

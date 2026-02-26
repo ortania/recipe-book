@@ -21,15 +21,48 @@ import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./edit-recipe.module.css";
 import { CloseButton } from "../../controls";
-import { calculateNutrition, clearNutritionCache } from "../../../services/openai";
-import { isGroupHeader, getGroupName, makeGroupHeader, ingredientsOnly } from "../../../utils/ingredientUtils";
+import {
+  calculateNutrition,
+  clearNutritionCache,
+} from "../../../services/openai";
+import {
+  isGroupHeader,
+  getGroupName,
+  makeGroupHeader,
+  ingredientsOnly,
+} from "../../../utils/ingredientUtils";
 
 const TABS = [
-  { id: "basic", icon: FileText, labelKey: "basicInfo" },
-  { id: "ingredients", icon: List, labelKey: "ingredients" },
-  { id: "instructions", icon: ListOrdered, labelKey: "instructions" },
-  { id: "image", icon: Image, labelKey: "recipeImage" },
-  { id: "categories", icon: Tags, labelKey: "categories" },
+  {
+    id: "basic",
+    icon: FileText,
+    labelKey: "basicInfo",
+    shortLabelKey: "basicInfoShort",
+  },
+  {
+    id: "ingredients",
+    icon: List,
+    labelKey: "ingredients",
+    shortLabelKey: "ingredients",
+  },
+  {
+    id: "instructions",
+    icon: ListOrdered,
+    labelKey: "instructions",
+    shortLabelKey: "instructionsShort",
+  },
+  {
+    id: "image",
+    icon: Image,
+    labelKey: "recipeImage",
+    shortLabelKey: "recipeImageShort",
+  },
+  {
+    id: "categories",
+    icon: Tags,
+    labelKey: "categories",
+    shortLabelKey: "categories",
+  },
 ];
 
 function EditRecipe({ person, onSave, onCancel, groups = [] }) {
@@ -40,6 +73,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     "name",
   );
   const [activeTab, setActiveTab] = useState("basic");
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
   const fileInputRef = useRef(null);
   const ingredientsListRef = useRef(null);
   const instructionsListRef = useRef(null);
@@ -60,6 +94,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
 
   const { handleTouchStart, handleTouchMove, handleTouchEnd } =
     useTouchDragDrop(handleTouchReorder);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 600);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   useEffect(() => {
     const onMove = (e) => handleTouchMove(e);
@@ -287,7 +327,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     if (saving) return;
     setSaving(true);
     const filledIngredients = ingredientsOnly(
-      editedPerson.ingredients.map((i) => i.trim()).filter((i) => i)
+      editedPerson.ingredients.map((i) => i.trim()).filter((i) => i),
     );
     const filledAll = editedPerson.ingredients
       .map((i) => i.trim())
@@ -310,9 +350,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           nutritionCalculated = true;
         } else {
           console.warn("Nutrition calculation returned error:", result?.error);
-          const msg = result?.error === "QUOTA_EXCEEDED"
-            ? t("recipes", "nutritionQuotaError")
-            : `⚠️ ${t("recipes", "nutritionError")}`;
+          const msg =
+            result?.error === "QUOTA_EXCEEDED"
+              ? t("recipes", "nutritionQuotaError")
+              : `⚠️ ${t("recipes", "nutritionError")}`;
           setSavedMessage(msg);
           await new Promise((r) => setTimeout(r, 3000));
         }
@@ -349,7 +390,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     await onSave(updatedPerson);
     setSaving(false);
     if (nutritionCalculated) {
-      setSavedMessage(`✅ ${t("recipes", "saved")} (🔥 ${nutrition.calories || "?"} kcal)`);
+      setSavedMessage(
+        `✅ ${t("recipes", "saved")} (🔥 ${nutrition.calories || "?"} kcal)`,
+      );
     } else {
       setSavedMessage("✅ " + t("recipes", "saved"));
     }
@@ -584,7 +627,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                       placeholder={t("addWizard", "groupPlaceholder")}
                       value={getGroupName(ing)}
                       onChange={(e) =>
-                        handleIngredientChange(i, makeGroupHeader(e.target.value))
+                        handleIngredientChange(
+                          i,
+                          makeGroupHeader(e.target.value),
+                        )
                       }
                     />
                     <button
@@ -602,7 +648,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                       placeholder={`${t("addWizard", "ingredient")} ${ingredientCounter}`}
                       value={ing}
                       rows={1}
-                      onChange={(e) => handleIngredientChange(i, e.target.value)}
+                      onChange={(e) =>
+                        handleIngredientChange(i, e.target.value)
+                      }
                       onInput={(e) => {
                         e.target.style.height = "auto";
                         e.target.style.height = e.target.scrollHeight + "px";
@@ -856,8 +904,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 // type="button"
                 className={classes.editCloseBtn}
                 onClick={onCancel}
-              >
-              </CloseButton>
+              ></CloseButton>
               <div className={classes.editTitleGroup}>
                 <h2>{t("recipes", "editRecipe")}</h2>
                 <p>{editedPerson.name}</p>
@@ -893,7 +940,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                     <span className={classes.sidebarTabIcon}>
                       <Icon />
                     </span>
-                    {t("addWizard", tab.labelKey)}
+                    {t(
+                      "addWizard",
+                      isMobile ? tab.shortLabelKey : tab.labelKey,
+                    )}
                   </button>
                 );
               })}
@@ -903,9 +953,11 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 onClick={() => setActiveTab("delete")}
               >
                 <span className={classes.sidebarTabIcon}>
-                  <Trash2 size={16} />
+                  <Trash2 />
                 </span>
-                {t("confirm", "deleteRecipe")}
+                {isMobile
+                  ? t("confirm", "deleteRecipeShort")
+                  : t("confirm", "deleteRecipe")}
               </button>
             </div>
 
