@@ -625,7 +625,7 @@
 
 .userName {
   color: var(--text-muted);
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   font-weight: 400;
 }
 
@@ -637,7 +637,7 @@
   background: transparent;
   border: none;
   color: var(--text-muted);
-  padding: 0.65rem 1rem;
+  padding: 0.65rem 0rem;
   font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.15s ease;

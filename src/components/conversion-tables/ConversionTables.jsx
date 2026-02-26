@@ -1,6 +1,17 @@
 import { useState, useMemo } from "react";
 import { useLanguage } from "../../context";
 import { SearchBox } from "../controls/search";
+import {
+  CupSoda,
+  Utensils,
+  Pipette,
+  Thermometer,
+  Cake,
+  Ruler,
+  Egg,
+  ClipboardList,
+  HelpCircle,
+} from "lucide-react";
 import conversionData from "./conversionData";
 import classes from "./conversion-tables.module.css";
 
@@ -12,19 +23,15 @@ function ConversionTables() {
   const conversions = conversionData[language] || conversionData.he;
 
   const tabs = [
-    { id: "cups", label: t("conversions", "tabCups"), icon: "🥤" },
-    { id: "spoons", label: t("conversions", "tabSpoons"), icon: "🥄" },
-    { id: "teaspoons", label: t("conversions", "tabTeaspoons"), icon: "🥄" },
-    {
-      id: "temperature",
-      label: t("conversions", "tabTemperature"),
-      icon: "🌡️",
-    },
-    { id: "pans", label: t("conversions", "tabPans"), icon: "🍰" },
-    { id: "universal", label: t("conversions", "tabUniversal"), icon: "📏" },
-    { id: "eggs", label: t("conversions", "tabEggs"), icon: "🥚" },
-    { id: "general", label: t("conversions", "tabGeneral"), icon: "📋" },
-    { id: "faq", label: t("conversions", "tabFaq"), icon: "❓" },
+    { id: "cups", label: t("conversions", "tabCups"), icon: CupSoda },
+    { id: "spoons", label: t("conversions", "tabSpoons"), icon: Utensils },
+    { id: "teaspoons", label: t("conversions", "tabTeaspoons"), icon: Pipette },
+    { id: "temperature", label: t("conversions", "tabTemperature"), icon: Thermometer },
+    { id: "pans", label: t("conversions", "tabPans"), icon: Cake },
+    { id: "universal", label: t("conversions", "tabUniversal"), icon: Ruler },
+    { id: "eggs", label: t("conversions", "tabEggs"), icon: Egg },
+    { id: "general", label: t("conversions", "tabGeneral"), icon: ClipboardList },
+    { id: "faq", label: t("conversions", "tabFaq"), icon: HelpCircle },
   ];
 
   // Filter conversions based on search query
@@ -85,16 +92,19 @@ function ConversionTables() {
         </div>
 
         <div className={classes.tabs}>
-          {tabs.map((tab) => (
-            <button
-              key={tab.id}
-              className={`${classes.tab} ${activeTab === tab.id ? classes.activeTab : ""}`}
-              onClick={() => setActiveTab(tab.id)}
-            >
-              <span className={classes.tabIcon}>{tab.icon}</span>
-              <span className={classes.tabLabel}>{tab.label}</span>
-            </button>
-          ))}
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            return (
+              <button
+                key={tab.id}
+                className={`${classes.tab} ${activeTab === tab.id ? classes.activeTab : ""}`}
+                onClick={() => setActiveTab(tab.id)}
+              >
+                <span className={classes.tabIcon}><Icon size={18} /></span>
+                <span className={classes.tabLabel}>{tab.label}</span>
+              </button>
+            );
+          })}
         </div>
       </div>
 

@@ -38,6 +38,7 @@ import {
   Lightbulb,
   Info,
   Loader2,
+  Plus,
 } from "lucide-react";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
@@ -101,7 +102,7 @@ function AddRecipeWizard({
   initialScreen = "method",
 }) {
   const { t } = useLanguage();
-  const { currentUser } = useRecipeBook();
+  const { currentUser, addCategory } = useRecipeBook();
   const { getTranslated: getTranslatedGroup } = useTranslatedList(
     groups,
     "name",
@@ -710,6 +711,22 @@ function AddRecipeWizard({
         ? prev.categories.filter((c) => c !== catId)
         : [...prev.categories, catId],
     }));
+  };
+
+  // ========== Add Category Inline ==========
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const handleAddNewCategory = async () => {
+    const name = newCategoryName.trim();
+    if (!name) return;
+    const COLORS = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#9B59B6", "#3498DB", "#F1C40F", "#2ECC71", "#E67E22", "#1ABC9C"];
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    const newCat = await addCategory({ id: Date.now().toString(), name, description: `${name}`, color });
+    if (newCat) {
+      updateRecipe("categories", [...recipe.categories, newCat.id]);
+    }
+    setNewCategoryName("");
+    setShowNewCategoryInput(false);
   };
 
   // ========== Submit ==========
@@ -1325,6 +1342,32 @@ function AddRecipeWizard({
                 {getTranslatedGroup(group)}
               </button>
             ))}
+          {showNewCategoryInput ? (
+            <div className={classes.newCategoryInline}>
+              <input
+                type="text"
+                className={classes.newCategoryInput}
+                placeholder={t("categories", "categoryName")}
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") { e.preventDefault(); handleAddNewCategory(); }
+                  if (e.key === "Escape") { setShowNewCategoryInput(false); setNewCategoryName(""); }
+                }}
+                autoFocus
+              />
+              <button type="button" className={classes.newCategoryConfirmBtn} onClick={handleAddNewCategory} disabled={!newCategoryName.trim()}>
+                <Check size={18} />
+              </button>
+              <button type="button" className={classes.newCategoryCancelBtn} onClick={() => { setShowNewCategoryInput(false); setNewCategoryName(""); }}>
+                <X size={14} />
+              </button>
+            </div>
+          ) : (
+            <button type="button" className={classes.addCategoryChip} onClick={() => setShowNewCategoryInput(true)}>
+              <Plus size={14} /> {t("categories", "addCategory")}
+            </button>
+          )}
         </div>
       </div>
     </div>
