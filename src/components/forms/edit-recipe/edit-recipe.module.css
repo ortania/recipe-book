@@ -707,7 +707,8 @@
 }
 
 .categoryChip:hover {
-  border-color: #1a9c5a;
+  /* border-color: #1a9c5a; */
+  border-color: var(--active-color);
 }
 
 @media (hover: none) {
@@ -721,7 +722,8 @@
   /* border-color: #1a9c5a;
   color: white; */
   background: var(--bg-hover);
-  color: var(--text-primary);
+  /* color: var(--text-primary); */
+  color: var(--active-color);
 }
 
 /* ========== Nutrition ========== */
