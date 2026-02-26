@@ -1,23 +1,13 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
-  MessageCircle,
-  Lightbulb,
-  Camera,
-  Sparkles,
   ChevronDown,
   Search,
-  MessageSquare,
-  Menu,
   ArrowUpDown,
   LayoutGrid,
   List as ListIcon,
-  BookOpen,
-  BookOpenText,
-  Copy,
-  Trash2,
-  Pencil,
   History,
   Filter,
   Link,
@@ -25,6 +15,14 @@ import {
   PenLine,
   Mic,
   ImagePlus,
+  Copy,
+  Trash2,
+  Pencil,
+  Settings2,
+  UtensilsCrossed,
+  ChevronUp,
+  Tags,
+  X,
 } from "lucide-react";
 import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
 import { useRecipeBook, useLanguage } from "../../context";
@@ -36,21 +34,22 @@ import { RecipeInfo } from "./RecipeInfo";
 import { SimpleRecipeInfo } from "./SimpleRecipeInfo";
 import { EditRecipe } from "../forms/edit-recipe";
 import { SortControls } from "../controls/sort-controls";
-import { ViewToggleButton } from "../controls/view-toggle-button";
 import ViewToggle from "../controls/view-toggle";
 import ChatWindow from "../chat/ChatWindow";
 
 import { Greeting } from "../greeting";
 import { search } from "./utils";
-import { AddButton, AddRecipeDropdown } from "../controls";
+import { AddRecipeDropdown } from "../controls";
 import { Fab } from "../controls/fab";
 import fabClasses from "../controls/fab/fab.module.css";
 import { BottomSheet } from "../controls/bottom-sheet";
 import { CloseButton } from "../controls/close-button";
 import { BackButton } from "../controls/back-button";
-import ChatHelpButton from "../controls/chat-help-button/ChatHelpButton";
 import { SortDropdown } from "../controls/sort-dropdown";
+import { SearchBox } from "../controls/search";
 import { SearchOverlay } from "./search-overlay";
+import { CategoriesManagement } from "../categories-management";
+import { getCategoryIcon } from "../../utils/categoryIcons";
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -130,6 +129,11 @@ function RecipesView({
     return false;
   });
   const [isMobile, setIsMobile] = useState(false);
+  const [mobileTabsEl, setMobileTabsEl] = useState(null);
+  const [mobileActionsEl, setMobileActionsEl] = useState(null);
+  const [showCategoriesSheet, setShowCategoriesSheet] = useState(false);
+  const [showManagement, setShowManagement] = useState(false);
+  const [categorySearch, setCategorySearch] = useState("");
   const filterRef = useRef(null);
   const sortRef = useRef(null);
   const [filterMenuStyle, setFilterMenuStyle] = useState({});
@@ -141,6 +145,13 @@ function RecipesView({
     toggleCategory,
     clearCategorySelection,
     setIsSearchActive,
+    categories,
+    recipes,
+    addCategory,
+    editCategory,
+    deleteCategory,
+    reorderCategories,
+    sortCategoriesAlphabetically,
   } = useRecipeBook();
 
   const hasMoreRecipes = hasMoreRecipesProp ?? hasMoreRecipesCtx;
@@ -158,7 +169,11 @@ function RecipesView({
 
   useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
-    const update = () => setIsMobile(mql.matches);
+    const update = () => {
+      setIsMobile(mql.matches);
+      setMobileTabsEl(mql.matches ? document.getElementById("mobile-tabs-portal") : null);
+      setMobileActionsEl(mql.matches ? document.getElementById("mobile-header-actions-portal") : null);
+    };
     update();
     mql.addEventListener("change", update);
     return () => mql.removeEventListener("change", update);
@@ -529,8 +544,6 @@ function RecipesView({
     groups,
     "name",
   );
-  const isAllSelected = selectedCategories.includes("all");
-
   /* ── Shared filter/sort content for dropdown (desktop) + BottomSheet (mobile) ── */
   const filterContent = (
     <div className={classes.dropdownScrollable}>
@@ -615,6 +628,48 @@ function RecipesView({
     setSortField(field);
     setSortDirection(direction);
   };
+
+  const viewToggleElement = (
+    <ViewToggle
+      activeView={activeView}
+      onViewChange={handleViewChange}
+      recipesLabel={recipesTabLabel}
+    />
+  );
+
+  const isAllSelected = selectedCategories.includes("all");
+  const selectedCount = isAllSelected ? 0 : selectedCategories.length;
+
+  const getGroupContacts = (groupId) => {
+    if (groupId === "all") return recipes;
+    if (groupId === "general") {
+      return recipes.filter((r) => !r.categories || r.categories.length === 0);
+    }
+    return recipes.filter((r) => r.categories && r.categories.includes(groupId));
+  };
+
+  const mobileHeaderActions = (
+    <>
+      <button
+        className={classes.mobileHeaderBtn}
+        onClick={() => setShowCategoriesSheet(true)}
+        title={t("nav", "categories")}
+      >
+        <Tags size={20} />
+        {!isAllSelected && selectedCount > 0 && (
+          <span className={classes.mobileHeaderBadge}>{selectedCount}</span>
+        )}
+      </button>
+      <button
+        className={classes.mobileHeaderBtn}
+        onClick={toggleView}
+        title={isSimpleView ? t("recipesView", "gridView") : t("recipesView", "listView")}
+      >
+        {isSimpleView ? <LayoutGrid size={20} /> : <ListIcon size={20} />}
+      </button>
+    </>
+  );
+
   const selectedCategoryObjects = isAllSelected
     ? []
     : selectedCategories
@@ -624,33 +679,15 @@ function RecipesView({
   if (!persons || persons.length === 0) {
     return (
       <div className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}>
+        {mobileTabsEl && createPortal(viewToggleElement, mobileTabsEl)}
+        {mobileActionsEl && createPortal(mobileHeaderActions, mobileActionsEl)}
         <div className={classes.viewToggleWrapper}>
-          {showAddAndFavorites && !showChat && (
-            <div className={classes.iconButtons}>
-              <AddButton
-                type="circle"
-                onClick={() => setShowFavoritesOnly((prev) => !prev)}
-                title={t("recipes", "favorite")}
-                className={showFavoritesOnly ? classes.favoritesActive : ""}
-              >
-                {showFavoritesOnly ? (
-                  <Heart size="1em" strokeWidth={1.5} fill="red" stroke="red" />
-                ) : (
-                  <Heart size="1em" strokeWidth={1.5} />
-                )}
-              </AddButton>
-              <span className={classes.desktopOnly}>
-                <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
-              </span>
-            </div>
+          <span className={classes.desktopOnly}>
+            <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
+          </span>
+          {!mobileTabsEl && (
+            <div className={classes.viewToggle}>{viewToggleElement}</div>
           )}
-          <div className={classes.viewToggle}>
-            <ViewToggle
-              activeView={activeView}
-              onViewChange={handleViewChange}
-              recipesLabel={recipesTabLabel}
-            />
-          </div>
         </div>
 
         <div style={{ display: showChat ? "block" : "none" }}>
@@ -709,161 +746,35 @@ function RecipesView({
 
   return (
     <div className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}>
+      {mobileTabsEl && createPortal(viewToggleElement, mobileTabsEl)}
+      {mobileActionsEl && createPortal(mobileHeaderActions, mobileActionsEl)}
+
       <div className={classes.stickyTop}>
         <div className={classes.viewToggleWrapper}>
-          {showSearch && (
-            <BackButton onClick={closeSearch} />
+          <span className={classes.desktopOnly}>
+            <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
+          </span>
+          {!mobileTabsEl && (
+            <div className={classes.viewToggle}>{viewToggleElement}</div>
           )}
-          {showAddAndFavorites && !showChat && !showSearch && (
-            <div className={classes.iconButtons}>
-              <AddButton
-                type="circle"
-                onClick={() => setShowFavoritesOnly((prev) => !prev)}
-                title={t("recipes", "favorite")}
-                className={showFavoritesOnly ? classes.favoritesActive : ""}
-              >
-                {showFavoritesOnly ? (
-                  <Heart size="1em" strokeWidth={1.5} fill="red" stroke="red" />
-                ) : (
-                  <Heart size="1em" strokeWidth={1.5} />
-                )}
-              </AddButton>
-              <span className={classes.desktopOnly}>
-                <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
-              </span>
-            </div>
-          )}
-          <div className={classes.viewToggle}>
-            <ViewToggle
-              activeView={showSearch ? "chat" : activeView}
-              onViewChange={(view) => {
-                if (showSearch) {
-                  if (view === "recipes") {
-                    closeSearch();
-                    setActiveView("recipes");
-                    setShowChat(false);
-                  }
-                } else {
-                  handleViewChange(view);
-                }
-              }}
-              recipesLabel={recipesTabLabel}
-              chatLabel={showSearch ? t("common", "search") : undefined}
-            />
-          </div>
-          {persons.length > 0 && !showChat && (
+          <div className={classes.desktopHeaderActions}>
             <button
-              className={classes.viewToggleIcon}
+              className={classes.desktopHeaderBtn}
+              onClick={() => setShowCategoriesSheet(true)}
+              title={t("nav", "categories")}
+            >
+              <Tags size={18} />
+              {!isAllSelected && selectedCount > 0 && (
+                <span className={classes.mobileHeaderBadge}>{selectedCount}</span>
+              )}
+            </button>
+            <button
+              className={classes.desktopHeaderBtn}
               onClick={toggleView}
-              title={
-                isSimpleView
-                  ? t("recipesView", "gridView")
-                  : t("recipesView", "listView")
-              }
+              title={isSimpleView ? t("recipesView", "gridView") : t("recipesView", "listView")}
             >
               {isSimpleView ? <LayoutGrid size={18} /> : <ListIcon size={18} />}
             </button>
-          )}
-          <div className={classes.helpBtnEnd}>
-            <ChatHelpButton
-              key={showSearch ? "search" : activeView}
-              title={
-                showSearch
-                  ? t("recipesView", "searchHelpTitle")
-                  : showChat
-                    ? t("chat", "helpTitle")
-                    : helpTitleProp || t("recipesView", "helpTitle")
-              }
-              description={
-                showSearch
-                  ? t("recipesView", "searchHelpIntro")
-                  : showChat
-                    ? t("chat", "helpIntro")
-                    : helpDescriptionProp || t("recipesView", "helpIntro")
-              }
-              items={
-                showSearch
-                  ? [
-                      <>
-                        <Search size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "searchHelpSearch")}
-                      </>,
-                      <>
-                        <Sparkles size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "searchHelpSuggestions")}
-                      </>,
-                      <>
-                        <Filter size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "searchHelpFilter")}
-                      </>,
-                      <>
-                        <ArrowUpDown size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "searchHelpSort")}
-                      </>,
-                    ]
-                  : showChat
-                    ? [
-                        <>
-                          <MessageCircle size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("chat", "helpFeature1")}
-                        </>,
-                        <>
-                          <Lightbulb size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("chat", "helpFeature2")}
-                        </>,
-                        <>
-                          <Camera size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("chat", "helpFeature3")}
-                        </>,
-                        <>
-                          <Sparkles size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("chat", "helpFeature4")}
-                        </>,
-                      ]
-                    : helpItemsProp || [
-                        <>
-                          <Menu size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("recipesView", "helpSideMenu")}
-                        </>,
-                        <>
-                          <MessageSquare size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("recipesView", "helpTabChat")}
-                        </>,
-                        <>
-                          <BookOpen size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("recipesView", "helpTabRecipes")}
-                        </>,
-                        <>
-                          <Search size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("recipesView", "helpSearch")}
-                        </>,
-                        <>
-                          <Filter size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("recipesView", "helpFilter")}
-                        </>,
-                        <>
-                          <ArrowUpDown size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("recipesView", "helpSort")}
-                        </>,
-                        <>
-                          <Heart size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("recipesView", "helpFavorites")}
-                        </>,
-                        <>
-                          <span
-                            style={{ verticalAlign: "middle", fontWeight: 700 }}
-                          >
-                            +
-                          </span>{" "}
-                          {t("recipesView", "helpAdd")}
-                        </>,
-                        <>
-                          <LayoutGrid size={16} style={{ verticalAlign: "middle" }} />{" "}
-                          {t("recipesView", "helpView")}
-                        </>,
-                      ]
-              }
-            />
           </div>
         </div>
 
@@ -876,8 +787,21 @@ function RecipesView({
           </div>
         )}
 
-        {!showChat && !showSearch && persons.length > 0 && (
-          <div className={classes.searchHeader}>
+        {!showChat && persons.length > 0 && (
+          <div className={classes.searchHeader} style={{ display: showSearch ? "none" : undefined }}>
+            {showAddAndFavorites && (
+              <button
+                onClick={() => setShowFavoritesOnly((prev) => !prev)}
+                title={t("recipes", "favorite")}
+                className={`${classes.favoritesBtn} ${showFavoritesOnly ? classes.favoritesActive : ""}`}
+              >
+                {showFavoritesOnly ? (
+                  <Heart size={22} strokeWidth={1.5} fill="red" stroke="red" />
+                ) : (
+                  <Heart size={22} strokeWidth={1.5} />
+                )}
+              </button>
+            )}
             <button
               className={classes.searchTrigger}
               onClick={() => setShowSearch(true)}
@@ -1068,6 +992,11 @@ function RecipesView({
                               className={classes.compactItem}
                               onClick={() => navigate(`/recipe/${person.id}`)}
                             >
+                              {(person.image || person.image_src) ? (
+                                <img src={person.image || person.image_src} alt="" className={classes.compactThumb} />
+                              ) : (
+                                <span className={classes.compactThumbPlaceholder}><UtensilsCrossed size={16} /></span>
+                              )}
                               <span className={classes.compactName}>
                                 {person.name}
                               </span>
@@ -1142,6 +1071,11 @@ function RecipesView({
                             className={classes.compactItem}
                             onClick={() => navigate(`/recipe/${person.id}`)}
                           >
+                            {(person.image || person.image_src) ? (
+                              <img src={person.image || person.image_src} alt="" className={classes.compactThumb} />
+                            ) : (
+                              <span className={classes.compactThumbPlaceholder}><UtensilsCrossed size={16} /></span>
+                            )}
                             <span className={classes.compactName}>
                               {person.name}
                             </span>
@@ -1198,6 +1132,11 @@ function RecipesView({
                   className={classes.compactItem}
                   onClick={() => navigate(`/recipe/${person.id}`)}
                 >
+                  {(person.image || person.image_src) ? (
+                    <img src={person.image || person.image_src} alt="" className={classes.compactThumb} />
+                  ) : (
+                    <span className={classes.compactThumbPlaceholder}><UtensilsCrossed size={16} /></span>
+                  )}
                   <span className={classes.compactName}>{person.name}</span>
                   {showAddAndFavorites && (
                     <div className={classes.compactActions}>
@@ -1278,6 +1217,173 @@ function RecipesView({
           <AddRecipeMenu onSelect={onAddPerson} t={t} />
         </Fab>
       )}
+
+      {isMobile ? (
+        <BottomSheet
+          open={showCategoriesSheet}
+          onClose={() => setShowCategoriesSheet(false)}
+          title={t("nav", "categories")}
+        >
+          <CategoriesSheetContent
+            classes={classes}
+            categories={categories}
+            categorySearch={categorySearch}
+            setCategorySearch={setCategorySearch}
+            clearCategorySelection={clearCategorySelection}
+            isAllSelected={isAllSelected}
+            selectedCount={selectedCount}
+            selectedCategories={selectedCategories}
+            toggleCategory={toggleCategory}
+            getTranslatedGroup={getTranslatedGroup}
+            getGroupContacts={getGroupContacts}
+            getCategoryIcon={getCategoryIcon}
+            setShowCategoriesSheet={setShowCategoriesSheet}
+            setShowManagement={setShowManagement}
+            t={t}
+          />
+        </BottomSheet>
+      ) : showCategoriesSheet && (
+        <>
+          <div className={classes.categoriesPopupOverlay} onClick={() => setShowCategoriesSheet(false)} />
+          <div className={classes.categoriesPopup}>
+            <div className={classes.categoriesPopupHeader}>
+              <span className={classes.categoriesPopupTitle}>{t("nav", "categories")}</span>
+              <button className={classes.categoriesPopupClose} onClick={() => setShowCategoriesSheet(false)}>
+                <X size={18} />
+              </button>
+            </div>
+            <CategoriesSheetContent
+              classes={classes}
+              categories={categories}
+              categorySearch={categorySearch}
+              setCategorySearch={setCategorySearch}
+              clearCategorySelection={clearCategorySelection}
+              isAllSelected={isAllSelected}
+              selectedCount={selectedCount}
+              selectedCategories={selectedCategories}
+              toggleCategory={toggleCategory}
+              getTranslatedGroup={getTranslatedGroup}
+              getGroupContacts={getGroupContacts}
+              getCategoryIcon={getCategoryIcon}
+              setShowCategoriesSheet={setShowCategoriesSheet}
+              setShowManagement={setShowManagement}
+              t={t}
+            />
+          </div>
+        </>
+      )}
+
+      {showManagement && (
+        <CategoriesManagement
+          categories={categories}
+          onClose={() => setShowManagement(false)}
+          onAddCategory={addCategory}
+          onEditCategory={editCategory}
+          onDeleteCategory={deleteCategory}
+          onReorderCategories={reorderCategories}
+          onSortAlphabetically={sortCategoriesAlphabetically}
+          getGroupContacts={getGroupContacts}
+        />
+      )}
+    </div>
+  );
+}
+
+function CategoriesSheetContent({
+  classes,
+  categories,
+  categorySearch,
+  setCategorySearch,
+  clearCategorySelection,
+  isAllSelected,
+  selectedCount,
+  selectedCategories,
+  toggleCategory,
+  getTranslatedGroup,
+  getGroupContacts,
+  getCategoryIcon,
+  setShowCategoriesSheet,
+  setShowManagement,
+  t,
+}) {
+  return (
+    <div className={classes.categoriesSheetContent}>
+      <div className={classes.categoriesSheetSearch}>
+        <SearchBox
+          searchTerm={categorySearch}
+          onSearchChange={(val) => {
+            setCategorySearch(val);
+            if (!val) clearCategorySelection();
+          }}
+          placeholder={t("categories", "searchCategory")}
+          size="small"
+        />
+      </div>
+
+      {!isAllSelected && selectedCount > 0 && (
+        <div className={classes.categoriesSheetActiveBar}>
+          <span className={classes.categoriesSheetActiveCount}>
+            {selectedCount} {t("categories", "selected") || "נבחרו"}
+          </span>
+          <button className={classes.categoriesSheetClear} onClick={clearCategorySelection}>
+            {t("categories", "clear")}
+          </button>
+        </div>
+      )}
+
+      <div className={classes.categoriesSheetList}>
+        {categories
+          .filter((group) => {
+            if (!categorySearch.trim()) return true;
+            const term = categorySearch.trim().toLowerCase();
+            const name =
+              group.id === "all"
+                ? t("categories", "allRecipes").toLowerCase()
+                : (getTranslatedGroup(group) || "").toLowerCase();
+            return name.includes(term);
+          })
+          .map((group) => {
+            const isSelected = selectedCategories.includes(group.id);
+            const IconComp = group.id === "all" ? UtensilsCrossed : getCategoryIcon(group.icon);
+            return (
+              <button
+                key={group.id}
+                className={`${classes.categorySheetItem} ${isSelected ? classes.categorySheetActive : ""}`}
+                onClick={() => toggleCategory(group.id)}
+                style={isSelected ? {
+                  borderColor: group.color,
+                  backgroundColor: `${group.color}15`,
+                } : undefined}
+              >
+                <span className={classes.categorySheetLabel}>
+                  <span
+                    className={classes.categorySheetIcon}
+                    style={{ backgroundColor: `${group.color}18`, color: group.color }}
+                  >
+                    <IconComp size={18} />
+                  </span>
+                  <span className={classes.categorySheetName}>
+                    {group.id === "all" ? t("categories", "allRecipes") : getTranslatedGroup(group)}
+                  </span>
+                </span>
+                <span className={classes.categorySheetCountNum}>
+                  {getGroupContacts(group.id).length}
+                </span>
+              </button>
+            );
+          })}
+      </div>
+
+      <button
+        className={classes.categoryManageBtn}
+        onClick={() => {
+          setShowCategoriesSheet(false);
+          setShowManagement(true);
+        }}
+      >
+        <Settings2 size={16} />
+        {t("categories", "manage")}
+      </button>
     </div>
   );
 }

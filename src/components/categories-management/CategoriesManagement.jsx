@@ -15,7 +15,6 @@ import {
   DEFAULT_ICON_ID,
   getCategoryIcon,
 } from "../../utils/categoryIcons";
-import ChatHelpButton from "../controls/chat-help-button/ChatHelpButton";
 import classes from "./categories-management.module.css";
 
 const COLORS = [
@@ -281,14 +280,6 @@ function CategoriesManagement({
             {t("categories", "categoryManagement")}
           </h2>
           <div className={classes.headerActions}>
-            <ChatHelpButton
-              title={t("categories", "helpTitle")}
-              items={[
-                t("categories", "helpAdd"),
-                t("categories", "helpSort"),
-                t("categories", "helpDrag"),
-              ]}
-            />
             <button
               className={classes.sortBtn}
               onClick={() =>

@@ -14,7 +14,7 @@
   border: none;
   background: none;
   cursor: pointer;
-  font-size: var(--basic-font);
+  font-size: var(--basic-font) !important;
   color: var(--text-primary, #333);
   text-align: start;
   gap: 0.5rem;
@@ -28,7 +28,7 @@
 
 .option.active {
   font-weight: 600;
-  color: var(--primary-color, #4a90d9);
+  color: var(--active-color, #4a90d9);
   background: var(--bg-hover, #f5f5f5);
 }
 
@@ -44,5 +44,5 @@
 }
 
 .option.active .arrow {
-  color: var(--primary-color, #4a90d9);
+  color: var(--action-color, #4a90d9);
 }

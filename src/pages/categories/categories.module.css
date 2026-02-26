@@ -163,7 +163,7 @@
   flex: 1;
   border: 1px solid var(--border-color);
   background: var(--bg-card);
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   outline: none;
   color: var(--text-primary);
   padding: 0 0.75rem;

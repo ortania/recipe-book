@@ -203,6 +203,7 @@
   font-weight: 700;
   color: var(--text-primary);
   margin: 0 0 1.5rem 0;
+  letter-spacing: 0;
 }
 
 /* ========== Form Elements ========== */

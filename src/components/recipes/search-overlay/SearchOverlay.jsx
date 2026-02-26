@@ -12,6 +12,7 @@ import { useLanguage } from "../../../context";
 import { SearchBox } from "../../controls/search";
 import { BottomSheet } from "../../controls/bottom-sheet";
 import { CloseButton } from "../../controls/close-button";
+import { BackButton } from "../../controls/back-button";
 import { SortDropdown } from "../../controls/sort-dropdown";
 import { RecipeInfo } from "../RecipeInfo";
 import { search } from "../utils";
@@ -460,6 +461,7 @@ function SearchOverlay({
     <>
       {/* Search header */}
       <div className={parentClasses.searchHeader}>
+        <BackButton onClick={onClose} />
         <div className={`${parentClasses.searchBoxWrapper} ${classes.searchBoxRelative}`} ref={suggestionsRef}>
           <SearchBox
             searchTerm={searchTerm}

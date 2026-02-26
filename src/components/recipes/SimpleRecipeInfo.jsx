@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { UtensilsCrossed } from "lucide-react";
 import classes from "./simple-recipe-info.module.css";
 import { Button } from "../controls/button";
 
@@ -46,6 +47,13 @@ function SimpleRecipeInfo({
           >
             {isFavorite ? "★" : "☆"}
           </Button>
+          {(person.image || person.image_src) ? (
+            <img src={person.image || person.image_src} alt="" className={classes.thumb} />
+          ) : (
+            <span className={classes.thumbPlaceholder}>
+              <UtensilsCrossed size={16} />
+            </span>
+          )}
           <span className={classes.name}>{person.name}</span>
           <span className={classes.phone}>
             {person.servings ? `${person.servings} servings` : ""}

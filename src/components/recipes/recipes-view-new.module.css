@@ -101,8 +101,7 @@
 
 @media (max-width: 768px) {
   .recipesContainer {
-    /* מרווח אחרי ה-header העליון: גובה סרגל Chat/Recipes + סרגל חיפוש קבוע */
-    padding-top: 10rem;
+    padding-top: 3.5rem;
     padding-left: 0;
     padding-right: 0;
     max-width: 100%;
@@ -110,54 +109,43 @@
   }
 
   .recipesContainer.chatMode {
-    padding-top: 7rem;
+    padding-top: 3.5rem;
     padding-bottom: 0;
   }
 
   .stickyTop {
     position: sticky;
-    top: 6.8rem;
+    top: 0;
     z-index: 100;
     background: var(--bg-primary);
+    padding-top: 0.5rem;
+    margin-top: -3.5rem;
   }
 
   :global(body.sidebar-open) .viewToggleWrapper,
   :global(body.sidebar-open) .iconButtons,
-  :global(body.sidebar-open) .viewToggleIcon,
   :global(body.sidebar-open) .searchHeader,
   :global(body.modal-open) .viewToggleWrapper,
   :global(body.modal-open) .iconButtons,
-  :global(body.modal-open) .viewToggleIcon,
   :global(body.modal-open) .searchHeader {
     display: none !important;
   }
 
   .viewToggleWrapper {
-    /* במובייל הסרגל Chat/Recipes מקובע מתחת ל-header העליון */
-    position: fixed;
-    top: 3.8rem;
-    left: 0;
-    right: 0;
-    padding: 0.5rem 1rem;
+    position: static;
+    padding: 0;
     margin: 0;
-    /* border-bottom: 1px solid var(--border-color); */
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-height: 0;
+    display: none;
     background: var(--bg-primary);
-    z-index: 100;
   }
 
   .viewToggleWrapper::before {
-    /* במובייל כבר לא צריך שכבת רקע נוספת – הכל בתוך stickyTop */
     content: none;
   }
 
   .viewToggle {
-    position: static;
-    transform: none;
-    display: flex;
-    justify-content: center;
+    display: none;
   }
 
   .iconButtons {
@@ -167,15 +155,8 @@
     transform: translateY(-50%);
   }
 
-  .viewToggleIcon {
-    position: absolute;
-    inset-inline-end: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-  }
-
   .headerTitle {
-    margin-top: 3rem;
+    margin-top: 0;
     padding-left: 0;
   }
 
@@ -184,15 +165,12 @@
   }
 
   .searchHeader {
-    position: fixed;
-    top: 6.5rem;
-    left: 0;
-    right: 0;
+    position: sticky;
+    top: 0;
     z-index: 99;
     padding: 0.6rem 1rem 0.75rem;
     margin: 0;
     background: var(--bg-primary);
-    /* border-bottom: 1px solid var(--border-color); */
     flex-wrap: nowrap;
     gap: 0.6rem;
   }
@@ -714,7 +692,7 @@
     flex-wrap: nowrap;
     gap: 0.6rem;
     padding: 0.6rem 1rem;
-    margin: 1rem 0;
+    margin: 0;
   }
 
   .searchBoxWrapper {
@@ -827,7 +805,7 @@
   color: var(--text-primary);
   margin: 0;
   font-weight: 500;
-  letter-spacing: 0.01em;
+  letter-spacing: 0;
 }
 
 .emptyButton {
@@ -900,7 +878,7 @@
 }
 
 .recentlyViewedName {
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   color: var(--text-secondary);
   text-align: center;
   max-width: 90px;
@@ -987,9 +965,10 @@
 
   .searchHeader {
     flex-wrap: nowrap;
-    padding: 2rem 1rem 0.4rem;
+    padding: 0.5rem 1rem 0.4rem;
     gap: 0.4rem;
     align-items: center;
+    margin: 0;
   }
 
   .searchBoxWrapper {
@@ -1042,6 +1021,41 @@
 /* Hide add-recipe dropdown on mobile (FAB replaces it) */
 @media (max-width: 768px) {
   .desktopOnly {
+    display: none !important;
+  }
+}
+
+/* ===== Desktop header action buttons (categories + view toggle) ===== */
+.desktopHeaderActions {
+  position: absolute;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  inset-inline-end: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.desktopHeaderBtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.35em;
+  border-radius: 8px;
+  transition: background 0.15s ease;
+}
+
+.desktopHeaderBtn:hover {
+  background: var(--bg-hover);
+}
+
+@media (max-width: 768px) {
+  .desktopHeaderActions {
     display: none !important;
   }
 }
@@ -1129,4 +1143,289 @@
 .compactDanger:hover {
   color: #c0392b;
   background: rgba(231, 76, 60, 0.1);
+}
+
+/* ===== Compact item thumbnail ===== */
+.compactThumb {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.compactThumbPlaceholder {
+  width: 36px;
+  height: 36px;
+  border-radius: 6px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-hover);
+  color: var(--text-muted);
+}
+
+/* ===== Mobile header action buttons ===== */
+.mobileHeaderBtn {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: 0.25em;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+}
+
+.mobileHeaderBtn:hover {
+  background: var(--bg-hover);
+}
+
+.mobileHeaderBadge {
+  position: absolute;
+  top: -4px;
+  inset-inline-end: -6px;
+  background: var(--clr-blue-3);
+  color: #fff;
+  font-size: 0.6rem;
+  min-width: 14px;
+  height: 14px;
+  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 3px;
+  font-weight: 600;
+}
+
+/* ===== Favorites button next to search ===== */
+.favoritesBtn {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.2em;
+  color: var(--text-primary);
+  transition: transform 0.15s ease;
+}
+
+.favoritesBtn:hover {
+  transform: scale(1.1);
+}
+
+/* ===== Categories BottomSheet ===== */
+.categoriesSheetContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0;
+}
+
+.categoriesSheetSearch {
+  padding: 0 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.categoriesSheetActiveBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.5rem;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+}
+
+.categoriesSheetActiveCount {
+  font-size: var(--small-font);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.categoriesSheetClear {
+  background: none;
+  border: none;
+  color: var(--clr-blue-3);
+  cursor: pointer;
+  font-size: var(--small-font);
+  font-weight: 500;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.categoriesSheetClear:hover {
+  background: var(--bg-hover);
+}
+
+.categoriesSheetList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 0 0.1rem;
+}
+
+.categorySheetItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.5rem;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: var(--basic-font);
+  color: var(--text-primary);
+}
+
+.categorySheetItem:hover {
+  background: var(--bg-hover);
+}
+
+.categorySheetItem:active {
+  transform: scale(0.98);
+}
+
+.categorySheetActive {
+  font-weight: 600;
+  border-color: currentColor;
+}
+
+.categorySheetLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.categorySheetName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.categorySheetIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.categorySheetCountNum {
+  font-size: var(--basic-font);
+  color: var(--text-muted);
+  flex-shrink: 0;
+  min-width: 1.5em;
+  text-align: center;
+}
+
+.categoryManageBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  margin-top: 0.5rem;
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: var(--basic-font);
+  transition: all 0.15s;
+}
+
+.categoryManageBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+/* ===== Desktop Categories Popup ===== */
+.categoriesPopupOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  z-index: 10199;
+}
+
+.categoriesPopup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--bg-primary);
+  border-radius: 14px;
+  width: 95vw;
+  max-width: 420px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  z-index: 10200;
+  overflow: hidden;
+  direction: rtl;
+  text-align: right;
+  animation: categoriesPopupIn 0.2s ease-out;
+}
+
+@keyframes categoriesPopupIn {
+  from { opacity: 0; transform: translate(-50%, -48%); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+
+.categoriesPopupHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border-color);
+  flex-shrink: 0;
+}
+
+.categoriesPopupTitle {
+  font-size: var(--large-font);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.categoriesPopupClose {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.3em;
+  border-radius: 6px;
+  transition: all 0.15s;
+}
+
+.categoriesPopupClose:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.categoriesPopup .categoriesSheetContent {
+  padding: 1rem 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.categoriesPopup .categoriesSheetList {
+  max-height: 45vh;
 }

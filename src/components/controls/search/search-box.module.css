@@ -50,9 +50,9 @@
 
 .small .searchInput {
   padding-block: 0.35rem;
-  padding-inline-start: 2.2rem;
+  padding-inline-start: 3rem;
   padding-inline-end: 1.8rem;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   border-radius: 12px;
 }
 

@@ -362,6 +362,7 @@
   padding: 1rem 1.5rem;
   display: flex;
   justify-content: flex-end;
+  border-radius: 16px 16px 0 0;
 }
 
 .doneBtn {

@@ -222,10 +222,8 @@ function Navigation({ onLogout, links }) {
           <button className={classes.hamburger} onClick={toggleSidebar}>
             {isOpen ? null : <Menu size={22} />}
           </button>
-          <div className={classes.mobileLogo}>
-            <span className={classes.logo}>Cooki</span>
-            <span className={classes.logoTail}>Pal</span>
-          </div>
+          <div id="mobile-tabs-portal" className={classes.mobileTabsSlot} />
+          <div id="mobile-header-actions-portal" className={classes.mobileActionsSlot} />
         </div>
       )}
 

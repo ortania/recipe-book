@@ -731,7 +731,7 @@
   width: 100%;
   outline: none;
   font-family: "SF Mono", "Menlo", monospace;
-  letter-spacing: 0.05em;
+  letter-spacing: 0;
 }
 
 .startButton,
