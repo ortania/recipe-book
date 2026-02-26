@@ -5,6 +5,8 @@ import classes from "./search-box.module.css";
 function SearchBox({
   searchTerm,
   onSearchChange,
+  onKeyDown,
+  onFocus,
   placeholder = "Search...",
   examples = [],
   size = "medium",
@@ -34,6 +36,8 @@ function SearchBox({
         placeholder={displayPlaceholder}
         value={searchTerm}
         onChange={(e) => onSearchChange(e.target.value)}
+        onKeyDown={onKeyDown}
+        onFocus={onFocus}
         className={classes.searchInput}
         autoFocus={autoFocus}
       />

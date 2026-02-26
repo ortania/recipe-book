@@ -49,6 +49,7 @@ export const RecipeBookProvider = ({ children }) => {
   const [lastRecipeDoc, setLastRecipeDoc] = useState(null);
   const [hasMoreRecipes, setHasMoreRecipes] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState(["all"]);
+  const [isSearchActive, setIsSearchActive] = useState(false);
   const loginResolverRef = useRef(null);
 
   const toggleCategory = (categoryId) => {
@@ -449,6 +450,8 @@ export const RecipeBookProvider = ({ children }) => {
     sortCategoriesAlphabetically,
     loadMoreRecipes,
     copyRecipeToUser,
+    isSearchActive,
+    setIsSearchActive,
     login,
     logout,
   };

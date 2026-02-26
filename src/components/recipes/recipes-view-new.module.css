@@ -283,6 +283,41 @@
   min-width: 0;
 }
 
+.searchTrigger {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1 1 280px;
+  max-width: 400px;
+  height: 32px;
+  padding-inline-start: 0.75rem;
+  padding-inline-end: 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-input);
+  color: var(--text-muted);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: border-color 0.2s, background-color 0.2s;
+  box-sizing: border-box;
+  text-align: start;
+}
+
+.searchTrigger:hover {
+  background: var(--bg-hover);
+}
+
+.searchTriggerIcon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.searchTriggerText {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 .headerControls {
   display: flex;
   gap: 0.75rem;
@@ -688,6 +723,12 @@
     max-width: none;
   }
 
+  .searchTrigger {
+    flex: 1 1 auto;
+    min-width: 0;
+    max-width: none;
+  }
+
   .headerControls {
     flex-shrink: 0;
   }
@@ -955,6 +996,13 @@
     flex: 1 1 auto;
     min-width: 0;
     width: 100%;
+  }
+
+  .searchTrigger {
+    flex: 1 1 auto;
+    min-width: 0;
+    width: 100%;
+    max-width: none;
   }
 
   .headerControls {

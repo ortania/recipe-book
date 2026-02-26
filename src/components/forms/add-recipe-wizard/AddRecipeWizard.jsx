@@ -13,26 +13,31 @@ import {
   parseFreeSpeechRecipe,
 } from "../../../services/openai";
 import {
-  FiLink,
-  FiChevronLeft,
-  FiChevronRight,
-  FiCheck,
-  FiCamera,
-  FiUpload,
-  FiX,
-  FiStar,
-  FiMenu,
-  FiChevronUp,
-  FiChevronDown,
-  FiGlobe,
-  FiHelpCircle,
-} from "react-icons/fi";
-import { PiMicrophoneLight, PiMicrophoneSlash } from "react-icons/pi";
-import { GoHeart } from "react-icons/go";
-import { PiPencilSimpleLineLight } from "react-icons/pi";
-import { BsClipboardData } from "react-icons/bs";
-import { FaMicrophone, FaStop } from "react-icons/fa6";
-import { MdOutlineEditNote } from "react-icons/md";
+  Link,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  Camera,
+  Upload,
+  X,
+  Star,
+  GripVertical,
+  ChevronUp,
+  ChevronDown,
+  Globe,
+  HelpCircle,
+  Mic,
+  Heart,
+  Pencil,
+  ClipboardList,
+  Eye,
+  Clock,
+  Flame,
+  Utensils,
+  Lightbulb,
+  Info,
+  Loader2,
+} from "lucide-react";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./add-recipe-wizard.module.css";
@@ -960,7 +965,7 @@ function AddRecipeWizard({
                     handleTouchStart(e, i, "ingredients", ingredientsListRef)
                   }
                 >
-                  <FiMenu size={16} />
+                  <GripVertical size={16} />
                 </span>
                 {isGroup ? (
                   <div className={classes.groupInputBox}>
@@ -980,7 +985,7 @@ function AddRecipeWizard({
                       className={classes.removeItemBtn}
                       onClick={() => handleRemoveIngredient(i)}
                     >
-                      <FiX />
+                      <X size={16} />
                     </button>
                   </div>
                 ) : (
@@ -1010,7 +1015,7 @@ function AddRecipeWizard({
                         className={classes.removeItemBtn}
                         onClick={() => handleRemoveIngredient(i)}
                       >
-                        <FiX />
+                        <X size={16} />
                       </button>
                     )}
                   </div>
@@ -1064,12 +1069,12 @@ function AddRecipeWizard({
                   title={t("addWizard", "parseIngredientsWhenToUse")}
                   aria-label={t("addWizard", "parseIngredientsHelpLabel")}
                 >
-                  <FiHelpCircle size={18} />
+                  <HelpCircle size={18} />
                 </button>
                 {parseIngredientsOpen ? (
-                  <FiChevronUp size={20} />
+                  <ChevronUp size={20} />
                 ) : (
-                  <FiChevronDown size={20} />
+                  <ChevronDown size={20} />
                 )}
               </span>
             </div>
@@ -1088,7 +1093,7 @@ function AddRecipeWizard({
                   }}
                   aria-label={t("common", "close")}
                 >
-                  <FiX size={18} />
+                  <X size={18} />
                 </button>
                 <div className={classes.parseIngredientsHelpBody}>
                   {t("addWizard", "parseIngredientsHelpText")
@@ -1174,7 +1179,7 @@ function AddRecipeWizard({
                 handleTouchStart(e, i, "instructions", instructionsListRef)
               }
             >
-              <FiMenu size={16} />
+              <GripVertical size={16} />
             </span>
             <div className={classes.instructionBox}>
               {recipe.instructions.length > 1 && (
@@ -1183,7 +1188,7 @@ function AddRecipeWizard({
                   className={classes.instructionRemoveBtn}
                   onClick={() => handleRemoveInstruction(i)}
                 >
-                  <FiX />
+                  <X size={16} />
                 </button>
               )}
               <div className={classes.instructionContent}>
@@ -1257,7 +1262,7 @@ function AddRecipeWizard({
               className={classes.imageRemoveBtn}
               onClick={() => updateRecipe("image_src", "")}
             >
-              ✕
+              <X size={16} />
             </button>
           </div>
         ) : (
@@ -1268,7 +1273,7 @@ function AddRecipeWizard({
                 className={classes.imageOptionBtn}
                 onClick={() => cameraInputRef.current?.click()}
               >
-                <FiCamera className={classes.imageOptionIcon} />
+                <Camera className={classes.imageOptionIcon} />
                 <span>{t("addWizard", "takePhoto")}</span>
               </button>
             )}
@@ -1277,7 +1282,7 @@ function AddRecipeWizard({
               className={classes.imageOptionBtn}
               onClick={() => fileInputRef.current?.click()}
             >
-              <FiUpload className={classes.imageOptionIcon} />
+              <Upload className={classes.imageOptionIcon} />
               <span>{t("addWizard", "fromFile")}</span>
             </button>
           </div>
@@ -1322,14 +1327,14 @@ function AddRecipeWizard({
             className={classes.previewCloseBtn}
             onClick={() => setShowPreview(false)}
           >
-            <FiX size={25} />
+            <X size={25} />
           </button> */}
           <CloseButton
             type="button"
             className={classes.previewCloseBtn}
             onClick={() => setShowPreview(false)}
           >
-            {/* <FiX size={25} /> */}
+            {/* <X size={25} /> */}
           </CloseButton>
           {recipe.image_src ? (
             <img
@@ -1346,17 +1351,17 @@ function AddRecipeWizard({
               <div className={classes.previewMeta}>
                 {recipe.prepTime && (
                   <span>
-                    ⏱ {formatTime(recipe.prepTime, t("recipes", "minutes"))}
+                    <Clock size={14} /> {formatTime(recipe.prepTime, t("recipes", "minutes"))}
                   </span>
                 )}
                 {recipe.cookTime && (
                   <span>
-                    🔥 {formatTime(recipe.cookTime, t("recipes", "minutes"))}
+                    <Flame size={14} /> {formatTime(recipe.cookTime, t("recipes", "minutes"))}
                   </span>
                 )}
                 {recipe.servings && (
                   <span>
-                    🍽 {recipe.servings} {t("recipes", "servings")}
+                    <Utensils size={14} /> {recipe.servings} {t("recipes", "servings")}
                   </span>
                 )}
               </div>
@@ -1408,7 +1413,7 @@ function AddRecipeWizard({
 
       <div className={classes.summaryBox}>
         <div className={classes.summaryIcon}>
-          <FiCheck size={48} />
+          <Check size={48} />
         </div>
         <h4 className={classes.summaryTitle}>
           {t("addWizard", "recipeReady")}
@@ -1419,7 +1424,7 @@ function AddRecipeWizard({
           className={classes.previewBtn}
           onClick={() => setShowPreview(true)}
         >
-          👁 {t("addWizard", "previewRecipe")}
+          <Eye size={16} /> {t("addWizard", "previewRecipe")}
         </button>
       </div>
 
@@ -1439,7 +1444,7 @@ function AddRecipeWizard({
                 updateRecipe("rating", star === recipe.rating ? 0 : star)
               }
             >
-              <FiStar size={24} />
+              <Star size={24} />
             </button>
           ))}
         </div>
@@ -1452,7 +1457,7 @@ function AddRecipeWizard({
           checked={recipe.isFavorite}
           onChange={() => updateRecipe("isFavorite", !recipe.isFavorite)}
         />
-        <GoHeart size={16} />
+        <Heart size={16} />
         <span className={classes.favoriteLabel}>
           {t(
             "recipes",
@@ -1468,7 +1473,7 @@ function AddRecipeWizard({
           checked={recipe.shareToGlobal}
           onChange={() => updateRecipe("shareToGlobal", !recipe.shareToGlobal)}
         />
-        <FiGlobe size={16} />
+        <Globe size={16} />
         <span className={classes.favoriteLabel}>
           {t("recipes", "shareToGlobal")}
         </span>
@@ -1526,7 +1531,7 @@ function AddRecipeWizard({
         className={classes.methodCloseBtn}
         onClick={handleClose}
       >
-        <FiX size={22} />
+        <X size={22} />
       </button> */}
       <CloseButton
         
@@ -1543,7 +1548,7 @@ function AddRecipeWizard({
           onClick={() => setScreen("photo")}
         >
           <div className={`${classes.methodIcon} ${classes.methodIconPhoto}`}>
-            <FiCamera />
+            <Camera size={24} />
           </div>
           <div className={classes.methodCardContent}>
             <h3 className={classes.methodCardTitle}>
@@ -1560,7 +1565,7 @@ function AddRecipeWizard({
           onClick={() => setScreen("url")}
         >
           <div className={`${classes.methodIcon} ${classes.methodIconUrl}`}>
-            <FiLink />
+            <Link size={24} />
           </div>
           <div className={classes.methodCardContent}>
             <h3 className={classes.methodCardTitle}>
@@ -1578,7 +1583,7 @@ function AddRecipeWizard({
           onClick={() => setScreen("text")}
         >
           <div className={`${classes.methodIcon} ${classes.methodIconText}`}>
-            <BsClipboardData />
+            <ClipboardList size={24} />
           </div>
           <div className={classes.methodCardContent}>
             <h3 className={classes.methodCardTitle}>
@@ -1598,7 +1603,7 @@ function AddRecipeWizard({
           <div
             className={`${classes.methodIcon} ${classes.methodIconRecording}`}
           >
-            <PiMicrophoneLight />
+            <Mic size={24} />
           </div>
           <div className={classes.methodCardContent}>
             <h3 className={classes.methodCardTitle}>
@@ -1619,8 +1624,7 @@ function AddRecipeWizard({
           }}
         >
           <div className={`${classes.methodIcon} ${classes.methodIconManual}`}>
-            {/* <MdOutlineEditNote /> */}
-            <PiPencilSimpleLineLight />
+            <Pencil size={24} />
           </div>
           <div className={classes.methodCardContent}>
             <h3 className={classes.methodCardTitle}>
@@ -1647,14 +1651,14 @@ function AddRecipeWizard({
             setImportError("");
           }}
         >
-          <FiChevronRight /> {t("addWizard", "backToMethod")}
+          <ChevronRight /> {t("addWizard", "backToMethod")}
         </button>
         <CloseButton
           // type="button"
           // className={classes.wizardCloseBtn}
           onClick={handleClose}
         >
-          {/* <FiX /> */}
+          {/* <X size={16} /> */}
         </CloseButton>
       </div>
 
@@ -1675,7 +1679,7 @@ function AddRecipeWizard({
       />
 
       <div className={classes.tipBox}>
-        <span className={classes.tipIcon}>💡</span>
+        <span className={classes.tipIcon}><Lightbulb size={16} /></span>
         <span>
           <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
           {t("addWizard", "urlTip")}
@@ -1699,7 +1703,7 @@ function AddRecipeWizard({
         disabled={isImporting || !recipeUrl.trim()}
       >
         {isImporting ? t("addWizard", "importing") : t("addWizard", "continue")}
-        {/* {!isImporting && <FiChevronRight />} */}
+        {/* {!isImporting && <ChevronRight />} */}
       </button>
     </div>
   );
@@ -1715,14 +1719,14 @@ function AddRecipeWizard({
             setImportError("");
           }}
         >
-          <FiChevronRight /> {t("addWizard", "backToMethod")}
+          <ChevronRight /> {t("addWizard", "backToMethod")}
         </button>
         <CloseButton
           // type="button"
           // className={classes.wizardCloseBtn}
           onClick={handleClose}
         >
-          {/* <FiX /> */}
+          {/* <X size={16} /> */}
         </CloseButton>
       </div>
 
@@ -1742,7 +1746,7 @@ function AddRecipeWizard({
       />
 
       <div className={`${classes.tipBox} ${classes.tipBoxPurple}`}>
-        <span className={classes.tipIcon}>💡</span>
+        <span className={classes.tipIcon}><Lightbulb size={16} /></span>
         <span>
           <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
           {t("addWizard", "textTip")}
@@ -1759,7 +1763,7 @@ function AddRecipeWizard({
         {isImporting
           ? t("addWizard", "importing")
           : t("addWizard", "parseAndImport")}
-        {/* {!isImporting && <FiChevronRight />} */}
+        {/* {!isImporting && <ChevronRight />} */}
       </button>
     </div>
   );
@@ -1777,7 +1781,7 @@ function AddRecipeWizard({
             setImportError("");
           }}
         >
-          <FiChevronRight /> {t("addWizard", "backToMethod")}
+          <ChevronRight /> {t("addWizard", "backToMethod")}
         </button>
         <CloseButton onClick={handleClose} />
       </div>
@@ -1796,7 +1800,7 @@ function AddRecipeWizard({
             className={classes.recordBtn}
             onClick={handleStartRecording}
           >
-            <FaMicrophone size={28} />
+            <Mic size={28} />
             <span>
               {recordingText.trim()
                 ? t("addWizard", "continueRecording")
@@ -1838,7 +1842,7 @@ function AddRecipeWizard({
       )}
 
       <div className={`${classes.tipBox} ${classes.tipBoxPurple}`}>
-        <span className={classes.tipIcon}>🎙️</span>
+        <span className={classes.tipIcon}><Mic size={16} /></span>
         <span>
           <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
           {t("addWizard", "recordingTip")
@@ -1873,7 +1877,7 @@ function AddRecipeWizard({
             {isImporting
               ? t("addWizard", "importing")
               : t("addWizard", "parseAndImport")}
-            {/* {!isImporting && <FiChevronRight />} */}
+            {/* {!isImporting && <ChevronRight />} */}
           </button>
           <button
             type="button"
@@ -1915,14 +1919,14 @@ function AddRecipeWizard({
             setImportError("");
           }}
         >
-          <FiChevronRight /> {t("addWizard", "backToMethod")}
+          <ChevronRight /> {t("addWizard", "backToMethod")}
         </button>
         <CloseButton
           // type="button"
           // className={classes.wizardCloseBtn}
           onClick={handleClose}
         >
-          {/* <FiX /> */}
+          {/* <X size={16} /> */}
         </CloseButton>
       </div>
 
@@ -1951,7 +1955,7 @@ function AddRecipeWizard({
 
       {isImporting ? (
         <div className={classes.photoUploadArea}>
-          <FiCamera className={classes.photoUploadIcon} />
+          <Camera className={classes.photoUploadIcon} />
           <span className={classes.photoUploadText}>
             {t("addWizard", "analyzingPhoto")}
           </span>
@@ -1964,7 +1968,7 @@ function AddRecipeWizard({
               className={classes.imageOptionBtn}
               onClick={() => photoInputRef.current?.click()}
             >
-              <FiCamera className={classes.imageOptionIcon} />
+              <Camera className={classes.imageOptionIcon} />
               <span>{t("addWizard", "takePhoto")}</span>
             </button>
           )}
@@ -1973,14 +1977,14 @@ function AddRecipeWizard({
             className={classes.imageOptionBtn}
             onClick={() => photoFileInputRef.current?.click()}
           >
-            <FiUpload className={classes.imageOptionIcon} />
+            <Upload className={classes.imageOptionIcon} />
             <span>{t("addWizard", "fromFile")}</span>
           </button>
         </div>
       )}
 
       <div className={`${classes.tipBox} ${classes.tipBoxGreen}`}>
-        <span className={classes.tipIcon}>📸</span>
+        <span className={classes.tipIcon}><Camera size={16} /></span>
         <span>
           <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
           {t("addWizard", "photoTip")}
@@ -2008,7 +2012,7 @@ function AddRecipeWizard({
           className={classes.backLink}
           onClick={handleManualBack}
         >
-          <FiChevronRight />{" "}
+          <ChevronRight />{" "}
           {cameFromRecording
             ? t("addWizard", "backToRecording")
             : t("addWizard", "backToMethod")}
@@ -2020,7 +2024,7 @@ function AddRecipeWizard({
 
       {recipe.sourceUrl && (
         <div className={classes.tipBox}>
-          <span className={classes.tipIcon}>ℹ️</span>
+          <span className={classes.tipIcon}><Info size={16} /></span>
           <span>{t("addWizard", "importReviewNote")}</span>
         </div>
       )}
@@ -2045,11 +2049,11 @@ function AddRecipeWizard({
           disabled={!canProceed() || saving}
         >
           {saving
-            ? "⏳ " + (t("common", "loading") || "...")
+            ? <><Loader2 size={16} className={classes.spinning} /> {t("common", "loading") || "..."}</>
             : manualStep === 4
               ? t("addWizard", "saveRecipe")
               : t("addWizard", "continue")}
-          {/* <FiChevronRight /> */}
+          {/* <ChevronRight /> */}
         </button>
       </div>
     </div>

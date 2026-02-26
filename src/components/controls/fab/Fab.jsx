@@ -96,7 +96,9 @@ function Fab({
           onClose={() => setSheetOpen(false)}
           title={sheetTitle || label}
         >
-          {children}
+          <div onClick={() => setSheetOpen(false)}>
+            {children}
+          </div>
         </BottomSheet>
       )}
     </>

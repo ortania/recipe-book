@@ -13,9 +13,8 @@ import {
   ArrowUpDown,
   LayoutGrid,
   List as ListIcon,
-  ArrowDownAZ,
-  ArrowUpAZ,
   BookOpen,
+  BookOpenText,
   Copy,
   Trash2,
   Pencil,
@@ -35,7 +34,6 @@ import classes from "./recipes-view-new.module.css";
 
 import { RecipeInfo } from "./RecipeInfo";
 import { SimpleRecipeInfo } from "./SimpleRecipeInfo";
-import { SearchBox } from "../controls/search";
 import { EditRecipe } from "../forms/edit-recipe";
 import { SortControls } from "../controls/sort-controls";
 import { ViewToggleButton } from "../controls/view-toggle-button";
@@ -49,7 +47,10 @@ import { Fab } from "../controls/fab";
 import fabClasses from "../controls/fab/fab.module.css";
 import { BottomSheet } from "../controls/bottom-sheet";
 import { CloseButton } from "../controls/close-button";
+import { BackButton } from "../controls/back-button";
 import ChatHelpButton from "../controls/chat-help-button/ChatHelpButton";
+import { SortDropdown } from "../controls/sort-dropdown";
+import { SearchOverlay } from "./search-overlay";
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -122,6 +123,12 @@ function RecipesView({
   const [activeView, setActiveView] = useState("recipes");
   const [showChat, setShowChat] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [showSearch, setShowSearch] = useState(() => {
+    try {
+      if (sessionStorage.getItem("searchOverlayState")) return true;
+    } catch {}
+    return false;
+  });
   const [isMobile, setIsMobile] = useState(false);
   const filterRef = useRef(null);
   const sortRef = useRef(null);
@@ -133,10 +140,21 @@ function RecipesView({
     selectedCategories,
     toggleCategory,
     clearCategorySelection,
+    setIsSearchActive,
   } = useRecipeBook();
 
   const hasMoreRecipes = hasMoreRecipesProp ?? hasMoreRecipesCtx;
   const loadMoreRecipes = onLoadMore || loadMoreRecipesCtx;
+
+  const closeSearch = useCallback(() => {
+    setShowSearch(false);
+    try { sessionStorage.removeItem("searchOverlayState"); } catch {}
+  }, []);
+
+  useEffect(() => {
+    setIsSearchActive(showSearch);
+    return () => setIsSearchActive(false);
+  }, [showSearch, setIsSearchActive]);
 
   useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
@@ -265,9 +283,9 @@ function RecipesView({
     }
   }, [showFilterMenu, showSortMenu]);
 
-  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
+      if (window.innerWidth <= MOBILE_BREAKPOINT) return;
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setShowFilterMenu(false);
       }
@@ -583,29 +601,20 @@ function RecipesView({
     </div>
   );
 
-  const sortContent = (
-    <div className={classes.dropdownScrollable}>
-      <div className={classes.filterSection}>
-        <button className={classes.sortDirectionBtn} onClick={() => setSortDirection((prev) => prev === "asc" ? "desc" : "asc")} title={sortDirection === "asc" ? "Ascending" : "Descending"}>
-          {sortDirection === "asc" ? <ArrowUpAZ size={20} /> : <ArrowDownAZ size={20} />}
-          {sortDirection === "asc" ? t("recipesView", "ascending") || "↑" : t("recipesView", "descending") || "↓"}
-        </button>
-      </div>
-      <div className={classes.filterDivider} />
-      {[
-        { field: "name", label: t("recipesView", "sortByName") },
-        { field: "prepTime", label: t("recipesView", "sortByPrepTime") },
-        { field: "difficulty", label: t("recipesView", "sortByDifficulty") },
-        { field: "rating", label: t("recipesView", "sortByRating") },
-        { field: "favorites", label: t("recipesView", "sortByFavorites") },
-        { field: "recentlyViewed", label: t("recipesView", "sortByRecentlyViewed") },
-      ].map(({ field, label }) => (
-        <button key={field} className={sortField === field ? classes.active : ""} onClick={() => { setSortField(field); if (!isMobile) setShowSortMenu(false); }}>
-          {label}
-        </button>
-      ))}
-    </div>
-  );
+  const recipeSortOptions = [
+    { field: "name", defaultDir: "asc" },
+    { field: "newest", defaultDir: "desc", lockedDir: "desc" },
+    { field: "prepTime", defaultDir: "asc" },
+    { field: "difficulty", defaultDir: "asc" },
+    { field: "rating", defaultDir: "desc" },
+    { field: "favorites", defaultDir: "desc" },
+    { field: "recentlyViewed", defaultDir: "desc", lockedDir: "desc" },
+  ];
+
+  const handleRecipeSortChange = (field, direction) => {
+    setSortField(field);
+    setSortDirection(direction);
+  };
   const selectedCategoryObjects = isAllSelected
     ? []
     : selectedCategories
@@ -702,7 +711,10 @@ function RecipesView({
     <div className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}>
       <div className={classes.stickyTop}>
         <div className={classes.viewToggleWrapper}>
-          {showAddAndFavorites && !showChat && (
+          {showSearch && (
+            <BackButton onClick={closeSearch} />
+          )}
+          {showAddAndFavorites && !showChat && !showSearch && (
             <div className={classes.iconButtons}>
               <AddButton
                 type="circle"
@@ -723,9 +735,20 @@ function RecipesView({
           )}
           <div className={classes.viewToggle}>
             <ViewToggle
-              activeView={activeView}
-              onViewChange={handleViewChange}
+              activeView={showSearch ? "chat" : activeView}
+              onViewChange={(view) => {
+                if (showSearch) {
+                  if (view === "recipes") {
+                    closeSearch();
+                    setActiveView("recipes");
+                    setShowChat(false);
+                  }
+                } else {
+                  handleViewChange(view);
+                }
+              }}
               recipesLabel={recipesTabLabel}
+              chatLabel={showSearch ? t("common", "search") : undefined}
             />
           </div>
           {persons.length > 0 && !showChat && (
@@ -743,85 +766,108 @@ function RecipesView({
           )}
           <div className={classes.helpBtnEnd}>
             <ChatHelpButton
-              key={activeView}
+              key={showSearch ? "search" : activeView}
               title={
-                showChat
-                  ? t("chat", "helpTitle")
-                  : helpTitleProp || t("recipesView", "helpTitle")
+                showSearch
+                  ? t("recipesView", "searchHelpTitle")
+                  : showChat
+                    ? t("chat", "helpTitle")
+                    : helpTitleProp || t("recipesView", "helpTitle")
               }
               description={
-                showChat
-                  ? t("chat", "helpIntro")
-                  : helpDescriptionProp || t("recipesView", "helpIntro")
+                showSearch
+                  ? t("recipesView", "searchHelpIntro")
+                  : showChat
+                    ? t("chat", "helpIntro")
+                    : helpDescriptionProp || t("recipesView", "helpIntro")
               }
               items={
-                showChat
+                showSearch
                   ? [
                       <>
-                        <MessageCircle size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("chat", "helpFeature1")}
-                      </>,
-                      <>
-                        <Lightbulb size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("chat", "helpFeature2")}
-                      </>,
-                      <>
-                        <Camera size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("chat", "helpFeature3")}
+                        <Search size={16} style={{ verticalAlign: "middle" }} />{" "}
+                        {t("recipesView", "searchHelpSearch")}
                       </>,
                       <>
                         <Sparkles size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("chat", "helpFeature4")}
-                      </>,
-                    ]
-                  : helpItemsProp || [
-                      <>
-                        <Menu size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "helpSideMenu")}
-                      </>,
-                      <>
-                        <MessageSquare size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "helpTabChat")}
-                      </>,
-                      <>
-                        <BookOpen size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "helpTabRecipes")}
-                      </>,
-                      <>
-                        <Search size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "helpSearch")}
+                        {t("recipesView", "searchHelpSuggestions")}
                       </>,
                       <>
                         <Filter size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "helpFilter")}
+                        {t("recipesView", "searchHelpFilter")}
                       </>,
                       <>
                         <ArrowUpDown size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "helpSort")}
-                      </>,
-                      <>
-                        <Heart size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "helpFavorites")}
-                      </>,
-                      <>
-                        <span
-                          style={{ verticalAlign: "middle", fontWeight: 700 }}
-                        >
-                          +
-                        </span>{" "}
-                        {t("recipesView", "helpAdd")}
-                      </>,
-                      <>
-                        <LayoutGrid size={16} style={{ verticalAlign: "middle" }} />{" "}
-                        {t("recipesView", "helpView")}
+                        {t("recipesView", "searchHelpSort")}
                       </>,
                     ]
+                  : showChat
+                    ? [
+                        <>
+                          <MessageCircle size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("chat", "helpFeature1")}
+                        </>,
+                        <>
+                          <Lightbulb size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("chat", "helpFeature2")}
+                        </>,
+                        <>
+                          <Camera size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("chat", "helpFeature3")}
+                        </>,
+                        <>
+                          <Sparkles size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("chat", "helpFeature4")}
+                        </>,
+                      ]
+                    : helpItemsProp || [
+                        <>
+                          <Menu size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("recipesView", "helpSideMenu")}
+                        </>,
+                        <>
+                          <MessageSquare size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("recipesView", "helpTabChat")}
+                        </>,
+                        <>
+                          <BookOpen size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("recipesView", "helpTabRecipes")}
+                        </>,
+                        <>
+                          <Search size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("recipesView", "helpSearch")}
+                        </>,
+                        <>
+                          <Filter size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("recipesView", "helpFilter")}
+                        </>,
+                        <>
+                          <ArrowUpDown size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("recipesView", "helpSort")}
+                        </>,
+                        <>
+                          <Heart size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("recipesView", "helpFavorites")}
+                        </>,
+                        <>
+                          <span
+                            style={{ verticalAlign: "middle", fontWeight: 700 }}
+                          >
+                            +
+                          </span>{" "}
+                          {t("recipesView", "helpAdd")}
+                        </>,
+                        <>
+                          <LayoutGrid size={16} style={{ verticalAlign: "middle" }} />{" "}
+                          {t("recipesView", "helpView")}
+                        </>,
+                      ]
               }
             />
           </div>
         </div>
 
-        {showGreeting && (
+        {showGreeting && !showSearch && (
           <div
             className={classes.headerTitle}
             style={{ display: showChat ? "none" : undefined }}
@@ -830,53 +876,18 @@ function RecipesView({
           </div>
         )}
 
-        {!showChat && persons.length > 0 && (
+        {!showChat && !showSearch && persons.length > 0 && (
           <div className={classes.searchHeader}>
-            <div className={classes.searchBoxWrapper}>
-              <SearchBox
-                searchTerm={searchTerm}
-                onSearchChange={setSearchTerm}
-                placeholder={t("common", "search")}
-                examples={[
-                  t("recipesView", "searchExample1"),
-                  t("recipesView", "searchExample2"),
-                  t("recipesView", "searchExample3"),
-                  t("recipesView", "searchExample4"),
-                ]}
-              />
-            </div>
+            <button
+              className={classes.searchTrigger}
+              onClick={() => setShowSearch(true)}
+            >
+              <Search size={16} className={classes.searchTriggerIcon} />
+              <span className={classes.searchTriggerText}>
+                {t("common", "search")}
+              </span>
+            </button>
             <div className={classes.headerControls}>
-              <div className={classes.dropdownContainer} ref={filterRef}>
-                <button
-                  className={classes.filterButton}
-                  onClick={toggleFilterMenu}
-                >
-                  <Filter size={16} />{" "}
-                  <span className={classes.hideOnMobile}>
-                    {t("recipesView", "filter")}
-                  </span>{" "}
-                  <ChevronDown size={16} />
-                </button>
-                {!isMobile && showFilterMenu && (
-                  <>
-                    <div className={classes.dropdownOverlay} onClick={() => setShowFilterMenu(false)} />
-                    <div className={classes.dropdownMenu} style={filterMenuStyle} onClick={(e) => e.stopPropagation()}>
-                      <div className={classes.dropdownClose}>
-                        {hasActiveFilters && (
-                          <button className={classes.clearFiltersBtn} onClick={clearAllFilters}>{t("recipesView", "clearFilters")}</button>
-                        )}
-                        <CloseButton onClick={() => setShowFilterMenu(false)} />
-                      </div>
-                      {filterContent}
-                    </div>
-                  </>
-                )}
-                {isMobile && (
-                  <BottomSheet open={showFilterMenu} onClose={() => setShowFilterMenu(false)} title={t("recipesView", "filter")}>
-                    {filterContent}
-                  </BottomSheet>
-                )}
-              </div>
               <div className={classes.dropdownContainer} ref={sortRef}>
                 <button
                   className={classes.sortingButton}
@@ -893,18 +904,25 @@ function RecipesView({
                     <div className={classes.dropdownOverlay} onClick={() => setShowSortMenu(false)} />
                     <div className={classes.dropdownMenu} style={sortMenuStyle}>
                       <div className={classes.dropdownClose}>
-                        <button className={classes.sortDirectionBtn} onClick={() => setSortDirection((prev) => prev === "asc" ? "desc" : "asc")} title={sortDirection === "asc" ? "Ascending" : "Descending"}>
-                          {sortDirection === "asc" ? <ArrowUpAZ size={20} /> : <ArrowDownAZ size={20} />}
-                        </button>
                         <CloseButton onClick={() => setShowSortMenu(false)} />
                       </div>
-                      {sortContent}
+                      <SortDropdown
+                        sortField={sortField}
+                        sortDirection={sortDirection}
+                        onSortChange={handleRecipeSortChange}
+                        options={recipeSortOptions}
+                      />
                     </div>
                   </>
                 )}
                 {isMobile && (
                   <BottomSheet open={showSortMenu} onClose={() => setShowSortMenu(false)} title={t("recipesView", "sorting")}>
-                    {sortContent}
+                    <SortDropdown
+                      sortField={sortField}
+                      sortDirection={sortDirection}
+                      onSortChange={handleRecipeSortChange}
+                      options={recipeSortOptions}
+                    />
                   </BottomSheet>
                 )}
               </div>
@@ -913,7 +931,31 @@ function RecipesView({
         )}
       </div>
 
-      {showChat ? (
+      {showSearch ? (
+        <SearchOverlay
+          open={showSearch}
+          persons={localPersons}
+          groups={groups}
+          onEditPerson={(person) => {
+            closeSearch();
+            setEditingPerson(person);
+          }}
+          onDeletePerson={onDeletePerson}
+          onCopyRecipe={onCopyRecipe}
+          onRate={onRate}
+          userRatings={userRatings}
+          onToggleFavorite={handleToggleFavorite}
+          isSimpleView={isSimpleView}
+          onClose={closeSearch}
+          showCategories={showCategories}
+          selectedCategories={selectedCategories}
+          toggleCategory={toggleCategory}
+          clearCategorySelection={clearCategorySelection}
+          getTranslatedGroup={getTranslatedGroup}
+          selectedCategoryObjects={selectedCategoryObjects}
+          isAllSelected={isAllSelected}
+        />
+      ) : showChat ? (
         <ChatWindow showImageButton showGreeting={showGreeting} />
       ) : (
         <div>
@@ -1231,7 +1273,7 @@ function RecipesView({
         </div>
       )}
 
-      {showAddAndFavorites && !showChat && (
+      {showAddAndFavorites && !showChat && !showSearch && (
         <Fab label={t("recipesView", "addNewRecipe")}>
           <AddRecipeMenu onSelect={onAddPerson} t={t} />
         </Fab>

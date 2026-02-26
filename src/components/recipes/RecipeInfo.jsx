@@ -12,7 +12,7 @@ import useTranslatedText from "../../hooks/useTranslatedText";
 const DEFAULT_IMAGE =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='320'%3E%3Crect width='400' height='320' fill='%23e0e0e0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='%23666'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopyRecipe, userRating = 0, onRate }) {
+function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopyRecipe, userRating = 0, onRate, onCardClick }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const translatedName = useTranslatedText(person.name);
@@ -101,7 +101,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
     <>
       <div
         className={classes.recipeCard}
-        onClick={() => navigate(`/recipe/${person.id}`)}
+        onClick={() => onCardClick ? onCardClick(person.id) : navigate(`/recipe/${person.id}`)}
       >
         <div className={classes.imageContainer}>
           <img

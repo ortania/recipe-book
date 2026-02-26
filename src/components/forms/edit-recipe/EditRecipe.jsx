@@ -1,22 +1,20 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Modal } from "../../modal";
 import {
-  FiX,
-  FiStar,
-  FiCamera,
-  FiMenu,
-  FiSave,
-  FiTrash2,
-  FiGlobe,
-} from "react-icons/fi";
-import { GoHeart, GoHeartFill } from "react-icons/go";
-import {
-  BsFileText,
-  BsListUl,
-  BsListOl,
-  BsImage,
-  BsTags,
-} from "react-icons/bs";
+  X,
+  Star,
+  Camera,
+  GripVertical,
+  Save,
+  Trash2,
+  Globe,
+  Heart,
+  FileText,
+  List,
+  ListOrdered,
+  Image,
+  Tags,
+} from "lucide-react";
 import { useLanguage, useRecipeBook } from "../../../context";
 import { uploadRecipeImage } from "../../../firebase/imageService";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
@@ -27,11 +25,11 @@ import { calculateNutrition, clearNutritionCache } from "../../../services/opena
 import { isGroupHeader, getGroupName, makeGroupHeader, ingredientsOnly } from "../../../utils/ingredientUtils";
 
 const TABS = [
-  { id: "basic", icon: BsFileText, labelKey: "basicInfo" },
-  { id: "ingredients", icon: BsListUl, labelKey: "ingredients" },
-  { id: "instructions", icon: BsListOl, labelKey: "instructions" },
-  { id: "image", icon: BsImage, labelKey: "recipeImage" },
-  { id: "categories", icon: BsTags, labelKey: "categories" },
+  { id: "basic", icon: FileText, labelKey: "basicInfo" },
+  { id: "ingredients", icon: List, labelKey: "ingredients" },
+  { id: "instructions", icon: ListOrdered, labelKey: "instructions" },
+  { id: "image", icon: Image, labelKey: "recipeImage" },
+  { id: "categories", icon: Tags, labelKey: "categories" },
 ];
 
 function EditRecipe({ person, onSave, onCancel, groups = [] }) {
@@ -375,11 +373,11 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           onClick={toggleFavorite}
         >
           {editedPerson.isFavorite ? (
-            <GoHeartFill color="red" size={22} />
+            <Heart size={22} fill="red" stroke="red" />
           ) : (
-            <GoHeart color="black" size={22} />
+            <Heart size={22} />
           )}
-          {/* // <FiStar
+          {/* // <Star
           //   size={22}
           //   fill={editedPerson.isFavorite ? "#e53935" : "none"}
           // />{" "} */}
@@ -425,7 +423,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                   }))
                 }
               >
-                <FiStar
+                <Star
                   size={20}
                   fill={star <= (editedPerson.rating || 0) ? "#ffc107" : "none"}
                 />
@@ -543,7 +541,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               checked={editedPerson.shareToGlobal}
               onChange={handleChange}
             />
-            <FiGlobe size={16} />
+            <Globe size={16} />
             <span>{t("recipes", "shareToGlobal")}</span>
           </label>
         </div>
@@ -577,7 +575,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                     handleTouchStart(e, i, "ingredients", ingredientsListRef)
                   }
                 >
-                  <FiMenu size={16} />
+                  <GripVertical size={16} />
                 </span>
                 {isGroup ? (
                   <div className={classes.groupInputBox}>
@@ -594,7 +592,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                       className={classes.removeItemBtn}
                       onClick={() => removeIngredient(i)}
                     >
-                      <FiX size={16} />
+                      <X size={16} />
                     </button>
                   </div>
                 ) : (
@@ -622,7 +620,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                         className={classes.removeItemBtn}
                         onClick={() => removeIngredient(i)}
                       >
-                        <FiX size={16} />
+                        <X size={16} />
                       </button>
                     )}
                   </div>
@@ -672,7 +670,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 handleTouchStart(e, i, "instructions", instructionsListRef)
               }
             >
-              <FiMenu size={16} />
+              <GripVertical size={16} />
             </span>
             <div className={classes.instructionBox}>
               {editedPerson.instructions.length > 1 && (
@@ -681,7 +679,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                   className={classes.instructionRemoveBtn}
                   onClick={() => removeInstruction(i)}
                 >
-                  <FiX />
+                  <X size={16} />
                 </button>
               )}
               <div className={classes.instructionContent}>
@@ -746,12 +744,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 setEditedPerson((prev) => ({ ...prev, image_src: "" }));
               }}
             >
-              ✕
+              <X size={16} />
             </button>
           </>
         ) : (
           <>
-            <FiCamera className={classes.imageUploadIcon} />
+            <Camera className={classes.imageUploadIcon} />
             <span className={classes.imageUploadText}>
               {uploadingImage
                 ? t("recipes", "uploading")
@@ -859,7 +857,6 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 className={classes.editCloseBtn}
                 onClick={onCancel}
               >
-                {/* <FiX/> */}
               </CloseButton>
               <div className={classes.editTitleGroup}>
                 <h2>{t("recipes", "editRecipe")}</h2>
@@ -876,7 +873,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 onClick={handleSubmit}
                 disabled={saving}
               >
-                <FiSave size={16} />{" "}
+                <Save size={16} />{" "}
                 {saving ? t("common", "loading") : t("recipes", "saveChanges")}
               </button>
             </div>
@@ -906,7 +903,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 onClick={() => setActiveTab("delete")}
               >
                 <span className={classes.sidebarTabIcon}>
-                  <FiTrash2 />
+                  <Trash2 size={16} />
                 </span>
                 {t("confirm", "deleteRecipe")}
               </button>

@@ -12,6 +12,7 @@ import {
   ShoppingCart,
   Globe,
   BookOpen,
+  BookOpenText,
   UtensilsCrossed,
   LayoutGrid,
   Menu,
@@ -30,7 +31,7 @@ import classes from "./navigation.module.css";
 
 const iconMap = {
   Home: Home,
-  Categories: BookOpen,
+  Categories: BookOpenText,
   MealPlanner: CalendarDays,
   ShoppingList: ShoppingCart,
   GlobalRecipes: Globe,

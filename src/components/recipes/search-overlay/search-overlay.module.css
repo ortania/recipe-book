@@ -1,0 +1,194 @@
+/* Search View – minimal styles, reuses parentClasses from recipes-view-new */
+
+.backRow {
+  display: flex;
+  align-items: center;
+  padding-bottom: 0.25rem;
+}
+
+.searchBoxRelative {
+  position: relative;
+}
+
+.resultsCount {
+  font-size: var(--small-font);
+  color: var(--text-muted);
+  margin-bottom: 0.75rem;
+  padding-inline-start: 0.25rem;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  text-align: center;
+}
+
+.emptyHint {
+  font-size: var(--basic-font);
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* No results state */
+.noResultsBlock {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 2rem;
+  text-align: center;
+  gap: 0.5rem;
+}
+
+.noResultsTitle {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: var(--text-primary, #333);
+  margin: 0;
+}
+
+.noResultsHint {
+  font-size: var(--basic-font);
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Autocomplete / recent searches dropdown */
+.suggestions {
+  position: absolute;
+  top: 100%;
+  inset-inline-start: 0;
+  inset-inline-end: 0;
+  z-index: 50;
+  background: var(--bg-primary, #fff);
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  margin-top: 4px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+
+.recentHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem 0.25rem;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-muted, #888);
+}
+
+.recentIcon {
+  color: var(--text-muted, #888);
+  flex-shrink: 0;
+}
+
+.suggestionItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  text-align: start;
+  font-size: var(--basic-font);
+  color: var(--text-primary, #333);
+  transition: background 0.15s;
+}
+
+.suggestionItem:hover {
+  background: var(--bg-hover, #f5f5f5);
+}
+
+.suggestionImg {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.suggestionName {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Previous searches section (in main content) */
+.previousSearchesSection {
+  margin-bottom: 1.5rem;
+  padding-inline: 0.25rem;
+}
+
+.previousSearchesTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  color: var(--text-muted, #888);
+  margin: 0 0 0.75rem;
+}
+
+.previousSearchesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.previousSearchChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.4em 0.85em;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 2rem;
+  background: var(--bg-primary, #fff);
+  color: var(--text-primary, #333);
+  font-size: var(--small-font);
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.previousSearchChip:hover {
+  background: var(--bg-hover, #f0f0f0);
+  border-color: var(--primary-color, #2196f3);
+  color: var(--primary-color, #2196f3);
+}
+
+.foundTermLabel {
+  font-weight: 400;
+  font-size: var(--basic-font);
+  color: var(--text-muted, #888);
+}
+
+/* Clear all button */
+.clearAllButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.4em 0.75em;
+  border: 1px solid var(--border-color, #ddd);
+  border-radius: 0.5rem;
+  background: var(--bg-primary, #fff);
+  color: var(--text-muted, #888);
+  font-size: var(--small-font);
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+
+.clearAllButton:hover {
+  background: var(--bg-hover, #f5f5f5);
+  color: var(--danger-color, #e53935);
+  border-color: var(--danger-color, #e53935);
+}

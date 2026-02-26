@@ -83,6 +83,25 @@ export function search(persons, searchTerm, sortField, sortDirection) {
         const aRating = parseFloat(a.rating) || 0;
         const bRating = parseFloat(b.rating) || 0;
         comparison = aRating - bRating;
+      } else if (sortField === "newest") {
+        const aTime = a.createdAt?.seconds || a.createdAt || 0;
+        const bTime = b.createdAt?.seconds || b.createdAt || 0;
+        comparison = aTime - bTime;
+      } else if (sortField === "favorites") {
+        const aFav = a.isFavorite ? 1 : 0;
+        const bFav = b.isFavorite ? 1 : 0;
+        comparison = aFav - bFav;
+      } else if (sortField === "recentlyViewed") {
+        try {
+          const ids = JSON.parse(localStorage.getItem("recentlyViewedRecipes") || "[]");
+          const aIdx = ids.indexOf(a.id);
+          const bIdx = ids.indexOf(b.id);
+          const aPos = aIdx === -1 ? 9999 : aIdx;
+          const bPos = bIdx === -1 ? 9999 : bIdx;
+          comparison = aPos - bPos;
+        } catch {
+          comparison = 0;
+        }
       }
       return sortDirection === "asc" ? comparison : -comparison;
     });
