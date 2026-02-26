@@ -54,7 +54,7 @@ Variables
   --clr-footer: var(--clr-blue-3);
 
   --transition: all 0.4s linear;
-  --spacing: 0.1rem;
+  --spacing: 0;
   --radius: 0.25rem;
 
   --max-width: 900px;

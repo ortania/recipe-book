@@ -3211,11 +3211,11 @@ const translations = {
       mixed: "המתכון יובא בהצלחה! מומלץ לבדוק את המרכיבים וההוראות לפני השמירה",
     },
     continue: {
-      he: "המשך",
+      he: "הבא",
       en: "Continue",
       ru: "Продолжить",
       de: "Weiter",
-      mixed: "המשך",
+      mixed: "הבא",
     },
     importing: {
       he: "מייבא...",

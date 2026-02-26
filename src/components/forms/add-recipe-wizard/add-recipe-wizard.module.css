@@ -527,6 +527,7 @@
   color: var(--text-muted);
   font-style: italic;
   font-weight: 400;
+  opacity: 0.5;
 }
 
 .formInput:focus {
@@ -563,6 +564,7 @@
   color: var(--text-muted);
   font-style: italic;
   font-weight: 400;
+  opacity: 0.5;
 }
 
 .formTextarea:focus {
@@ -627,6 +629,7 @@
   color: var(--text-muted);
   font-style: italic;
   font-weight: 400;
+  opacity: 0.5;
 }
 
 .dynamicItemTextarea {
@@ -649,6 +652,7 @@
   color: var(--text-muted);
   font-style: italic;
   font-weight: 400;
+  opacity: 0.5;
 }
 
 .removeItemBtn {
@@ -949,7 +953,7 @@
 .parseIngredientsTextarea::placeholder {
   font-style: italic;
   color: var(--text-muted);
-  opacity: 0.8;
+  opacity: 0.5;
 }
 .parseIngredientsActions {
   margin-top: 0.75rem;
@@ -1432,7 +1436,7 @@
 @media (max-width: 500px) {
   .wizardContainer {
     padding: 1rem;
-    padding-bottom: 3rem;
+    padding-bottom: 6.5rem;
     width: 100%;
     box-sizing: border-box;
   }
@@ -1458,6 +1462,20 @@
   .dragHandle {
     touch-action: none;
     padding: 0.4em;
+  }
+
+  .navButtons {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    margin: 0;
+    padding: 1rem 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    background: var(--bg-card, #fff);
+    border-top: 1px solid var(--border-color);
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+    z-index: 100;
   }
 }
 

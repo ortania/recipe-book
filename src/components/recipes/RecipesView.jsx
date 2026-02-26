@@ -7,6 +7,8 @@ import {
   Search,
   ArrowUpDown,
   LayoutGrid,
+  LayoutList,
+  ScrollText,
   List as ListIcon,
   History,
   Filter,
@@ -159,7 +161,9 @@ function RecipesView({
 
   const closeSearch = useCallback(() => {
     setShowSearch(false);
-    try { sessionStorage.removeItem("searchOverlayState"); } catch {}
+    try {
+      sessionStorage.removeItem("searchOverlayState");
+    } catch {}
   }, []);
 
   useEffect(() => {
@@ -171,8 +175,14 @@ function RecipesView({
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
     const update = () => {
       setIsMobile(mql.matches);
-      setMobileTabsEl(mql.matches ? document.getElementById("mobile-tabs-portal") : null);
-      setMobileActionsEl(mql.matches ? document.getElementById("mobile-header-actions-portal") : null);
+      setMobileTabsEl(
+        mql.matches ? document.getElementById("mobile-tabs-portal") : null,
+      );
+      setMobileActionsEl(
+        mql.matches
+          ? document.getElementById("mobile-header-actions-portal")
+          : null,
+      );
     };
     update();
     mql.addEventListener("change", update);
@@ -202,9 +212,7 @@ function RecipesView({
   // Recently viewed recipes – placeholder, computed after filters are applied
   const recentlyViewedStoredIds = useMemo(() => {
     try {
-      return JSON.parse(
-        localStorage.getItem("recentlyViewedRecipes") || "[]",
-      );
+      return JSON.parse(localStorage.getItem("recentlyViewedRecipes") || "[]");
     } catch {
       return [];
     }
@@ -548,57 +556,165 @@ function RecipesView({
   const filterContent = (
     <div className={classes.dropdownScrollable}>
       <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>{t("recipesView", "sortByRating")}:</label>
+        <label className={classes.filterLabel}>
+          {t("recipesView", "sortByRating")}:
+        </label>
         {["all", "3", "4", "5"].map((v) => (
-          <button key={v} className={selectedRating === v ? classes.active : ""} onClick={() => setSelectedRating(v)}>
-            {v === "all" ? t("categories", "all") : `★${v}${v !== "5" ? "+" : ""}`}
+          <button
+            key={v}
+            className={selectedRating === v ? classes.active : ""}
+            onClick={() => setSelectedRating(v)}
+          >
+            {v === "all"
+              ? t("categories", "all")
+              : `★${v}${v !== "5" ? "+" : ""}`}
           </button>
         ))}
       </div>
       <div className={classes.filterDivider} />
       <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>{t("recipes", "prepTime")}:</label>
-        <button className={selectedPrepTime === "all" ? classes.active : ""} onClick={() => setSelectedPrepTime("all")}>{t("categories", "all")}</button>
-        <button className={selectedPrepTime === "quick" ? classes.active : ""} onClick={() => setSelectedPrepTime("quick")}>≤15 {t("recipes", "minutes")}</button>
-        <button className={selectedPrepTime === "medium" ? classes.active : ""} onClick={() => setSelectedPrepTime("medium")}>15-30 {t("recipes", "minutes")}</button>
-        <button className={selectedPrepTime === "long" ? classes.active : ""} onClick={() => setSelectedPrepTime("long")}>30+ {t("recipes", "minutes")}</button>
+        <label className={classes.filterLabel}>
+          {t("recipes", "prepTime")}:
+        </label>
+        <button
+          className={selectedPrepTime === "all" ? classes.active : ""}
+          onClick={() => setSelectedPrepTime("all")}
+        >
+          {t("categories", "all")}
+        </button>
+        <button
+          className={selectedPrepTime === "quick" ? classes.active : ""}
+          onClick={() => setSelectedPrepTime("quick")}
+        >
+          ≤15 {t("recipes", "minutes")}
+        </button>
+        <button
+          className={selectedPrepTime === "medium" ? classes.active : ""}
+          onClick={() => setSelectedPrepTime("medium")}
+        >
+          15-30 {t("recipes", "minutes")}
+        </button>
+        <button
+          className={selectedPrepTime === "long" ? classes.active : ""}
+          onClick={() => setSelectedPrepTime("long")}
+        >
+          30+ {t("recipes", "minutes")}
+        </button>
       </div>
       <div className={classes.filterDivider} />
       <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>{t("recipes", "difficulty")}:</label>
+        <label className={classes.filterLabel}>
+          {t("recipes", "difficulty")}:
+        </label>
         {["all", "VeryEasy", "Easy", "Medium", "Hard"].map((v) => (
-          <button key={v} className={selectedDifficulty === v ? classes.active : ""} onClick={() => setSelectedDifficulty(v)}>
+          <button
+            key={v}
+            className={selectedDifficulty === v ? classes.active : ""}
+            onClick={() => setSelectedDifficulty(v)}
+          >
             {v === "all" ? t("categories", "all") : t("difficulty", v)}
           </button>
         ))}
       </div>
       <div className={classes.filterDivider} />
       <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>{t("recipesView", "ingredientCount")}:</label>
-        <button className={selectedIngredientCount === "all" ? classes.active : ""} onClick={() => setSelectedIngredientCount("all")}>{t("categories", "all")}</button>
-        <button className={selectedIngredientCount === "few" ? classes.active : ""} onClick={() => setSelectedIngredientCount("few")}>≤5</button>
-        <button className={selectedIngredientCount === "medium" ? classes.active : ""} onClick={() => setSelectedIngredientCount("medium")}>6-10</button>
-        <button className={selectedIngredientCount === "many" ? classes.active : ""} onClick={() => setSelectedIngredientCount("many")}>10+</button>
+        <label className={classes.filterLabel}>
+          {t("recipesView", "ingredientCount")}:
+        </label>
+        <button
+          className={selectedIngredientCount === "all" ? classes.active : ""}
+          onClick={() => setSelectedIngredientCount("all")}
+        >
+          {t("categories", "all")}
+        </button>
+        <button
+          className={selectedIngredientCount === "few" ? classes.active : ""}
+          onClick={() => setSelectedIngredientCount("few")}
+        >
+          ≤5
+        </button>
+        <button
+          className={selectedIngredientCount === "medium" ? classes.active : ""}
+          onClick={() => setSelectedIngredientCount("medium")}
+        >
+          6-10
+        </button>
+        <button
+          className={selectedIngredientCount === "many" ? classes.active : ""}
+          onClick={() => setSelectedIngredientCount("many")}
+        >
+          10+
+        </button>
       </div>
       <div className={classes.filterDivider} />
       <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>{t("recipesView", "stepCount")}:</label>
-        <button className={selectedStepCount === "all" ? classes.active : ""} onClick={() => setSelectedStepCount("all")}>{t("categories", "all")}</button>
-        <button className={selectedStepCount === "few" ? classes.active : ""} onClick={() => setSelectedStepCount("few")}>≤3</button>
-        <button className={selectedStepCount === "medium" ? classes.active : ""} onClick={() => setSelectedStepCount("medium")}>4-7</button>
-        <button className={selectedStepCount === "many" ? classes.active : ""} onClick={() => setSelectedStepCount("many")}>7+</button>
+        <label className={classes.filterLabel}>
+          {t("recipesView", "stepCount")}:
+        </label>
+        <button
+          className={selectedStepCount === "all" ? classes.active : ""}
+          onClick={() => setSelectedStepCount("all")}
+        >
+          {t("categories", "all")}
+        </button>
+        <button
+          className={selectedStepCount === "few" ? classes.active : ""}
+          onClick={() => setSelectedStepCount("few")}
+        >
+          ≤3
+        </button>
+        <button
+          className={selectedStepCount === "medium" ? classes.active : ""}
+          onClick={() => setSelectedStepCount("medium")}
+        >
+          4-7
+        </button>
+        <button
+          className={selectedStepCount === "many" ? classes.active : ""}
+          onClick={() => setSelectedStepCount("many")}
+        >
+          7+
+        </button>
       </div>
       <div className={classes.filterDivider} />
       <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>{t("recipesView", "byIngredients")}:</label>
+        <label className={classes.filterLabel}>
+          {t("recipesView", "byIngredients")}:
+        </label>
         <div className={classes.ingredientInputRow}>
-          <input type="text" className={classes.ingredientInput} value={ingredientInput} onChange={(e) => setIngredientInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addFilterIngredient(); } }} placeholder={t("recipesView", "addIngredient")} />
-          <button className={classes.ingredientAddBtn} onClick={addFilterIngredient} type="button">+</button>
+          <input
+            type="text"
+            className={classes.ingredientInput}
+            value={ingredientInput}
+            onChange={(e) => setIngredientInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addFilterIngredient();
+              }
+            }}
+            placeholder={t("recipesView", "addIngredient")}
+          />
+          <button
+            className={classes.ingredientAddBtn}
+            onClick={addFilterIngredient}
+            type="button"
+          >
+            +
+          </button>
         </div>
         {filterIngredients.length > 0 && (
           <div className={classes.ingredientChips}>
             {filterIngredients.map((ing) => (
-              <span key={ing} className={classes.ingredientChip}>{ing}<button className={classes.ingredientChipRemove} onClick={() => removeFilterIngredient(ing)}>✕</button></span>
+              <span key={ing} className={classes.ingredientChip}>
+                {ing}
+                <button
+                  className={classes.ingredientChipRemove}
+                  onClick={() => removeFilterIngredient(ing)}
+                >
+                  ✕
+                </button>
+              </span>
             ))}
           </div>
         )}
@@ -607,7 +723,12 @@ function RecipesView({
         <>
           <div className={classes.filterDivider} />
           <div className={classes.filterSection}>
-            <button className={classes.clearFiltersBtn} onClick={clearAllFilters}>{t("recipesView", "clearFilters")}</button>
+            <button
+              className={classes.clearFiltersBtn}
+              onClick={clearAllFilters}
+            >
+              {t("recipesView", "clearFilters")}
+            </button>
           </div>
         </>
       )}
@@ -645,7 +766,9 @@ function RecipesView({
     if (groupId === "general") {
       return recipes.filter((r) => !r.categories || r.categories.length === 0);
     }
-    return recipes.filter((r) => r.categories && r.categories.includes(groupId));
+    return recipes.filter(
+      (r) => r.categories && r.categories.includes(groupId),
+    );
   };
 
   const mobileHeaderActions = (
@@ -656,16 +779,20 @@ function RecipesView({
         title={t("nav", "categories")}
       >
         <Tags size={20} />
-        {!isAllSelected && selectedCount > 0 && (
+        {/* {!isAllSelected && selectedCount > 0 && (
           <span className={classes.mobileHeaderBadge}>{selectedCount}</span>
-        )}
+        )} */}
       </button>
       <button
         className={classes.mobileHeaderBtn}
         onClick={toggleView}
-        title={isSimpleView ? t("recipesView", "gridView") : t("recipesView", "listView")}
+        title={
+          isSimpleView
+            ? t("recipesView", "gridView")
+            : t("recipesView", "listView")
+        }
       >
-        {isSimpleView ? <LayoutGrid size={20} /> : <ListIcon size={20} />}
+        {isSimpleView ? <LayoutGrid size={20} /> : <ScrollText size={20} />}
       </button>
     </>
   );
@@ -676,9 +803,13 @@ function RecipesView({
         .map((id) => groups.find((g) => g.id === id))
         .filter(Boolean);
 
-  if (!persons || persons.length === 0) {
+  const hasSelectedCategories = !isAllSelected && selectedCategories.length > 0;
+
+  if (!persons || (persons.length === 0 && !hasSelectedCategories)) {
     return (
-      <div className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}>
+      <div
+        className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}
+      >
         {mobileTabsEl && createPortal(viewToggleElement, mobileTabsEl)}
         {mobileActionsEl && createPortal(mobileHeaderActions, mobileActionsEl)}
         <div className={classes.viewToggleWrapper}>
@@ -745,7 +876,9 @@ function RecipesView({
   }
 
   return (
-    <div className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}>
+    <div
+      className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}
+    >
       {mobileTabsEl && createPortal(viewToggleElement, mobileTabsEl)}
       {mobileActionsEl && createPortal(mobileHeaderActions, mobileActionsEl)}
 
@@ -764,16 +897,22 @@ function RecipesView({
               title={t("nav", "categories")}
             >
               <Tags size={18} />
-              {!isAllSelected && selectedCount > 0 && (
-                <span className={classes.mobileHeaderBadge}>{selectedCount}</span>
-              )}
+              {/* {!isAllSelected && selectedCount > 0 && (
+                <span className={classes.mobileHeaderBadge}>
+                  {selectedCount}
+                </span>
+              )} */}
             </button>
             <button
               className={classes.desktopHeaderBtn}
               onClick={toggleView}
-              title={isSimpleView ? t("recipesView", "gridView") : t("recipesView", "listView")}
+              title={
+                isSimpleView
+                  ? t("recipesView", "gridView")
+                  : t("recipesView", "listView")
+              }
             >
-              {isSimpleView ? <LayoutGrid size={18} /> : <ListIcon size={18} />}
+              {isSimpleView ? <LayoutGrid size={18} /> : <ScrollText size={18} />}
             </button>
           </div>
         </div>
@@ -787,8 +926,11 @@ function RecipesView({
           </div>
         )}
 
-        {!showChat && persons.length > 0 && (
-          <div className={classes.searchHeader} style={{ display: showSearch ? "none" : undefined }}>
+        {!showChat && (persons.length > 0 || hasSelectedCategories) && (
+          <div
+            className={classes.searchHeader}
+            style={{ display: showSearch ? "none" : undefined }}
+          >
             {showAddAndFavorites && (
               <button
                 onClick={() => setShowFavoritesOnly((prev) => !prev)}
@@ -825,7 +967,10 @@ function RecipesView({
                 </button>
                 {!isMobile && showSortMenu && (
                   <>
-                    <div className={classes.dropdownOverlay} onClick={() => setShowSortMenu(false)} />
+                    <div
+                      className={classes.dropdownOverlay}
+                      onClick={() => setShowSortMenu(false)}
+                    />
                     <div className={classes.dropdownMenu} style={sortMenuStyle}>
                       <div className={classes.dropdownClose}>
                         <CloseButton onClick={() => setShowSortMenu(false)} />
@@ -840,7 +985,11 @@ function RecipesView({
                   </>
                 )}
                 {isMobile && (
-                  <BottomSheet open={showSortMenu} onClose={() => setShowSortMenu(false)} title={t("recipesView", "sorting")}>
+                  <BottomSheet
+                    open={showSortMenu}
+                    onClose={() => setShowSortMenu(false)}
+                    title={t("recipesView", "sorting")}
+                  >
                     <SortDropdown
                       sortField={sortField}
                       sortDirection={sortDirection}
@@ -887,10 +1036,7 @@ function RecipesView({
             <div className={classes.recentlyViewedSection}>
               <div className={classes.sectionHeader}>
                 <h2 className={classes.sectionTitle}>
-                  <History
-                    size={16}
-                    style={{ marginInlineEnd: "0.4rem" }}
-                  />
+                  <History size={16} style={{ marginInlineEnd: "0.4rem" }} />
                   {t("recipesView", "recentlyViewed")}
                 </h2>
               </div>
@@ -992,10 +1138,18 @@ function RecipesView({
                               className={classes.compactItem}
                               onClick={() => navigate(`/recipe/${person.id}`)}
                             >
-                              {(person.image || person.image_src) ? (
-                                <img src={person.image || person.image_src} alt="" className={classes.compactThumb} />
+                              {person.image || person.image_src ? (
+                                <img
+                                  src={person.image || person.image_src}
+                                  alt=""
+                                  className={classes.compactThumb}
+                                />
                               ) : (
-                                <span className={classes.compactThumbPlaceholder}><UtensilsCrossed size={16} /></span>
+                                <span
+                                  className={classes.compactThumbPlaceholder}
+                                >
+                                  <UtensilsCrossed size={16} />
+                                </span>
                               )}
                               <span className={classes.compactName}>
                                 {person.name}
@@ -1071,10 +1225,16 @@ function RecipesView({
                             className={classes.compactItem}
                             onClick={() => navigate(`/recipe/${person.id}`)}
                           >
-                            {(person.image || person.image_src) ? (
-                              <img src={person.image || person.image_src} alt="" className={classes.compactThumb} />
+                            {person.image || person.image_src ? (
+                              <img
+                                src={person.image || person.image_src}
+                                alt=""
+                                className={classes.compactThumb}
+                              />
                             ) : (
-                              <span className={classes.compactThumbPlaceholder}><UtensilsCrossed size={16} /></span>
+                              <span className={classes.compactThumbPlaceholder}>
+                                <UtensilsCrossed size={16} />
+                              </span>
                             )}
                             <span className={classes.compactName}>
                               {person.name}
@@ -1132,10 +1292,16 @@ function RecipesView({
                   className={classes.compactItem}
                   onClick={() => navigate(`/recipe/${person.id}`)}
                 >
-                  {(person.image || person.image_src) ? (
-                    <img src={person.image || person.image_src} alt="" className={classes.compactThumb} />
+                  {person.image || person.image_src ? (
+                    <img
+                      src={person.image || person.image_src}
+                      alt=""
+                      className={classes.compactThumb}
+                    />
                   ) : (
-                    <span className={classes.compactThumbPlaceholder}><UtensilsCrossed size={16} /></span>
+                    <span className={classes.compactThumbPlaceholder}>
+                      <UtensilsCrossed size={16} />
+                    </span>
                   )}
                   <span className={classes.compactName}>{person.name}</span>
                   {showAddAndFavorites && (
@@ -1242,35 +1408,45 @@ function RecipesView({
             t={t}
           />
         </BottomSheet>
-      ) : showCategoriesSheet && (
-        <>
-          <div className={classes.categoriesPopupOverlay} onClick={() => setShowCategoriesSheet(false)} />
-          <div className={classes.categoriesPopup}>
-            <div className={classes.categoriesPopupHeader}>
-              <span className={classes.categoriesPopupTitle}>{t("nav", "categories")}</span>
-              <button className={classes.categoriesPopupClose} onClick={() => setShowCategoriesSheet(false)}>
-                <X size={18} />
-              </button>
-            </div>
-            <CategoriesSheetContent
-              classes={classes}
-              categories={categories}
-              categorySearch={categorySearch}
-              setCategorySearch={setCategorySearch}
-              clearCategorySelection={clearCategorySelection}
-              isAllSelected={isAllSelected}
-              selectedCount={selectedCount}
-              selectedCategories={selectedCategories}
-              toggleCategory={toggleCategory}
-              getTranslatedGroup={getTranslatedGroup}
-              getGroupContacts={getGroupContacts}
-              getCategoryIcon={getCategoryIcon}
-              setShowCategoriesSheet={setShowCategoriesSheet}
-              setShowManagement={setShowManagement}
-              t={t}
+      ) : (
+        showCategoriesSheet && (
+          <>
+            <div
+              className={classes.categoriesPopupOverlay}
+              onClick={() => setShowCategoriesSheet(false)}
             />
-          </div>
-        </>
+            <div className={classes.categoriesPopup}>
+              <div className={classes.categoriesPopupHeader}>
+                <span className={classes.categoriesPopupTitle}>
+                  {t("nav", "categories")}
+                </span>
+                <button
+                  className={classes.categoriesPopupClose}
+                  onClick={() => setShowCategoriesSheet(false)}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <CategoriesSheetContent
+                classes={classes}
+                categories={categories}
+                categorySearch={categorySearch}
+                setCategorySearch={setCategorySearch}
+                clearCategorySelection={clearCategorySelection}
+                isAllSelected={isAllSelected}
+                selectedCount={selectedCount}
+                selectedCategories={selectedCategories}
+                toggleCategory={toggleCategory}
+                getTranslatedGroup={getTranslatedGroup}
+                getGroupContacts={getGroupContacts}
+                getCategoryIcon={getCategoryIcon}
+                setShowCategoriesSheet={setShowCategoriesSheet}
+                setShowManagement={setShowManagement}
+                t={t}
+              />
+            </div>
+          </>
+        )
       )}
 
       {showManagement && (
@@ -1325,7 +1501,10 @@ function CategoriesSheetContent({
           <span className={classes.categoriesSheetActiveCount}>
             {selectedCount} {t("categories", "selected") || "נבחרו"}
           </span>
-          <button className={classes.categoriesSheetClear} onClick={clearCategorySelection}>
+          <button
+            className={classes.categoriesSheetClear}
+            onClick={clearCategorySelection}
+          >
             {t("categories", "clear")}
           </button>
         </div>
@@ -1344,26 +1523,38 @@ function CategoriesSheetContent({
           })
           .map((group) => {
             const isSelected = selectedCategories.includes(group.id);
-            const IconComp = group.id === "all" ? UtensilsCrossed : getCategoryIcon(group.icon);
+            const IconComp =
+              group.id === "all"
+                ? UtensilsCrossed
+                : getCategoryIcon(group.icon);
             return (
               <button
                 key={group.id}
                 className={`${classes.categorySheetItem} ${isSelected ? classes.categorySheetActive : ""}`}
                 onClick={() => toggleCategory(group.id)}
-                style={isSelected ? {
-                  borderColor: group.color,
-                  backgroundColor: `${group.color}15`,
-                } : undefined}
+                style={
+                  isSelected
+                    ? {
+                        borderColor: group.color,
+                        backgroundColor: `${group.color}15`,
+                      }
+                    : undefined
+                }
               >
                 <span className={classes.categorySheetLabel}>
                   <span
                     className={classes.categorySheetIcon}
-                    style={{ backgroundColor: `${group.color}18`, color: group.color }}
+                    style={{
+                      backgroundColor: `${group.color}18`,
+                      color: group.color,
+                    }}
                   >
                     <IconComp size={18} />
                   </span>
                   <span className={classes.categorySheetName}>
-                    {group.id === "all" ? t("categories", "allRecipes") : getTranslatedGroup(group)}
+                    {group.id === "all"
+                      ? t("categories", "allRecipes")
+                      : getTranslatedGroup(group)}
                   </span>
                 </span>
                 <span className={classes.categorySheetCountNum}>
@@ -1392,24 +1583,48 @@ function AddRecipeMenu({ onSelect, t }) {
   return (
     <div className={fabClasses.menu}>
       <button className={fabClasses.menuItem} onClick={() => onSelect("photo")}>
-        <span className={fabClasses.menuLabel}>{t("addWizard", "fromPhoto")}</span>
-        <span className={fabClasses.menuIcon}><ImagePlus size={20} /></span>
+        <span className={fabClasses.menuLabel}>
+          {t("addWizard", "fromPhoto")}
+        </span>
+        <span className={fabClasses.menuIcon}>
+          <ImagePlus size={20} />
+        </span>
       </button>
       <button className={fabClasses.menuItem} onClick={() => onSelect("url")}>
-        <span className={fabClasses.menuLabel}>{t("addWizard", "fromUrl")}</span>
-        <span className={fabClasses.menuIcon}><Link size={20} /></span>
+        <span className={fabClasses.menuLabel}>
+          {t("addWizard", "fromUrl")}
+        </span>
+        <span className={fabClasses.menuIcon}>
+          <Link size={20} />
+        </span>
       </button>
       <button className={fabClasses.menuItem} onClick={() => onSelect("text")}>
-        <span className={fabClasses.menuLabel}>{t("addWizard", "fromText")}</span>
-        <span className={fabClasses.menuIcon}><ClipboardList size={20} /></span>
+        <span className={fabClasses.menuLabel}>
+          {t("addWizard", "fromText")}
+        </span>
+        <span className={fabClasses.menuIcon}>
+          <ClipboardList size={20} />
+        </span>
       </button>
-      <button className={fabClasses.menuItem} onClick={() => onSelect("recording")}>
-        <span className={fabClasses.menuLabel}>{t("addWizard", "fromRecording")}</span>
-        <span className={fabClasses.menuIcon}><Mic size={20} /></span>
+      <button
+        className={fabClasses.menuItem}
+        onClick={() => onSelect("recording")}
+      >
+        <span className={fabClasses.menuLabel}>
+          {t("addWizard", "fromRecording")}
+        </span>
+        <span className={fabClasses.menuIcon}>
+          <Mic size={20} />
+        </span>
       </button>
-      <button className={fabClasses.menuItem} onClick={() => onSelect("manual")}>
+      <button
+        className={fabClasses.menuItem}
+        onClick={() => onSelect("manual")}
+      >
         <span className={fabClasses.menuLabel}>{t("addWizard", "manual")}</span>
-        <span className={fabClasses.menuIcon}><PenLine size={20} /></span>
+        <span className={fabClasses.menuIcon}>
+          <PenLine size={20} />
+        </span>
       </button>
     </div>
   );

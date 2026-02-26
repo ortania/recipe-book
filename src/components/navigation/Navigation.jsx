@@ -15,6 +15,7 @@ import {
   BookOpenText,
   UtensilsCrossed,
   LayoutGrid,
+  ScrollText,
   Menu,
   MessageSquareMore,
   Settings2,

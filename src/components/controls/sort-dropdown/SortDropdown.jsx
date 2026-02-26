@@ -1,4 +1,4 @@
-import { MoveUp, MoveDown } from "lucide-react";
+import { ArrowUp, ArrowDown } from "lucide-react";
 import { useLanguage } from "../../../context";
 import classes from "./sort-dropdown.module.css";
 
@@ -43,23 +43,23 @@ function SortDropdown({
     <div className={classes.list}>
       {options.map(({ field, lockedDir, defaultDir }) => {
         const isActive = sortField === field;
-        const dir = isActive ? sortDirection : (lockedDir || defaultDir || "asc");
+        const dir = isActive ? sortDirection : lockedDir || defaultDir || "asc";
         return (
           <button
             key={field}
             className={`${classes.option} ${isActive ? classes.active : ""}`}
             onClick={() => handleSelect(field)}
           >
-            <span className={classes.label}>{labelMap[field] || field}</span>
             <span className={classes.arrow}>
               {lockedDir ? (
-                <MoveDown size={16} />
+                <ArrowDown size={16} />
               ) : dir === "asc" ? (
-                <MoveUp size={16} />
+                <ArrowUp size={16} />
               ) : (
-                <MoveDown size={16} />
+                <ArrowDown size={16} />
               )}
             </span>
+            <span className={classes.label}>{labelMap[field] || field}</span>
           </button>
         );
       })}

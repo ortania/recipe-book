@@ -44,5 +44,5 @@
 }
 
 .option.active .arrow {
-  color: var(--action-color, #4a90d9);
+  color: var(--active-color, #4a90d9);
 }

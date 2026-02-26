@@ -55,13 +55,13 @@
 }
 
 .recipeTime {
-  font-size: var(--very-small-font);
+  font-size: var(--small-font);
   color: var(--text-muted);
   margin: 0;
 }
 
 .recipeDifficulty {
-  font-size: var(--very-small-font);
+  font-size: var(--small-font);
   color: var(--text-secondary);
   font-weight: 500;
 }
@@ -150,7 +150,7 @@
   border: none;
   border-radius: 20px;
   padding: 0.45em 1em;
-  font-size: var(--very-small-font);
+  font-size: var(--small-font);
   font-weight: 500;
   color: var(--clr-blue-3, #2563eb);
   cursor: pointer;
@@ -287,7 +287,7 @@
 }
 
 .starClickable {
-  font-size: 1.4rem;
+  font-size: 1.7rem;
   line-height: 1;
   cursor: pointer;
   transition: transform 0.15s;
