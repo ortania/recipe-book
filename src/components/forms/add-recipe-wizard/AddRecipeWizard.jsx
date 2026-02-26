@@ -29,6 +29,7 @@ import {
   Mic,
   Heart,
   Pencil,
+  FilePenLine,
   ClipboardList,
   Eye,
   Clock,
@@ -1644,7 +1645,7 @@ function AddRecipeWizard({
           }}
         >
           <div className={`${classes.methodIcon} ${classes.methodIconManual}`}>
-            <Pencil size={24} />
+            <FilePenLine size={24} />
           </div>
           <div className={classes.methodCardContent}>
             <h3 className={classes.methodCardTitle}>

@@ -14,12 +14,12 @@ import {
   Filter,
   Link,
   ClipboardList,
-  PenLine,
   Mic,
   ImagePlus,
   Copy,
   Trash2,
   Pencil,
+  FilePenLine,
   Settings2,
   UtensilsCrossed,
   ChevronUp,
@@ -912,7 +912,11 @@ function RecipesView({
                   : t("recipesView", "listView")
               }
             >
-              {isSimpleView ? <LayoutGrid size={18} /> : <ScrollText size={18} />}
+              {isSimpleView ? (
+                <LayoutGrid size={18} />
+              ) : (
+                <ScrollText size={18} />
+              )}
             </button>
           </div>
         </div>
@@ -1164,7 +1168,7 @@ function RecipesView({
                                     }}
                                     title="Edit"
                                   >
-                                    <Pencil size={16} />
+                                    <FilePenLine size={16} />
                                   </button>
                                   <button
                                     className={`${classes.compactActionBtn} ${classes.compactDanger}`}
@@ -1249,7 +1253,7 @@ function RecipesView({
                                   }}
                                   title="Edit"
                                 >
-                                  <Pencil size={16} />
+                                  <FilePenLine size={16} />
                                 </button>
                                 <button
                                   className={`${classes.compactActionBtn} ${classes.compactDanger}`}
@@ -1314,7 +1318,7 @@ function RecipesView({
                         }}
                         title="Edit"
                       >
-                        <Pencil size={16} />
+                        <FilePenLine size={16} />
                       </button>
                       <button
                         className={`${classes.compactActionBtn} ${classes.compactDanger}`}
@@ -1623,7 +1627,7 @@ function AddRecipeMenu({ onSelect, t }) {
       >
         <span className={fabClasses.menuLabel}>{t("addWizard", "manual")}</span>
         <span className={fabClasses.menuIcon}>
-          <PenLine size={20} />
+          <FilePenLine size={20} />
         </span>
       </button>
     </div>

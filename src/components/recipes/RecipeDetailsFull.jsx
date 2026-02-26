@@ -487,10 +487,10 @@ function RecipeDetailsFull({
                     }}
                     onMouseEnter={() => setHoverStar(star)}
                     onMouseLeave={() => setHoverStar(0)}
-                    onClick={() => onRate(recipe.id, star)}
+                    onClick={() => onRate(recipe.id, star === userRating ? 0 : star)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ")
-                        onRate(recipe.id, star);
+                        onRate(recipe.id, star === userRating ? 0 : star);
                     }}
                   >
                     ★

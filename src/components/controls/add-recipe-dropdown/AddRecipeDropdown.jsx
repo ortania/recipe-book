@@ -1,10 +1,14 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, ClipboardList, PenLine, Mic, ImagePlus } from "lucide-react";
+import { Link, ClipboardList, FilePenLine, Mic, ImagePlus } from "lucide-react";
 import { useLanguage } from "../../../context";
 import { AddButton } from "../add-button";
 import classes from "./add-recipe-dropdown.module.css";
 
-function AddRecipeDropdown({ onSelect, buttonType = "circlePrimary", children }) {
+function AddRecipeDropdown({
+  onSelect,
+  buttonType = "circlePrimary",
+  children,
+}) {
   const { t } = useLanguage();
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
@@ -141,7 +145,7 @@ function AddRecipeDropdown({ onSelect, buttonType = "circlePrimary", children })
               {t("addWizard", "manual")}
             </span>
             <span className={classes.dropdownIcon}>
-              <PenLine size={20} />
+              <FilePenLine size={20} />
             </span>
           </button>
         </div>

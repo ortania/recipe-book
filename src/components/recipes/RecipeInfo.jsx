@@ -2,7 +2,7 @@ import React from "react";
 import classes from "./recipe-card-new.module.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, Pencil, Trash2, Copy } from "lucide-react";
+import { Heart, Pencil, FilePenLine, Trash2, Copy } from "lucide-react";
 import { Button } from "../controls/button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { formatDifficulty, formatTime } from "./utils";
@@ -12,7 +12,17 @@ import useTranslatedText from "../../hooks/useTranslatedText";
 const DEFAULT_IMAGE =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='320'%3E%3Crect width='400' height='320' fill='%23e0e0e0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='%23666'%3ENo Image%3C/text%3E%3C/svg%3E";
 
-function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopyRecipe, userRating = 0, onRate, onCardClick }) {
+function RecipeInfo({
+  person,
+  groups,
+  onEdit,
+  onDelete,
+  onToggleFavorite,
+  onCopyRecipe,
+  userRating = 0,
+  onRate,
+  onCardClick,
+}) {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const translatedName = useTranslatedText(person.name);
@@ -101,7 +111,11 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
     <>
       <div
         className={classes.recipeCard}
-        onClick={() => onCardClick ? onCardClick(person.id) : navigate(`/recipe/${person.id}`)}
+        onClick={() =>
+          onCardClick
+            ? onCardClick(person.id)
+            : navigate(`/recipe/${person.id}`)
+        }
       >
         <div className={classes.imageContainer}>
           <img
@@ -124,7 +138,11 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
                 isFavorite ? "Remove from favorites" : "Add to favorites"
               }
             >
-              {isFavorite ? <Heart size={18} fill="red" color="red" /> : <Heart size={18} />}
+              {isFavorite ? (
+                <Heart size={18} fill="red" color="red" />
+              ) : (
+                <Heart size={18} />
+              )}
             </button>
           )}
 
@@ -151,7 +169,7 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
                 className={classes.actionButton}
                 title="Edit recipe"
               >
-                <Pencil size={16} />
+                <FilePenLine size={16} />
               </button>
               <button
                 onClick={(e) => {
@@ -185,18 +203,26 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
           {onRate ? (
             <div className={classes.ratingSection}>
               <div className={classes.ratingRow}>
-                <span className={classes.ratingLabel}>{t("globalRecipes", "myRating")}:</span>
+                <span className={classes.ratingLabel}>
+                  {t("globalRecipes", "myRating")}:
+                </span>
                 <div className={classes.starsRow}>
                   {[1, 2, 3, 4, 5].map((star) => (
                     <span
                       key={star}
                       className={classes.starClickable}
                       style={{
-                        color: star <= (hoverStar || userRating) ? "#ffc107" : "#e0e0e0",
+                        color:
+                          star <= (hoverStar || userRating)
+                            ? "#ffc107"
+                            : "#e0e0e0",
                       }}
                       onMouseEnter={() => setHoverStar(star)}
                       onMouseLeave={() => setHoverStar(0)}
-                      onClick={(e) => { e.stopPropagation(); onRate(person.id, star); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRate(person.id, star);
+                      }}
                     >
                       ★
                     </span>
@@ -215,7 +241,10 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
                           key={star}
                           className={classes.star}
                           style={{
-                            color: star <= Math.round(person.avgRating) ? "#ffc107" : "#e0e0e0",
+                            color:
+                              star <= Math.round(person.avgRating)
+                                ? "#ffc107"
+                                : "#e0e0e0",
                           }}
                         >
                           ★
@@ -224,30 +253,37 @@ function RecipeInfo({ person, groups, onEdit, onDelete, onToggleFavorite, onCopy
                     </div>
                   </div>
                   <span className={classes.ratingMeta}>
-                    ({Number(person.avgRating).toFixed(1)} · {person.ratingCount})
+                    ({Number(person.avgRating).toFixed(1)} ·{" "}
+                    {person.ratingCount})
                   </span>
                 </div>
               )}
             </div>
-          ) : (person.avgRating > 0 || person.rating > 0) && (
-            <div className={classes.starsRow} style={{ margin: "0.3rem 0" }}>
-              {[1, 2, 3, 4, 5].map((star) => (
-                <span
-                  key={star}
-                  className={classes.star}
-                  style={{
-                    color: star <= Math.round(person.avgRating || person.rating) ? "#ffc107" : "#e0e0e0",
-                  }}
-                >
-                  ★
-                </span>
-              ))}
-              {person.avgRating > 0 && (
-                <span className={classes.ratingMeta}>
-                  ({Number(person.avgRating).toFixed(1)} · {person.ratingCount})
-                </span>
-              )}
-            </div>
+          ) : (
+            (person.avgRating > 0 || person.rating > 0) && (
+              <div className={classes.starsRow} style={{ margin: "0.3rem 0" }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <span
+                    key={star}
+                    className={classes.star}
+                    style={{
+                      color:
+                        star <= Math.round(person.avgRating || person.rating)
+                          ? "#ffc107"
+                          : "#e0e0e0",
+                    }}
+                  >
+                    ★
+                  </span>
+                ))}
+                {person.avgRating > 0 && (
+                  <span className={classes.ratingMeta}>
+                    ({Number(person.avgRating).toFixed(1)} ·{" "}
+                    {person.ratingCount})
+                  </span>
+                )}
+              </div>
+            )
           )}
         </div>
 
