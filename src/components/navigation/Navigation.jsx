@@ -264,7 +264,7 @@ function Navigation({ onLogout, links }) {
             })}
           </div>
 
-          {(isMobile || location.pathname === "/categories") && (
+          {(!isMobile || location.pathname === "/categories") && (
             <>
               <div className={classes.separator}></div>
 

@@ -1,4 +1,5 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useLanguage } from "../../context";
 import { SearchBox } from "../controls/search";
 import {
@@ -15,10 +16,27 @@ import {
 import conversionData from "./conversionData";
 import classes from "./conversion-tables.module.css";
 
+const MOBILE_BREAKPOINT = 768;
+
 function ConversionTables() {
   const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState("cups");
   const [searchQuery, setSearchQuery] = useState("");
+  const [isMobile, setIsMobile] = useState(false);
+  const [mobileTabsEl, setMobileTabsEl] = useState(null);
+
+  useEffect(() => {
+    const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
+    const update = () => {
+      setIsMobile(mql.matches);
+      setMobileTabsEl(
+        mql.matches ? document.getElementById("mobile-tabs-portal") : null,
+      );
+    };
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
 
   const conversions = conversionData[language] || conversionData.he;
 
@@ -26,11 +44,19 @@ function ConversionTables() {
     { id: "cups", label: t("conversions", "tabCups"), icon: CupSoda },
     { id: "spoons", label: t("conversions", "tabSpoons"), icon: Utensils },
     { id: "teaspoons", label: t("conversions", "tabTeaspoons"), icon: Pipette },
-    { id: "temperature", label: t("conversions", "tabTemperature"), icon: Thermometer },
+    {
+      id: "temperature",
+      label: t("conversions", "tabTemperature"),
+      icon: Thermometer,
+    },
     { id: "pans", label: t("conversions", "tabPans"), icon: Cake },
     { id: "universal", label: t("conversions", "tabUniversal"), icon: Ruler },
     { id: "eggs", label: t("conversions", "tabEggs"), icon: Egg },
-    { id: "general", label: t("conversions", "tabGeneral"), icon: ClipboardList },
+    {
+      id: "general",
+      label: t("conversions", "tabGeneral"),
+      icon: ClipboardList,
+    },
     { id: "faq", label: t("conversions", "tabFaq"), icon: HelpCircle },
   ];
 
@@ -73,12 +99,19 @@ function ConversionTables() {
     return filtered;
   }, [searchQuery, conversions]);
 
+  const mobileTitle = (
+    <span className={classes.mobileTitle}>{t("conversions", "title")}</span>
+  );
+
   return (
     <div className={classes.container}>
-      <div className={classes.header}>
-        <h1>{t("conversions", "title")}</h1>
-        <p className={classes.subtitle}>{t("conversions", "subtitle")}</p>
-      </div>
+      {mobileTabsEl && createPortal(mobileTitle, mobileTabsEl)}
+      {!isMobile && (
+        <div className={classes.header}>
+          <h1>{t("conversions", "title")}</h1>
+          <p className={classes.subtitle}>{t("conversions", "subtitle")}</p>
+        </div>
+      )}
 
       <div className={classes.stickyBar}>
         <div className={classes.searchContainer}>
@@ -100,7 +133,9 @@ function ConversionTables() {
                 className={`${classes.tab} ${activeTab === tab.id ? classes.activeTab : ""}`}
                 onClick={() => setActiveTab(tab.id)}
               >
-                <span className={classes.tabIcon}><Icon size={18} /></span>
+                <span className={classes.tabIcon}>
+                  <Icon size={18} />
+                </span>
                 <span className={classes.tabLabel}>{tab.label}</span>
               </button>
             );

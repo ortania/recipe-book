@@ -235,7 +235,7 @@ function RecipeInfo({
                     <span className={classes.ratingLabel}>
                       {t("globalRecipes", "avgRating")}:
                     </span>
-                    <div className={classes.starsRow}>
+                    {/* <div className={classes.starsRow}>
                       {[1, 2, 3, 4, 5].map((star) => (
                         <span
                           key={star}
@@ -250,10 +250,10 @@ function RecipeInfo({
                           ★
                         </span>
                       ))}
-                    </div>
+                    </div> */}
                   </div>
                   <span className={classes.ratingMeta}>
-                    ({Number(person.avgRating).toFixed(1)} ·{" "}
+                    {Number(person.avgRating).toFixed(1)} ({" "}
                     {person.ratingCount})
                   </span>
                 </div>

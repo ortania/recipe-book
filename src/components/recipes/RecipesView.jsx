@@ -971,7 +971,7 @@ function RecipesView({
                   <span className={classes.hideOnMobile}>
                     {t("recipesView", "sorting")}
                   </span>{" "}
-                  <ChevronDown size={16} />
+                  {/* <ChevronDown size={16} /> */}
                 </button>
                 {!isMobile && showSortMenu && (
                   <>

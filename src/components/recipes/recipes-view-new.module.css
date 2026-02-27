@@ -213,7 +213,7 @@
   border-radius: 50px;
   border: 1.5px solid;
   background: var(--bg-card);
-  font-size: var(--basic-font);
+  font-size: var(--small-font);
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
@@ -717,7 +717,8 @@
 
   .recipeGrid {
     grid-template-columns: repeat(2, 1fr);
-    gap: 0.75rem;
+    /* gap: 0.75rem; */
+    gap: 1rem 1.5rem;
   }
 
   .sectionTitle {
@@ -839,7 +840,7 @@
 
 /* ===== Recently Viewed ===== */
 .recentlyViewedSection {
-  margin-bottom: 1.25rem;
+  margin-bottom: 2.5rem;
 }
 
 .recentlyViewedScroll {
@@ -882,7 +883,7 @@
 }
 
 .recentlyViewedName {
-  font-size: var(--basic-font);
+  font-size: var(--small-font);
   color: var(--text-secondary);
   text-align: center;
   max-width: 90px;

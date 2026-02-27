@@ -12,6 +12,12 @@
   padding-bottom: 0.5rem;
 }
 
+.mobileTitle {
+  font-size: var(--basic-font);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
 .header {
   text-align: center;
   margin-bottom: 0;
@@ -276,6 +282,7 @@
     gap: 0.5rem;
     padding: 0.75rem;
     font-size: var(--basic-font);
+    /* margin-bottom: .5rem; */
   }
 
   .question {

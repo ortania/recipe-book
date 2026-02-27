@@ -739,7 +739,7 @@
     display: flex;
     flex-shrink: 0;
     align-items: center;
-    gap: 0.4rem;
+    gap: 1rem;
   }
 
   .nav .logo,
@@ -807,6 +807,7 @@
 
   .navBottom {
     padding-bottom: 4rem;
+    margin-top: auto;
   }
 
   .logoutButton {
