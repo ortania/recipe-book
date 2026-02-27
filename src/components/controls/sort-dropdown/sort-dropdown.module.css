@@ -27,8 +27,8 @@
 }
 
 .option.active {
-  font-weight: 600;
-  color: var(--active-color, #4a90d9);
+  font-weight: 800;
+  /* color: var(--active-color); */
   background: var(--bg-hover, #f5f5f5);
 }
 

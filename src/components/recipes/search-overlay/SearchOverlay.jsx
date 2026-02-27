@@ -7,6 +7,7 @@ import {
   History,
   Search,
   RotateCcw,
+  Trash2,
 } from "lucide-react";
 import { useLanguage } from "../../../context";
 import { SearchBox } from "../../controls/search";
@@ -585,7 +586,7 @@ function SearchOverlay({
 
           {hasAnythingActive && (
             <button className={classes.clearAllButton} onClick={clearSearch}>
-              <RotateCcw size={16} />
+              <Trash2 size={16} />
               <span className={parentClasses.hideOnMobile}>{t("categories", "clearAllFilters") || "נקה הכל"}</span>
             </button>
           )}

@@ -180,8 +180,8 @@
   border: 1px solid var(--border-color, #ddd);
   border-radius: 0.5rem;
   background: var(--bg-primary, #fff);
-  color: var(--text-muted, #888);
-  font-size: var(--small-font);
+  /* color: var(--text-muted, #888); */
+  font-size: var(--basic-font);
   cursor: pointer;
   transition: background 0.15s, color 0.15s, border-color 0.15s;
   white-space: nowrap;

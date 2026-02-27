@@ -561,122 +561,134 @@ function RecipesView({
         <label className={classes.filterLabel}>
           {t("recipesView", "sortByRating")}:
         </label>
-        {["all", "3", "4", "5"].map((v) => (
-          <button
-            key={v}
-            className={selectedRating === v ? classes.active : ""}
-            onClick={() => setSelectedRating(v)}
-          >
-            {v === "all"
-              ? t("categories", "all")
-              : `★${v}${v !== "5" ? "+" : ""}`}
-          </button>
-        ))}
+        <div className={classes.filterSectionButtons}>
+          {["all", "3", "4", "5"].map((v) => (
+            <button
+              key={v}
+              className={selectedRating === v ? classes.active : ""}
+              onClick={() => setSelectedRating(v)}
+            >
+              {v === "all"
+                ? t("categories", "all")
+                : `★${v}${v !== "5" ? "+" : ""}`}
+            </button>
+          ))}
+        </div>
       </div>
       <div className={classes.filterDivider} />
       <div className={classes.filterSection}>
         <label className={classes.filterLabel}>
           {t("recipes", "prepTime")}:
         </label>
-        <button
-          className={selectedPrepTime === "all" ? classes.active : ""}
-          onClick={() => setSelectedPrepTime("all")}
-        >
-          {t("categories", "all")}
-        </button>
-        <button
-          className={selectedPrepTime === "quick" ? classes.active : ""}
-          onClick={() => setSelectedPrepTime("quick")}
-        >
-          ≤15 {t("recipes", "minutes")}
-        </button>
-        <button
-          className={selectedPrepTime === "medium" ? classes.active : ""}
-          onClick={() => setSelectedPrepTime("medium")}
-        >
-          15-30 {t("recipes", "minutes")}
-        </button>
-        <button
-          className={selectedPrepTime === "long" ? classes.active : ""}
-          onClick={() => setSelectedPrepTime("long")}
-        >
-          30+ {t("recipes", "minutes")}
-        </button>
+        <div className={classes.filterSectionButtons}>
+          <button
+            className={selectedPrepTime === "all" ? classes.active : ""}
+            onClick={() => setSelectedPrepTime("all")}
+          >
+            {t("categories", "all")}
+          </button>
+          <button
+            className={selectedPrepTime === "quick" ? classes.active : ""}
+            onClick={() => setSelectedPrepTime("quick")}
+          >
+            ≤15 {t("recipes", "minutes")}
+          </button>
+          <button
+            className={selectedPrepTime === "medium" ? classes.active : ""}
+            onClick={() => setSelectedPrepTime("medium")}
+          >
+            15-30 {t("recipes", "minutes")}
+          </button>
+          <button
+            className={selectedPrepTime === "long" ? classes.active : ""}
+            onClick={() => setSelectedPrepTime("long")}
+          >
+            30+ {t("recipes", "minutes")}
+          </button>
+        </div>
       </div>
       <div className={classes.filterDivider} />
       <div className={classes.filterSection}>
         <label className={classes.filterLabel}>
           {t("recipes", "difficulty")}:
         </label>
-        {["all", "VeryEasy", "Easy", "Medium", "Hard"].map((v) => (
-          <button
-            key={v}
-            className={selectedDifficulty === v ? classes.active : ""}
-            onClick={() => setSelectedDifficulty(v)}
-          >
-            {v === "all" ? t("categories", "all") : t("difficulty", v)}
-          </button>
-        ))}
+        <div className={classes.filterSectionButtons}>
+          {["all", "VeryEasy", "Easy", "Medium", "Hard"].map((v) => (
+            <button
+              key={v}
+              className={selectedDifficulty === v ? classes.active : ""}
+              onClick={() => setSelectedDifficulty(v)}
+            >
+              {v === "all" ? t("categories", "all") : t("difficulty", v)}
+            </button>
+          ))}
+        </div>
       </div>
       <div className={classes.filterDivider} />
       <div className={classes.filterSection}>
         <label className={classes.filterLabel}>
           {t("recipesView", "ingredientCount")}:
         </label>
-        <button
-          className={selectedIngredientCount === "all" ? classes.active : ""}
-          onClick={() => setSelectedIngredientCount("all")}
-        >
-          {t("categories", "all")}
-        </button>
-        <button
-          className={selectedIngredientCount === "few" ? classes.active : ""}
-          onClick={() => setSelectedIngredientCount("few")}
-        >
-          ≤5
-        </button>
-        <button
-          className={selectedIngredientCount === "medium" ? classes.active : ""}
-          onClick={() => setSelectedIngredientCount("medium")}
-        >
-          6-10
-        </button>
-        <button
-          className={selectedIngredientCount === "many" ? classes.active : ""}
-          onClick={() => setSelectedIngredientCount("many")}
-        >
-          10+
-        </button>
+        <div className={classes.filterSectionButtons}>
+          <button
+            className={selectedIngredientCount === "all" ? classes.active : ""}
+            onClick={() => setSelectedIngredientCount("all")}
+          >
+            {t("categories", "all")}
+          </button>
+          <button
+            className={selectedIngredientCount === "few" ? classes.active : ""}
+            onClick={() => setSelectedIngredientCount("few")}
+          >
+            ≤5
+          </button>
+          <button
+            className={
+              selectedIngredientCount === "medium" ? classes.active : ""
+            }
+            onClick={() => setSelectedIngredientCount("medium")}
+          >
+            6-10
+          </button>
+          <button
+            className={selectedIngredientCount === "many" ? classes.active : ""}
+            onClick={() => setSelectedIngredientCount("many")}
+          >
+            10+
+          </button>
+        </div>
       </div>
       <div className={classes.filterDivider} />
       <div className={classes.filterSection}>
         <label className={classes.filterLabel}>
           {t("recipesView", "stepCount")}:
         </label>
-        <button
-          className={selectedStepCount === "all" ? classes.active : ""}
-          onClick={() => setSelectedStepCount("all")}
-        >
-          {t("categories", "all")}
-        </button>
-        <button
-          className={selectedStepCount === "few" ? classes.active : ""}
-          onClick={() => setSelectedStepCount("few")}
-        >
-          ≤3
-        </button>
-        <button
-          className={selectedStepCount === "medium" ? classes.active : ""}
-          onClick={() => setSelectedStepCount("medium")}
-        >
-          4-7
-        </button>
-        <button
-          className={selectedStepCount === "many" ? classes.active : ""}
-          onClick={() => setSelectedStepCount("many")}
-        >
-          7+
-        </button>
+        <div className={classes.filterSectionButtons}>
+          <button
+            className={selectedStepCount === "all" ? classes.active : ""}
+            onClick={() => setSelectedStepCount("all")}
+          >
+            {t("categories", "all")}
+          </button>
+          <button
+            className={selectedStepCount === "few" ? classes.active : ""}
+            onClick={() => setSelectedStepCount("few")}
+          >
+            ≤3
+          </button>
+          <button
+            className={selectedStepCount === "medium" ? classes.active : ""}
+            onClick={() => setSelectedStepCount("medium")}
+          >
+            4-7
+          </button>
+          <button
+            className={selectedStepCount === "many" ? classes.active : ""}
+            onClick={() => setSelectedStepCount("many")}
+          >
+            7+
+          </button>
+        </div>
       </div>
       <div className={classes.filterDivider} />
       <div className={classes.filterSection}>
@@ -851,8 +863,14 @@ function RecipesView({
                 <div key={i} className={classes.skeletonCard}>
                   <div className={classes.skeletonImage} />
                   <div className={classes.skeletonInfo}>
-                    <div className={classes.skeletonName} style={{ width: `${w}%` }} />
-                    <div className={classes.skeletonMeta} style={{ width: `${w - 30}%` }} />
+                    <div
+                      className={classes.skeletonName}
+                      style={{ width: `${w}%` }}
+                    />
+                    <div
+                      className={classes.skeletonMeta}
+                      style={{ width: `${w - 30}%` }}
+                    />
                   </div>
                 </div>
               ))}
@@ -905,7 +923,7 @@ function RecipesView({
               title={t("nav", "categories")}
             >
               <Tags size={28} />
-       
+
               {/* {!isAllSelected && selectedCount > 0 && (
                 <span className={classes.mobileHeaderBadge}>
                   {selectedCount}
@@ -921,11 +939,7 @@ function RecipesView({
                   : t("recipesView", "listView")
               }
             >
-              {isSimpleView ? (
-                <LayoutGrid size={28} />
-              ) : (
-                <Rows4 size={28} />
-              )}
+              {isSimpleView ? <LayoutGrid size={28} /> : <Rows4 size={28} />}
             </button>
           </div>
         </div>

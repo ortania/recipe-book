@@ -150,9 +150,11 @@
   border: none;
   border-radius: 20px;
   padding: 0.45em 1em;
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   font-weight: 500;
-  color: var(--clr-blue-3, #2563eb);
+  /* color: var(--clr-blue-3, #2563eb); */
+  color: var(--text-primary);
+  font-weight: 700;
   cursor: pointer;
   transition: all 0.25s ease;
   z-index: 2;
@@ -161,7 +163,8 @@
 }
 
 .copyButton:hover {
-  background: var(--clr-blue-3, #2563eb);
+  /* background: var(--clr-blue-3, #2563eb); */
+  background: var(--text-primary);
   color: white;
   transform: translateX(-50%) scale(1.04);
 }

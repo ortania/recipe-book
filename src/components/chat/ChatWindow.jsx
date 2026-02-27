@@ -350,7 +350,7 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
 
   /* ── render ── */
   return (
-    <div className={classes.chatContainer}>
+    <div className={`${classes.chatContainer} ${isRecipeMode ? classes.embedded : ""}`}>
       {!isRecipeMode && (showGreeting === undefined ? true : showGreeting) && (
         <div className={classes.chatHeader}>
           <div className={classes.greeting}>
@@ -392,9 +392,14 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
               )}
             </h3>
             <p className={classes.ideasSubtitle}>
-              {isRecipeMode
-                ? t("recipeChat", "updateHint")
-                : t("chat", "ideaSubtitle")}
+              {isRecipeMode ? (
+                <>
+                  <Lightbulb size={18} style={{ verticalAlign: "middle", marginInlineEnd: "0.3rem" }} />
+                  {t("recipeChat", "updateHint")}
+                </>
+              ) : (
+                t("chat", "ideaSubtitle")
+              )}
             </p>
             <div className={classes.ideaChips}>
               {isRecipeMode
@@ -553,7 +558,7 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
         <div ref={messagesEndRef} />
       </div>
 
-      <div className={!isRecipeMode ? classes.fixedInputWrapper : undefined}>
+      <div className={isRecipeMode ? classes.embeddedInputWrapper : classes.fixedInputWrapper}>
         <ChatInput
           value={input}
           onChange={setInput}

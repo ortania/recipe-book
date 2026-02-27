@@ -447,6 +447,22 @@
   box-sizing: border-box;
 }
 
+/* When embedded inside recipe detail tabs */
+.embedded {
+  height: auto;
+  padding-bottom: 5rem;
+}
+
+.embeddedInputWrapper {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  background: var(--bg-primary);
+  padding: 0.5rem 1rem 1rem;
+}
+
 /* Mobile */
 @media (max-width: 768px) {
   .chatContainer {
@@ -461,6 +477,18 @@
     z-index: 100;
     background: var(--bg-primary);
     overscroll-behavior: contain;
+  }
+
+  .chatContainer.embedded {
+    position: relative;
+    top: auto;
+    bottom: auto;
+    left: auto;
+    right: auto;
+    z-index: auto;
+    padding: 0;
+    padding-bottom: 5rem;
+    height: auto;
   }
 
   .fixedInputWrapper {

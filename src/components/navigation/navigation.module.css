@@ -116,8 +116,9 @@
 .active {
   background-color: var(--bg-hover);
   font-weight: 700;
-  /* color: var(--text-primary); */
-  color: var(--active-color);
+
+  /* color: var(--active-color); */
+  font-weight: 800;
 }
 
 .active .icon {
