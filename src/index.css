@@ -83,10 +83,16 @@ Variables
   --bg-chip: #ffffff;
   --bg-chip-hover: #f0e6ff;
 
+  --accent-color-1: #914c03;
+  --accent-color-2: #9a652d;
+  --accent-color-3: #1a9c5a;
+  --accent-color-4: #1a9c5a;
+  --accent-color-5: #1a9c5a;
+
   /* --text-primary: #222222; */
   --text-primary: #635555;
   --text-secondary: #555555;
-  --text-muted: #888888;
+  --text-muted: #888888; 
   --text-on-primary: #ffffff;
 
   --border-color: #e0e0e0;
@@ -147,8 +153,8 @@ Variables
 
 @media (min-width: 769px) {
   :root {
-    --btn-circle-primary: 2.5rem;
-    --btn-icon-primary: 1.3rem;
+    --btn-circle-primary: 3.5rem;
+    --btn-icon-primary: 2.5rem;
     --btn-circle: 2.25rem;
     --btn-icon: 1.15rem;
   }

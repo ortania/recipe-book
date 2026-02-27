@@ -282,7 +282,7 @@ function Navigation({ onLogout, links }) {
                     </button>
                   </div>
 
-                  <div className={classes.sectionHeader}>
+                  {/* <div className={classes.sectionHeader}>
                     <button
                       className={classes.sectionHeaderBtn}
                       onClick={() =>
@@ -386,7 +386,7 @@ function Navigation({ onLogout, links }) {
                           );
                         })}
                     </div>
-                  )}
+                  )} */}
                 </>
               )}
             </>

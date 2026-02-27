@@ -145,7 +145,8 @@
 
 .itemAmount {
   font-weight: 600;
-  color: #667eea;
+  color: var(--accent-color-1);
+  /* color: #667eea; */
   font-size: var(--basic-font);
 }
 
@@ -160,11 +161,12 @@
   grid-template-columns: 1fr 1fr 2fr;
   gap: 1rem;
   padding: 1rem;
-  background: #667eea;
-  background: var(--text-primary);
-  color: white;
-  border-radius: 8px;
-  font-weight: 600;
+  /* background: #667eea; */
+  /* background: var(--text-primary); */
+  color: var(--text-primary);
+  /* border-radius: 8px; */
+  border-bottom: 1px solid var(--text-primary);
+  font-weight: 700;
   text-align: center;
 }
 
@@ -204,19 +206,21 @@
   padding: 1.5rem;
   background: var(--bg-tertiary);
   /* border-radius: 8px; */
-  border-inline-start: 4px solid #667eea;
+  /* border-inline-start: 4px solid #667eea; */
+  border-inline-start: 4px solid var(--accent-color-1);
 }
 
 .question {
   font-weight: 600;
   color: var(--text-primary);
-  font-size: 1.05rem;
+  font-size: var(--basic-font);
   margin-bottom: 0.75rem;
 }
 
 .answer {
-  color: #667eea;
-  font-size: 1.1rem;
+  /* color: #667eea; */
+  color: var(--accent-color-1);
+  font-size: var(--basic-font);
   font-weight: 600;
 }
 

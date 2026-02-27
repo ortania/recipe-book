@@ -79,7 +79,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.5rem 0.75rem 0.25rem;
-  font-size: 0.8rem;
+  font-size: var(--basic-font);
   font-weight: 600;
   color: var(--text-muted, #888);
 }
@@ -153,7 +153,7 @@
   border-radius: 2rem;
   background: var(--bg-primary, #fff);
   color: var(--text-primary, #333);
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   cursor: pointer;
   transition: background 0.15s, border-color 0.15s;
   white-space: nowrap;
@@ -161,8 +161,8 @@
 
 .previousSearchChip:hover {
   background: var(--bg-hover, #f0f0f0);
-  border-color: var(--primary-color, #2196f3);
-  color: var(--primary-color, #2196f3);
+  border-color: var(--active-color);
+  color: var(--active-color);
 }
 
 .foundTermLabel {

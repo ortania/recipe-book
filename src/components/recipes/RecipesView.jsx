@@ -24,6 +24,8 @@ import {
   UtensilsCrossed,
   ChevronUp,
   Tags,
+  SquareMenu,
+  Rows4,
   X,
 } from "lucide-react";
 import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
@@ -779,6 +781,7 @@ function RecipesView({
         title={t("nav", "categories")}
       >
         <Tags size={20} />
+
         {/* {!isAllSelected && selectedCount > 0 && (
           <span className={classes.mobileHeaderBadge}>{selectedCount}</span>
         )} */}
@@ -792,7 +795,7 @@ function RecipesView({
             : t("recipesView", "listView")
         }
       >
-        {isSimpleView ? <LayoutGrid size={20} /> : <ScrollText size={20} />}
+        {isSimpleView ? <LayoutGrid size={20} /> : <Rows4 size={20} />}
       </button>
     </>
   );
@@ -896,7 +899,8 @@ function RecipesView({
               onClick={() => setShowCategoriesSheet(true)}
               title={t("nav", "categories")}
             >
-              <Tags size={18} />
+              <Tags size={28} />
+       
               {/* {!isAllSelected && selectedCount > 0 && (
                 <span className={classes.mobileHeaderBadge}>
                   {selectedCount}
@@ -913,9 +917,9 @@ function RecipesView({
               }
             >
               {isSimpleView ? (
-                <LayoutGrid size={18} />
+                <LayoutGrid size={28} />
               ) : (
-                <ScrollText size={18} />
+                <Rows4 size={28} />
               )}
             </button>
           </div>
