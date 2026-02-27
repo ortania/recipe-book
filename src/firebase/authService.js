@@ -108,14 +108,26 @@ export const fetchAllUsers = async () => {
 
 export const findUserByEmail = async (email) => {
   try {
+    const currentUser = auth.currentUser;
+    console.log("🔍 findUserByEmail:", {
+      email,
+      authUid: currentUser?.uid,
+      isLoggedIn: !!currentUser,
+    });
     const usersRef = collection(db, USERS_COLLECTION);
     const q = query(usersRef, where("email", "==", email.toLowerCase().trim()));
     const querySnapshot = await getDocs(q);
+    console.log(
+      "🔍 Query result: empty =",
+      querySnapshot.empty,
+      "size =",
+      querySnapshot.size,
+    );
     if (querySnapshot.empty) return null;
     const userDoc = querySnapshot.docs[0];
     return { id: userDoc.id, ...userDoc.data() };
   } catch (error) {
-    console.error("Error finding user by email:", error);
+    console.error("Error finding user by email:", error.code, error.message);
     return null;
   }
 };

@@ -115,8 +115,7 @@ export const addRecipe = async (recipe, userId) => {
 
     return {
       id: docRef.id,
-      ...recipe,
-      order: recipeData.order,
+      ...recipeData,
     };
   } catch (error) {
     console.error("Error adding recipe:", error);
