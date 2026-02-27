@@ -105,7 +105,21 @@ function GlobalRecipes() {
   );
 
   if (!ready) {
-    return <div className={classes.loading}>{t("common", "loading")}</div>;
+    return (
+      <div className={classes.loading}>
+        <div className={classes.skeletonGrid}>
+          {[70, 85, 60, 78, 65, 80].map((w, i) => (
+            <div key={i} className={classes.skeletonCard}>
+              <div className={classes.skeletonImage} />
+              <div className={classes.skeletonInfo}>
+                <div className={classes.skeletonName} style={{ width: `${w}%` }} />
+                <div className={classes.skeletonMeta} style={{ width: `${w - 30}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
   }
 
   return (

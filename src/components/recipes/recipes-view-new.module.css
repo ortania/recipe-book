@@ -749,7 +749,63 @@
   font-size: var(--small-font);
 }
 
-/* Loading state */
+/* Skeleton Loading */
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+.skeletonCard {
+  animation: skeletonFadeIn 0.4s ease both;
+}
+
+.skeletonCard:nth-child(1) { animation-delay: 0s; }
+.skeletonCard:nth-child(2) { animation-delay: 0.05s; }
+.skeletonCard:nth-child(3) { animation-delay: 0.1s; }
+.skeletonCard:nth-child(4) { animation-delay: 0.15s; }
+.skeletonCard:nth-child(5) { animation-delay: 0.2s; }
+.skeletonCard:nth-child(6) { animation-delay: 0.25s; }
+
+@keyframes skeletonFadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.skeletonImage {
+  width: 100%;
+  padding-bottom: 100%;
+  border-radius: 25px;
+  background: linear-gradient(105deg, var(--border-color) 0%, var(--bg-hover) 40%, var(--border-color) 60%, var(--bg-hover) 100%);
+  background-size: 300% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+}
+
+.skeletonInfo {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.skeletonName {
+  height: 0.9rem;
+  border-radius: 6px;
+  background: linear-gradient(105deg, var(--border-color) 0%, var(--bg-hover) 40%, var(--border-color) 60%, var(--bg-hover) 100%);
+  background-size: 300% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+  animation-delay: 0.15s;
+}
+
+.skeletonMeta {
+  height: 0.65rem;
+  border-radius: 6px;
+  background: linear-gradient(105deg, var(--border-color) 0%, var(--bg-hover) 40%, var(--border-color) 60%, var(--bg-hover) 100%);
+  background-size: 300% 100%;
+  animation: shimmer 2s ease-in-out infinite;
+  animation-delay: 0.3s;
+}
+
+/* Legacy loading state */
 .loadingState {
   display: flex;
   flex-direction: column;

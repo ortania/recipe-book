@@ -846,11 +846,16 @@ function RecipesView({
           )}
 
           {loading ? (
-            <div className={classes.loadingState}>
-              <span className={classes.loadingSpinner} />
-              <p className={classes.loadingText}>
-                {t("common", "loading") || "Loading..."}
-              </p>
+            <div className={classes.recipeGrid}>
+              {[70, 85, 60, 78, 65, 80].map((w, i) => (
+                <div key={i} className={classes.skeletonCard}>
+                  <div className={classes.skeletonImage} />
+                  <div className={classes.skeletonInfo}>
+                    <div className={classes.skeletonName} style={{ width: `${w}%` }} />
+                    <div className={classes.skeletonMeta} style={{ width: `${w - 30}%` }} />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : (
             <div className={classes.emptyState}>
