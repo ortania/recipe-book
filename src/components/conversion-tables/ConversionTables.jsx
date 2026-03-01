@@ -2,18 +2,20 @@ import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useLanguage } from "../../context";
 import { SearchBox } from "../controls/search";
+import { LiaUtensilSpoonSolid } from "react-icons/lia";
 import {
   CupSoda,
-  Utensils,
-  Pipette,
   Thermometer,
   Cake,
+  RectangleHorizontal,
   Ruler,
   Egg,
   ClipboardList,
   HelpCircle,
 } from "lucide-react";
 import conversionData from "./conversionData";
+
+import buttonClasses from "../controls/gen-button.module.css";
 import classes from "./conversion-tables.module.css";
 
 const MOBILE_BREAKPOINT = 768;
@@ -42,14 +44,27 @@ function ConversionTables() {
 
   const tabs = [
     { id: "cups", label: t("conversions", "tabCups"), icon: CupSoda },
-    { id: "spoons", label: t("conversions", "tabSpoons"), icon: Utensils },
-    { id: "teaspoons", label: t("conversions", "tabTeaspoons"), icon: Pipette },
+    {
+      id: "spoons",
+      label: t("conversions", "tabSpoons"),
+      icon: LiaUtensilSpoonSolid,
+      iconSize: 22,
+    },
+    {
+      id: "teaspoons",
+      label: t("conversions", "tabTeaspoons"),
+      icon: LiaUtensilSpoonSolid,
+    },
     {
       id: "temperature",
       label: t("conversions", "tabTemperature"),
       icon: Thermometer,
     },
-    { id: "pans", label: t("conversions", "tabPans"), icon: Cake },
+    {
+      id: "pans",
+      label: t("conversions", "tabPans"),
+      icon: RectangleHorizontal,
+    },
     { id: "universal", label: t("conversions", "tabUniversal"), icon: Ruler },
     { id: "eggs", label: t("conversions", "tabEggs"), icon: Egg },
     {
@@ -130,11 +145,11 @@ function ConversionTables() {
             return (
               <button
                 key={tab.id}
-                className={`${classes.tab} ${activeTab === tab.id ? classes.activeTab : ""}`}
+                className={` ${buttonClasses.genButton} ${classes.tab} ${activeTab === tab.id ? classes.activeTab : ""} `}
                 onClick={() => setActiveTab(tab.id)}
               >
                 <span className={classes.tabIcon}>
-                  <Icon size={18} />
+                  <Icon size={tab.iconSize || 18} />
                 </span>
                 <span className={classes.tabLabel}>{tab.label}</span>
               </button>

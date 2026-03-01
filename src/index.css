@@ -105,7 +105,7 @@ Variables
   --accent-color-5: #1a9c5a;
 
   /* --text-primary: #222222; */
-  --text-primary: var(clr-brown-1);
+  --text-primary: var(--clr-brown-1);
   --text-secondary: var(--clr-brown-2);
   --text-muted: #888888;
   --text-on-primary: #ffffff;
@@ -114,6 +114,7 @@ Variables
   --border-error: var(--clr-red-dark);
   --border-light: #eeeeee;
   --divider: #dddddd;
+  --border-special-primary: var(--clr-brown-1);
 
   --button-bg-primary: var(--clr-brown-1);
   --button-bg-secondary: var(--clr-brown-2);
@@ -276,7 +277,7 @@ img {
   height: auto;
 }
 
-@media (min-width: 80rem) {primary
+@media (min-width: 80rem) {
   h1 {
     font-size: 4rem;
   }

@@ -4,7 +4,7 @@ import { signupUser } from "../../firebase/authService";
 import { useLanguage } from "../../context";
 import FormInput from "../login/FormInput";
 import { Onboarding } from "../onboarding";
-import { User, Mail, Lock, ShieldCheck } from "lucide-react";
+import { User, Mail, Lock, ShieldCheck, TriangleAlert } from "lucide-react";
 
 import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "../login/login.module.css";
@@ -16,6 +16,7 @@ function Signup() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [onboardingDone, setOnboardingDone] = useState(
@@ -23,6 +24,32 @@ function Signup() {
   );
 
   const navigate = useNavigate();
+
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const getError = (field, value, pw) => {
+    if (field === "displayName") {
+      if (!value.trim()) return t("auth", "nameRequired");
+    }
+    if (field === "email") {
+      if (!value.trim()) return t("auth", "emailError");
+      if (!emailRegex.test(value.trim())) return t("auth", "emailError");
+    }
+    if (field === "password") {
+      if (!value || value.length < 6) return t("auth", "passwordError");
+    }
+    if (field === "confirmPassword") {
+      if (!value) return t("auth", "passwordsDontMatch");
+      if (value !== (pw ?? password)) return t("auth", "passwordsDontMatch");
+    }
+    return "";
+  };
+
+  const isFormValid =
+    !getError("displayName", displayName) &&
+    !getError("email", email) &&
+    !getError("password", password) &&
+    !getError("confirmPassword", confirmPassword);
 
   const handleFocus = (e) => {
     e.target.removeAttribute("readonly");
@@ -32,30 +59,41 @@ function Signup() {
     setShowPassword((prevState) => !prevState);
   };
 
+  const handleChange = (field, value) => {
+    const setters = { displayName: setDisplayName, email: setEmail, password: setPassword, confirmPassword: setConfirmPassword };
+    setters[field](value);
+
+    if (field === "password" || field === "confirmPassword") {
+      setFieldErrors((prev) => ({ ...prev, [field]: getError(field, value) }));
+      if (field === "password" && confirmPassword) {
+        setFieldErrors((prev) => ({ ...prev, confirmPassword: getError("confirmPassword", confirmPassword, value) }));
+      }
+    } else {
+      if (fieldErrors[field] && !getError(field, value)) {
+        setFieldErrors((prev) => ({ ...prev, [field]: "" }));
+      }
+    }
+  };
+
+  const handleBlur = (field) => {
+    const values = { displayName, email, password, confirmPassword };
+    if (!values[field]) return;
+    setFieldErrors((prev) => ({ ...prev, [field]: getError(field, values[field]) }));
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    if (!displayName.trim()) {
-      setError(t("auth", "nameRequired"));
-      return;
-    }
+    const errors = {
+      displayName: getError("displayName", displayName),
+      email: getError("email", email),
+      password: getError("password", password),
+      confirmPassword: getError("confirmPassword", confirmPassword),
+    };
+    setFieldErrors(errors);
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email.trim())) {
-      setError(t("auth", "emailError"));
-      return;
-    }
-
-    if (!password || password.length < 6) {
-      setError(t("auth", "passwordError"));
-      return;
-    }
-
-    if (password !== confirmPassword) {
-      setError(t("auth", "passwordsDontMatch"));
-      return;
-    }
+    if (Object.values(errors).some((e) => e)) return;
 
     setIsLoading(true);
 
@@ -87,15 +125,17 @@ function Signup() {
     <div className={classes.loginContainer}>
       <form className={classes.loginForm} onSubmit={handleSubmit}>
         <p className={classes.title}>{t("auth", "signup")}</p>
-        {error && <p className={classes.error}>{error}</p>}
+        {error && <p className={classes.error}><TriangleAlert size={16} /> {error}</p>}
 
         <FormInput
           type="text"
           placeholder={t("auth", "displayName")}
           value={displayName}
-          onChange={(e) => setDisplayName(e.target.value)}
+          onChange={(e) => handleChange("displayName", e.target.value)}
           isLoading={isLoading}
           onFocus={handleFocus}
+          onBlur={() => handleBlur("displayName")}
+          error={fieldErrors.displayName}
         >
           <User size={16} />
         </FormInput>
@@ -104,9 +144,11 @@ function Signup() {
           type="email"
           placeholder={t("auth", "email")}
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => handleChange("email", e.target.value)}
           isLoading={isLoading}
           onFocus={handleFocus}
+          onBlur={() => handleBlur("email")}
+          error={fieldErrors.email}
         >
           <Mail size={16} />
         </FormInput>
@@ -115,12 +157,14 @@ function Signup() {
           type="password"
           placeholder={t("auth", "password")}
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => handleChange("password", e.target.value)}
           isLoading={isLoading}
           onFocus={handleFocus}
+          onBlur={() => handleBlur("password")}
           isPassword={true}
           togglePassword={togglePassword}
           showPassword={showPassword}
+          error={fieldErrors.password}
         >
           <Lock size={16} />
         </FormInput>
@@ -129,17 +173,19 @@ function Signup() {
           type="password"
           placeholder={t("auth", "confirmPassword")}
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={(e) => handleChange("confirmPassword", e.target.value)}
           isLoading={isLoading}
           onFocus={handleFocus}
+          onBlur={() => handleBlur("confirmPassword")}
           isPassword={true}
           togglePassword={togglePassword}
           showPassword={showPassword}
+          error={fieldErrors.confirmPassword}
         >
           <ShieldCheck size={16} />
         </FormInput>
 
-        <button type="submit" disabled={isLoading} className={buttonClasses.genButton}>
+        <button type="submit" disabled={isLoading || !isFormValid} className={buttonClasses.genButton}>
           {isLoading ? t("auth", "creatingAccount") : t("auth", "signup")}
         </button>
 

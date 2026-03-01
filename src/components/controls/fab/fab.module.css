@@ -10,7 +10,7 @@
   justify-content: center;
   gap: 0.6rem;
   padding: 0 2rem;
-  background: var(--text-primary);
+  background: var(--button-bg-primary);
   color: var(--bg-primary);
   border: none;
   font-size: var(--basic-font);

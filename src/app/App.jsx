@@ -243,7 +243,38 @@ function RecipeDetailSkeleton() {
   );
 }
 
+function LoginSkeleton() {
+  return (
+    <div style={{
+      display: "flex", justifyContent: "center", alignItems: "center",
+      minHeight: "100vh", width: "100vw", padding: "2rem",
+      background: "var(--bg-primary)",
+    }}>
+      <div style={{
+        width: "100%", maxWidth: 440, display: "flex",
+        flexDirection: "column", alignItems: "center", gap: "2rem",
+      }}>
+        <Skeleton width={180} height={50} borderRadius={12} />
+        <div style={{
+          width: "100%", padding: "3rem",
+          background: "var(--bg-card)", borderRadius: 20,
+          display: "flex", flexDirection: "column", gap: "1.5rem",
+        }}>
+          <Skeleton width="40%" height="2rem" borderRadius={8} style={{ alignSelf: "center" }} />
+          <Skeleton height="3.2rem" borderRadius={12} />
+          <Skeleton height="3.2rem" borderRadius={12} />
+          <Skeleton width="35%" height="1rem" borderRadius={6} />
+          <Skeleton height="3rem" borderRadius={12} />
+          <Skeleton width="50%" height="0.9rem" borderRadius={6} style={{ alignSelf: "center" }} />
+          <Skeleton width="60%" height="0.9rem" borderRadius={6} style={{ alignSelf: "center" }} />
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function skeletonForPath(path) {
+  if (path.startsWith("/login") || path.startsWith("/signup") || path === "/") return <LoginSkeleton />;
   if (path.startsWith("/conversions")) return <ConversionsSkeleton />;
   if (path.startsWith("/settings")) return <SettingsSkeleton />;
   if (path.startsWith("/meal-planner")) return <MealPlannerSkeleton />;

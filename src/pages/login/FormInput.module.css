@@ -13,6 +13,14 @@
   background: var(--bg-tertiary);
 }
 
+.inputWrapper input::-webkit-contacts-auto-fill-button,
+.inputWrapper input::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+  position: absolute;
+}
+
 .inputWrapper input:focus {
   outline: none;
   border-color: #667eea;
@@ -89,4 +97,22 @@
 .eyeButton svg {
   width: 2rem;
   height: 2rem;
+}
+
+.fieldWrapper {
+  width: 100%;
+}
+
+.fieldError {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--error-color, #e53e3e);
+  font-size: var(--basic-font);
+  margin-top: 0.3rem;
+  padding-inline-start: 0.3rem;
+}
+
+.inputError input {
+  border-color: var(--error-color, #e53e3e) !important;
 }

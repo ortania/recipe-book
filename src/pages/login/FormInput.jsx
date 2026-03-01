@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Eye, EyeClosed } from "lucide-react";
+import { Eye, EyeClosed, TriangleAlert } from "lucide-react";
 import classes from "./FormInput.module.css";
 
 function FormInput({
@@ -10,71 +10,92 @@ function FormInput({
   onChange,
   isLoading,
   onFocus,
+  onBlur,
   isPassword,
   togglePassword,
   showPassword,
   inputRef,
   children,
+  error,
 }) {
   const hasIcon = !!children;
+  const errorClass = error ? classes.inputError : "";
+  const requiredPlaceholder = `${placeholder} *`;
 
   if (isPassword) {
     return (
-      <div className={`${classes.passwordInput} ${hasIcon ? classes.hasIcon : ""}`}>
-        {hasIcon && <span className={classes.inputIcon}>{children}</span>}
-        <input
-          type={showPassword ? "text" : "password"}
-          placeholder={placeholder}
-          value={value}
-          onChange={onChange}
-          disabled={isLoading}
-          required
-          readOnly
-          onFocus={onFocus}
-        />
-        <button
-          type="button"
-          onClick={togglePassword}
-          className={classes.eyeButton}
-          disabled={isLoading}
-        >
-          {showPassword ? <Eye size={30} /> : <EyeClosed size={30} />}
-        </button>
+      <div className={classes.fieldWrapper}>
+        <div className={`${classes.passwordInput} ${hasIcon ? classes.hasIcon : ""} ${errorClass}`}>
+          {hasIcon && <span className={classes.inputIcon}>{children}</span>}
+          <input
+            type={showPassword ? "text" : "password"}
+            placeholder={requiredPlaceholder}
+            value={value}
+            onChange={onChange}
+            disabled={isLoading}
+            required
+            readOnly
+            onFocus={onFocus}
+            onBlur={onBlur}
+            autoComplete="off"
+          />
+          <button
+            type="button"
+            onClick={togglePassword}
+            className={classes.eyeButton}
+            disabled={isLoading}
+          >
+            {showPassword ? <Eye size={30} /> : <EyeClosed size={30} />}
+          </button>
+        </div>
+        {error && <span className={classes.fieldError}><TriangleAlert size={14} /> {error}</span>}
       </div>
     );
   }
 
   if (hasIcon) {
     return (
-      <div className={`${classes.inputWrapper} ${classes.hasIcon}`}>
-        <span className={classes.inputIcon}>{children}</span>
+      <div className={classes.fieldWrapper}>
+        <div className={`${classes.inputWrapper} ${classes.hasIcon} ${errorClass}`}>
+          <span className={classes.inputIcon}>{children}</span>
+          <input
+            ref={inputRef}
+            type={type}
+            placeholder={requiredPlaceholder}
+            value={value}
+            onChange={onChange}
+            disabled={isLoading}
+            required
+            readOnly
+            onFocus={onFocus}
+            onBlur={onBlur}
+            autoComplete="off"
+          />
+        </div>
+        {error && <span className={classes.fieldError}><TriangleAlert size={14} /> {error}</span>}
+      </div>
+    );
+  }
+
+  return (
+    <div className={classes.fieldWrapper}>
+      <div className={`${classes.inputWrapper} ${errorClass}`}>
         <input
           ref={inputRef}
           type={type}
-          placeholder={placeholder}
+          placeholder={requiredPlaceholder}
           value={value}
           onChange={onChange}
           disabled={isLoading}
           required
           readOnly
           onFocus={onFocus}
+          onBlur={onBlur}
+          autoComplete="off"
         />
       </div>
-    );
-  }
-
-  return (
-    <input
-      ref={inputRef}
-      type={type}
-      placeholder={placeholder}
-      value={value}
-      onChange={onChange}
-      disabled={isLoading}
-      required
-      readOnly
-      onFocus={onFocus}
-    />
+      {error && <span className={classes.fieldError}><TriangleAlert size={14} /> {error}</span>}
+    </div>
   );
 }
 

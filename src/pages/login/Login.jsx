@@ -5,7 +5,7 @@ import FormInput from "./FormInput";
 import { useRecipeBook, useLanguage } from "../../context";
 import { loginUser, resetPassword } from "../../firebase/authService";
 
-import { Mail, Lock } from "lucide-react";
+import { Mail, Lock, TriangleAlert } from "lucide-react";
 
 import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./login.module.css";
@@ -21,6 +21,7 @@ function Login() {
   const [email, setEmail] = useState(savedEmail);
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [fieldErrors, setFieldErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [showForgotPassword, setShowForgotPassword] = useState(false);
@@ -31,6 +32,23 @@ function Login() {
 
   const navigate = useNavigate();
 
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  const getError = (field, value) => {
+    if (field === "email") {
+      if (!value.trim()) return t("auth", "emailError");
+      if (!emailRegex.test(value.trim())) return t("auth", "emailError");
+    }
+    if (field === "password") {
+      if (!value) return t("auth", "passwordError");
+      if (value.length < 6) return t("auth", "passwordError");
+    }
+    return "";
+  };
+
+  const isFormValid =
+    !getError("email", email) && !getError("password", password);
+
   const handleFocus = (e) => {
     e.target.removeAttribute("readonly");
   };
@@ -40,11 +58,26 @@ function Login() {
   };
 
   const handleEmailChange = (e) => {
-    setEmail(e.target.value);
+    const val = e.target.value;
+    setEmail(val);
+    if (fieldErrors.email && !getError("email", val)) {
+      setFieldErrors((prev) => ({ ...prev, email: "" }));
+    }
   };
 
   const handlePasswordChange = (e) => {
-    setPassword(e.target.value);
+    const val = e.target.value;
+    setPassword(val);
+    setFieldErrors((prev) => ({
+      ...prev,
+      password: getError("password", val),
+    }));
+  };
+
+  const handleBlur = (field) => {
+    const value = field === "email" ? email : password;
+    if (!value) return;
+    setFieldErrors((prev) => ({ ...prev, [field]: getError(field, value) }));
   };
 
   const handleForgotPassword = async (e) => {
@@ -81,23 +114,15 @@ function Login() {
     }
   };
 
-  // Login submission handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
 
-    // Simple email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!email || !emailRegex.test(email.trim())) {
-      setError(t("auth", "emailError"));
-      return;
-    }
+    const emailErr = getError("email", email);
+    const passwordErr = getError("password", password);
+    setFieldErrors({ email: emailErr, password: passwordErr });
 
-    // Password validation
-    if (!password || password.length < 6) {
-      setError(t("auth", "passwordError"));
-      return;
-    }
+    if (emailErr || passwordErr) return;
 
     setIsLoading(true);
 
@@ -161,7 +186,11 @@ function Login() {
 
             <form className={classes.loginForm} onSubmit={handleSubmit}>
               <p className={classes.title}>{t("auth", "login")}</p>
-              {error && <p className={classes.error}>{error}</p>}
+              {error && (
+                <p className={classes.error}>
+                  <TriangleAlert size={16} /> {error}
+                </p>
+              )}
 
               <FormInput
                 type="email"
@@ -170,7 +199,9 @@ function Login() {
                 onChange={handleEmailChange}
                 isLoading={isLoading}
                 onFocus={handleFocus}
+                onBlur={() => handleBlur("email")}
                 inputRef={emailInputRef}
+                error={fieldErrors.email}
               >
                 <Mail size={16} />
               </FormInput>
@@ -182,9 +213,11 @@ function Login() {
                 onChange={handlePasswordChange}
                 isLoading={isLoading}
                 onFocus={handleFocus}
+                onBlur={() => handleBlur("password")}
                 isPassword={true}
                 togglePassword={togglePassword}
                 showPassword={showPassword}
+                error={fieldErrors.password}
               >
                 <Lock size={16} />
               </FormInput>
@@ -201,7 +234,7 @@ function Login() {
 
               <button
                 type="submit"
-                disabled={isLoading}
+                disabled={isLoading || !isFormValid}
                 className={buttonClasses.genButton}
               >
                 {isLoading ? t("auth", "loggingIn") : t("auth", "login")}
@@ -270,6 +303,7 @@ function Login() {
       {showForgotPassword && (
         <div
           className={classes.loginContainer}
+          style={{ zIndex: 10 }}
           onClick={() => setShowForgotPassword(false)}
         >
           <form
@@ -279,7 +313,7 @@ function Login() {
           >
             <p className={classes.title}>{t("auth", "resetTitle")}</p>
             <p className={classes.subtitle}>{t("auth", "resetInstructions")}</p>
-            {error && <p className={classes.error}>{error}</p>}
+            {error && <p className={classes.error}><TriangleAlert size={16} /> {error}</p>}
             {resetMessage && <p className={classes.success}>{resetMessage}</p>}
 
             <FormInput
@@ -289,11 +323,13 @@ function Login() {
               onChange={(e) => setResetEmail(e.target.value)}
               isLoading={isResetting}
               onFocus={handleFocus}
-            >
-              <Mail size="1.4em" />
-            </FormInput>
+            />
 
-            <button type="submit" disabled={isResetting}>
+            <button
+              type="submit"
+              className={buttonClasses.genButton}
+              disabled={isResetting || !emailRegex.test(resetEmail.trim())}
+            >
               {isResetting ? "..." : t("auth", "resetPassword")}
             </button>
 
@@ -305,7 +341,8 @@ function Login() {
                 setError("");
                 setResetMessage("");
               }}
-              className={classes.backButton}
+              className={buttonClasses.genButton}
+              style={{ width: "100%" }}
               disabled={isResetting}
             >
               {t("auth", "login")}

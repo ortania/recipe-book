@@ -2,6 +2,8 @@
   max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
 }
 
 .stickyBar {
@@ -70,43 +72,36 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-bottom: 0;
+  margin-top: 1rem;
   justify-content: center;
   padding: 0.5rem 0;
 }
 
 .tab {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
   background: var(--bg-card);
-  border: 2px solid var(--border-color);
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: var(--basic-font);
-  font-weight: 500;
-  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--text-primary);
+  padding: 0.2em 0.6em;
 }
 
 .tab:hover {
-  border-color: var(--text-primary);
-  background: var(--bg-hover);
-  transform: translateY(-1px);
+  border-color: var(--text-primary) !important;
+  background: var(--bg-card) !important;
+  /* box-shadow: none !important; */
+  color: var(--text-primary) !important;
+  /* transform: translateY(-1px); */
 }
 
 .activeTab {
-  background: var(--text-primary);
+  background: var(--button-bg-primary);
   border-color: var(--text-primary);
-  color: white;
+  color: var(--text-on-primary);
 }
 
 .activeTab:hover {
-  background: var(--text-primary);
-  border-color: var(--text-primary);
-  color: white;
-  transform: translateY(-1px);
-  opacity: 0.9;
+  background: var(--button-bg-secondary) !important;
+  border: 1px solid var(--button-bg-secondary);
+  color: var(--text-on-primary) !important;
 }
 
 .tabIcon {
@@ -135,7 +130,7 @@
   justify-content: space-between;
   align-items: center; */
   display: grid;
-  grid-template-columns: 200px 1fr;
+  grid-template-columns: 150px 1fr;
   gap: 2rem;
   padding: 0.75rem 1rem;
   background: var(--bg-tertiary);
@@ -180,7 +175,7 @@
   /* background: var(--text-primary); */
   color: var(--text-primary);
   /* border-radius: 8px; */
-  border-bottom: 1px solid var(--text-primary);
+  border-bottom: 1px solid var(--border-color);
   font-weight: 700;
   text-align: center;
 }
@@ -203,10 +198,9 @@
 .note {
   margin-top: 1.5rem;
   padding: 1rem;
-  background: #fff3cd;
-  border-inline-start: 4px solid #ffc107;
-  /* border-radius: 8px; */
-  color: #856404;
+  background: var(--bg-primary);
+  border-inline-start: 2px solid var(--border-special-primary);
+  color: var(--text-primary);
   line-height: 1.6;
   grid-column: 1 / -1;
 }
@@ -244,7 +238,7 @@
     padding: 1rem;
     padding-top: 0;
     padding-bottom: 5rem;
-    height: calc(100dvh - 3.5rem);
+    height: 100%;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
@@ -273,7 +267,6 @@
   }
 
   .tab {
-    padding: 0.5rem 0.75rem;
     font-size: var(--small-font);
   }
 

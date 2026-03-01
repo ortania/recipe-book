@@ -358,11 +358,11 @@ const translations = {
       mixed: "Confirm Password",
     },
     displayName: {
-      he: "שם תצוגה",
-      en: "Display Name",
+      he: "שם ",
+      en: "Name",
       ru: "Имя",
       de: "Anzeigename",
-      mixed: "Display Name",
+      mixed: "Name",
     },
     loggingIn: {
       he: "מתחבר...",
