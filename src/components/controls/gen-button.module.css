@@ -1,0 +1,65 @@
+
+/* button */
+
+.genButton {
+  border: none;
+  border-radius: 12px;
+  color: var(--text-on-primary);
+  background: var(--button-bg-primary);
+  font-size: var(--basic-font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 1.2rem;
+}
+
+.genButton:hover {
+  background: var(--button-bg-secondary);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+.genButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.genButton:hover:not(:disabled) {
+  color: var(--text-on-primary);
+  background: var(--button-bg-secondary);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* checkbox */
+
+.checkBox {
+  appearance: none;
+  padding: 0.2rem;
+  width: 2rem;
+  height: 2rem;
+  border: 0.15rem solid var(--button-bg-primary);
+  border-radius: 0.3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.checkBox:checked {
+  background-color: var(--button-bg-primary);
+}
+
+.checkBox:checked::after {
+  content: "";
+  width: 0.6rem;
+  height: 1rem;
+  border: solid white;
+  border-width: 0 0.2rem 0.2rem 0;
+  transform: rotate(45deg);
+}
+
+/* .checkBox:hover {
+  border-color: var(--button-bg-primary);
+  opacity: 0.6;
+} */
+

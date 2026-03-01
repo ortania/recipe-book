@@ -539,7 +539,7 @@
   padding: 0.4rem 0.6rem;
   border: 1px solid var(--border-color);
   border-radius: 8px;
-  font-size: var(--very-small-font);
+  font-size: var(--small-font);
   background: var(--bg-card);
   color: var(--text-primary);
   outline: none;
@@ -582,7 +582,7 @@
   background: var(--bg-hover);
   border: 1px solid var(--border-color);
   border-radius: 16px;
-  font-size: var(--very-small-font);
+  font-size: var(--small-font);
   color: var(--text-primary);
 }
 
@@ -604,11 +604,12 @@
 .clearFiltersBtn {
   padding: 0.3em 0.7em !important;
   border: none !important;
-  background: #ff5252 !important;
+  /* background: #ff5252 !important; */
+  background: var(--accent-color-2) !important;
   color: white !important;
   text-align: center;
   cursor: pointer;
-  font-size: var(--very-small-font) !important;
+  font-size: var(--basic-font) !important;
   font-weight: 600;
   border-radius: 16px !important;
   transition: background 0.2s;
@@ -755,102 +756,6 @@
   border-radius: 1rem;
   padding: 0.3em 0.8em;
   font-size: var(--small-font);
-}
-
-/* Skeleton Loading */
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-.skeletonCard {
-  animation: skeletonFadeIn 0.4s ease both;
-}
-
-.skeletonCard:nth-child(1) {
-  animation-delay: 0s;
-}
-.skeletonCard:nth-child(2) {
-  animation-delay: 0.05s;
-}
-.skeletonCard:nth-child(3) {
-  animation-delay: 0.1s;
-}
-.skeletonCard:nth-child(4) {
-  animation-delay: 0.15s;
-}
-.skeletonCard:nth-child(5) {
-  animation-delay: 0.2s;
-}
-.skeletonCard:nth-child(6) {
-  animation-delay: 0.25s;
-}
-
-@keyframes skeletonFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.skeletonImage {
-  width: 100%;
-  padding-bottom: 100%;
-  border-radius: 25px;
-  background: linear-gradient(
-    105deg,
-    var(--border-color) 0%,
-    var(--bg-hover) 40%,
-    var(--border-color) 60%,
-    var(--bg-hover) 100%
-  );
-  background-size: 300% 100%;
-  animation: shimmer 2s ease-in-out infinite;
-}
-
-.skeletonInfo {
-  padding: 0.75rem;
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-}
-
-.skeletonName {
-  height: 0.9rem;
-  border-radius: 6px;
-  background: linear-gradient(
-    105deg,
-    var(--border-color) 0%,
-    var(--bg-hover) 40%,
-    var(--border-color) 60%,
-    var(--bg-hover) 100%
-  );
-  background-size: 300% 100%;
-  animation: shimmer 2s ease-in-out infinite;
-  animation-delay: 0.15s;
-}
-
-.skeletonMeta {
-  height: 0.65rem;
-  border-radius: 6px;
-  background: linear-gradient(
-    105deg,
-    var(--border-color) 0%,
-    var(--bg-hover) 40%,
-    var(--border-color) 60%,
-    var(--bg-hover) 100%
-  );
-  background-size: 300% 100%;
-  animation: shimmer 2s ease-in-out infinite;
-  animation-delay: 0.3s;
 }
 
 /* Legacy loading state */

@@ -1,25 +1,23 @@
 .dialog {
-  background-color: var(--bg-card);
-  padding: 2rem;
-  border-radius: 12px;
-  width: 90%;
-  max-width: 450px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-  margin: 0 auto;
+  padding: 2.5rem 2rem;
   text-align: center;
-  direction: rtl;
 }
 
 .dialog h3 {
   margin-top: 0;
-  color: var(--clr-blue-3);
-  font-size: var(--very-large-font);
+  color: var(--text-primary);
+  font-size: var(--large-font);
   margin-bottom: 0.5rem;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
 }
 
 .recipeName {
   font-size: var(--basic-font);
-  color: var(--text-secondary);
+  color: var(--text-primary);
   margin-bottom: 1.5rem;
   margin-top: 0;
   font-style: italic;
@@ -57,15 +55,16 @@
 }
 
 .emailInput:focus {
-  border-color: var(--clr-blue-3);
+  border: 1px solid var(--text-primary);
 }
 
 .addButton {
   padding: 0.6em 1.2em;
   border: none;
   border-radius: 8px;
-  background: var(--clr-blue-3);
-  color: white;
+  /* background: var(--clr-blue-3); */
+  background: var(--text-primary);
+  color: var(--bg-primary);
   font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
@@ -74,7 +73,7 @@
 }
 
 .addButton:hover:not(:disabled) {
-  opacity: 0.9;
+  background: var(--text-secondary);
   transform: translateY(-1px);
 }
 
@@ -108,7 +107,7 @@
   border: 1px solid var(--border-color);
   border-radius: 20px;
   font-size: var(--basic-font);
-  color: var(--clr-blue-3);
+  color: var(--text-primary);
   font-weight: 500;
 }
 
@@ -123,18 +122,21 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--clr-blue-3);
+  color: var(--text-primary);
   font-size: var(--basic-font);
   padding: 0;
   border-radius: 50%;
   transition: all 0.15s;
   width: 20px;
   height: 20px;
+  font-weight: 600;
 }
 
 .chipRemove:hover {
-  background: rgba(21, 101, 192, 0.15);
-  color: #0d47a1;
+  /* background: rgba(21, 101, 192, 0.15);
+  color: #0d47a1; */
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 /* Buttons */
@@ -146,6 +148,27 @@
 
 .buttons button {
   font-size: var(--basic-font);
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.buttons button:first-of-type {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+}
+
+.buttons button:first-of-type:hover {
+  background: var(--bg-hover);
+}
+
+.buttons button:last-of-type {
+  background: var(--text-primary);
+  color: var(--bg-primary);
+
+}
+.buttons button:last-of-type:hover {
+  background: var(--text-secondary);
 }
 
 /* Results */
@@ -177,10 +200,9 @@
   font-weight: 500;
 }
 
-@media (max-width: 480px) {
+@media (max-width: 768px) {
   .dialog {
-    width: 95%;
-    padding: 1.25rem;
+    padding: 2rem 1.5rem;
   }
 
   .inputRow {

@@ -4,6 +4,7 @@ import { Button } from "../../controls/button";
 import { Modal } from "../../modal";
 import { findUserByEmail } from "../../../firebase/authService";
 import { useLanguage } from "../../../context";
+import { Copy } from "lucide-react";
 import classes from "./copy-recipe-dialog.module.css";
 
 function CopyRecipeDialog({ recipeName, currentUserId, onCopy, onCancel }) {
@@ -97,9 +98,11 @@ function CopyRecipeDialog({ recipeName, currentUserId, onCopy, onCancel }) {
   };
 
   return (
-    <Modal onClose={onCancel}>
+    <Modal onClose={onCancel} maxWidth="450px">
       <div className={classes.dialog}>
-        <h3>📋 {t("copyRecipe", "title")}</h3>
+        <h3>
+          <Copy /> {t("copyRecipe", "title")}
+        </h3>
         <p className={classes.recipeName}>"{recipeName}"</p>
 
         {done ? (

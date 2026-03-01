@@ -3,9 +3,7 @@ import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
   Heart,
-  ChevronDown,
   Search,
-  ArrowUpDown,
   LayoutGrid,
   LayoutList,
   ScrollText,
@@ -28,6 +26,7 @@ import {
   Rows4,
   X,
 } from "lucide-react";
+import Skeleton from "react-loading-skeleton";
 import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
@@ -49,7 +48,7 @@ import fabClasses from "../controls/fab/fab.module.css";
 import { BottomSheet } from "../controls/bottom-sheet";
 import { CloseButton } from "../controls/close-button";
 import { BackButton } from "../controls/back-button";
-import { SortDropdown } from "../controls/sort-dropdown";
+import { SortButton } from "../controls/sort-button";
 import { SearchBox } from "../controls/search";
 import { SearchOverlay } from "./search-overlay";
 import { CategoriesManagement } from "../categories-management";
@@ -115,7 +114,6 @@ function RecipesView({
     }
   });
   const [showFilterMenu, setShowFilterMenu] = useState(false);
-  const [showSortMenu, setShowSortMenu] = useState(false);
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedPrepTime, setSelectedPrepTime] = useState("all");
   const [selectedDifficulty, setSelectedDifficulty] = useState("all");
@@ -139,9 +137,7 @@ function RecipesView({
   const [showManagement, setShowManagement] = useState(false);
   const [categorySearch, setCategorySearch] = useState("");
   const filterRef = useRef(null);
-  const sortRef = useRef(null);
   const [filterMenuStyle, setFilterMenuStyle] = useState({});
-  const [sortMenuStyle, setSortMenuStyle] = useState({});
   const {
     hasMoreRecipes: hasMoreRecipesCtx,
     loadMoreRecipes: loadMoreRecipesCtx,
@@ -222,6 +218,7 @@ function RecipesView({
 
   const handleViewChange = (view) => {
     setActiveView(view);
+    setShowSearch(false);
     if (view === "chat") {
       setShowChat(true);
     } else {
@@ -281,20 +278,13 @@ function RecipesView({
     });
   };
 
-  const toggleSortMenu = () => {
-    setShowSortMenu((prev) => {
-      if (!prev) setSortMenuStyle(calcDropdownPos(sortRef));
-      return !prev;
-    });
-  };
-
   // Lock body scroll only on desktop when dropdown is open.
   // On mobile we rely on the bottom-sheet styles and let the page scroll normally
   // so that the filter window itself יהיה ניתן לגלילה.
   useEffect(() => {
     const isDesktop = window.innerWidth > 700;
 
-    if (isDesktop && (showFilterMenu || showSortMenu)) {
+    if (isDesktop && showFilterMenu) {
       const previousOverflow = document.body.style.overflow;
       document.body.style.overflow = "hidden";
 
@@ -306,16 +296,13 @@ function RecipesView({
     if (isDesktop) {
       document.body.style.overflow = "";
     }
-  }, [showFilterMenu, showSortMenu]);
+  }, [showFilterMenu]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (window.innerWidth <= MOBILE_BREAKPOINT) return;
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setShowFilterMenu(false);
-      }
-      if (sortRef.current && !sortRef.current.contains(event.target)) {
-        setShowSortMenu(false);
       }
     };
 
@@ -858,23 +845,39 @@ function RecipesView({
           )}
 
           {loading ? (
-            <div className={classes.recipeGrid}>
-              {[70, 85, 60, 78, 65, 80].map((w, i) => (
-                <div key={i} className={classes.skeletonCard}>
-                  <div className={classes.skeletonImage} />
-                  <div className={classes.skeletonInfo}>
-                    <div
-                      className={classes.skeletonName}
-                      style={{ width: `${w}%` }}
-                    />
-                    <div
-                      className={classes.skeletonMeta}
-                      style={{ width: `${w - 30}%` }}
-                    />
+            isSimpleView ? (
+              <div>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} style={{
+                    display: "flex", alignItems: "center", gap: "1rem",
+                    padding: "0.75rem 1rem", marginBottom: "0.5rem",
+                    background: "var(--bg-card)", borderRadius: 4,
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                  }}>
+                    <Skeleton width={32} height={32} borderRadius={6} />
+                    <div style={{ flex: 1 }}>
+                      <Skeleton width="60%" height="0.9rem" borderRadius={6} />
+                    </div>
+                    <Skeleton width={50} height="0.7rem" borderRadius={6} />
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            ) : (
+              <div className={classes.recipeGrid}>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i}>
+                    <Skeleton height={0} style={{ paddingBottom: "100%" }} borderRadius={25} />
+                    <div style={{ padding: "0.75rem" }}>
+                      <Skeleton width="75%" height="1.2rem" borderRadius={6} style={{ marginBottom: "0.3rem" }} />
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <Skeleton width="30%" height="0.9rem" borderRadius={6} />
+                        <Skeleton width="25%" height="0.9rem" borderRadius={6} />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
           ) : (
             <div className={classes.emptyState}>
               <RecipeBookIcon width={72} height={72} />
@@ -981,51 +984,12 @@ function RecipesView({
               </span>
             </button>
             <div className={classes.headerControls}>
-              <div className={classes.dropdownContainer} ref={sortRef}>
-                <button
-                  className={classes.sortingButton}
-                  onClick={toggleSortMenu}
-                >
-                  <ArrowUpDown size={16} />{" "}
-                  <span className={classes.hideOnMobile}>
-                    {t("recipesView", "sorting")}
-                  </span>{" "}
-                  {/* <ChevronDown size={16} /> */}
-                </button>
-                {!isMobile && showSortMenu && (
-                  <>
-                    <div
-                      className={classes.dropdownOverlay}
-                      onClick={() => setShowSortMenu(false)}
-                    />
-                    <div className={classes.dropdownMenu} style={sortMenuStyle}>
-                      <div className={classes.dropdownClose}>
-                        <CloseButton onClick={() => setShowSortMenu(false)} />
-                      </div>
-                      <SortDropdown
-                        sortField={sortField}
-                        sortDirection={sortDirection}
-                        onSortChange={handleRecipeSortChange}
-                        options={recipeSortOptions}
-                      />
-                    </div>
-                  </>
-                )}
-                {isMobile && (
-                  <BottomSheet
-                    open={showSortMenu}
-                    onClose={() => setShowSortMenu(false)}
-                    title={t("recipesView", "sorting")}
-                  >
-                    <SortDropdown
-                      sortField={sortField}
-                      sortDirection={sortDirection}
-                      onSortChange={handleRecipeSortChange}
-                      options={recipeSortOptions}
-                    />
-                  </BottomSheet>
-                )}
-              </div>
+              <SortButton
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onSortChange={handleRecipeSortChange}
+                options={recipeSortOptions}
+              />
             </div>
           </div>
         )}

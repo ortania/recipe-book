@@ -325,8 +325,9 @@
 }
 
 .activeTab {
-  color: var(--text-primary);
   border-bottom-color: var(--text-primary);
+  background: var(--text-primary);
+  color: var(--bg-primary);
 }
 
 .tabContent {

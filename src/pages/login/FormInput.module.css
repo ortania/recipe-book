@@ -1,4 +1,5 @@
 .inputWrapper {
+  position: relative;
   width: 100%;
 }
 
@@ -24,6 +25,23 @@
   cursor: not-allowed;
 }
 
+.inputWrapper.hasIcon input {
+  padding-inline-start: 3rem !important;
+}
+
+.inputIcon {
+  position: absolute;
+  inset-inline-start: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
 .passwordInput {
   position: relative;
   width: 100%;
@@ -32,6 +50,10 @@
 .passwordInput input {
   width: 100%;
   padding-inline-end: 3.5rem;
+}
+
+.passwordInput.hasIcon input {
+  padding-inline-start: 3rem !important;
 }
 
 .eyeButton {
@@ -54,8 +76,9 @@
 }
 
 .eyeButton:hover {
-  color: #667eea;
-  background-color: rgba(102, 126, 234, 0.1);
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+
 }
 
 .eyeButton:disabled {
@@ -64,6 +87,6 @@
 }
 
 .eyeButton svg {
-  width: 1.8rem;
-  height: 1.8rem;
+  width: 2rem;
+  height: 2rem;
 }

@@ -5,6 +5,9 @@ import FormInput from "./FormInput";
 import { useRecipeBook, useLanguage } from "../../context";
 import { loginUser, resetPassword } from "../../firebase/authService";
 
+import { Mail, Lock } from "lucide-react";
+
+import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./login.module.css";
 
 function Login() {
@@ -168,7 +171,9 @@ function Login() {
                 isLoading={isLoading}
                 onFocus={handleFocus}
                 inputRef={emailInputRef}
-              />
+              >
+                <Mail size={16} />
+              </FormInput>
 
               <FormInput
                 type="password"
@@ -180,10 +185,13 @@ function Login() {
                 isPassword={true}
                 togglePassword={togglePassword}
                 showPassword={showPassword}
-              />
+              >
+                <Lock size={16} />
+              </FormInput>
 
               <label className={classes.rememberMe}>
                 <input
+                  className={buttonClasses.checkBox}
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
@@ -191,7 +199,11 @@ function Login() {
                 <span>{t("auth", "rememberMe")}</span>
               </label>
 
-              <button type="submit" disabled={isLoading}>
+              <button
+                type="submit"
+                disabled={isLoading}
+                className={buttonClasses.genButton}
+              >
                 {isLoading ? t("auth", "loggingIn") : t("auth", "login")}
               </button>
 
@@ -277,7 +289,9 @@ function Login() {
               onChange={(e) => setResetEmail(e.target.value)}
               isLoading={isResetting}
               onFocus={handleFocus}
-            />
+            >
+              <Mail size="1.4em" />
+            </FormInput>
 
             <button type="submit" disabled={isResetting}>
               {isResetting ? "..." : t("auth", "resetPassword")}

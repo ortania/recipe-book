@@ -4,6 +4,9 @@ import { signupUser } from "../../firebase/authService";
 import { useLanguage } from "../../context";
 import FormInput from "../login/FormInput";
 import { Onboarding } from "../onboarding";
+import { User, Mail, Lock, ShieldCheck } from "lucide-react";
+
+import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "../login/login.module.css";
 
 function Signup() {
@@ -93,7 +96,9 @@ function Signup() {
           onChange={(e) => setDisplayName(e.target.value)}
           isLoading={isLoading}
           onFocus={handleFocus}
-        />
+        >
+          <User size={16} />
+        </FormInput>
 
         <FormInput
           type="email"
@@ -102,7 +107,9 @@ function Signup() {
           onChange={(e) => setEmail(e.target.value)}
           isLoading={isLoading}
           onFocus={handleFocus}
-        />
+        >
+          <Mail size={16} />
+        </FormInput>
 
         <FormInput
           type="password"
@@ -114,7 +121,9 @@ function Signup() {
           isPassword={true}
           togglePassword={togglePassword}
           showPassword={showPassword}
-        />
+        >
+          <Lock size={16} />
+        </FormInput>
 
         <FormInput
           type="password"
@@ -126,9 +135,11 @@ function Signup() {
           isPassword={true}
           togglePassword={togglePassword}
           showPassword={showPassword}
-        />
+        >
+          <ShieldCheck size={16} />
+        </FormInput>
 
-        <button type="submit" disabled={isLoading}>
+        <button type="submit" disabled={isLoading} className={buttonClasses.genButton}>
           {isLoading ? t("auth", "creatingAccount") : t("auth", "signup")}
         </button>
 

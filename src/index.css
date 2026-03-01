@@ -32,6 +32,7 @@ Variables
   --clr-red: hsl(0, 100%, 50%);
   --clr-red-dark: hsl(0, 67%, 44%);
   --clr-red-light: hsl(360, 71%, 66%);
+  --clr-red-very-light:rgb(250, 238, 238);
 
   --clr-grey-special: #eae6eb;
 
@@ -45,6 +46,18 @@ Variables
   --clr-grey-8: hsl(210, 31%, 80%);
   --clr-grey-9: hsl(212, 33%, 89%);
   --clr-grey-10: hsl(210, 36%, 96%);
+
+  /* brown */
+  --clr-brown-1: #635555;
+  --clr-brown-2: #555555;
+  --clr-brown-3: #444444;
+  --clr-brown-4: #333333;
+  --clr-brown-5: #222222;
+  --clr-brown-6: #111111;
+  --clr-brown-7: #000000;
+  --clr-brown-8: #000000;
+  --clr-brown-9: #000000;
+  --clr-brown-10: #000000;
 
   --light-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
   --dark-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -83,6 +96,8 @@ Variables
   --bg-chip: #ffffff;
   --bg-chip-hover: #f0e6ff;
 
+  --bg-error: var(--clr-red-very-light);
+
   --accent-color-1: #914c03;
   --accent-color-2: #9a652d;
   --accent-color-3: #1a9c5a;
@@ -90,15 +105,20 @@ Variables
   --accent-color-5: #1a9c5a;
 
   /* --text-primary: #222222; */
-  --text-primary: #635555;
-  --text-secondary: #555555;
-  --text-muted: #888888; 
+  --text-primary: var(clr-brown-1);
+  --text-secondary: var(--clr-brown-2);
+  --text-muted: #888888;
   --text-on-primary: #ffffff;
 
   --border-color: #e0e0e0;
-  /* --border-color: transparent; */
+  --border-error: var(--clr-red-dark);
   --border-light: #eeeeee;
   --divider: #dddddd;
+
+  --button-bg-primary: var(--clr-brown-1);
+  --button-bg-secondary: var(--clr-brown-2);
+  --button-bg-tertiary: var(--tertiary-color);
+  
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -113,6 +133,17 @@ Variables
   --bubble-assistant: #ffffff;
   --bubble-user-text: #333333;
   --bubble-assistant-text: #333333;
+
+  --error-color: var(--clr-red);
+  --success-color: var(--clr-green);
+  --warning-color: var(--clr-yellow);
+  --info-color: var(--clr-blue);
+  --primary-color: var(--clr-brown-1);
+  --secondary-color: var(--clr-brown-2);
+  /* 
+  --tertiary-color: var(--clr-blue);
+  --quaternary-color: var(--clr-blue);
+  --quinary-color: var(--clr-blue); */
 }
 
 [data-theme="dark"] {
@@ -126,6 +157,8 @@ Variables
   --bg-chip: #1e2a45;
   --bg-chip-hover: #2d1b4e;
 
+  --bg-error: var(--clr-red);
+
   --text-primary: #e8e8e8;
   --text-secondary: #b0b8c8;
   --text-muted: #7a8599;
@@ -133,6 +166,7 @@ Variables
 
   --border-color: #2a3550;
   --border-light: #222d42;
+  --border-error: var(--clr-red);
   --divider: #2a3550;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -242,7 +276,7 @@ img {
   height: auto;
 }
 
-@media (min-width: 80rem) {
+@media (min-width: 80rem) {primary
   h1 {
     font-size: 4rem;
   }
@@ -331,4 +365,28 @@ html {
       rgba(26, 26, 46, 1) 70%
     );
   }
+}
+
+/* Override react-loading-skeleton: gentle color pulse, no gradient sweep */
+.react-loading-skeleton::after {
+  display: none !important;
+}
+
+.react-loading-skeleton {
+  background-color: #ececec !important;
+  animation: skeletonPulse 2s ease-in-out infinite !important;
+}
+
+@keyframes skeletonPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+[data-theme="dark"] .react-loading-skeleton {
+  background-color: #2a2a3e !important;
 }

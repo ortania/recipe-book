@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  ArrowUpDown,
   ChevronDown,
   Filter,
   History,
@@ -14,7 +13,7 @@ import { SearchBox } from "../../controls/search";
 import { BottomSheet } from "../../controls/bottom-sheet";
 import { CloseButton } from "../../controls/close-button";
 import { BackButton } from "../../controls/back-button";
-import { SortDropdown } from "../../controls/sort-dropdown";
+import { SortButton } from "../../controls/sort-button";
 import { RecipeInfo } from "../RecipeInfo";
 import { search } from "../utils";
 import parentClasses from "../recipes-view-new.module.css";
@@ -83,16 +82,20 @@ function SearchOverlay({
   });
 
   const [searchTerm, setSearchTerm] = useState(restoredState?.searchTerm || "");
-  const [debouncedSearch, setDebouncedSearch] = useState(restoredState?.searchTerm || "");
+  const [debouncedSearch, setDebouncedSearch] = useState(
+    restoredState?.searchTerm || "",
+  );
   const [isMobile, setIsMobile] = useState(false);
-  const [showSuggestions, setShowSuggestions] = useState(false);
   const [recentSearches, setRecentSearches] = useState(getRecentSearches);
   const [showRecentSearches, setShowRecentSearches] = useState(false);
 
-  const [sortField, setSortField] = useState(restoredState?.sortField || "name");
-  const [sortDirection, setSortDirection] = useState(restoredState?.sortDirection || "asc");
+  const [sortField, setSortField] = useState(
+    restoredState?.sortField || "name",
+  );
+  const [sortDirection, setSortDirection] = useState(
+    restoredState?.sortDirection || "asc",
+  );
   const [showFilterMenu, setShowFilterMenu] = useState(false);
-  const [showSortMenu, setShowSortMenu] = useState(false);
 
   const [selectedRating, setSelectedRating] = useState("all");
   const [selectedPrepTime, setSelectedPrepTime] = useState("all");
@@ -101,13 +104,13 @@ function SearchOverlay({
   const [selectedStepCount, setSelectedStepCount] = useState("all");
   const [filterIngredients, setFilterIngredients] = useState([]);
   const [ingredientInput, setIngredientInput] = useState("");
-  const [searchViewedIds, setSearchViewedIds] = useState(restoredState?.searchViewedIds || []);
+  const [searchViewedIds, setSearchViewedIds] = useState(
+    restoredState?.searchViewedIds || [],
+  );
 
   const filterRef = useRef(null);
-  const sortRef = useRef(null);
   const suggestionsRef = useRef(null);
   const [filterMenuStyle, setFilterMenuStyle] = useState({});
-  const [sortMenuStyle, setSortMenuStyle] = useState({});
 
   useEffect(() => {
     const mql = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT}px)`);
@@ -129,35 +132,34 @@ function SearchOverlay({
       .filter(Boolean);
   }, [searchViewedIds, persons]);
 
-  const handleRecipeClick = useCallback((personId) => {
-    const newViewedIds = [personId, ...searchViewedIds.filter((id) => id !== personId)].slice(0, 8);
-    setSearchViewedIds(newViewedIds);
-    sessionStorage.setItem(SEARCH_STATE_KEY, JSON.stringify({
-      searchTerm,
-      sortField,
-      sortDirection,
-      searchViewedIds: newViewedIds,
-    }));
-    if (searchTerm.trim()) saveRecentSearch(searchTerm);
-    navigate(`/recipe/${personId}`);
-  }, [searchTerm, sortField, sortDirection, searchViewedIds, navigate]);
-
-  const suggestions = useMemo(() => {
-    if (!searchTerm || searchTerm.length < 1) return [];
-    const term = searchTerm.toLowerCase();
-    return (persons || [])
-      .filter((p) => p.name?.toLowerCase().includes(term))
-      .slice(0, 6);
-  }, [searchTerm, persons]);
-
-  useEffect(() => {
-    setShowSuggestions(searchTerm.length > 0 && suggestions.length > 0);
-  }, [searchTerm, suggestions]);
+  const handleRecipeClick = useCallback(
+    (personId) => {
+      const newViewedIds = [
+        personId,
+        ...searchViewedIds.filter((id) => id !== personId),
+      ].slice(0, 8);
+      setSearchViewedIds(newViewedIds);
+      sessionStorage.setItem(
+        SEARCH_STATE_KEY,
+        JSON.stringify({
+          searchTerm,
+          sortField,
+          sortDirection,
+          searchViewedIds: newViewedIds,
+        }),
+      );
+      if (searchTerm.trim()) saveRecentSearch(searchTerm);
+      navigate(`/recipe/${personId}`);
+    },
+    [searchTerm, sortField, sortDirection, searchViewedIds, navigate],
+  );
 
   useEffect(() => {
     const handleClick = (e) => {
-      if (suggestionsRef.current && !suggestionsRef.current.contains(e.target)) {
-        setShowSuggestions(false);
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target)
+      ) {
         setShowRecentSearches(false);
       }
     };
@@ -165,20 +167,13 @@ function SearchOverlay({
     return () => document.removeEventListener("mousedown", handleClick);
   }, []);
 
-  const handleSuggestionClick = (person) => {
-    setSearchTerm(person.name);
-    setShowSuggestions(false);
-  };
-
   const handleRecentSearchClick = (term) => {
     setSearchTerm(term);
     setShowRecentSearches(false);
-    setShowSuggestions(false);
   };
 
   const handleSearchKeyDown = (e) => {
     if (e.key === "Enter") {
-      setShowSuggestions(false);
       setShowRecentSearches(false);
       if (searchTerm.trim()) saveRecentSearch(searchTerm);
       setRecentSearches(getRecentSearches());
@@ -231,21 +226,11 @@ function SearchOverlay({
     });
   };
 
-  const toggleSortMenu = () => {
-    setShowSortMenu((prev) => {
-      if (!prev) setSortMenuStyle(calcDropdownPos(sortRef));
-      return !prev;
-    });
-  };
-
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (window.innerWidth <= MOBILE_BREAKPOINT) return;
       if (filterRef.current && !filterRef.current.contains(event.target)) {
         setShowFilterMenu(false);
-      }
-      if (sortRef.current && !sortRef.current.contains(event.target)) {
-        setShowSortMenu(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -276,12 +261,15 @@ function SearchOverlay({
     clearAllFilters();
     setSortField("name");
     setSortDirection("asc");
-    setShowSuggestions(false);
     setShowRecentSearches(false);
     if (clearCategorySelection) clearCategorySelection();
   };
 
-  const hasAnythingActive = searchTerm || hasActiveFilters || sortField !== "name" || (!isAllSelected && selectedCategoryObjects.length > 0);
+  const hasAnythingActive =
+    searchTerm ||
+    hasActiveFilters ||
+    sortField !== "name" ||
+    (!isAllSelected && selectedCategoryObjects.length > 0);
 
   const addFilterIngredient = () => {
     const trimmed = ingredientInput.trim();
@@ -300,7 +288,9 @@ function SearchOverlay({
 
     if (selectedRating !== "all") {
       const minRating = parseFloat(selectedRating);
-      filtered = filtered.filter((p) => (parseFloat(p.rating) || 0) >= minRating);
+      filtered = filtered.filter(
+        (p) => (parseFloat(p.rating) || 0) >= minRating,
+      );
     }
     if (selectedPrepTime !== "all") {
       filtered = filtered.filter((p) => {
@@ -314,12 +304,16 @@ function SearchOverlay({
     }
     if (selectedDifficulty !== "all") {
       filtered = filtered.filter(
-        (p) => p.difficulty && p.difficulty.toLowerCase() === selectedDifficulty.toLowerCase(),
+        (p) =>
+          p.difficulty &&
+          p.difficulty.toLowerCase() === selectedDifficulty.toLowerCase(),
       );
     }
     if (selectedIngredientCount !== "all") {
       filtered = filtered.filter((p) => {
-        const c = Array.isArray(p.ingredients) ? p.ingredients.filter(Boolean).length : 0;
+        const c = Array.isArray(p.ingredients)
+          ? p.ingredients.filter(Boolean).length
+          : 0;
         if (selectedIngredientCount === "few") return c <= 5;
         if (selectedIngredientCount === "medium") return c > 5 && c <= 10;
         if (selectedIngredientCount === "many") return c > 10;
@@ -328,7 +322,9 @@ function SearchOverlay({
     }
     if (selectedStepCount !== "all") {
       filtered = filtered.filter((p) => {
-        const c = Array.isArray(p.instructions) ? p.instructions.filter(Boolean).length : 0;
+        const c = Array.isArray(p.instructions)
+          ? p.instructions.filter(Boolean).length
+          : 0;
         if (selectedStepCount === "few") return c <= 3;
         if (selectedStepCount === "medium") return c > 3 && c <= 7;
         if (selectedStepCount === "many") return c > 7;
@@ -341,7 +337,9 @@ function SearchOverlay({
         const ings = p.ingredients
           .filter(Boolean)
           .map((i) => (typeof i === "string" ? i : i.name || "").toLowerCase());
-        return filterIngredients.every((fi) => ings.some((ri) => ri.includes(fi.toLowerCase())));
+        return filterIngredients.every((fi) =>
+          ings.some((ri) => ri.includes(fi.toLowerCase())),
+        );
       });
     }
 
@@ -362,23 +360,34 @@ function SearchOverlay({
   useEffect(() => {
     if (filteredResults.length > 0 && (debouncedSearch || hasActiveFilters)) {
       try {
-        localStorage.setItem(LAST_SEARCH_RESULTS_KEY, JSON.stringify({
-          term: debouncedSearch || "",
-          ids: filteredResults.slice(0, 10).map((p) => p.id),
-        }));
+        localStorage.setItem(
+          LAST_SEARCH_RESULTS_KEY,
+          JSON.stringify({
+            term: debouncedSearch || "",
+            ids: filteredResults.slice(0, 10).map((p) => p.id),
+          }),
+        );
       } catch {}
     }
   }, [filteredResults, debouncedSearch, hasActiveFilters]);
 
   const lastFoundData = useMemo(() => {
     try {
-      const raw = JSON.parse(localStorage.getItem(LAST_SEARCH_RESULTS_KEY) || "{}");
-      const ids = Array.isArray(raw.ids) ? raw.ids : (Array.isArray(raw) ? raw : []);
+      const raw = JSON.parse(
+        localStorage.getItem(LAST_SEARCH_RESULTS_KEY) || "{}",
+      );
+      const ids = Array.isArray(raw.ids)
+        ? raw.ids
+        : Array.isArray(raw)
+          ? raw
+          : [];
       const term = raw.term || "";
       if (ids.length === 0) return { term: "", recipes: [] };
       return {
         term,
-        recipes: ids.map((id) => (persons || []).find((p) => p.id === id)).filter(Boolean),
+        recipes: ids
+          .map((id) => (persons || []).find((p) => p.id === id))
+          .filter(Boolean),
       };
     } catch {
       return { term: "", recipes: [] };
@@ -390,66 +399,187 @@ function SearchOverlay({
   const filterContent = (
     <div className={parentClasses.dropdownScrollable}>
       <div className={parentClasses.filterSection}>
-        <label className={parentClasses.filterLabel}>{t("recipesView", "sortByRating")}:</label>
+        <label className={parentClasses.filterLabel}>
+          {t("recipesView", "sortByRating")}:
+        </label>
         {["all", "3", "4", "5"].map((v) => (
-          <button key={v} className={selectedRating === v ? parentClasses.active : ""} onClick={() => setSelectedRating(v)}>
-            {v === "all" ? t("categories", "all") : `★${v}${v !== "5" ? "+" : ""}`}
+          <button
+            key={v}
+            className={selectedRating === v ? parentClasses.active : ""}
+            onClick={() => setSelectedRating(v)}
+          >
+            {v === "all"
+              ? t("categories", "all")
+              : `★${v}${v !== "5" ? "+" : ""}`}
           </button>
         ))}
       </div>
       <div className={parentClasses.filterDivider} />
       <div className={parentClasses.filterSection}>
-        <label className={parentClasses.filterLabel}>{t("recipes", "prepTime")}:</label>
-        <button className={selectedPrepTime === "all" ? parentClasses.active : ""} onClick={() => setSelectedPrepTime("all")}>{t("categories", "all")}</button>
-        <button className={selectedPrepTime === "quick" ? parentClasses.active : ""} onClick={() => setSelectedPrepTime("quick")}>≤15 {t("recipes", "minutes")}</button>
-        <button className={selectedPrepTime === "medium" ? parentClasses.active : ""} onClick={() => setSelectedPrepTime("medium")}>15-30 {t("recipes", "minutes")}</button>
-        <button className={selectedPrepTime === "long" ? parentClasses.active : ""} onClick={() => setSelectedPrepTime("long")}>30+ {t("recipes", "minutes")}</button>
+        <label className={parentClasses.filterLabel}>
+          {t("recipes", "prepTime")}:
+        </label>
+        <button
+          className={selectedPrepTime === "all" ? parentClasses.active : ""}
+          onClick={() => setSelectedPrepTime("all")}
+        >
+          {t("categories", "all")}
+        </button>
+        <button
+          className={selectedPrepTime === "quick" ? parentClasses.active : ""}
+          onClick={() => setSelectedPrepTime("quick")}
+        >
+          ≤15 {t("recipes", "minutes")}
+        </button>
+        <button
+          className={selectedPrepTime === "medium" ? parentClasses.active : ""}
+          onClick={() => setSelectedPrepTime("medium")}
+        >
+          15-30 {t("recipes", "minutes")}
+        </button>
+        <button
+          className={selectedPrepTime === "long" ? parentClasses.active : ""}
+          onClick={() => setSelectedPrepTime("long")}
+        >
+          30+ {t("recipes", "minutes")}
+        </button>
       </div>
       <div className={parentClasses.filterDivider} />
       <div className={parentClasses.filterSection}>
-        <label className={parentClasses.filterLabel}>{t("recipes", "difficulty")}:</label>
+        <label className={parentClasses.filterLabel}>
+          {t("recipes", "difficulty")}:
+        </label>
         {["all", "VeryEasy", "Easy", "Medium", "Hard"].map((v) => (
-          <button key={v} className={selectedDifficulty === v ? parentClasses.active : ""} onClick={() => setSelectedDifficulty(v)}>
+          <button
+            key={v}
+            className={selectedDifficulty === v ? parentClasses.active : ""}
+            onClick={() => setSelectedDifficulty(v)}
+          >
             {v === "all" ? t("categories", "all") : t("difficulty", v)}
           </button>
         ))}
       </div>
       <div className={parentClasses.filterDivider} />
       <div className={parentClasses.filterSection}>
-        <label className={parentClasses.filterLabel}>{t("recipesView", "ingredientCount")}:</label>
-        <button className={selectedIngredientCount === "all" ? parentClasses.active : ""} onClick={() => setSelectedIngredientCount("all")}>{t("categories", "all")}</button>
-        <button className={selectedIngredientCount === "few" ? parentClasses.active : ""} onClick={() => setSelectedIngredientCount("few")}>≤5</button>
-        <button className={selectedIngredientCount === "medium" ? parentClasses.active : ""} onClick={() => setSelectedIngredientCount("medium")}>6-10</button>
-        <button className={selectedIngredientCount === "many" ? parentClasses.active : ""} onClick={() => setSelectedIngredientCount("many")}>10+</button>
+        <label className={parentClasses.filterLabel}>
+          {t("recipesView", "ingredientCount")}:
+        </label>
+        <button
+          className={
+            selectedIngredientCount === "all" ? parentClasses.active : ""
+          }
+          onClick={() => setSelectedIngredientCount("all")}
+        >
+          {t("categories", "all")}
+        </button>
+        <button
+          className={
+            selectedIngredientCount === "few" ? parentClasses.active : ""
+          }
+          onClick={() => setSelectedIngredientCount("few")}
+        >
+          ≤5
+        </button>
+        <button
+          className={
+            selectedIngredientCount === "medium" ? parentClasses.active : ""
+          }
+          onClick={() => setSelectedIngredientCount("medium")}
+        >
+          6-10
+        </button>
+        <button
+          className={
+            selectedIngredientCount === "many" ? parentClasses.active : ""
+          }
+          onClick={() => setSelectedIngredientCount("many")}
+        >
+          10+
+        </button>
       </div>
       <div className={parentClasses.filterDivider} />
       <div className={parentClasses.filterSection}>
-        <label className={parentClasses.filterLabel}>{t("recipesView", "stepCount")}:</label>
-        <button className={selectedStepCount === "all" ? parentClasses.active : ""} onClick={() => setSelectedStepCount("all")}>{t("categories", "all")}</button>
-        <button className={selectedStepCount === "few" ? parentClasses.active : ""} onClick={() => setSelectedStepCount("few")}>≤3</button>
-        <button className={selectedStepCount === "medium" ? parentClasses.active : ""} onClick={() => setSelectedStepCount("medium")}>4-7</button>
-        <button className={selectedStepCount === "many" ? parentClasses.active : ""} onClick={() => setSelectedStepCount("many")}>7+</button>
+        <label className={parentClasses.filterLabel}>
+          {t("recipesView", "stepCount")}:
+        </label>
+        <button
+          className={selectedStepCount === "all" ? parentClasses.active : ""}
+          onClick={() => setSelectedStepCount("all")}
+        >
+          {t("categories", "all")}
+        </button>
+        <button
+          className={selectedStepCount === "few" ? parentClasses.active : ""}
+          onClick={() => setSelectedStepCount("few")}
+        >
+          ≤3
+        </button>
+        <button
+          className={selectedStepCount === "medium" ? parentClasses.active : ""}
+          onClick={() => setSelectedStepCount("medium")}
+        >
+          4-7
+        </button>
+        <button
+          className={selectedStepCount === "many" ? parentClasses.active : ""}
+          onClick={() => setSelectedStepCount("many")}
+        >
+          7+
+        </button>
       </div>
       <div className={parentClasses.filterDivider} />
       <div className={parentClasses.filterSection}>
-        <label className={parentClasses.filterLabel}>{t("recipesView", "byIngredients")}:</label>
+        <label className={parentClasses.filterLabel}>
+          {t("recipesView", "byIngredients")}:
+        </label>
         <div className={parentClasses.ingredientInputRow}>
-          <input type="text" className={parentClasses.ingredientInput} value={ingredientInput} onChange={(e) => setIngredientInput(e.target.value)} onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addFilterIngredient(); } }} placeholder={t("recipesView", "addIngredient")} />
-          <button className={parentClasses.ingredientAddBtn} onClick={addFilterIngredient} type="button">+</button>
+          <input
+            type="text"
+            className={parentClasses.ingredientInput}
+            value={ingredientInput}
+            onChange={(e) => setIngredientInput(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                addFilterIngredient();
+              }
+            }}
+            placeholder={t("recipesView", "addIngredient")}
+          />
+          <button
+            className={parentClasses.ingredientAddBtn}
+            onClick={addFilterIngredient}
+            type="button"
+          >
+            +
+          </button>
         </div>
         {filterIngredients.length > 0 && (
           <div className={parentClasses.ingredientChips}>
             {filterIngredients.map((ing) => (
-              <span key={ing} className={parentClasses.ingredientChip}>{ing}<button className={parentClasses.ingredientChipRemove} onClick={() => removeFilterIngredient(ing)}>✕</button></span>
+              <span key={ing} className={parentClasses.ingredientChip}>
+                {ing}
+                <button
+                  className={parentClasses.ingredientChipRemove}
+                  onClick={() => removeFilterIngredient(ing)}
+                >
+                  ✕
+                </button>
+              </span>
             ))}
           </div>
         )}
       </div>
-      {hasActiveFilters && (
+      {hasActiveFilters && isMobile && (
         <>
           <div className={parentClasses.filterDivider} />
           <div className={parentClasses.filterSection}>
-            <button className={parentClasses.clearFiltersBtn} onClick={clearAllFilters}>{t("recipesView", "clearFilters")}</button>
+            <button
+              className={parentClasses.clearFiltersBtn}
+              onClick={clearAllFilters}
+            >
+              {t("recipesView", "clearFilters")}
+            </button>
           </div>
         </>
       )}
@@ -463,17 +593,18 @@ function SearchOverlay({
       {/* Search header */}
       <div className={parentClasses.searchHeader}>
         <BackButton onClick={onClose} />
-        <div className={`${parentClasses.searchBoxWrapper} ${classes.searchBoxRelative}`} ref={suggestionsRef}>
+        <div
+          className={`${parentClasses.searchBoxWrapper} ${classes.searchBoxRelative}`}
+          ref={suggestionsRef}
+        >
           <SearchBox
             searchTerm={searchTerm}
             onSearchChange={(val) => {
               setSearchTerm(val);
-              if (val) {
-                setShowSuggestions(true);
-                setShowRecentSearches(false);
+              if (!val && recentSearches.length > 0) {
+                setShowRecentSearches(true);
               } else {
-                setShowSuggestions(false);
-                if (recentSearches.length > 0) setShowRecentSearches(true);
+                setShowRecentSearches(false);
               }
             }}
             onKeyDown={handleSearchKeyDown}
@@ -487,27 +618,13 @@ function SearchOverlay({
             ]}
             autoFocus
           />
-          {showSuggestions && suggestions.length > 0 && (
-            <div className={classes.suggestions}>
-              {suggestions.map((p) => (
-                <button
-                  key={p.id}
-                  className={classes.suggestionItem}
-                  onClick={() => handleSuggestionClick(p)}
-                >
-                  {p.image_src && (
-                    <img src={p.image_src} alt="" className={classes.suggestionImg} />
-                  )}
-                  <span className={classes.suggestionName}>{p.name}</span>
-                </button>
-              ))}
-            </div>
-          )}
-          {showRecentSearches && !searchTerm && recentSearches.length > 0 && (
+          {/* {showRecentSearches && !searchTerm && recentSearches.length > 0 && (
             <div className={classes.suggestions}>
               <div className={classes.recentHeader}>
                 <Search size={14} />
-                <span>{t("recipesView", "recentSearches") || "חיפושים אחרונים"}</span>
+                <span>
+                  {t("recipesView", "recentSearches") || "חיפושים אחרונים"}
+                </span>
               </div>
               {recentSearches.map((term, i) => (
                 <button
@@ -520,22 +637,41 @@ function SearchOverlay({
                 </button>
               ))}
             </div>
-          )}
+          )} */}
         </div>
         <div className={parentClasses.headerControls}>
           <div className={parentClasses.dropdownContainer} ref={filterRef}>
-            <button className={parentClasses.filterButton} onClick={toggleFilterMenu}>
+            <button
+              className={parentClasses.filterButton}
+              onClick={toggleFilterMenu}
+            >
               <Filter size={16} />
-              <span className={parentClasses.hideOnMobile}>{t("recipesView", "filter")}</span>
-              <ChevronDown size={16} />
+              <span className={parentClasses.hideOnMobile}>
+                {t("recipesView", "filter")}
+              </span>
+              <span className={parentClasses.hideOnMobile}>
+                <ChevronDown size={16} />
+              </span>
             </button>
             {!isMobile && showFilterMenu && (
               <>
-                <div className={parentClasses.dropdownOverlay} onClick={() => setShowFilterMenu(false)} />
-                <div className={parentClasses.dropdownMenu} style={filterMenuStyle} onClick={(e) => e.stopPropagation()}>
+                <div
+                  className={parentClasses.dropdownOverlay}
+                  onClick={() => setShowFilterMenu(false)}
+                />
+                <div
+                  className={parentClasses.dropdownMenu}
+                  style={filterMenuStyle}
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className={parentClasses.dropdownClose}>
                     {hasActiveFilters && (
-                      <button className={parentClasses.clearFiltersBtn} onClick={clearAllFilters}>{t("recipesView", "clearFilters")}</button>
+                      <button
+                        className={parentClasses.clearFiltersBtn}
+                        onClick={clearAllFilters}
+                      >
+                        {t("recipesView", "clearFilters")}
+                      </button>
                     )}
                     <CloseButton onClick={() => setShowFilterMenu(false)} />
                   </div>
@@ -544,76 +680,57 @@ function SearchOverlay({
               </>
             )}
             {isMobile && (
-              <BottomSheet open={showFilterMenu} onClose={() => setShowFilterMenu(false)} title={t("recipesView", "filter")}>
+              <BottomSheet
+                open={showFilterMenu}
+                onClose={() => setShowFilterMenu(false)}
+                title={t("recipesView", "filter")}
+              >
                 {filterContent}
               </BottomSheet>
             )}
           </div>
 
-          <div className={parentClasses.dropdownContainer} ref={sortRef}>
-            <button className={parentClasses.sortingButton} onClick={toggleSortMenu}>
-              <ArrowUpDown size={16} />
-              <span className={parentClasses.hideOnMobile}>{t("recipesView", "sorting")}</span>
-              <ChevronDown size={16} />
-            </button>
-            {!isMobile && showSortMenu && (
-              <>
-                <div className={parentClasses.dropdownOverlay} onClick={() => setShowSortMenu(false)} />
-                <div className={parentClasses.dropdownMenu} style={sortMenuStyle}>
-                  <div className={parentClasses.dropdownClose}>
-                    <CloseButton onClick={() => setShowSortMenu(false)} />
-                  </div>
-                  <SortDropdown
-                    sortField={sortField}
-                    sortDirection={sortDirection}
-                    onSortChange={handleSortChange}
-                    options={SORT_OPTIONS}
-                  />
-                </div>
-              </>
-            )}
-            {isMobile && (
-              <BottomSheet open={showSortMenu} onClose={() => setShowSortMenu(false)} title={t("recipesView", "sorting")}>
-                <SortDropdown
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                  onSortChange={handleSortChange}
-                  options={SORT_OPTIONS}
-                />
-              </BottomSheet>
-            )}
-          </div>
+          <SortButton
+            sortField={sortField}
+            sortDirection={sortDirection}
+            onSortChange={handleSortChange}
+            options={SORT_OPTIONS}
+          />
 
           {hasAnythingActive && (
             <button className={classes.clearAllButton} onClick={clearSearch}>
               <Trash2 size={16} />
-              <span className={parentClasses.hideOnMobile}>{t("categories", "clearAllFilters") || "נקה הכל"}</span>
+              <span className={parentClasses.hideOnMobile}>
+                {t("categories", "clearAllFilters") || "נקה הכל"}
+              </span>
             </button>
           )}
         </div>
       </div>
 
       {/* Category chips */}
-      {showCategories && !isAllSelected && selectedCategoryObjects.length > 0 && (
-        <div className={parentClasses.filterChips}>
-          {selectedCategoryObjects.map((cat) => (
+      {showCategories &&
+        !isAllSelected &&
+        selectedCategoryObjects.length > 0 && (
+          <div className={parentClasses.filterChips}>
+            {selectedCategoryObjects.map((cat) => (
+              <button
+                key={cat.id}
+                className={parentClasses.filterChip}
+                style={{ borderColor: cat.color, color: cat.color }}
+                onClick={() => toggleCategory?.(cat.id)}
+              >
+                {getTranslatedGroup?.(cat)} ✕
+              </button>
+            ))}
             <button
-              key={cat.id}
-              className={parentClasses.filterChip}
-              style={{ borderColor: cat.color, color: cat.color }}
-              onClick={() => toggleCategory?.(cat.id)}
+              className={parentClasses.clearChips}
+              onClick={clearCategorySelection}
             >
-              {getTranslatedGroup?.(cat)} ✕
+              {t("categories", "clearAllFilters")}
             </button>
-          ))}
-          <button
-            className={parentClasses.clearChips}
-            onClick={clearCategorySelection}
-          >
-            {t("categories", "clearAllFilters")}
-          </button>
-        </div>
-      )}
+          </div>
+        )}
 
       {/* Content */}
       <div>
@@ -628,14 +745,21 @@ function SearchOverlay({
                   {t("recipesView", "noResults")}
                 </p>
                 <p className={classes.noResultsHint}>
-                  {t("recipesView", "noResultsHint") || "נסי מילה אחרת או הסירי סינון"}
+                  {t("recipesView", "noResultsHint") ||
+                    "נסי מילה אחרת או הסירי סינון"}
                 </p>
               </div>
             ) : isSimpleView ? (
               <div className={parentClasses.compactList}>
                 {filteredResults.map((person) => (
-                  <div key={person.id} className={parentClasses.compactItem} onClick={() => handleRecipeClick(person.id)}>
-                    <span className={parentClasses.compactName}>{person.name}</span>
+                  <div
+                    key={person.id}
+                    className={parentClasses.compactItem}
+                    onClick={() => handleRecipeClick(person.id)}
+                  >
+                    <span className={parentClasses.compactName}>
+                      {person.name}
+                    </span>
                   </div>
                 ))}
               </div>
@@ -661,7 +785,7 @@ function SearchOverlay({
         ) : (
           <>
             {/* Recent search terms */}
-            {recentSearches.length > 0 && (
+            {/* {recentSearches.length > 0 && (
               <div className={classes.previousSearchesSection}>
                 <h3 className={classes.previousSearchesTitle}>
                   <History size={16} />
@@ -680,7 +804,7 @@ function SearchOverlay({
                   ))}
                 </div>
               </div>
-            )}
+            )} */}
 
             {/* "Found recently" - last search results */}
             {lastFoundData.recipes.length > 0 && (
@@ -690,30 +814,46 @@ function SearchOverlay({
                     <Search size={16} style={{ marginInlineEnd: "0.4rem" }} />
                     {t("recipesView", "foundRecently") || "נמצאו לאחרונה"}
                     {lastFoundData.term && (
-                      <span className={classes.foundTermLabel}> "{lastFoundData.term}"</span>
+                      <span className={classes.foundTermLabel}>
+                        {" "}
+                        "{lastFoundData.term}"
+                      </span>
                     )}
                   </h2>
                 </div>
                 <div className={parentClasses.recentlyViewedScroll}>
                   {lastFoundData.recipes.map((person) => (
-                    <div key={person.id} className={parentClasses.recentlyViewedCard} onClick={() => handleRecipeClick(person.id)}>
+                    <div
+                      key={person.id}
+                      className={parentClasses.recentlyViewedCard}
+                      onClick={() => handleRecipeClick(person.id)}
+                    >
                       {person.image_src && (
-                        <img src={person.image_src} alt={person.name} className={parentClasses.recentlyViewedImage} loading="lazy" />
+                        <img
+                          src={person.image_src}
+                          alt={person.name}
+                          className={parentClasses.recentlyViewedImage}
+                          loading="lazy"
+                        />
                       )}
-                      <span className={parentClasses.recentlyViewedName}>{person.name}</span>
+                      <span className={parentClasses.recentlyViewedName}>
+                        {person.name}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
             )}
 
-            {recentSearches.length === 0 && lastFoundData.recipes.length === 0 && (
-              <div className={classes.emptyState}>
-                <p className={classes.emptyHint}>
-                  {t("recipesView", "searchHint") || "חפש מתכון לפי שם, מרכיב או קטגוריה"}
-                </p>
-              </div>
-            )}
+            {recentSearches.length === 0 &&
+              lastFoundData.recipes.length === 0 && (
+                <div className={classes.emptyState}>
+                  <p className={classes.emptyHint}>
+                    {t("recipesView", "searchHint") ||
+                      "חפש מתכון לפי שם, מרכיב או קטגוריה"}
+                  </p>
+                </div>
+              )}
           </>
         )}
       </div>

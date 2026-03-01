@@ -12,6 +12,7 @@ import {
   getUserRatingsBatch,
   setUserRating,
 } from "../../firebase/ratingService";
+import Skeleton from "react-loading-skeleton";
 import { RecipesView, UpButton } from "../../components";
 import { scrollToTop } from "../utils";
 import classes from "./global-recipes.module.css";
@@ -108,12 +109,15 @@ function GlobalRecipes() {
     return (
       <div className={classes.loading}>
         <div className={classes.skeletonGrid}>
-          {[70, 85, 60, 78, 65, 80].map((w, i) => (
-            <div key={i} className={classes.skeletonCard}>
-              <div className={classes.skeletonImage} />
-              <div className={classes.skeletonInfo}>
-                <div className={classes.skeletonName} style={{ width: `${w}%` }} />
-                <div className={classes.skeletonMeta} style={{ width: `${w - 30}%` }} />
+          {Array.from({ length: 6 }).map((_, i) => (
+            <div key={i}>
+              <Skeleton height={0} style={{ paddingBottom: "100%" }} borderRadius={25} />
+              <div style={{ padding: "0.75rem" }}>
+                <Skeleton width="75%" height="1.2rem" borderRadius={6} style={{ marginBottom: "0.3rem" }} />
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                  <Skeleton width="30%" height="0.9rem" borderRadius={6} />
+                  <Skeleton width="25%" height="0.9rem" borderRadius={6} />
+                </div>
               </div>
             </div>
           ))}

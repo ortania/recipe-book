@@ -40,17 +40,23 @@
     background-color 0.2s ease;
 }
 
-.footerLink:hover {
+/* .footerLink:hover {
   color: var(--text-primary);
   background-color: var(--bg-hover);
-}
+} */
 
 .footerLink.active {
   color: var(--active-color);
   background-color: var(--bg-hover);
-  font-weight: 799;
-  color: var(--active-color);
+  font-weight: 800;
+  border-bottom: 1px solid currentColor;
+  border-radius: 0;
 }
+
+/* .footerLink.active .footerIcon {
+  fill: var(--active-color);
+  stroke: none;
+} */
 
 .footerIcon {
   font-size: 2rem;

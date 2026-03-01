@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { AiOutlineEye, AiOutlineEyeInvisible } from "react-icons/ai";
+import { Eye, EyeClosed } from "lucide-react";
 import classes from "./FormInput.module.css";
 
 function FormInput({
@@ -14,10 +14,14 @@ function FormInput({
   togglePassword,
   showPassword,
   inputRef,
+  children,
 }) {
+  const hasIcon = !!children;
+
   if (isPassword) {
     return (
-      <div className={classes.passwordInput}>
+      <div className={`${classes.passwordInput} ${hasIcon ? classes.hasIcon : ""}`}>
+        {hasIcon && <span className={classes.inputIcon}>{children}</span>}
         <input
           type={showPassword ? "text" : "password"}
           placeholder={placeholder}
@@ -34,8 +38,27 @@ function FormInput({
           className={classes.eyeButton}
           disabled={isLoading}
         >
-          {showPassword ? <AiOutlineEyeInvisible /> : <AiOutlineEye />}
+          {showPassword ? <Eye size={30} /> : <EyeClosed size={30} />}
         </button>
+      </div>
+    );
+  }
+
+  if (hasIcon) {
+    return (
+      <div className={`${classes.inputWrapper} ${classes.hasIcon}`}>
+        <span className={classes.inputIcon}>{children}</span>
+        <input
+          ref={inputRef}
+          type={type}
+          placeholder={placeholder}
+          value={value}
+          onChange={onChange}
+          disabled={isLoading}
+          required
+          readOnly
+          onFocus={onFocus}
+        />
       </div>
     );
   }

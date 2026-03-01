@@ -1,12 +1,15 @@
 /* Button variants */
 .primary {
-  background-color: #2196f3;
+  /* background-color: #2196f3; */
+  background-color: var(--text-primary);
   color: white;
   border: none;
 }
 
 .primary:hover {
-  background-color: #1976d2;
+  /* background-color: #1976d2; */
+  opacity: 0.9;
+  transform: translateY(-1px);
 }
 
 .danger {
