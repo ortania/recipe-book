@@ -1,7 +1,7 @@
 import { X } from "lucide-react";
 import classes from "./close-button.module.css";
 
-const CloseButton = ({ onClick, type = "plain", className, title }) => {
+const CloseButton = ({ onClick, type = "plain", className, title, size=20 }) => {
   return (
     <button
       className={`${classes.closeButton} ${classes[type]} ${className || ""}`}
@@ -9,7 +9,7 @@ const CloseButton = ({ onClick, type = "plain", className, title }) => {
       title={title}
       type="button"
     >
-      <X size={20} />
+      <X size={size} />
     </button>
   );
 };

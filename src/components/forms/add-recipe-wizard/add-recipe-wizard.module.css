@@ -15,7 +15,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-size: var(--basic-font);
   cursor: pointer;
   background: none;
@@ -25,8 +25,17 @@
   transition: color 0.2s;
 }
 
+.backLink svg {
+  display: block;
+  transform: translateX(1rem);
+  width: 3rem;
+  height: 3rem;
+}
+
 .backLink:hover {
-  color: var(--text-primary);
+  /* color: var(--text-primary); */
+  /* transform: scale(1.2); */
+  opacity: .8;
 }
 
 /* ========== Method Selection ========== */
@@ -214,6 +223,24 @@
   font-size: var(--basic-font);
   color: var(--text-secondary);
   font-weight: 500;
+}
+
+.aiProcessingHint {
+  margin: 0.5rem 0 0;
+  font-size: var(--basic-font);
+  /* color: var(--text-muted); */
+  text-align: center;
+  animation: aiPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes aiPulse {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
 }
 
 .tipBoxGreen {
@@ -1499,7 +1526,7 @@
   flex: 1;
   padding: 0.9rem;
   background: var(--bg-tertiary);
-  border: none;
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   font-size: var(--basic-font);
   font-weight: 600;

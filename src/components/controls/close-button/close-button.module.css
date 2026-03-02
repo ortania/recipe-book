@@ -9,14 +9,15 @@
   line-height: 1;
 }
 
+
 .plain {
   background: none;
-  color: var(--text-secondary);
+  color: var(--text-primary);
   font-size: 2.5rem;
 }
 
 .plain:hover {
-  color: var(--text-primary);
+  /* color: var(--text-primary); */
 }
 
 .circle {
@@ -33,4 +34,5 @@
   /* background: #e5e7eb; */
   color: var(--text-primary);
   transform: scale(1.1);
+  opacity: 0.8;
 }

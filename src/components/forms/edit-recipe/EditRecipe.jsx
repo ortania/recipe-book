@@ -21,6 +21,7 @@ import { useLanguage, useRecipeBook } from "../../../context";
 import { uploadRecipeImage } from "../../../firebase/imageService";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
+import buttonClasses from "../../controls/gen-button.module.css";
 import classes from "./edit-recipe.module.css";
 import { CloseButton } from "../../controls";
 import {
@@ -595,10 +596,13 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
 
       {!person.copiedFrom && (
         <div className={classes.formGroup}>
-          <label className={classes.checkboxLabel}>
+          <label
+            className={classes.checkboxLabel}
+          >
             <input
               type="checkbox"
               name="shareToGlobal"
+              className={buttonClasses.checkBox}
               checked={editedPerson.shareToGlobal}
               onChange={handleChange}
             />
@@ -948,6 +952,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 // type="button"
                 className={classes.editCloseBtn}
                 onClick={onCancel}
+                size={30}
               ></CloseButton>
               <div className={classes.editTitleGroup}>
                 <h2>{t("recipes", "editRecipe")}</h2>

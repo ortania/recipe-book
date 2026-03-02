@@ -42,6 +42,7 @@ import {
 } from "lucide-react";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
+import buttonClasses from '../../controls/gen-button.module.css'
 import classes from "./add-recipe-wizard.module.css";
 import { CloseButton } from "../../controls";
 import { formatTime } from "../../recipes/utils";
@@ -736,9 +737,25 @@ function AddRecipeWizard({
   const handleAddNewCategory = async () => {
     const name = newCategoryName.trim();
     if (!name) return;
-    const COLORS = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#9B59B6", "#3498DB", "#F1C40F", "#2ECC71", "#E67E22", "#1ABC9C"];
+    const COLORS = [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#45B7D1",
+      "#96CEB4",
+      "#9B59B6",
+      "#3498DB",
+      "#F1C40F",
+      "#2ECC71",
+      "#E67E22",
+      "#1ABC9C",
+    ];
     const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    const newCat = await addCategory({ id: Date.now().toString(), name, description: `${name}`, color });
+    const newCat = await addCategory({
+      id: Date.now().toString(),
+      name,
+      description: `${name}`,
+      color,
+    });
     if (newCat) {
       updateRecipe("categories", [...recipe.categories, newCat.id]);
     }
@@ -1368,20 +1385,42 @@ function AddRecipeWizard({
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") { e.preventDefault(); handleAddNewCategory(); }
-                  if (e.key === "Escape") { setShowNewCategoryInput(false); setNewCategoryName(""); }
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddNewCategory();
+                  }
+                  if (e.key === "Escape") {
+                    setShowNewCategoryInput(false);
+                    setNewCategoryName("");
+                  }
                 }}
                 autoFocus
               />
-              <button type="button" className={classes.newCategoryConfirmBtn} onClick={handleAddNewCategory} disabled={!newCategoryName.trim()}>
+              <button
+                type="button"
+                className={classes.newCategoryConfirmBtn}
+                onClick={handleAddNewCategory}
+                disabled={!newCategoryName.trim()}
+              >
                 <Check size={18} />
               </button>
-              <button type="button" className={classes.newCategoryCancelBtn} onClick={() => { setShowNewCategoryInput(false); setNewCategoryName(""); }}>
+              <button
+                type="button"
+                className={classes.newCategoryCancelBtn}
+                onClick={() => {
+                  setShowNewCategoryInput(false);
+                  setNewCategoryName("");
+                }}
+              >
                 <X size={14} />
               </button>
             </div>
           ) : (
-            <button type="button" className={classes.addCategoryChip} onClick={() => setShowNewCategoryInput(true)}>
+            <button
+              type="button"
+              className={classes.addCategoryChip}
+              onClick={() => setShowNewCategoryInput(true)}
+            >
               <Plus size={14} /> {t("categories", "addCategory")}
             </button>
           )}
@@ -1408,8 +1447,9 @@ function AddRecipeWizard({
             type="button"
             className={classes.previewCloseBtn}
             onClick={() => setShowPreview(false)}
+            size={30}
           >
-            {/* <X size={25} /> */}
+
           </CloseButton>
           {recipe.image_src ? (
             <img
@@ -1531,7 +1571,7 @@ function AddRecipeWizard({
       <label className={classes.favoriteToggle}>
         <input
           type="checkbox"
-          className={classes.favoriteCheckbox}
+          className={classes.favoriteCheckbox + ' ' + buttonClasses.checkBox}
           checked={recipe.isFavorite}
           onChange={() => updateRecipe("isFavorite", !recipe.isFavorite)}
         />
@@ -1547,7 +1587,7 @@ function AddRecipeWizard({
       <label className={classes.favoriteToggle}>
         <input
           type="checkbox"
-          className={classes.favoriteCheckbox}
+          className={classes.favoriteCheckbox + ' ' + buttonClasses.checkBox}
           checked={recipe.shareToGlobal}
           onChange={() => updateRecipe("shareToGlobal", !recipe.shareToGlobal)}
         />
@@ -1618,7 +1658,7 @@ function AddRecipeWizard({
       >
         <X size={22} />
       </button> */}
-      <CloseButton className={classes.methodCloseBtn} onClick={handleClose} />
+      <CloseButton className={classes.methodCloseBtn} onClick={handleClose} size={30}/>
 
       <h1 className={classes.methodTitle}>{t("addWizard", "title")}</h1>
       <p className={classes.methodSubtitle}>{t("addWizard", "subtitle")}</p>
@@ -1732,12 +1772,13 @@ function AddRecipeWizard({
             setImportError("");
           }}
         >
-          <ChevronRight /> {t("addWizard", "backToMethod")}
+          <ChevronRight size={30}/> {t("addWizard", "backToMethod")}
         </button>
         <CloseButton
           // type="button"
           // className={classes.wizardCloseBtn}
           onClick={handleClose}
+          size={30}
         >
           {/* <X size={16} /> */}
         </CloseButton>
@@ -1770,12 +1811,17 @@ function AddRecipeWizard({
       </div>
 
       {isImporting && (
-        <div className={classes.progressBarContainer}>
-          <div
-            className={classes.progressBar}
-            style={{ width: `${Math.min(importProgress, 100)}%` }}
-          />
-        </div>
+        <>
+          <div className={classes.progressBarContainer}>
+            <div
+              className={classes.progressBar}
+              style={{ width: `${Math.min(importProgress, 100)}%` }}
+            />
+          </div>
+          <p className={classes.aiProcessingHint}>
+            {t("addWizard", "aiProcessingHint")}
+          </p>
+        </>
       )}
 
       {importError && <p className={classes.errorText}>{importError}</p>}
@@ -1808,6 +1854,7 @@ function AddRecipeWizard({
           // type="button"
           // className={classes.wizardCloseBtn}
           onClick={handleClose}
+          size={30}
         >
           {/* <X size={16} /> */}
         </CloseButton>
@@ -1868,7 +1915,7 @@ function AddRecipeWizard({
         >
           <ChevronRight /> {t("addWizard", "backToMethod")}
         </button>
-        <CloseButton onClick={handleClose} />
+        <CloseButton onClick={handleClose} size={30}/>
       </div>
 
       <h2 className={classes.screenTitle}>
@@ -1955,6 +2002,11 @@ function AddRecipeWizard({
 
       {!isRecording && recordingText.trim() && (
         <div className={classes.recordingActions}>
+          {isImporting && (
+            <p className={classes.aiProcessingHint}>
+              {t("addWizard", "aiProcessingHint")}
+            </p>
+          )}
           <button
             type="button"
             className={classes.continueBtn}
@@ -2012,6 +2064,7 @@ function AddRecipeWizard({
           // type="button"
           // className={classes.wizardCloseBtn}
           onClick={handleClose}
+          size={30}
         >
           {/* <X size={16} /> */}
         </CloseButton>
@@ -2046,6 +2099,9 @@ function AddRecipeWizard({
           <span className={classes.photoUploadText}>
             {t("addWizard", "analyzingPhoto")}
           </span>
+          <p className={classes.aiProcessingHint}>
+            {t("addWizard", "aiProcessingHint")}
+          </p>
         </div>
       ) : (
         <div className={classes.imageUploadButtons}>
@@ -2108,6 +2164,7 @@ function AddRecipeWizard({
         </button>
         <CloseButton
           onClick={cameFromRecording ? handleManualBack : handleClose}
+          size={30}
         ></CloseButton>
       </div>
 
@@ -2175,7 +2232,11 @@ function AddRecipeWizard({
   };
 
   return (
-    <Modal onClose={handleClose} maxWidth="550px" className={screen === "manual" ? classes.noPadModal : undefined}>
+    <Modal
+      onClose={handleClose}
+      maxWidth="550px"
+      className={screen === "manual" ? classes.noPadModal : undefined}
+    >
       {renderScreen()}
     </Modal>
   );

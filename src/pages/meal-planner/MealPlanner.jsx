@@ -11,6 +11,7 @@ import { useRecipeBook, useLanguage } from "../../context";
 import { useMealPlanner } from "../../hooks/useMealPlanner";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { SearchBox } from "../../components/controls/search";
+import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./meal-planner.module.css";
 
 const DAY_COLORS = [
@@ -241,7 +242,7 @@ function MealPlanner() {
                       <label key={key} className={classes.shoppingItem}>
                         <input
                           type="checkbox"
-                          className={classes.shoppingCheckbox}
+                          className={classes.shoppingCheckbox  + ' ' + buttonClasses.checkBox}
                           checked={isChecked}
                           onChange={() => toggleChecked(key)}
                         />

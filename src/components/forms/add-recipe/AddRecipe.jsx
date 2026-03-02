@@ -3,6 +3,7 @@ import { Modal } from "../../modal";
 import { Button } from "../../controls/button";
 import { FaGripVertical } from "react-icons/fa";
 import { useLanguage } from "../../../context";
+import buttonClasses from "../../controls/gen-button.module.css";
 import classes from "../form.module.css";
 import {
   parseRecipeFromUrl,
@@ -919,7 +920,7 @@ function AddRecipe({
               type="checkbox"
               checked={newPerson.isFavorite}
               onChange={handleFavoriteToggle}
-              className={classes.favoriteCheckbox}
+              className={classes.favoriteCheckbox + ' ' + buttonClasses.checkBox}
             />
             <span className={classes.favoriteText}>
               {newPerson.isFavorite

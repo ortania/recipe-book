@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./recipe-details-full.module.css";
 import { formatDifficulty, formatTime, hasTime } from "./utils";
 import { useLanguage } from "../../context";
@@ -833,7 +834,7 @@ function RecipeDetailsFull({
                           type="checkbox"
                           checked={checkedIngredients[index] || false}
                           onChange={() => toggleIngredient(index)}
-                          className={classes.checkbox}
+                          className={classes.checkbox + ' ' + buttonClasses.checkBox}
                         />
                         <span
                           className={
@@ -862,7 +863,7 @@ function RecipeDetailsFull({
                         type="checkbox"
                         checked={checkedInstructions[index] || false}
                         onChange={() => toggleInstruction(index)}
-                        className={classes.checkbox}
+                        className={classes.checkbox + ' ' + buttonClasses.checkBox}
                       />
                       <span
                         className={

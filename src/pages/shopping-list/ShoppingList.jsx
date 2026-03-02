@@ -9,6 +9,7 @@ import {
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { buildShoppingList } from "../../utils/ingredientUtils";
+import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./shopping-list.module.css";
 
 function ShoppingList() {
@@ -103,7 +104,7 @@ function ShoppingList() {
                   type="checkbox"
                   checked={!!isChecked}
                   onChange={() => toggleChecked(key)}
-                  className={classes.checkbox}
+                  className={classes.checkbox + " " + buttonClasses.checkBox}
                 />
                 <span className={classes.listItemText}>
                   {item.count > 1

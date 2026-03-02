@@ -3024,6 +3024,13 @@ const translations = {
       de: "Foto wird analysiert...",
       mixed: "מנתח את התמונה...",
     },
+    aiProcessingHint: {
+      he: "ה-AI מעבד את המתכון, זה עשוי לקחת מספר שניות",
+      en: "AI is processing the recipe, this may take a few seconds",
+      ru: "ИИ обрабатывает рецепт, это может занять несколько секунд",
+      de: "KI verarbeitet das Rezept, dies kann einige Sekunden dauern",
+      mixed: "AI is processing the recipe, this may take a few seconds",
+    },
     photoTip: {
       he: "צלם מתכון מספר בישול, מגזין, או צילום מסך מאתר מתכונים",
       en: "Photograph a recipe from a CookiPal, magazine, or screenshot from a recipe site",
