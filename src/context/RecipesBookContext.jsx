@@ -23,6 +23,8 @@ import {
   onAuthStateChange,
   getUserData,
   logoutUser,
+  handleGoogleRedirect,
+  ensureGoogleUserDoc,
 } from "../firebase/authService";
 import { doc, writeBatch } from "firebase/firestore";
 import { db } from "../firebase/config";
@@ -74,9 +76,12 @@ export const RecipeBookProvider = ({ children }) => {
 
   // Listen to auth state changes
   useEffect(() => {
+    handleGoogleRedirect();
+
     const unsubscribe = onAuthStateChange(async (user) => {
       if (user) {
         setIsLoading(true);
+        await ensureGoogleUserDoc(user);
         let userData = await getUserData(user.uid);
         if (!userData) {
           await new Promise((resolve) => setTimeout(resolve, 1500));

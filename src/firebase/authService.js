@@ -1,6 +1,10 @@
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
@@ -61,6 +65,61 @@ export const loginUser = async (email, password, rememberMe = true) => {
   } catch (error) {
     console.error("Error logging in:", error);
     throw error;
+  }
+};
+
+const googleProvider = new GoogleAuthProvider();
+
+export const ensureGoogleUserDoc = async (user) => {
+  if (!user) return;
+  const existing = await getDoc(doc(db, USERS_COLLECTION, user.uid));
+  if (!existing.exists()) {
+    await setDoc(doc(db, USERS_COLLECTION, user.uid), {
+      email: user.email,
+      displayName: user.displayName || user.email.split("@")[0],
+      isAdmin: true,
+      createdAt: new Date().toISOString(),
+    });
+  }
+};
+
+export const signInWithGoogle = async () => {
+  try {
+    await setPersistence(auth, browserLocalPersistence);
+    const result = await signInWithPopup(auth, googleProvider);
+    const user = result.user;
+    await ensureGoogleUserDoc(user);
+    console.log("✅ Google sign-in (popup):", user.uid);
+    return user;
+  } catch (error) {
+    if (
+      error.code === "auth/popup-closed-by-user" ||
+      error.code === "auth/cancelled-popup-request"
+    ) {
+      return null;
+    }
+    if (error.code === "auth/popup-blocked") {
+      console.log("Popup blocked, falling back to redirect…");
+      await signInWithRedirect(auth, googleProvider);
+      return null;
+    }
+    console.error("Error signing in with Google:", error);
+    throw error;
+  }
+};
+
+export const handleGoogleRedirect = async () => {
+  try {
+    const result = await getRedirectResult(auth);
+    if (result?.user) {
+      await ensureGoogleUserDoc(result.user);
+      console.log("✅ Google sign-in (redirect):", result.user.uid);
+      return result.user;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error handling Google redirect:", error);
+    return null;
   }
 };
 

@@ -450,11 +450,25 @@ const translations = {
       mixed: "Or login with",
     },
     loginWithGoogle: {
-      he: "Google התחבר עם",
-      en: "Login with Google",
+      he: "התחברות עם Google",
+      en: "Sign in with Google",
       ru: "Войти через Google",
       de: "Mit Google anmelden",
-      mixed: "Login with Google",
+      mixed: "Sign in with Google",
+    },
+    continueWithGoogle: {
+      he: "המשך עם Google",
+      en: "Continue with Google",
+      ru: "Продолжить через Google",
+      de: "Weiter mit Google",
+      mixed: "Continue with Google",
+    },
+    googleSignInError: {
+      he: "ההתחברות עם Google נכשלה. אנא נסה שוב.",
+      en: "Google sign-in failed. Please try again.",
+      ru: "Ошибка входа через Google. Попробуйте снова.",
+      de: "Google-Anmeldung fehlgeschlagen. Bitte versuchen Sie es erneut.",
+      mixed: "Google sign-in failed. Please try again.",
     },
     emailError: {
       he: "כתובת אימייל לא תקינה",
