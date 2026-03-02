@@ -53,6 +53,7 @@ import { SearchBox } from "../controls/search";
 import { SearchOverlay } from "./search-overlay";
 import { CategoriesManagement } from "../categories-management";
 import { getCategoryIcon } from "../../utils/categoryIcons";
+import { CategoriesSheetContent } from "../categories-sheet-content";
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -135,7 +136,6 @@ function RecipesView({
   const [mobileActionsEl, setMobileActionsEl] = useState(null);
   const [showCategoriesSheet, setShowCategoriesSheet] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
-  const [categorySearch, setCategorySearch] = useState("");
   const filterRef = useRef(null);
   const [filterMenuStyle, setFilterMenuStyle] = useState({});
   const {
@@ -848,12 +848,19 @@ function RecipesView({
             isSimpleView ? (
               <div>
                 {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i} style={{
-                    display: "flex", alignItems: "center", gap: "1rem",
-                    padding: "0.75rem 1rem", marginBottom: "0.5rem",
-                    background: "var(--bg-card)", borderRadius: 4,
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                  }}>
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                      padding: "0.75rem 1rem",
+                      marginBottom: "0.5rem",
+                      background: "var(--bg-card)",
+                      borderRadius: 4,
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    }}
+                  >
                     <Skeleton width={32} height={32} borderRadius={6} />
                     <div style={{ flex: 1 }}>
                       <Skeleton width="60%" height="0.9rem" borderRadius={6} />
@@ -866,12 +873,35 @@ function RecipesView({
               <div className={classes.recipeGrid}>
                 {Array.from({ length: 6 }).map((_, i) => (
                   <div key={i}>
-                    <Skeleton height={0} style={{ paddingBottom: "100%" }} borderRadius={25} />
+                    <Skeleton
+                      height={0}
+                      style={{ paddingBottom: "100%" }}
+                      borderRadius={25}
+                    />
                     <div style={{ padding: "0.75rem" }}>
-                      <Skeleton width="75%" height="1.2rem" borderRadius={6} style={{ marginBottom: "0.3rem" }} />
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                        <Skeleton width="30%" height="0.9rem" borderRadius={6} />
-                        <Skeleton width="25%" height="0.9rem" borderRadius={6} />
+                      <Skeleton
+                        width="75%"
+                        height="1.2rem"
+                        borderRadius={6}
+                        style={{ marginBottom: "0.3rem" }}
+                      />
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                        }}
+                      >
+                        <Skeleton
+                          width="30%"
+                          height="0.9rem"
+                          borderRadius={6}
+                        />
+                        <Skeleton
+                          width="25%"
+                          height="0.9rem"
+                          borderRadius={6}
+                        />
                       </div>
                     </div>
                   </div>
@@ -968,21 +998,21 @@ function RecipesView({
                 className={`${classes.favoritesBtn} ${showFavoritesOnly ? classes.favoritesActive : ""}`}
               >
                 {showFavoritesOnly ? (
-                  <Heart size={22} strokeWidth={1.5} fill="red" stroke="red" />
+                  <Heart size={30} strokeWidth={1.5} fill="red" stroke="red" />
                 ) : (
-                  <Heart size={22} strokeWidth={1.5} />
+                  <Heart size={30} strokeWidth={1.5} />
                 )}
               </button>
             )}
-            <button
-              className={classes.searchTrigger}
-              onClick={() => setShowSearch(true)}
-            >
-              <Search size={16} className={classes.searchTriggerIcon} />
-              <span className={classes.searchTriggerText}>
-                {t("common", "search")}
-              </span>
-            </button>
+            <div className={classes.searchBoxWrapper}>
+              <SearchBox
+                searchTerm=""
+                onSearchChange={() => setShowSearch(true)}
+                onFocus={() => setShowSearch(true)}
+                placeholder={t("common", "search")}
+                size="large"
+              />
+            </div>
             <div className={classes.headerControls}>
               <SortButton
                 sortField={sortField}
@@ -1382,21 +1412,10 @@ function RecipesView({
           title={t("nav", "categories")}
         >
           <CategoriesSheetContent
-            classes={classes}
-            categories={categories}
-            categorySearch={categorySearch}
-            setCategorySearch={setCategorySearch}
-            clearCategorySelection={clearCategorySelection}
-            isAllSelected={isAllSelected}
-            selectedCount={selectedCount}
-            selectedCategories={selectedCategories}
-            toggleCategory={toggleCategory}
-            getTranslatedGroup={getTranslatedGroup}
-            getGroupContacts={getGroupContacts}
-            getCategoryIcon={getCategoryIcon}
-            setShowCategoriesSheet={setShowCategoriesSheet}
-            setShowManagement={setShowManagement}
-            t={t}
+            onManage={() => {
+              setShowCategoriesSheet(false);
+              setShowManagement(true);
+            }}
           />
         </BottomSheet>
       ) : (
@@ -1419,21 +1438,10 @@ function RecipesView({
                 </button>
               </div>
               <CategoriesSheetContent
-                classes={classes}
-                categories={categories}
-                categorySearch={categorySearch}
-                setCategorySearch={setCategorySearch}
-                clearCategorySelection={clearCategorySelection}
-                isAllSelected={isAllSelected}
-                selectedCount={selectedCount}
-                selectedCategories={selectedCategories}
-                toggleCategory={toggleCategory}
-                getTranslatedGroup={getTranslatedGroup}
-                getGroupContacts={getGroupContacts}
-                getCategoryIcon={getCategoryIcon}
-                setShowCategoriesSheet={setShowCategoriesSheet}
-                setShowManagement={setShowManagement}
-                t={t}
+                onManage={() => {
+                  setShowCategoriesSheet(false);
+                  setShowManagement(true);
+                }}
               />
             </div>
           </>
@@ -1443,7 +1451,10 @@ function RecipesView({
       {showManagement && (
         <CategoriesManagement
           categories={categories}
-          onClose={() => setShowManagement(false)}
+          onClose={() => {
+            setShowManagement(false);
+            setShowCategoriesSheet(true);
+          }}
           onAddCategory={addCategory}
           onEditCategory={editCategory}
           onDeleteCategory={deleteCategory}
@@ -1452,120 +1463,6 @@ function RecipesView({
           getGroupContacts={getGroupContacts}
         />
       )}
-    </div>
-  );
-}
-
-function CategoriesSheetContent({
-  classes,
-  categories,
-  categorySearch,
-  setCategorySearch,
-  clearCategorySelection,
-  isAllSelected,
-  selectedCount,
-  selectedCategories,
-  toggleCategory,
-  getTranslatedGroup,
-  getGroupContacts,
-  getCategoryIcon,
-  setShowCategoriesSheet,
-  setShowManagement,
-  t,
-}) {
-  return (
-    <div className={classes.categoriesSheetContent}>
-      <div className={classes.categoriesSheetSearch}>
-        <SearchBox
-          searchTerm={categorySearch}
-          onSearchChange={(val) => {
-            setCategorySearch(val);
-            if (!val) clearCategorySelection();
-          }}
-          placeholder={t("categories", "searchCategory")}
-          size="small"
-        />
-      </div>
-
-      {!isAllSelected && selectedCount > 0 && (
-        <div className={classes.categoriesSheetActiveBar}>
-          <span className={classes.categoriesSheetActiveCount}>
-            {selectedCount} {t("categories", "selected") || "נבחרו"}
-          </span>
-          <button
-            className={classes.categoriesSheetClear}
-            onClick={clearCategorySelection}
-          >
-            {t("categories", "clear")}
-          </button>
-        </div>
-      )}
-
-      <div className={classes.categoriesSheetList}>
-        {categories
-          .filter((group) => {
-            if (!categorySearch.trim()) return true;
-            const term = categorySearch.trim().toLowerCase();
-            const name =
-              group.id === "all"
-                ? t("categories", "allRecipes").toLowerCase()
-                : (getTranslatedGroup(group) || "").toLowerCase();
-            return name.includes(term);
-          })
-          .map((group) => {
-            const isSelected = selectedCategories.includes(group.id);
-            const IconComp =
-              group.id === "all"
-                ? UtensilsCrossed
-                : getCategoryIcon(group.icon);
-            return (
-              <button
-                key={group.id}
-                className={`${classes.categorySheetItem} ${isSelected ? classes.categorySheetActive : ""}`}
-                onClick={() => toggleCategory(group.id)}
-                style={
-                  isSelected
-                    ? {
-                        borderColor: group.color,
-                        backgroundColor: `${group.color}15`,
-                      }
-                    : undefined
-                }
-              >
-                <span className={classes.categorySheetLabel}>
-                  <span
-                    className={classes.categorySheetIcon}
-                    style={{
-                      backgroundColor: `${group.color}18`,
-                      color: group.color,
-                    }}
-                  >
-                    <IconComp size={18} />
-                  </span>
-                  <span className={classes.categorySheetName}>
-                    {group.id === "all"
-                      ? t("categories", "allRecipes")
-                      : getTranslatedGroup(group)}
-                  </span>
-                </span>
-                <span className={classes.categorySheetCountNum}>
-                  {getGroupContacts(group.id).length}
-                </span>
-              </button>
-            );
-          })}
-      </div>
-
-      <button
-        className={classes.categoryManageBtn}
-        onClick={() => {
-          setShowCategoriesSheet(false);
-          setShowManagement(true);
-        }}
-      >
-        <Settings2 size={16} />
-        {t("categories", "manage")}
-      </button>
     </div>
   );
 }

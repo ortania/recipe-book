@@ -58,6 +58,9 @@ function BottomSheet({ open, onClose, title, children }) {
   useEffect(() => {
     if (open && !mounted && !closingRef.current) {
       setMounted(true);
+    } else if (open && !mounted && closingRef.current) {
+      closingRef.current = false;
+      setMounted(true);
     } else if (!open && mounted && !closingRef.current) {
       animateOut();
     }
@@ -219,9 +222,6 @@ function BottomSheet({ open, onClose, title, children }) {
     window.addEventListener("popstate", onPop);
     return () => {
       window.removeEventListener("popstate", onPop);
-      if (window.history.state?.bottomSheet) {
-        window.history.back();
-      }
     };
   }, [mounted, handleClose]);
 
@@ -230,16 +230,9 @@ function BottomSheet({ open, onClose, title, children }) {
 
   return createPortal(
     <div className={classes.root} role="dialog" aria-modal="true">
-      <div
-        ref={overlayRef}
-        className={classes.overlay}
-        onClick={handleClose}
-      />
+      <div ref={overlayRef} className={classes.overlay} onClick={handleClose} />
       <div ref={sheetRef} className={classes.sheet}>
-        <div
-          className={classes.handleArea}
-          onTouchStart={onHandleTouchStart}
-        >
+        <div className={classes.handleArea} onTouchStart={onHandleTouchStart}>
           <div className={classes.handle} />
         </div>
 

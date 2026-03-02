@@ -592,7 +592,7 @@ function SearchOverlay({
     <>
       {/* Search header */}
       <div className={parentClasses.searchHeader}>
-        <BackButton onClick={onClose} />
+        <BackButton onClick={onClose} size={35}/>
         <div
           className={`${parentClasses.searchBoxWrapper} ${classes.searchBoxRelative}`}
           ref={suggestionsRef}
@@ -616,6 +616,7 @@ function SearchOverlay({
               t("recipesView", "searchExample3"),
               t("recipesView", "searchExample4"),
             ]}
+            size="large"
             autoFocus
           />
           {/* {showRecentSearches && !searchTerm && recentSearches.length > 0 && (

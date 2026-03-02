@@ -1,0 +1,141 @@
+/* ===== Categories Sheet Content ===== */
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0;
+}
+
+.search {
+  padding: 0 0.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.hint {
+  margin: 0;
+  padding: 0 0.5rem;
+  font-size: var(--basic-font);
+  color: var(--text-muted);
+}
+
+.activeBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.4rem 0.5rem;
+  background: var(--bg-tertiary);
+  border-radius: 8px;
+}
+
+.activeCount {
+  font-size: var(--basic-font);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.clearBtn {
+  color: var(--text-primary);
+  cursor: pointer;
+  font-size: var(--basic-font);
+  font-weight: 500;
+  padding: 0.5em 1em;
+  transition: 0.2s ease;
+  background: var(--bg-primary);
+  border-radius: var(--button-border-radius);
+  border: 2px solid var(--border-color);
+}
+
+.clearBtn:hover {
+  /* background: var(--bg-hover); */
+  border-color: var(--border-special-primary);
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  max-height: 55vh;
+  overflow-y: auto;
+  padding: 0 0.1rem;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.7rem 0.5rem;
+  border: 1.5px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  font-size: var(--basic-font);
+  color: var(--text-primary);
+}
+
+.item:hover {
+  background: var(--bg-hover);
+}
+
+.item:active {
+  transform: scale(0.98);
+}
+
+.itemActive {
+  font-weight: 600;
+  border-color: currentColor;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  min-width: 0;
+  flex: 1;
+}
+
+.name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.count {
+  font-size: var(--basic-font);
+  color: var(--text-muted);
+  flex-shrink: 0;
+  min-width: 1.5em;
+  text-align: center;
+}
+
+.manageBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1rem;
+  margin-top: 0.5rem;
+  background: none;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  color: var(--text-secondary);
+  cursor: pointer;
+  font-size: var(--basic-font);
+  transition: all 0.15s;
+}
+
+.manageBtn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}

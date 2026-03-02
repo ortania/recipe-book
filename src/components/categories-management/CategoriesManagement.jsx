@@ -272,105 +272,109 @@ function CategoriesManagement({
     </div>
   );
 
-  return (
-    <Modal onClose={onClose} maxWidth="480px">
-      <div className={classes.container}>
-        <div className={classes.header}>
-          <h2 className={classes.title}>
-            {t("categories", "categoryManagement")}
-          </h2>
-          <div className={classes.headerActions}>
-            <button
-              className={classes.sortBtn}
-              onClick={() =>
-                onSortAlphabetically && onSortAlphabetically(getTranslated)
-              }
-              title={t("categories", "sortAlphabetically") || "מיון לפי אב"}
-            >
-              <LuArrowUpDown />
-            </button>
-            <CloseButton onClick={onClose} />
-          </div>
+  const content = (
+    <div className={classes.container}>
+      <div className={classes.header}>
+        <h2 className={classes.title}>
+          {t("categories", "categoryManagement")}
+        </h2>
+        <div className={classes.headerActions}>
+          <button
+            className={classes.sortBtn}
+            onClick={() =>
+              onSortAlphabetically && onSortAlphabetically(getTranslated)
+            }
+            title={t("categories", "sortAlphabetically") || "מיון לפי אב"}
+          >
+            <LuArrowUpDown />
+          </button>
+          <CloseButton onClick={onClose} />
         </div>
+      </div>
 
-        <div
-          className={classes.listWrap}
-          ref={listRef}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-        >
-          {editableCategories.map((category, index) => (
-            <div
-              key={category.id}
-              data-drag-item
-              className={`${classes.catRow} ${dragIndex === index ? classes.dragging : ""}`}
-              onDragOver={handleDragOver}
-              onDrop={() => handleDrop(index)}
-              onDragEnd={handleDragEnd}
-            >
-              {editingId === category.id ? (
-                renderInlineForm(true)
-              ) : (
-                <>
-                  <span
-                    className={classes.dragHandle}
-                    draggable
-                    onDragStart={(e) => {
-                      e.dataTransfer.effectAllowed = "move";
-                      handleDragStart(index);
-                    }}
-                    onTouchStart={(e) =>
-                      handleTouchStart(e, index, "categories", listRef)
-                    }
-                  >
-                    <FiMenu size={16} />
+      <div
+        className={classes.listWrap}
+        ref={listRef}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
+      >
+        {editableCategories.map((category, index) => (
+          <div
+            key={category.id}
+            data-drag-item
+            className={`${classes.catRow} ${dragIndex === index ? classes.dragging : ""}`}
+            onDragOver={handleDragOver}
+            onDrop={() => handleDrop(index)}
+            onDragEnd={handleDragEnd}
+          >
+            {editingId === category.id ? (
+              renderInlineForm(true)
+            ) : (
+              <>
+                <span
+                  className={classes.dragHandle}
+                  draggable
+                  onDragStart={(e) => {
+                    e.dataTransfer.effectAllowed = "move";
+                    handleDragStart(index);
+                  }}
+                  onTouchStart={(e) =>
+                    handleTouchStart(e, index, "categories", listRef)
+                  }
+                >
+                  <FiMenu size={16} />
+                </span>
+                <div className={classes.catInfo}>
+                  {renderIconButton(category.icon, category.color)}
+                  <span className={classes.catName}>
+                    {getTranslated(category)}
                   </span>
-                  <div className={classes.catInfo}>
-                    {renderIconButton(category.icon, category.color)}
-                    <span className={classes.catName}>
-                      {getTranslated(category)}
-                    </span>
-                  </div>
-                  <div className={classes.catActions}>
-                    <button
-                      className={classes.editBtn}
-                      onClick={() => handleEditClick(category)}
-                    >
-                      <FaRegEdit />
-                    </button>
-                    <button
-                      className={classes.deleteBtn}
-                      onClick={() => handleDeleteClick(category)}
-                    >
-                      <GoTrash />
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
-          ))}
+                </div>
+                <div className={classes.catActions}>
+                  <button
+                    className={classes.editBtn}
+                    onClick={() => handleEditClick(category)}
+                  >
+                    <FaRegEdit />
+                  </button>
+                  <button
+                    className={classes.deleteBtn}
+                    onClick={() => handleDeleteClick(category)}
+                  >
+                    <GoTrash />
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        ))}
 
-          {showAddForm && renderInlineForm(false)}
-        </div>
+        {showAddForm && renderInlineForm(false)}
+      </div>
 
-        <div className={classes.bottomBar}>
-          {!showAddForm && (
-            <button className={classes.addNewBtn} onClick={handleAddClick}>
-              <PiPlusLight /> {t("categories", "addNewCategory")}
-            </button>
-          )}
-        </div>
-
-        {categoryToDelete && (
-          <ConfirmDialog
-            message={`${t("categories", "deleteConfirm")} "${getTranslated(categoryToDelete)}"?`}
-            onConfirm={handleConfirmDelete}
-            onCancel={() => setCategoryToDelete(null)}
-            confirmText={t("confirm", "yesDelete")}
-            cancelText={t("common", "cancel")}
-          />
+      <div className={classes.bottomBar}>
+        {!showAddForm && (
+          <button className={classes.addNewBtn} onClick={handleAddClick}>
+            <PiPlusLight /> {t("categories", "addNewCategory")}
+          </button>
         )}
       </div>
+
+      {categoryToDelete && (
+        <ConfirmDialog
+          message={`${t("categories", "deleteConfirm")} "${getTranslated(categoryToDelete)}"?`}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setCategoryToDelete(null)}
+          confirmText={t("confirm", "yesDelete")}
+          cancelText={t("common", "cancel")}
+        />
+      )}
+    </div>
+  );
+
+  return (
+    <Modal onClose={onClose} maxWidth="480px">
+      {content}
     </Modal>
   );
 }

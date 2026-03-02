@@ -105,27 +105,6 @@ function GlobalRecipes() {
     [currentUser, language, setRecipes],
   );
 
-  if (!ready) {
-    return (
-      <div className={classes.loading}>
-        <div className={classes.skeletonGrid}>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i}>
-              <Skeleton height={0} style={{ paddingBottom: "100%" }} borderRadius={25} />
-              <div style={{ padding: "0.75rem" }}>
-                <Skeleton width="75%" height="1.2rem" borderRadius={6} style={{ marginBottom: "0.3rem" }} />
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <Skeleton width="30%" height="0.9rem" borderRadius={6} />
-                  <Skeleton width="25%" height="0.9rem" borderRadius={6} />
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div>
       <RecipesView
@@ -133,6 +112,7 @@ function GlobalRecipes() {
         groups={[]}
         showAddAndFavorites={false}
         showCategories={false}
+        loading={!ready}
         recipesTabLabel={t("nav", "globalRecipesFull")}
         emptyTitle={t("recipesView", "emptyGlobalTitle")}
         hasMoreRecipes={hasMore}

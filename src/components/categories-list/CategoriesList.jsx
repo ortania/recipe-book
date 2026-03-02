@@ -39,6 +39,14 @@ function CategoriesList({
   );
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 768px)");
+    const update = () => setIsMobile(mql.matches);
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
 
   // Prevent body scroll when mobile categories are open
   useEffect(() => {

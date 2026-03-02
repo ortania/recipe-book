@@ -216,7 +216,7 @@
   background: var(--bg-tertiary);
   /* border-radius: 8px; */
   /* border-inline-start: 4px solid #667eea; */
-  border-inline-start: 4px solid var(--accent-color-1);
+  border-inline-start: 1px solid var(--accent-color-1);
 }
 
 .question {

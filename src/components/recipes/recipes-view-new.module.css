@@ -311,11 +311,10 @@
 
 .filterButton,
 .sortingButton {
-  padding: 0 0.75rem;
+  padding: 0.5em 0.75em;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border: none;
-  border-radius: 10px;
+  border-radius: var(--button-border-radius);
   font-size: var(--basic-font);
   font-weight: 400;
   color: var(--text-primary);
@@ -324,7 +323,7 @@
   align-items: center;
   gap: 0.3rem;
   transition: all 0.2s ease;
-  height: 32px;
+  /* height: 32px; */
   box-sizing: border-box;
   white-space: nowrap;
 }
@@ -732,6 +731,11 @@
 
   .sectionTitle {
     font-size: var(--large-font);
+  }
+
+  .filterButton,
+  .sortingButton {
+    padding: 0.3em 0.75em;
   }
 }
 
@@ -1228,6 +1232,10 @@
   padding: 0.2em;
   color: var(--text-primary);
   transition: transform 0.15s ease;
+}
+
+.favoritesBtn svg {
+  stroke-width: 1;
 }
 
 .favoritesBtn:hover {

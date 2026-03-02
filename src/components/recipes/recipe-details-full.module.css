@@ -240,6 +240,10 @@
   flex-shrink: 0;
 }
 
+.backButton svg {
+  stroke-width: 1;
+}
+
 .backButton:hover {
   color: var(--accent-color, #0066cc);
 }

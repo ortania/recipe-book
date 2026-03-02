@@ -1224,6 +1224,20 @@ const translations = {
       de: "Ziehen Sie das Symbol, um die Reihenfolge der Kategorien zu ändern",
       mixed: "Drag the handle icon to reorder categories",
     },
+    selected: {
+      he: "נבחרו",
+      en: "selected",
+      ru: "выбрано",
+      de: "ausgewählt",
+      mixed: "selected",
+    },
+    multiSelectHint: {
+      he: "ניתן לבחור מספר קטגוריות",
+      en: "You can select multiple categories",
+      ru: "Можно выбрать несколько категорий",
+      de: "Sie können mehrere Kategorien auswählen",
+      mixed: "You can select multiple categories",
+    },
     allRecipes: {
       he: "כל המתכונים",
       en: "All Recipes",

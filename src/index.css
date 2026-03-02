@@ -32,7 +32,7 @@ Variables
   --clr-red: hsl(0, 100%, 50%);
   --clr-red-dark: hsl(0, 67%, 44%);
   --clr-red-light: hsl(360, 71%, 66%);
-  --clr-red-very-light:rgb(250, 238, 238);
+  --clr-red-very-light: rgb(250, 238, 238);
 
   --clr-grey-special: #eae6eb;
 
@@ -119,7 +119,9 @@ Variables
   --button-bg-primary: var(--clr-brown-1);
   --button-bg-secondary: var(--clr-brown-2);
   --button-bg-tertiary: var(--tertiary-color);
-  
+
+  --button-border-radius: 20px;
+  --input-border-radius: 12px;
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -188,7 +190,7 @@ Variables
 
 @media (min-width: 769px) {
   :root {
-    --btn-circle-primary: 3.5rem;
+    --btn-circle-primary: 4.5rem;
     --btn-icon-primary: 2.5rem;
     --btn-circle: 2.25rem;
     --btn-icon: 1.15rem;

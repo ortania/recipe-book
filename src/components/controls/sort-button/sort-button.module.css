@@ -3,10 +3,11 @@
 }
 
 .trigger {
-  padding: 0 0.75rem;
+  padding: .5em 0.75em;
+  line-height: 1.5;
   background: var(--bg-card);
-  border: none;
-  border-radius: 10px;
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
   font-size: var(--basic-font);
   font-weight: 400;
   color: var(--text-primary);
@@ -15,7 +16,7 @@
   align-items: center;
   gap: 0.3rem;
   transition: all 0.2s ease;
-  height: 32px;
+  /* height: 32px; */
   box-sizing: border-box;
   white-space: nowrap;
 }
@@ -148,4 +149,12 @@
     background: var(--bg-card);
     padding: 0.4rem 0.8rem 0.2rem;
   }
+
+  
+.trigger {
+  padding: .3em 0.75em;
+
+}
+
+  
 }

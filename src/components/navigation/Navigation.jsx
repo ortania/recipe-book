@@ -13,22 +13,21 @@ import {
   Globe,
   BookOpen,
   BookOpenText,
-  UtensilsCrossed,
   LayoutGrid,
   ScrollText,
   Menu,
   MessageSquareMore,
   Settings2,
+  Tags,
+  X,
 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { ProductTour } from "../product-tour";
 import { useRecipeBook, useLanguage } from "../../context";
 import { CategoriesManagement } from "../categories-management";
-import useTranslatedList from "../../hooks/useTranslatedList";
 import { CloseButton } from "../controls/close-button";
-import { getCategoryIcon } from "../../utils/categoryIcons";
-import { SearchBox } from "../controls/search";
 import { BottomSheet } from "../controls/bottom-sheet";
+import { CategoriesSheetContent } from "../categories-sheet-content";
 import classes from "./navigation.module.css";
 
 const iconMap = {
@@ -69,7 +68,6 @@ function Navigation({ onLogout, links }) {
     sortCategoriesAlphabetically,
   } = useRecipeBook();
   const { t } = useLanguage();
-  const { getTranslated } = useTranslatedList(categories, "name");
   const [isOpen, setIsOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [selectedChat, setSelectedChat] = useState(null);
@@ -77,8 +75,9 @@ function Navigation({ onLogout, links }) {
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [chatLogOpen, setChatLogOpen] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
+  const [showCategoriesSheet, setShowCategoriesSheet] = useState(false);
+  const managementFromSheetRef = useRef(false);
   const [showTour, setShowTour] = useState(false);
-  const [categorySearch, setCategorySearch] = useState("");
   const [showHelp, setShowHelp] = useState(false);
   const [isMobileNav, setIsMobileNav] = useState(window.innerWidth <= 768);
   const navScrollableRef = useRef(null);
@@ -224,7 +223,10 @@ function Navigation({ onLogout, links }) {
             {isOpen ? null : <Menu size={22} />}
           </button>
           <div id="mobile-tabs-portal" className={classes.mobileTabsSlot} />
-          <div id="mobile-header-actions-portal" className={classes.mobileActionsSlot} />
+          <div
+            id="mobile-header-actions-portal"
+            className={classes.mobileActionsSlot}
+          />
         </div>
       )}
 
@@ -264,133 +266,30 @@ function Navigation({ onLogout, links }) {
             })}
           </div>
 
-          {(!isMobile || location.pathname === "/categories") && (
-            <>
-              <div className={classes.separator}></div>
+          <div className={classes.separator}></div>
 
-              {location.pathname !== "/global-recipes" && (
-                <>
-                  <div className={classes.categoryActions}>
-                    <button
-                      className={classes.categoryActionBtn}
-                      onClick={() => setShowManagement(true)}
-                      title={t("categories", "manage")}
-                    >
-                      <Settings2 size={16} className={classes.icon} />
+          <button
+            className={classes.navLink}
+            onClick={() => {
+              managementFromSheetRef.current = false;
+              setShowManagement(true);
+              closeSidebar();
+            }}
+          >
+            <Settings2 size={18} className={classes.icon} />
+            {t("categories", "manage")}
+          </button>
 
-                      {t("categories", "manage")}
-                    </button>
-                  </div>
-
-                  {/* <div className={classes.sectionHeader}>
-                    <button
-                      className={classes.sectionHeaderBtn}
-                      onClick={() =>
-                        !isMobile && setCategoriesOpen(!categoriesOpen)
-                      }
-                    >
-                      <span>
-                        <LayoutGrid size={16} />
-                        {t("nav", "categories").toUpperCase()}
-                        {!categorySearch && selectedCount > 0 && (
-                          <span className={classes.sectionCount}>
-                            ({selectedCount})
-                          </span>
-                        )}
-                      </span>
-                      {!isMobile &&
-                        (categoriesOpen ? (
-                          <ChevronUp size={14} className={classes.chevron} />
-                        ) : (
-                          <ChevronDown size={14} className={classes.chevron} />
-                        ))}
-                    </button>
-                    {!isAllSelected && selectedCount > 0 && (
-                      <button
-                        className={classes.clearCategoriesBtn}
-                        onClick={clearCategorySelection}
-                        title={t("categories", "clearAllFilters")}
-                      >
-                        {t("categories", "clear")}
-                      </button>
-                    )}
-                  </div>
-
-                  {(categoriesOpen || isMobile) && (
-                    <div className={classes.categoryList}>
-                      <div className={classes.categorySearchWrap}>
-                        <SearchBox
-                          searchTerm={categorySearch}
-                          onSearchChange={(val) => {
-                            setCategorySearch(val);
-                            if (!val) clearCategorySelection();
-                          }}
-                          placeholder={t("categories", "searchCategory")}
-                          size="small"
-                          className={classes.categorySearchBox}
-                        />
-                      </div>
-                      {categories
-                        .filter((group) => {
-                          if (!categorySearch.trim()) return true;
-                          const term = categorySearch.trim().toLowerCase();
-                          const name =
-                            group.id === "all"
-                              ? t("categories", "allRecipes").toLowerCase()
-                              : (getTranslated(group) || "").toLowerCase();
-                          return name.includes(term);
-                        })
-                        .map((group) => {
-                          const isSelected = selectedCategories.includes(
-                            group.id,
-                          );
-                          return (
-                            <button
-                              key={group.id}
-                              className={`${classes.categoryItem} ${isSelected ? classes.categoryActive : ""}`}
-                              onClick={() => toggleCategory(group.id)}
-                              style={{
-                                borderColor: group.color,
-                                backgroundColor: isSelected
-                                  ? `${group.color}22`
-                                  : "transparent",
-                                color: isSelected ? group.color : undefined,
-                              }}
-                            >
-                              <span className={classes.categoryLabel}>
-                                {(() => {
-                                  const IconComp =
-                                    group.id === "all"
-                                      ? UtensilsCrossed
-                                      : getCategoryIcon(group.icon);
-                                  return (
-                                    <span
-                                      className={classes.categoryIconWrap}
-                                      style={{
-                                        backgroundColor: `${group.color}22`,
-                                        color: group.color,
-                                      }}
-                                    >
-                                      <IconComp />
-                                    </span>
-                                  );
-                                })()}
-                                {group.id === "all"
-                                  ? t("categories", "allRecipes")
-                                  : getTranslated(group)}
-                              </span>
-                              <span className={classes.categoryCount}>
-                                {getGroupContacts(group.id).length}
-                              </span>
-                            </button>
-                          );
-                        })}
-                    </div>
-                  )} */}
-                </>
-              )}
-            </>
-          )}
+          <button
+            className={classes.navLink}
+            onClick={() => {
+              setShowCategoriesSheet(true);
+              closeSidebar();
+            }}
+          >
+            <Tags size={18} className={classes.icon} />
+            {t("nav", "categories")}
+          </button>
         </div>
 
         <div className={classes.navGradient} />
@@ -477,7 +376,13 @@ function Navigation({ onLogout, links }) {
       {showManagement && (
         <CategoriesManagement
           categories={categories}
-          onClose={() => setShowManagement(false)}
+          onClose={() => {
+            setShowManagement(false);
+            if (managementFromSheetRef.current) {
+              setShowCategoriesSheet(true);
+            }
+            managementFromSheetRef.current = false;
+          }}
           onAddCategory={addCategory}
           onEditCategory={editCategory}
           onDeleteCategory={deleteCategory}
@@ -485,6 +390,51 @@ function Navigation({ onLogout, links }) {
           onSortAlphabetically={sortCategoriesAlphabetically}
           getGroupContacts={getGroupContacts}
         />
+      )}
+
+      {isMobile ? (
+        <BottomSheet
+          open={showCategoriesSheet}
+          onClose={() => setShowCategoriesSheet(false)}
+          title={t("nav", "categories")}
+        >
+          <CategoriesSheetContent
+            onManage={() => {
+              setShowCategoriesSheet(false);
+              managementFromSheetRef.current = true;
+              setShowManagement(true);
+            }}
+          />
+        </BottomSheet>
+      ) : (
+        showCategoriesSheet && (
+          <>
+            <div
+              className={classes.catPopupOverlay}
+              onClick={() => setShowCategoriesSheet(false)}
+            />
+            <div className={classes.catPopup}>
+              <div className={classes.catPopupHeader}>
+                <span className={classes.catPopupTitle}>
+                  {t("nav", "categories")}
+                </span>
+                <button
+                  className={classes.catPopupClose}
+                  onClick={() => setShowCategoriesSheet(false)}
+                >
+                  <X size={18} />
+                </button>
+              </div>
+              <CategoriesSheetContent
+                onManage={() => {
+                  setShowCategoriesSheet(false);
+                  managementFromSheetRef.current = true;
+                  setShowManagement(true);
+                }}
+              />
+            </div>
+          </>
+        )
       )}
 
       <AnimatePresence>
