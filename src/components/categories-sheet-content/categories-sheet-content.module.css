@@ -43,11 +43,16 @@
   background: var(--bg-primary);
   border-radius: var(--button-border-radius);
   border: 2px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 .clearBtn:hover {
   /* background: var(--bg-hover); */
-  border-color: var(--border-special-primary);
+  /* border-color: var(--border-special-primary); */
+  color: var(--border-error);
+  border-color: var(--border-error);
 }
 
 .list {

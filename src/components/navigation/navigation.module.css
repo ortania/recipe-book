@@ -335,16 +335,14 @@
 .chatHistoryItem {
   background: transparent;
   border: none;
-  padding: 0.5rem 1rem;
+  width: 100%;
+  padding: 0.75rem 0.5rem;
   text-align: start;
-  color: var(--text-muted);
+  color: var(--text-primary);
   font-size: var(--basic-font);
-  border-radius: 6px;
+  font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .chatHistoryItem:hover {
@@ -420,7 +418,7 @@
   display: block;
   margin-bottom: 0.5rem;
   color: var(--text-primary);
-  font-size: 1rem;
+  font-size: var(--basic-font);
 }
 
 .chatQuestion p,
@@ -435,7 +433,7 @@
   background: var(--bg-tertiary);
   padding: 1rem;
   /* border-radius: 8px; */
-  border-inline-start: 3px solid #2196f3;
+  border-inline-start: 2px solid var(--border-special-primary);
 }
 
 .chatLogHeader {
@@ -537,6 +535,14 @@
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
+}
+
+.chatAccordionItem {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.chatAccordionItem:last-child {
+  border-bottom: none;
 }
 
 .chatBackBtn {

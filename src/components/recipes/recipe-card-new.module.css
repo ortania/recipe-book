@@ -150,7 +150,7 @@
   border: none;
   border-radius: 20px;
   padding: 0.45em 1em;
-  font-size: var(--basic-font);
+  font-size: var(--small-font);
   font-weight: 500;
   /* color: var(--clr-blue-3, #2563eb); */
   color: var(--text-primary);

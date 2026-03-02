@@ -3,6 +3,7 @@ import { UtensilsCrossed, Settings2 } from "lucide-react";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { getCategoryIcon } from "../../utils/categoryIcons";
+import { Trash2 } from "lucide-react";
 import { SearchBox } from "../controls/search";
 import classes from "./categories-sheet-content.module.css";
 
@@ -55,6 +56,7 @@ function CategoriesSheetContent({ onManage, className }) {
             {selectedCount} {t("categories", "selected")}
           </span>
           <button className={classes.clearBtn} onClick={clearCategorySelection}>
+            <Trash2 size={16} />
             {t("categories", "clear")}
           </button>
         </div>

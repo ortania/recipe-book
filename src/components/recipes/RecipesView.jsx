@@ -998,9 +998,14 @@ function RecipesView({
                 className={`${classes.favoritesBtn} ${showFavoritesOnly ? classes.favoritesActive : ""}`}
               >
                 {showFavoritesOnly ? (
-                  <Heart size={25} strokeWidth={1.5} fill="red" stroke="red" />
+                  <Heart
+                    size={isMobile ? 24 : 30}
+                    strokeWidth={1.5}
+                    fill="red"
+                    stroke="red"
+                  />
                 ) : (
-                  <Heart size={30} strokeWidth={1.5} />
+                  <Heart size={isMobile ? 24 : 30} strokeWidth={1.5} />
                 )}
               </button>
             )}

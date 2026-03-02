@@ -67,7 +67,7 @@ function Navigation({ onLogout, links }) {
   const { t } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
-  const [selectedChat, setSelectedChat] = useState(null);
+  const [expandedChats, setExpandedChats] = useState(new Set());
   const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
   const [showChatHistory, setShowChatHistory] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
@@ -205,11 +205,21 @@ function Navigation({ onLogout, links }) {
     document.body.classList.remove("sidebar-open");
   };
 
+  const toggleChat = (chatId) => {
+    setExpandedChats((prev) => {
+      const next = new Set(prev);
+      if (next.has(chatId)) next.delete(chatId);
+      else next.add(chatId);
+      return next;
+    });
+  };
+
   const filteredLinks = links;
 
   const isAllSelected = selectedCategories.includes("all");
   const selectedCount = isAllSelected ? 0 : selectedCategories.length;
   const isRecipeDetailsPage = location.pathname.startsWith("/recipe/");
+  const isGlobalRecipesPage = location.pathname === "/global-recipes";
 
   return (
     <>
@@ -264,30 +274,33 @@ function Navigation({ onLogout, links }) {
 
           <div className={classes.separator}></div>
 
-          <button
-            className={classes.navLink}
-            onClick={() => {
-              managementFromSheetRef.current = false;
-              setShowManagement(true);
-              closeSidebar();
-            }}
-          >
-            <Settings2 size={18} className={classes.icon} />
-            {t("categories", "manage")}
-          </button>
+          {!isGlobalRecipesPage && (
+            <>
+              <button
+                className={classes.navLink}
+                onClick={() => {
+                  managementFromSheetRef.current = false;
+                  setShowManagement(true);
+                  closeSidebar();
+                }}
+              >
+                <Settings2 size={18} className={classes.icon} />
+                {t("categories", "manage")}
+              </button>
 
-          <button
-            className={classes.navLink}
-            onClick={() => {
-              setShowCategoriesSheet(true);
-              closeSidebar();
-            }}
-          >
-            <Tags size={18} className={classes.icon} />
-            {t("nav", "categories")}
-          </button>
-
-          <div className={classes.separator}></div>
+              <button
+                className={classes.navLink}
+                onClick={() => {
+                  setShowCategoriesSheet(true);
+                  closeSidebar();
+                }}
+              >
+                <Tags size={18} className={classes.icon} />
+                {t("nav", "categories")}
+              </button>
+              <div className={classes.separator}></div>
+            </>
+          )}
           {/* Chat Log Section */}
           <button
             className={classes.navLink}
@@ -396,12 +409,13 @@ function Navigation({ onLogout, links }) {
                 <span className={classes.catPopupTitle}>
                   {t("nav", "categories")}
                 </span>
-                <button
+                <CloseButton
                   className={classes.catPopupClose}
                   onClick={() => setShowCategoriesSheet(false)}
                 >
-                  <X size={18} />
-                </button>
+                  {/* <X size={18} /> */}
+                  size={30}
+                </CloseButton>
               </div>
               <CategoriesSheetContent
                 onManage={() => {
@@ -506,59 +520,34 @@ function Navigation({ onLogout, links }) {
 
       {showChatHistory &&
         (isMobile ? (
-          <Modal
-            onClose={() => {
-              setShowChatHistory(false);
-              setSelectedChat(null);
-            }}
-            maxWidth="480px"
-          >
+          <Modal onClose={() => setShowChatHistory(false)} maxWidth="480px">
             <div className={classes.chatHistoryContainer}>
               <div className={classes.chatHistoryHeader}>
                 <h2 className={classes.chatHistoryTitle}>
                   {t("nav", "chatLog")}
                 </h2>
-                <CloseButton
-                  onClick={() => {
-                    setShowChatHistory(false);
-                    setSelectedChat(null);
-                  }}
-                />
+                <CloseButton onClick={() => setShowChatHistory(false)} />
               </div>
               {chatHistory.length === 0 ? (
                 <p className={classes.chatHistoryEmpty}>
                   {t("nav", "noChatHistory")}
                 </p>
-              ) : selectedChat ? (
-                <div className={classes.chatHistoryBody}>
-                  <button
-                    className={classes.chatBackBtn}
-                    onClick={() => setSelectedChat(null)}
-                  >
-                    ← {t("nav", "chatLog")}
-                  </button>
-                  <div className={classes.chatDetailItem}>
-                    <div className={classes.chatQuestion}>
-                      <strong>{t("nav", "chatLog")}:</strong>
-                      <p>{selectedChat.question}</p>
-                    </div>
-                    <div className={classes.chatAnswer}>
-                      <p>{selectedChat.answer}</p>
-                    </div>
-                  </div>
-                </div>
               ) : (
                 <div className={classes.chatHistoryBody}>
                   {chatHistory.map((chat) => (
-                    <button
-                      key={chat.id}
-                      className={classes.chatHistoryItem}
-                      onClick={() => setSelectedChat(chat)}
-                    >
-                      {chat.question.length > 60
-                        ? chat.question.substring(0, 60) + "..."
-                        : chat.question}
-                    </button>
+                    <div key={chat.id} className={classes.chatAccordionItem}>
+                      <button
+                        className={classes.chatHistoryItem}
+                        onClick={() => toggleChat(chat.id)}
+                      >
+                        {chat.question}
+                      </button>
+                      {expandedChats.has(chat.id) && (
+                        <div className={classes.chatAnswer}>
+                          <p>{chat.answer}</p>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}
@@ -568,60 +557,39 @@ function Navigation({ onLogout, links }) {
           <>
             <div
               className={classes.catPopupOverlay}
-              onClick={() => {
-                setShowChatHistory(false);
-                setSelectedChat(null);
-              }}
+              onClick={() => setShowChatHistory(false)}
             />
             <div className={classes.catPopup} style={{ maxWidth: "520px" }}>
               <div className={classes.catPopupHeader}>
                 <span className={classes.catPopupTitle}>
                   {t("nav", "chatLog")}
                 </span>
-                <button
+                <CloseButton
                   className={classes.catPopupClose}
-                  onClick={() => {
-                    setShowChatHistory(false);
-                    setSelectedChat(null);
-                  }}
-                >
-                  <X size={18} />
-                </button>
+                  onClick={() => setShowChatHistory(false)}
+                  size={30}
+                />
               </div>
               {chatHistory.length === 0 ? (
                 <p className={classes.chatHistoryEmpty}>
                   {t("nav", "noChatHistory")}
                 </p>
-              ) : selectedChat ? (
-                <div className={classes.chatHistoryBody}>
-                  <button
-                    className={classes.chatBackBtn}
-                    onClick={() => setSelectedChat(null)}
-                  >
-                    ← {t("nav", "chatLog")}
-                  </button>
-                  <div className={classes.chatDetailItem}>
-                    <div className={classes.chatQuestion}>
-                      <strong>{t("nav", "chatLog")}:</strong>
-                      <p>{selectedChat.question}</p>
-                    </div>
-                    <div className={classes.chatAnswer}>
-                      <p>{selectedChat.answer}</p>
-                    </div>
-                  </div>
-                </div>
               ) : (
                 <div className={classes.chatHistoryBody}>
                   {chatHistory.map((chat) => (
-                    <button
-                      key={chat.id}
-                      className={classes.chatHistoryItem}
-                      onClick={() => setSelectedChat(chat)}
-                    >
-                      {chat.question.length > 60
-                        ? chat.question.substring(0, 60) + "..."
-                        : chat.question}
-                    </button>
+                    <div key={chat.id} className={classes.chatAccordionItem}>
+                      <button
+                        className={classes.chatHistoryItem}
+                        onClick={() => toggleChat(chat.id)}
+                      >
+                        {chat.question}
+                      </button>
+                      {expandedChats.has(chat.id) && (
+                        <div className={classes.chatAnswer}>
+                          <p>{chat.answer}</p>
+                        </div>
+                      )}
+                    </div>
                   ))}
                 </div>
               )}
