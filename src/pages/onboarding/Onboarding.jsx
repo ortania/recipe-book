@@ -4,6 +4,15 @@ import { useLanguage } from "../../context";
 import useSwipe from "../../hooks/useSwipe";
 import { RecipeBookIcon } from "../../components/icons/RecipeBookIcon";
 import { SaveBookIcon } from "../../components/icons/SaveBookIcon";
+import {
+  SearchIcon,
+  CookIcon,
+  ChatIcon,
+  NutritionIcon,
+  ShoppingIcon,
+  ShareIcon,
+} from "./OnboardingIcons";
+import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./onboarding.module.css";
 
 const SCREENS = [
@@ -23,7 +32,7 @@ const SCREENS = [
   },
   {
     key: "search",
-    emoji: "🔍",
+    icon: <SearchIcon />,
     titleKey: "searchTitle",
     bullets: ["searchBullet1", "searchBullet2", "searchBullet3"],
     tipLabel: "howToUse",
@@ -31,7 +40,7 @@ const SCREENS = [
   },
   {
     key: "cook",
-    emoji: "🍳",
+    icon: <CookIcon />,
     titleKey: "cookTitle",
     subtitleKey: "cookSubtitle",
     tipLabel: "howToActivate",
@@ -39,7 +48,7 @@ const SCREENS = [
   },
   {
     key: "chat",
-    emoji: "💬",
+    icon: <ChatIcon />,
     titleKey: "chatTitle",
     subtitleKey: "chatSubtitle",
     tipLabel: "howToActivate",
@@ -47,7 +56,7 @@ const SCREENS = [
   },
   {
     key: "nutrition",
-    emoji: "🔥",
+    icon: <NutritionIcon />,
     titleKey: "nutritionTitle",
     subtitleKey: "nutritionSubtitle",
     tipLabel: "howToActivate",
@@ -55,7 +64,7 @@ const SCREENS = [
   },
   {
     key: "plan",
-    emoji: "🛒",
+    icon: <ShoppingIcon />,
     titleKey: "planTitle",
     subtitleKey: "planSubtitle",
     tipLabel: "howToActivate",
@@ -63,7 +72,7 @@ const SCREENS = [
   },
   {
     key: "share",
-    emoji: "🔗",
+    icon: <ShareIcon />,
     titleKey: "shareTitle",
     subtitleKey: "shareSubtitle",
     tipLabel: "howToActivate",
@@ -119,7 +128,7 @@ function Onboarding({ onFinish }) {
         </button>
 
         <div className={classes.content}>
-          <div className={classes.emoji}>{screen.icon || screen.emoji}</div>
+          <div className={classes.emoji}>{screen.icon}</div>
           <h1 className={classes.title}>{t("onboarding", screen.titleKey)}</h1>
 
           {screen.subtitleKey && (
@@ -160,7 +169,10 @@ function Onboarding({ onFinish }) {
             ))}
           </div>
 
-          <button className={classes.nextBtn} onClick={handleNext}>
+          <button
+            className={classes.nextBtn + " " + buttonClasses.genButton}
+            onClick={handleNext}
+          >
             {isLast ? t("onboarding", "getStarted") : t("onboarding", "next")}
           </button>
 

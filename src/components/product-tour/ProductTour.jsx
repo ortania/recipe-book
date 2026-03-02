@@ -21,6 +21,16 @@ import { useLanguage } from "../../context";
 import useSwipe from "../../hooks/useSwipe";
 import RecipeBookTourIcon from "../icons/RecipeBookIcon/RecipeBookTourIcon";
 import { SaveBookIcon } from "../icons/SaveBookIcon";
+import {
+  SearchIcon,
+  CookIcon,
+  ChatIcon,
+  NutritionIcon,
+  ShoppingIcon,
+  ShareIcon,
+} from "../../pages/onboarding/OnboardingIcons";
+import { CloseButton } from "../controls/close-button";
+import buttonClasses from "../controls/gen-button.module.css";
 import classes from "./productTour.module.css";
 
 const FEATURES = [
@@ -99,7 +109,7 @@ const ONBOARDING_SCREENS = [
   },
   {
     key: "search",
-    emoji: "🔍",
+    icon: <SearchIcon />,
     titleKey: "searchTitle",
     bullets: ["searchBullet1", "searchBullet2", "searchBullet3"],
     tipLabel: "howToUse",
@@ -107,7 +117,7 @@ const ONBOARDING_SCREENS = [
   },
   {
     key: "cook",
-    emoji: "🍳",
+    icon: <CookIcon />,
     titleKey: "cookTitle",
     subtitleKey: "cookSubtitle",
     tipLabel: "howToActivate",
@@ -115,7 +125,7 @@ const ONBOARDING_SCREENS = [
   },
   {
     key: "chat",
-    emoji: "💬",
+    icon: <ChatIcon />,
     titleKey: "chatTitle",
     subtitleKey: "chatSubtitle",
     tipLabel: "howToActivate",
@@ -123,7 +133,7 @@ const ONBOARDING_SCREENS = [
   },
   {
     key: "nutrition",
-    emoji: "🔥",
+    icon: <NutritionIcon />,
     titleKey: "nutritionTitle",
     subtitleKey: "nutritionSubtitle",
     tipLabel: "howToActivate",
@@ -131,7 +141,7 @@ const ONBOARDING_SCREENS = [
   },
   {
     key: "plan",
-    emoji: "🛒",
+    icon: <ShoppingIcon />,
     titleKey: "planTitle",
     subtitleKey: "planSubtitle",
     tipLabel: "howToActivate",
@@ -139,7 +149,7 @@ const ONBOARDING_SCREENS = [
   },
   {
     key: "share",
-    emoji: "🔗",
+    icon: <ShareIcon />,
     titleKey: "shareTitle",
     subtitleKey: "shareSubtitle",
     tipLabel: "howToActivate",
@@ -200,7 +210,7 @@ function OnboardingScene({ screenKey, t }) {
   return (
     <div style={baseStyle}>
       <div style={{ fontSize: "4rem", lineHeight: 1 }}>
-        {data.icon || data.emoji}
+        {data.icon}
       </div>
       <h2 style={titleStyle}>{t("onboarding", data.titleKey)}</h2>
       {data.subtitleKey && (
@@ -229,7 +239,7 @@ function OnboardingScene({ screenKey, t }) {
             style={{
               fontSize: "1.5rem",
               fontWeight: 700,
-              color: "var(--clr-blue-3)",
+              color: "var(--text-primary)",
             }}
           >
             {t("onboarding", data.tipLabel)}
@@ -624,7 +634,7 @@ function ProductTour({ onClose }) {
             <span className={classes.stepperCount}>
               {screen + 1} / {SCREENS.length}
             </span>
-            <button
+            <CloseButton
               className={classes.skipBtn}
               onClick={(e) => {
                 e.stopPropagation();
@@ -635,9 +645,7 @@ function ProductTour({ onClose }) {
                 e.preventDefault();
                 onClose?.();
               }}
-            >
-              ✕
-            </button>
+            />
           </div>
           <div className={classes.segmentedBar}>
             {SCREENS.map((_, i) => (
@@ -739,7 +747,7 @@ function ProductTour({ onClose }) {
 
         <div className={classes.navButtons}>
           <button
-            className={`${classes.navBtn} ${classes.navBtnSecondary}`}
+            className={`${classes.navBtn} ${classes.navBtnSecondary} ${buttonClasses.genButton}`}
             onClick={goBack}
             disabled={screen === 0}
             style={{ opacity: screen === 0 ? 0.3 : 1 }}
@@ -748,7 +756,7 @@ function ProductTour({ onClose }) {
           </button>
 
           <button
-            className={`${classes.navBtn} ${classes.navBtnPrimary}`}
+            className={`${classes.navBtn} ${classes.navBtnPrimary} ${buttonClasses.genButton}`}
             onClick={goNext}
           >
             {screen === SCREENS.length - 1

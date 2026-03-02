@@ -29,23 +29,31 @@
     border-color 0.3s ease;
 }
 
+
+
 .skipBtn {
   position: absolute;
   top: 1.25rem;
   inset-inline-end: 1.25rem;
-  background: none;
+  background: var(--bg-color);
+  /* border: 1px solid var(--border-color); */
   border: none;
-  color: var(--text-muted);
+  border-radius: var(--button-border-radius);
+  color: var(--text-primary);
   font-size: var(--basic-font);
   cursor: pointer;
-  padding: 0.4em 0.8em;
-  border-radius: 8px;
+  padding: 0.5em;
+  line-height: 1;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
   transition: all 0.2s ease;
 }
 
 .skipBtn:hover {
-  background: var(--bg-hover);
+  /* border-color: var(--text-primary); */
+  /* background: var(--bg-hover); */
   color: var(--text-secondary);
+  transform: scale(1.3);
 }
 
 .content {
@@ -120,7 +128,7 @@
 .tipLabel {
   font-size: var(--basic-font);
   font-weight: 700;
-  color: var(--clr-blue-3);
+  color: var(--text-se);
 }
 
 .tipText {
@@ -152,33 +160,19 @@
 }
 
 .dotActive {
-  background: var(--clr-blue-3);
+  background: var(--button-bg-primary);
   width: 24px;
   border-radius: 4px;
 }
 
 .nextBtn {
   width: 100%;
-  padding: 1rem;
-  border: none;
-  border-radius: 14px;
-  background: var(--text-primary);
-  color: var(--bg-primary);
-  font-size: var(--basic-font);
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.nextBtn:hover {
-  background: var(--text-secondary);
-  transform: translateY(-1px);
 }
 
 .skipToLoginBtn {
   background: none;
   border: none;
-  color: var(--clr-blue-3);
+  color: var(--text-secondary);
   font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.3em 0.8em;

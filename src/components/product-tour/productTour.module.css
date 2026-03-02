@@ -126,7 +126,7 @@
   height: 14px;
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.95);
-  border: 2px solid var(--clr-blue-3);
+  border: 2px solid var(--text-primary);
   box-shadow: 0 0 8px rgba(0, 102, 204, 0.6);
 }
 
@@ -136,7 +136,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  border: 2px solid var(--clr-blue-3);
+  border: 2px solid var(--text-primary);
   pointer-events: none;
   z-index: 9;
   transform: translate(-50%, -50%);
@@ -150,7 +150,7 @@
   margin-left: -16px;
   margin-top: -16px;
   border-radius: 50%;
-  border: 2px solid var(--clr-blue-3);
+  border: 2px solid var(--text-primary);
   animation: pulseAnim 1.5s ease-in-out infinite;
   pointer-events: none;
   z-index: 8;
@@ -713,6 +713,7 @@
 }
 
 .navBtn {
+  /*
   padding: 0.5em 1.2em;
   border-radius: 8px;
   border: none;
@@ -720,17 +721,17 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  font-family: inherit;
+  font-family: inherit; */
 }
 
-.navBtnPrimary {
+/* .navBtnPrimary {
   background: var(--clr-blue-3);
   color: #fff;
 }
 
 .navBtnPrimary:hover {
   opacity: 0.9;
-}
+} */
 
 .navBtnSecondary {
   background: var(--bg-tertiary);
@@ -738,10 +739,12 @@
 }
 
 .skipBtn {
-  background: none;
+  background: var(--bg-color);
+  /* border: 1px solid var(--border-color); */
   border: none;
-  color: var(--text-muted);
-  font-size: 1.3rem;
+  border-radius: var(--button-bordr-radius);
+  color: var(--text-primary);
+  font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.5em;
   line-height: 1;
@@ -750,7 +753,9 @@
 }
 
 .skipBtn:hover {
+  /* border-color: var(--text-primary); */
   color: var(--text-secondary);
+  transform: scale(1.3);
 }
 
 /* ========================================================
