@@ -118,7 +118,7 @@
     top: 0;
     z-index: 100;
     background: var(--bg-primary);
-    padding-top: 0.5rem;
+    padding-top: 0.3rem;
     margin-top: -3.5rem;
   }
 

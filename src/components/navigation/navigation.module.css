@@ -501,6 +501,66 @@
   color: var(--text-muted);
 }
 
+/* ===== Chat History Popup/Modal Content ===== */
+.chatHistoryContainer {
+  display: flex;
+  flex-direction: column;
+  max-height: 70vh;
+}
+
+.chatHistoryHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem 0.75rem;
+  flex-shrink: 0;
+}
+
+.chatHistoryTitle {
+  margin: 0;
+  font-size: var(--large-font);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.chatHistoryEmpty {
+  padding: 2rem 1.25rem;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: var(--basic-font);
+}
+
+.chatHistoryBody {
+  padding: 0.5rem 1.25rem 1.25rem;
+  overflow-y: auto;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.chatBackBtn {
+  background: none;
+  border: none;
+  color: var(--clr-blue-3);
+  cursor: pointer;
+  font-size: var(--basic-font);
+  font-weight: 500;
+  padding: 0.4rem 0;
+  margin-bottom: 0.5rem;
+  text-align: start;
+}
+
+.chatBackBtn:hover {
+  text-decoration: underline;
+}
+
+.chatDetailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
 .chatModal {
   position: fixed;
   top: 0;

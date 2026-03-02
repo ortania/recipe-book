@@ -106,6 +106,13 @@ const translations = {
       de: "Chat-Verlauf",
       mixed: "Chat History",
     },
+    noChatHistory: {
+      he: "אין היסטוריית צ'אט עדיין",
+      en: "No chat history yet",
+      ru: "Пока нет истории чата",
+      de: "Noch kein Chat-Verlauf",
+      mixed: "No chat history yet",
+    },
   },
 
   // ===================== SIDEBAR HELP =====================
