@@ -49,10 +49,14 @@ function drawRoundedRect(ctx, x, y, w, h, r) {
   ctx.closePath();
 }
 
-export async function generateRecipeImage(recipe, t) {
+export async function generateRecipeImage(recipe, t, language) {
   const WIDTH = 1080;
   const PADDING = 60;
   const CONTENT_WIDTH = WIDTH - PADDING * 2;
+  const RTL_LANGS = ["he", "ar", "mixed"];
+  const isRTL = RTL_LANGS.includes(language);
+  const START_X = isRTL ? WIDTH - PADDING : PADDING;
+  const TEXT_ALIGN = isRTL ? "right" : "left";
 
   const ingredientsArray = Array.isArray(recipe.ingredients)
     ? recipe.ingredients
@@ -151,6 +155,9 @@ export async function generateRecipeImage(recipe, t) {
   // Set final canvas height
   canvas.height = totalHeight;
 
+  // ─── Direction ───
+  ctx.direction = isRTL ? "rtl" : "ltr";
+
   // ─── Background ───
   ctx.fillStyle = "#fafafa";
   ctx.fillRect(0, 0, WIDTH, totalHeight);
@@ -183,13 +190,15 @@ export async function generateRecipeImage(recipe, t) {
     ctx.fillText(line, WIDTH / 2, y);
     y += 52;
   }
-  ctx.textAlign = "start";
+  ctx.textAlign = TEXT_ALIGN;
 
   // ─── Meta Info Bar ───
   y += 10;
   const metaParts = [];
-  if (recipe.prepTime && String(recipe.prepTime).trim() !== "0") metaParts.push(`⏱ Prep: ${recipe.prepTime}`);
-  if (recipe.cookTime && String(recipe.cookTime).trim() !== "0") metaParts.push(`🔥 Cook: ${recipe.cookTime}`);
+  if (recipe.prepTime && String(recipe.prepTime).trim() !== "0")
+    metaParts.push(`⏱ Prep: ${recipe.prepTime}`);
+  if (recipe.cookTime && String(recipe.cookTime).trim() !== "0")
+    metaParts.push(`🔥 Cook: ${recipe.cookTime}`);
   if (recipe.difficulty && recipe.difficulty !== "Unknown") {
     const diffMap = {
       VeryEasy: "Very Easy",
@@ -214,7 +223,7 @@ export async function generateRecipeImage(recipe, t) {
     ctx.fillStyle = "#666";
     ctx.textAlign = "center";
     ctx.fillText(metaParts.join("   •   "), WIDTH / 2, y + 22);
-    ctx.textAlign = "start";
+    ctx.textAlign = TEXT_ALIGN;
     y += 40;
   }
 
@@ -231,9 +240,10 @@ export async function generateRecipeImage(recipe, t) {
   y += 30;
   ctx.font = SECTION_FONT;
   ctx.fillStyle = "#0066cc";
+  ctx.textAlign = TEXT_ALIGN;
   ctx.fillText(
     `🥗  ${t ? t("recipes", "ingredients") : "Ingredients"}`,
-    PADDING,
+    START_X,
     y,
   );
   y += 30;
@@ -243,23 +253,28 @@ export async function generateRecipeImage(recipe, t) {
   if (ingredientsArray.length > 0) {
     for (const ing of ingredientsArray) {
       // Bullet point
+      const bulletX = isRTL ? WIDTH - PADDING - 10 : PADDING + 10;
       ctx.fillStyle = "#0066cc";
       ctx.beginPath();
-      ctx.arc(PADDING + 10, y - 4, 4, 0, Math.PI * 2);
+      ctx.arc(bulletX, y - 4, 4, 0, Math.PI * 2);
       ctx.fill();
 
+      const textX = isRTL ? WIDTH - PADDING - 28 : PADDING + 28;
       ctx.fillStyle = "#333";
+      ctx.textAlign = TEXT_ALIGN;
       const lines = wrapText(ctx, ing, CONTENT_WIDTH - 40);
       for (let j = 0; j < lines.length; j++) {
-        ctx.fillText(lines[j], PADDING + 28, y + j * LINE_HEIGHT);
+        ctx.fillText(lines[j], textX, y + j * LINE_HEIGHT);
       }
       y += lines.length * LINE_HEIGHT + 8;
     }
   } else {
+    const textX = isRTL ? WIDTH - PADDING - 28 : PADDING + 28;
     ctx.fillStyle = "#999";
+    ctx.textAlign = TEXT_ALIGN;
     ctx.fillText(
       t ? t("recipes", "noIngredientsListed") : "No ingredients listed",
-      PADDING + 28,
+      textX,
       y,
     );
     y += LINE_HEIGHT;
@@ -277,9 +292,10 @@ export async function generateRecipeImage(recipe, t) {
   y += 30;
   ctx.font = SECTION_FONT;
   ctx.fillStyle = "#0066cc";
+  ctx.textAlign = TEXT_ALIGN;
   ctx.fillText(
     `📝  ${t ? t("recipes", "instructions") : "Instructions"}`,
-    PADDING,
+    START_X,
     y,
   );
   y += 30;
@@ -288,29 +304,33 @@ export async function generateRecipeImage(recipe, t) {
   if (instructionsArray.length > 0) {
     for (let i = 0; i < instructionsArray.length; i++) {
       // Step number circle
+      const circleX = isRTL ? WIDTH - PADDING - 14 : PADDING + 14;
       ctx.fillStyle = "#0066cc";
       ctx.beginPath();
-      ctx.arc(PADDING + 14, y - 2, 14, 0, Math.PI * 2);
+      ctx.arc(circleX, y - 2, 14, 0, Math.PI * 2);
       ctx.fill();
       ctx.fillStyle = "#fff";
       ctx.font = 'bold 16px "Raleway", sans-serif';
       ctx.textAlign = "center";
-      ctx.fillText(`${i + 1}`, PADDING + 14, y + 4);
-      ctx.textAlign = "start";
+      ctx.fillText(`${i + 1}`, circleX, y + 4);
+      ctx.textAlign = TEXT_ALIGN;
 
+      const stepTextX = isRTL ? WIDTH - PADDING - 40 : PADDING + 40;
       ctx.font = BODY_FONT;
       ctx.fillStyle = "#333";
       const lines = wrapText(ctx, instructionsArray[i], CONTENT_WIDTH - 50);
       for (let j = 0; j < lines.length; j++) {
-        ctx.fillText(lines[j], PADDING + 40, y + j * LINE_HEIGHT);
+        ctx.fillText(lines[j], stepTextX, y + j * LINE_HEIGHT);
       }
       y += lines.length * LINE_HEIGHT + 12;
     }
   } else {
+    const textX = isRTL ? WIDTH - PADDING - 28 : PADDING + 28;
     ctx.fillStyle = "#999";
+    ctx.textAlign = TEXT_ALIGN;
     ctx.fillText(
       t ? t("recipes", "noInstructionsListed") : "No instructions provided",
-      PADDING + 28,
+      textX,
       y,
     );
     y += LINE_HEIGHT;
@@ -328,7 +348,8 @@ export async function generateRecipeImage(recipe, t) {
     y += 30;
     ctx.font = SECTION_FONT;
     ctx.fillStyle = "#7c3aed";
-    ctx.fillText(`📝  ${t ? t("recipes", "notes") : "Notes"}`, PADDING, y);
+    ctx.textAlign = TEXT_ALIGN;
+    ctx.fillText(`📝  ${t ? t("recipes", "notes") : "Notes"}`, START_X, y);
     y += 30;
 
     // Notes background
@@ -342,9 +363,11 @@ export async function generateRecipeImage(recipe, t) {
     ctx.lineWidth = 1;
     ctx.stroke();
 
+    const notesTextX = isRTL ? WIDTH - PADDING - 20 : PADDING + 20;
     ctx.fillStyle = "#4c1d95";
+    ctx.textAlign = TEXT_ALIGN;
     for (let j = 0; j < notesLines.length; j++) {
-      ctx.fillText(notesLines[j], PADDING + 20, y + j * LINE_HEIGHT + 6);
+      ctx.fillText(notesLines[j], notesTextX, y + j * LINE_HEIGHT + 6);
     }
     y += notesBgHeight;
   }

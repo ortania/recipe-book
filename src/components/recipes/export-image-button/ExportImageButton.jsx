@@ -5,14 +5,14 @@ import { useLanguage } from "../../../context";
 import { Image as ImageIcon } from "lucide-react";
 
 function ExportImageButton({ recipe, asMenuItem = false }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const [isGenerating, setIsGenerating] = useState(false);
 
   const handleExport = async () => {
     if (isGenerating) return;
     setIsGenerating(true);
     try {
-      await generateRecipeImage(recipe, t);
+      await generateRecipeImage(recipe, t, language);
     } catch (err) {
       console.error("Failed to generate recipe image:", err);
     } finally {
