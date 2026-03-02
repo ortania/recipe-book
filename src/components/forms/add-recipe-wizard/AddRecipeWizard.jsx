@@ -45,6 +45,7 @@ import useTranslatedList from "../../../hooks/useTranslatedList";
 import classes from "./add-recipe-wizard.module.css";
 import { CloseButton } from "../../controls";
 import { formatTime } from "../../recipes/utils";
+import { translateRecipeContent } from "../../../utils/translateContent";
 import {
   isGroupHeader,
   getGroupName,
@@ -101,7 +102,7 @@ function AddRecipeWizard({
   defaultGroup = null,
   initialScreen = "method",
 }) {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
   const { currentUser, addCategory } = useRecipeBook();
   const { getTranslated: getTranslatedGroup } = useTranslatedList(
     groups,
@@ -171,6 +172,17 @@ function AddRecipeWizard({
     setRecipe((prev) => ({ ...prev, [field]: value }));
   };
 
+  const needsTranslationRef = useRef(false);
+
+  useEffect(() => {
+    if (screen !== "manual" || !needsTranslationRef.current) return;
+    needsTranslationRef.current = false;
+    if (!language || language === "mixed") return;
+    translateRecipeContent(recipe, language)
+      .then((translated) => setRecipe(translated))
+      .catch(() => {});
+  }, [screen]);
+
   // ========== Import handlers ==========
   const handleImportFromUrl = async () => {
     if (!recipeUrl.trim()) {
@@ -202,7 +214,7 @@ function AddRecipeWizard({
           : prev.ingredients,
         instructions: parsed.instructions
           ? parsed.instructions
-              .split(".")
+              .split("\n")
               .map((i) => i.trim())
               .filter(Boolean)
           : prev.instructions,
@@ -214,6 +226,7 @@ function AddRecipeWizard({
       }));
       setImportProgress(100);
       clearInterval(progressRef.current);
+      needsTranslationRef.current = true;
       setScreen("manual");
       setManualStep(0);
     } catch (err) {
@@ -436,6 +449,7 @@ function AddRecipeWizard({
             ? [...new Set([...prev.categories, ...cats])]
             : prev.categories,
       }));
+      needsTranslationRef.current = true;
       setCameFromRecording(true);
       setScreen("manual");
       setManualStep(0);
@@ -509,6 +523,7 @@ function AddRecipeWizard({
             ? [...new Set([...prev.categories, ...cats])]
             : prev.categories,
       }));
+      needsTranslationRef.current = true;
       setCameFromRecording(true);
       setScreen("manual");
       setManualStep(0);
@@ -558,6 +573,7 @@ function AddRecipeWizard({
         servings: parsed.servings || prev.servings,
         image_src: parsed.image_src || prev.image_src,
       }));
+      needsTranslationRef.current = true;
       setScreen("manual");
       setManualStep(0);
     } catch (err) {
@@ -600,6 +616,7 @@ function AddRecipeWizard({
         servings: parsed.servings || prev.servings,
         notes: parsed.notes || prev.notes,
       }));
+      needsTranslationRef.current = true;
       setScreen("manual");
       setManualStep(0);
     } catch (err) {
@@ -2078,7 +2095,7 @@ function AddRecipeWizard({
 
   const renderManualScreen = () => (
     <div className={classes.wizardContainer}>
-      <div className={classes.screenTopBar}>
+      <div className={classes.manualTopBar}>
         <button
           type="button"
           className={classes.backLink}
@@ -2158,7 +2175,7 @@ function AddRecipeWizard({
   };
 
   return (
-    <Modal onClose={handleClose} maxWidth="550px">
+    <Modal onClose={handleClose} maxWidth="550px" className={screen === "manual" ? classes.noPadModal : undefined}>
       {renderScreen()}
     </Modal>
   );

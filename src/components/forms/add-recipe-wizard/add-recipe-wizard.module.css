@@ -1,5 +1,9 @@
 /* Add Recipe Wizard */
 
+.noPadModal {
+  padding: 0 !important;
+}
+
 .wizardContainer {
   padding: 2rem;
   max-width: 100%;
@@ -54,6 +58,25 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 0.5rem;
+}
+
+.manualTopBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  background: var(--bg-card);
+  z-index: 10;
+  margin: -2rem -2rem 0.5rem -2rem;
+  padding: calc(0.5rem + 2rem) 2rem 0.5rem 2rem;
+}
+
+@media (max-width: 500px) {
+  .manualTopBar {
+    margin: -1rem -1rem 0.5rem -1rem;
+    padding: calc(0.5rem + 1rem) 1rem 0.5rem 1rem;
+  }
 }
 
 .wizardCloseBtn {

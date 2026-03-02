@@ -932,7 +932,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   return (
-    <Modal onClose={onCancel}>
+    <Modal onClose={onCancel} className={classes.noPadModal}>
       <div className={classes.editContainer}>
         <div
           style={{

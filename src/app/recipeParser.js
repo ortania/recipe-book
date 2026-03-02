@@ -270,7 +270,7 @@ export const parseRecipeFromUrl = async (url) => {
       recipe.name = serverMicrodata.name || "";
       recipe.ingredients = serverMicrodata.ingredients.join("\n");
       if (serverMicrodata.instructions && serverMicrodata.instructions.length > 0) {
-        recipe.instructions = serverMicrodata.instructions.join(". ");
+        recipe.instructions = serverMicrodata.instructions.join("\n");
       }
       if (recipe.name && recipe.ingredients) return recipe;
     }
@@ -342,13 +342,13 @@ export const parseRecipeFromUrl = async (url) => {
                     return step.itemListElement
                       .map((s) => s.text || s.name || "")
                       .filter(Boolean)
-                      .join(". ");
+                      .join("\n");
                   }
                   if (step.name) return cleanHtml(step.name);
                   return "";
                 })
                 .filter(Boolean)
-                .join(". ");
+                .join("\n");
             } else if (typeof recipeData.recipeInstructions === "string") {
               recipe.instructions = cleanHtml(recipeData.recipeInstructions);
             }
@@ -415,7 +415,7 @@ export const parseRecipeFromUrl = async (url) => {
                   Array.isArray(aiResult.instructions) &&
                   aiResult.instructions.length > 0
                 ) {
-                  recipe.instructions = aiResult.instructions.join(". ");
+                  recipe.instructions = aiResult.instructions.join("\n");
                 }
                 if (aiResult.prepTime) recipe.prepTime = aiResult.prepTime;
                 if (aiResult.cookTime) recipe.cookTime = aiResult.cookTime;
@@ -499,7 +499,7 @@ export const parseRecipeFromUrl = async (url) => {
             if (Array.isArray(aiResult.ingredients))
               recipe.ingredients = aiResult.ingredients.join("\n");
             if (Array.isArray(aiResult.instructions))
-              recipe.instructions = aiResult.instructions.join(". ");
+              recipe.instructions = aiResult.instructions.join("\n");
             recipe.prepTime = aiResult.prepTime || "";
             recipe.cookTime = aiResult.cookTime || "";
             recipe.servings = aiResult.servings || "";
@@ -517,7 +517,7 @@ export const parseRecipeFromUrl = async (url) => {
         if (textResult.ingredients.length > 0)
           recipe.ingredients = textResult.ingredients.join("\n");
         if (!hadJsonLdRecipe && textResult.instructions.length > 0)
-          recipe.instructions = textResult.instructions.join(". ");
+          recipe.instructions = textResult.instructions.join("\n");
         if (recipe.name && recipe.ingredients) return recipe;
       } catch (textError) {
         console.error("[recipeParser] Local text parsing failed:", textError);

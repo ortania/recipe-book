@@ -321,6 +321,38 @@ exports.openaiTts = onRequest(
   },
 );
 
+// ── Google Translate proxy (so /api/translate works in production) ──
+exports.translate = onRequest(
+  { cors: true, region: "us-central1" },
+  async (req, res) => {
+    const { client, sl, tl, dt, q } = req.query;
+    if (!q || !tl) {
+      res.status(400).json({ error: "Missing required parameters (tl, q)" });
+      return;
+    }
+    try {
+      const url =
+        `https://translate.googleapis.com/translate_a/single` +
+        `?client=${encodeURIComponent(client || "gtx")}` +
+        `&sl=${encodeURIComponent(sl || "auto")}` +
+        `&tl=${encodeURIComponent(tl)}` +
+        `&dt=${encodeURIComponent(dt || "t")}` +
+        `&q=${encodeURIComponent(q)}`;
+      const response = await fetch(url, {
+        headers: { "User-Agent": "Mozilla/5.0" },
+      });
+      if (!response.ok) {
+        res.status(response.status).json({ error: "Translation service error" });
+        return;
+      }
+      const data = await response.json();
+      res.json(data);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  },
+);
+
 // ── Update avgRating on original recipe when a copy's rating changes ──
 exports.updateAvgRating = onDocumentWritten(
   { document: "recipes/{recipeId}", region: "us-central1" },
