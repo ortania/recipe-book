@@ -1435,12 +1435,11 @@ function RecipesView({
                 <span className={classes.categoriesPopupTitle}>
                   {t("nav", "categories")}
                 </span>
-                <button
+                <CloseButton
                   className={classes.categoriesPopupClose}
                   onClick={() => setShowCategoriesSheet(false)}
-                >
-                  <X size={18} />
-                </button>
+                  size={25}
+                />
               </div>
               <CategoriesSheetContent
                 onManage={() => {

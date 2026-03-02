@@ -278,13 +278,11 @@ function RecipeDetailsFull({
           className={classes.lightboxOverlay}
           onClick={() => setShowImageLightbox(false)}
         >
-          <button
+          <CloseButton
             className={classes.lightboxClose}
             onClick={() => setShowImageLightbox(false)}
-            aria-label={t("common", "close")}
-          >
-            ✕
-          </button>
+            title={t("common", "close")}
+          />
           <img
             src={recipe.image_src}
             alt={recipe.name}

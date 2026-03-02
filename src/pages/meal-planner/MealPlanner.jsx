@@ -11,6 +11,7 @@ import { useRecipeBook, useLanguage } from "../../context";
 import { useMealPlanner } from "../../hooks/useMealPlanner";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { SearchBox } from "../../components/controls/search";
+import { CloseButton } from "../../components/controls/close-button";
 import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./meal-planner.module.css";
 
@@ -162,14 +163,13 @@ function MealPlanner() {
                           >
                             {recipe.name}
                           </span>
-                          <button
+                          <CloseButton
                             className={classes.removeBtn}
                             onClick={() =>
                               removeRecipeFromDay(day, meal, recipe.id)
                             }
-                          >
-                            ✕
-                          </button>
+                            size={16}
+                          />
                         </div>
                       ))}
                     </div>
@@ -216,12 +216,7 @@ function MealPlanner() {
               <h3 className={classes.shoppingModalTitle}>
                 🛒 {t("mealPlanner", "shoppingList")}
               </h3>
-              <button
-                className={classes.pickerClose}
-                onClick={() => setShowShopping(false)}
-              >
-                ✕
-              </button>
+              <CloseButton onClick={() => setShowShopping(false)} />
             </div>
 
             {shoppingList.length === 0 ? (
@@ -322,12 +317,7 @@ function MealPickerWrapper({
                 })()
               : `${t("mealPlanner", picker.day)} — ${t("mealPlanner", "chooseRecipe")}`}
           </h3>
-          <button
-            className={classes.pickerClose}
-            onClick={() => setPicker(null)}
-          >
-            ✕
-          </button>
+          <CloseButton onClick={() => setPicker(null)} />
         </div>
 
         {!selectedCat ? (

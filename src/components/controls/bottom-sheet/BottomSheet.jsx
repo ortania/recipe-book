@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
+import { CloseButton } from "../close-button";
 import classes from "./bottom-sheet.module.css";
 
 const CLOSE_THRESHOLD = 0.25;
@@ -238,13 +239,7 @@ function BottomSheet({ open, onClose, title, children }) {
 
         <div className={classes.header}>
           <span className={classes.title}>{title || ""}</span>
-          <button
-            className={classes.closeBtn}
-            onClick={handleClose}
-            aria-label="סגירה"
-          >
-            ✕
-          </button>
+          <CloseButton onClick={handleClose} />
         </div>
 
         <div

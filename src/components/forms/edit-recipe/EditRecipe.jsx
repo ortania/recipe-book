@@ -952,8 +952,8 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 // type="button"
                 className={classes.editCloseBtn}
                 onClick={onCancel}
-                size={30}
-              ></CloseButton>
+                size={25}
+              />
               <div className={classes.editTitleGroup}>
                 <h2>{t("recipes", "editRecipe")}</h2>
                 <p>{editedPerson.name}</p>

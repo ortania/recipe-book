@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { BottomSheet } from "../bottom-sheet";
+import { CloseButton } from "../close-button";
 import classes from "./chat-help-button.module.css";
 
 const MOBILE_BREAKPOINT = 768;
@@ -145,12 +146,10 @@ function ChatHelpButton({ items, title, description, onToggle }) {
                 }}
               >
                 <span className={classes.dragIndicator}>⠿</span>
-                <button
+                <CloseButton
                   className={classes.close}
                   onClick={() => handleToggle(false)}
-                >
-                  ✕
-                </button>
+                />
               </div>
               <div className={classes.content}>
                 {title && <strong>{title}</strong>}

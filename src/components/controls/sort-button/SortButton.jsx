@@ -89,13 +89,14 @@ function SortButton({ sortField, sortDirection, onSortChange, options }) {
           />
           <div className={classes.dropdownMenu} style={menuStyle}>
             <div className={classes.dropdownClose}>
-              <CloseButton onClick={() => setShowMenu(false)}/>
+              <CloseButton onClick={() => setShowMenu(false)} />
             </div>
             <SortDropdown
               sortField={sortField}
               sortDirection={sortDirection}
               onSortChange={onSortChange}
               options={options}
+              size={25}
             />
           </div>
         </>

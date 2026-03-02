@@ -15,7 +15,6 @@ import {
   MessageSquareMore,
   Settings2,
   Tags,
-  X,
 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { ProductTour } from "../product-tour";
@@ -412,10 +411,9 @@ function Navigation({ onLogout, links }) {
                 <CloseButton
                   className={classes.catPopupClose}
                   onClick={() => setShowCategoriesSheet(false)}
-                >
-                  {/* <X size={18} /> */}
-                  size={30}
-                </CloseButton>
+                  size={25}
+                />
+
               </div>
               <CategoriesSheetContent
                 onManage={() => {
@@ -497,20 +495,7 @@ function Navigation({ onLogout, links }) {
                 <strong style={{ fontSize: "var(--large-font)" }}>
                   {t("sidebarHelp", "title")}
                 </strong>
-                <button
-                  onClick={() => setShowHelp(false)}
-                  style={{
-                    background: "none",
-                    border: "none",
-                    fontSize: "1.5rem",
-                    color: "var(--text-muted)",
-                    cursor: "pointer",
-                    padding: "0.2em",
-                    lineHeight: 1,
-                  }}
-                >
-                  ✕
-                </button>
+                <CloseButton onClick={() => setShowHelp(false)} />
               </div>
               <p>{t("sidebarHelp", "description")}</p>
             </div>
@@ -567,7 +552,7 @@ function Navigation({ onLogout, links }) {
                 <CloseButton
                   className={classes.catPopupClose}
                   onClick={() => setShowChatHistory(false)}
-                  size={30}
+                  size={25}
                 />
               </div>
               {chatHistory.length === 0 ? (

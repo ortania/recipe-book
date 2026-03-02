@@ -42,7 +42,7 @@ import {
 } from "lucide-react";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
-import buttonClasses from '../../controls/gen-button.module.css'
+import buttonClasses from "../../controls/gen-button.module.css";
 import classes from "./add-recipe-wizard.module.css";
 import { CloseButton } from "../../controls";
 import { formatTime } from "../../recipes/utils";
@@ -1447,10 +1447,9 @@ function AddRecipeWizard({
             type="button"
             className={classes.previewCloseBtn}
             onClick={() => setShowPreview(false)}
-            size={30}
-          >
+            size={25}
+          />
 
-          </CloseButton>
           {recipe.image_src ? (
             <img
               src={recipe.image_src}
@@ -1571,7 +1570,7 @@ function AddRecipeWizard({
       <label className={classes.favoriteToggle}>
         <input
           type="checkbox"
-          className={classes.favoriteCheckbox + ' ' + buttonClasses.checkBox}
+          className={classes.favoriteCheckbox + " " + buttonClasses.checkBox}
           checked={recipe.isFavorite}
           onChange={() => updateRecipe("isFavorite", !recipe.isFavorite)}
         />
@@ -1587,7 +1586,7 @@ function AddRecipeWizard({
       <label className={classes.favoriteToggle}>
         <input
           type="checkbox"
-          className={classes.favoriteCheckbox + ' ' + buttonClasses.checkBox}
+          className={classes.favoriteCheckbox + " " + buttonClasses.checkBox}
           checked={recipe.shareToGlobal}
           onChange={() => updateRecipe("shareToGlobal", !recipe.shareToGlobal)}
         />
@@ -1658,7 +1657,11 @@ function AddRecipeWizard({
       >
         <X size={22} />
       </button> */}
-      <CloseButton className={classes.methodCloseBtn} onClick={handleClose} size={30}/>
+      <CloseButton
+        className={classes.methodCloseBtn}
+        onClick={handleClose}
+        size={25}
+      />
 
       <h1 className={classes.methodTitle}>{t("addWizard", "title")}</h1>
       <p className={classes.methodSubtitle}>{t("addWizard", "subtitle")}</p>
@@ -1772,16 +1775,14 @@ function AddRecipeWizard({
             setImportError("");
           }}
         >
-          <ChevronRight size={30}/> {t("addWizard", "backToMethod")}
+          <ChevronRight size={30} /> {t("addWizard", "backToMethod")}
         </button>
         <CloseButton
           // type="button"
           // className={classes.wizardCloseBtn}
           onClick={handleClose}
-          size={30}
-        >
-          {/* <X size={16} /> */}
-        </CloseButton>
+          size={25}
+        />
       </div>
 
       <h2 className={classes.screenTitle}>{t("addWizard", "fromUrlTitle")}</h2>
@@ -1854,10 +1855,8 @@ function AddRecipeWizard({
           // type="button"
           // className={classes.wizardCloseBtn}
           onClick={handleClose}
-          size={30}
-        >
-          {/* <X size={16} /> */}
-        </CloseButton>
+          size={25}
+        />
       </div>
 
       <h2 className={classes.screenTitle}>{t("addWizard", "fromTextTitle")}</h2>
@@ -1915,7 +1914,7 @@ function AddRecipeWizard({
         >
           <ChevronRight /> {t("addWizard", "backToMethod")}
         </button>
-        <CloseButton onClick={handleClose} size={30}/>
+        <CloseButton onClick={handleClose} />
       </div>
 
       <h2 className={classes.screenTitle}>
@@ -2064,10 +2063,8 @@ function AddRecipeWizard({
           // type="button"
           // className={classes.wizardCloseBtn}
           onClick={handleClose}
-          size={30}
-        >
-          {/* <X size={16} /> */}
-        </CloseButton>
+          size={25}
+        />
       </div>
 
       <h2 className={classes.screenTitle}>
@@ -2164,8 +2161,8 @@ function AddRecipeWizard({
         </button>
         <CloseButton
           onClick={cameFromRecording ? handleManualBack : handleClose}
-          size={30}
-        ></CloseButton>
+          size={25}
+        />
       </div>
 
       {recipe.sourceUrl && (

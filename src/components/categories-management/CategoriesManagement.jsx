@@ -288,7 +288,7 @@ function CategoriesManagement({
           >
             <LuArrowUpDown />
           </button>
-          <CloseButton onClick={onClose} size={30}/>
+          <CloseButton onClick={onClose} />
         </div>
       </div>
 
