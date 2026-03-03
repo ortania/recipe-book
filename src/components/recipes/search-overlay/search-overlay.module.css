@@ -203,6 +203,24 @@
   border-color: var(--danger-color, #e53935);
 }
 
+.searchHeaderEdges {
+  flex-wrap: nowrap !important;
+  padding-inline: 0 !important;
+}
+
+.searchCenterDefault {
+  display: contents;
+}
+
+.searchCenter {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
 @media (max-width: 768px) {
   .resultsCount {
     padding-inline-start: 1rem;

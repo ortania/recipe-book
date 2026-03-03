@@ -19,6 +19,9 @@
   min-height: 50px;
   position: relative;
   z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
 }
 
 .viewToggle {
@@ -246,7 +249,38 @@
   margin: 0;
   padding: 0.5rem 0;
   border-radius: 0;
-  /* border-bottom: 1px solid var(--border-color); */
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bg-primary);
+}
+
+.mobileSearchSort {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.mobileSearchSort > *:nth-child(2) {
+  flex: 1;
+  min-width: 0;
+}
+
+.desktopSearchSort {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .desktopSearchSort {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    flex: 1;
+    min-width: 0;
+  }
 }
 
 .searchBoxWrapper {
@@ -323,9 +357,19 @@
   align-items: center;
   gap: 0.3rem;
   transition: all 0.2s ease;
-  /* height: 32px; */
   box-sizing: border-box;
   white-space: nowrap;
+}
+
+.filterButton > span,
+.sortingButton > span {
+  display: inline-flex;
+  align-items: center;
+  transition: transform 0.25s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
 }
 
 .filterButton:hover,
@@ -1047,13 +1091,11 @@
 
 /* ===== Desktop header action buttons (categories + view toggle) ===== */
 .desktopHeaderActions {
-  position: absolute;
-  inset-block-start: 50%;
-  transform: translateY(-50%);
-  inset-inline-end: 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  flex-shrink: 0;
+  margin-inline-start: auto;
 }
 
 .desktopHeaderBtn {

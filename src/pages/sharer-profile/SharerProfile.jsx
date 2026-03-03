@@ -1,12 +1,17 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { UserPlus, UserCheck } from "lucide-react";
 import { useRecipeBook, useLanguage } from "../../context";
-import { fetchSharerRecipes, copyRecipeToUser } from "../../firebase/globalRecipeService";
+import {
+  fetchSharerRecipes,
+  copyRecipeToUser,
+} from "../../firebase/globalRecipeService";
 import { getUserData, toggleFollowUser } from "../../firebase/authService";
-import { getUserRatingsBatch, setUserRating } from "../../firebase/ratingService";
-import { RecipeInfo } from "../../components/recipes/RecipeInfo";
-import { BackButton } from "../../components/controls/back-button";
+import {
+  getUserRatingsBatch,
+  setUserRating,
+} from "../../firebase/ratingService";
+import { RecipesView } from "../../components";
 import Skeleton from "react-loading-skeleton";
 import classes from "./sharer-profile.module.css";
 
@@ -84,32 +89,28 @@ function SharerProfile() {
   const handleCopyRecipe = useCallback(
     async (recipeId) => {
       if (!currentUser) return;
-      const copied = await copyRecipeToUser(recipeId, currentUser.uid, language);
+      const copied = await copyRecipeToUser(
+        recipeId,
+        currentUser.uid,
+        language,
+      );
       setRecipes((prev) => [...prev, copied]);
     },
     [currentUser, language, setRecipes],
   );
 
+  const recipesWithoutSharer = useMemo(
+    () => recipes.map(({ sharerName, ...rest }) => rest),
+    [recipes],
+  );
+
   if (loading) {
     return (
       <div className={classes.page}>
-        <div className={classes.headerBar}>
-          <Skeleton width={120} height="1.2rem" />
-        </div>
         <div className={classes.profileSection}>
           <Skeleton circle width={56} height={56} />
           <Skeleton width={140} height="1.4rem" />
           <Skeleton width={80} height="0.9rem" />
-        </div>
-        <div className={classes.grid}>
-          {Array.from({ length: 6 }).map((_, i) => (
-            <div key={i}>
-              <Skeleton height={0} style={{ paddingBottom: "100%" }} borderRadius={25} />
-              <div style={{ padding: "0.75rem" }}>
-                <Skeleton width="75%" height="1.2rem" borderRadius={6} />
-              </div>
-            </div>
-          ))}
         </div>
       </div>
     );
@@ -120,14 +121,6 @@ function SharerProfile() {
 
   return (
     <div className={classes.page}>
-      <div className={classes.headerBar}>
-        <BackButton
-          onClick={() => navigate("/global-recipes")}
-          title={t("sharerProfile", "back")}
-          className={classes.backBtn}
-        />
-      </div>
-
       <div className={classes.profileSection}>
         <div className={classes.avatar}>
           {sharerName.charAt(0).toUpperCase()}
@@ -164,23 +157,25 @@ function SharerProfile() {
       </div>
 
       {isPublic && (
-        recipes.length === 0 ? (
-          <div className={classes.empty}>{t("sharerProfile", "noRecipes")}</div>
-        ) : (
-          <div className={classes.grid}>
-            {recipes.map((recipe) => (
-              <RecipeInfo
-                key={recipe.id}
-                person={recipe}
-                onCopyRecipe={
-                  recipe.userId !== currentUser?.uid ? handleCopyRecipe : undefined
-                }
-                onRate={handleRate}
-                userRating={userRatings[recipe.id] || 0}
-              />
-            ))}
-          </div>
-        )
+        <RecipesView
+          persons={recipesWithoutSharer}
+          groups={[]}
+          showAddAndFavorites={false}
+          showCategories={false}
+          loading={!sharerData}
+          emptyTitle={t("sharerProfile", "noRecipes")}
+          onCopyRecipe={
+            currentUser?.uid !== sharerUserId ? handleCopyRecipe : undefined
+          }
+          onRate={handleRate}
+          userRatings={userRatings}
+          defaultSortField="rating"
+          defaultSortDirection="desc"
+          sortStorageKey="sharerRecipesSortPreference"
+          backAction={() => navigate(-1)}
+          showTabs={false}
+          recentlyViewedKey={`recentlyViewed_sharer_${sharerUserId}`}
+        />
       )}
     </div>
   );

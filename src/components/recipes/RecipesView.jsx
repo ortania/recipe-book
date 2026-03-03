@@ -82,6 +82,10 @@ function RecipesView({
   defaultSortDirection = "asc",
   sortStorageKey,
   loading = false,
+  backAction,
+  showTabs = true,
+  recentlyViewedKey,
+  headerAction,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -207,14 +211,31 @@ function RecipesView({
     return localPersons.filter((p) => p.isFavorite);
   }, [localPersons, showFavoritesOnly]);
 
-  // Recently viewed recipes – placeholder, computed after filters are applied
+  const rvKey = recentlyViewedKey || "recentlyViewedRecipes";
+
+  // Recently viewed recipes
   const recentlyViewedStoredIds = useMemo(() => {
     try {
-      return JSON.parse(localStorage.getItem("recentlyViewedRecipes") || "[]");
+      return JSON.parse(localStorage.getItem(rvKey) || "[]");
     } catch {
       return [];
     }
-  }, [localPersons]);
+  }, [localPersons, rvKey]);
+
+  const trackRecentlyViewed = useCallback(
+    (recipeId) => {
+      try {
+        const stored = JSON.parse(localStorage.getItem(rvKey) || "[]");
+        const updated = [
+          recipeId,
+          ...stored.filter((id) => id !== recipeId),
+        ].slice(0, 20);
+        localStorage.setItem(rvKey, JSON.stringify(updated));
+      } catch {}
+      navigate(`/recipe/${recipeId}`);
+    },
+    [rvKey, navigate],
+  );
 
   const handleViewChange = (view) => {
     setActiveView(view);
@@ -772,19 +793,17 @@ function RecipesView({
     );
   };
 
-  const mobileHeaderActions = (
+  const mobileHeaderActions = showTabs ? (
     <>
-      <button
-        className={classes.mobileHeaderBtn}
-        onClick={() => setShowCategoriesSheet(true)}
-        title={t("nav", "categories")}
-      >
-        <Tags size={20} />
-
-        {/* {!isAllSelected && selectedCount > 0 && (
-          <span className={classes.mobileHeaderBadge}>{selectedCount}</span>
-        )} */}
-      </button>
+      {showCategories && (
+        <button
+          className={classes.mobileHeaderBtn}
+          onClick={() => setShowCategoriesSheet(true)}
+          title={t("nav", "categories")}
+        >
+          <Tags size={20} />
+        </button>
+      )}
       <button
         className={classes.mobileHeaderBtn}
         onClick={toggleView}
@@ -797,6 +816,37 @@ function RecipesView({
         {isSimpleView ? <LayoutGrid size={20} /> : <Rows4 size={20} />}
       </button>
     </>
+  ) : null;
+
+  const mobileTabsContent = showTabs ? (
+    viewToggleElement
+  ) : showSearch ? null : (
+    <div className={classes.mobileSearchSort}>
+      {backAction && <BackButton onClick={backAction} size={22} />}
+      <SearchBox
+        searchTerm=""
+        onSearchChange={() => setShowSearch(true)}
+        onFocus={() => setShowSearch(true)}
+        placeholder={t("common", "search")}
+      />
+      <SortButton
+        sortField={sortField}
+        sortDirection={sortDirection}
+        onSortChange={handleRecipeSortChange}
+        options={recipeSortOptions}
+      />
+      <button
+        className={classes.mobileHeaderBtn}
+        onClick={toggleView}
+        title={
+          isSimpleView
+            ? t("recipesView", "gridView")
+            : t("recipesView", "listView")
+        }
+      >
+        {isSimpleView ? <LayoutGrid size={20} /> : <Rows4 size={20} />}
+      </button>
+    </div>
   );
 
   const selectedCategoryObjects = isAllSelected
@@ -812,13 +862,23 @@ function RecipesView({
       <div
         className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}
       >
-        {mobileTabsEl && createPortal(viewToggleElement, mobileTabsEl)}
-        {mobileActionsEl && createPortal(mobileHeaderActions, mobileActionsEl)}
+        {mobileTabsEl && createPortal(mobileTabsContent, mobileTabsEl)}
+        {mobileActionsEl &&
+          mobileHeaderActions &&
+          createPortal(mobileHeaderActions, mobileActionsEl)}
         <div className={classes.viewToggleWrapper}>
-          <span className={classes.desktopOnly}>
-            <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
-          </span>
-          {!mobileTabsEl && (
+          {headerAction ? (
+            <span className={classes.desktopOnly}>{headerAction}</span>
+          ) : showTabs ? (
+            <span className={classes.desktopOnly}>
+              <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
+            </span>
+          ) : backAction ? (
+            <span className={classes.desktopOnly}>
+              <BackButton onClick={backAction} />
+            </span>
+          ) : null}
+          {showTabs && !mobileTabsEl && (
             <div className={classes.viewToggle}>{viewToggleElement}</div>
           )}
         </div>
@@ -938,31 +998,56 @@ function RecipesView({
     <div
       className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}
     >
-      {mobileTabsEl && createPortal(viewToggleElement, mobileTabsEl)}
-      {mobileActionsEl && createPortal(mobileHeaderActions, mobileActionsEl)}
+      {mobileTabsEl && createPortal(mobileTabsContent, mobileTabsEl)}
+      {mobileActionsEl &&
+        mobileHeaderActions &&
+        createPortal(mobileHeaderActions, mobileActionsEl)}
 
       <div className={classes.stickyTop}>
-        <div className={classes.viewToggleWrapper}>
-          <span className={classes.desktopOnly}>
-            <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
-          </span>
-          {!mobileTabsEl && (
+        <div className={classes.viewToggleWrapper} style={!showTabs && showSearch ? { display: "none" } : undefined}>
+          {headerAction ? (
+            <span className={classes.desktopOnly}>{headerAction}</span>
+          ) : showTabs ? (
+            <span className={classes.desktopOnly}>
+              <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
+            </span>
+          ) : backAction ? (
+            <span className={classes.desktopOnly}>
+              <BackButton onClick={backAction} />
+            </span>
+          ) : null}
+          {showTabs && !mobileTabsEl && (
             <div className={classes.viewToggle}>{viewToggleElement}</div>
           )}
+          {!showTabs && !showSearch && (
+            <div className={classes.desktopSearchSort}>
+              <div className={classes.searchBoxWrapper}>
+                <SearchBox
+                  searchTerm=""
+                  onSearchChange={() => setShowSearch(true)}
+                  onFocus={() => setShowSearch(true)}
+                  placeholder={t("common", "search")}
+                  size="large"
+                />
+              </div>
+              <SortButton
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onSortChange={handleRecipeSortChange}
+                options={recipeSortOptions}
+              />
+            </div>
+          )}
           <div className={classes.desktopHeaderActions}>
-            <button
-              className={classes.desktopHeaderBtn}
-              onClick={() => setShowCategoriesSheet(true)}
-              title={t("nav", "categories")}
-            >
-              <Tags size={28} />
-
-              {/* {!isAllSelected && selectedCount > 0 && (
-                <span className={classes.mobileHeaderBadge}>
-                  {selectedCount}
-                </span>
-              )} */}
-            </button>
+            {showCategories && (
+              <button
+                className={classes.desktopHeaderBtn}
+                onClick={() => setShowCategoriesSheet(true)}
+                title={t("nav", "categories")}
+              >
+                <Tags size={28} />
+              </button>
+            )}
             <button
               className={classes.desktopHeaderBtn}
               onClick={toggleView}
@@ -986,48 +1071,51 @@ function RecipesView({
           </div>
         )}
 
-        {!showChat && (persons.length > 0 || hasSelectedCategories) && (
-          <div
-            className={classes.searchHeader}
-            style={{ display: showSearch ? "none" : undefined }}
-          >
-            {showAddAndFavorites && (
-              <button
-                onClick={() => setShowFavoritesOnly((prev) => !prev)}
-                title={t("recipes", "favorite")}
-                className={`${classes.favoritesBtn} ${showFavoritesOnly ? classes.favoritesActive : ""}`}
-              >
-                {showFavoritesOnly ? (
-                  <Heart
-                    size={isMobile ? 24 : 30}
-                    strokeWidth={1.5}
-                    fill="red"
-                    stroke="red"
-                  />
-                ) : (
-                  <Heart size={isMobile ? 24 : 30} strokeWidth={1.5} />
-                )}
-              </button>
-            )}
-            <div className={classes.searchBoxWrapper}>
-              <SearchBox
-                searchTerm=""
-                onSearchChange={() => setShowSearch(true)}
-                onFocus={() => setShowSearch(true)}
-                placeholder={t("common", "search")}
-                size="large"
-              />
+        {showTabs &&
+          !showChat &&
+          (persons.length > 0 || hasSelectedCategories) && (
+            <div
+              className={classes.searchHeader}
+              style={{ display: showSearch ? "none" : undefined }}
+            >
+              {backAction && !isMobile && <BackButton onClick={backAction} />}
+              {showAddAndFavorites && (
+                <button
+                  onClick={() => setShowFavoritesOnly((prev) => !prev)}
+                  title={t("recipes", "favorite")}
+                  className={`${classes.favoritesBtn} ${showFavoritesOnly ? classes.favoritesActive : ""}`}
+                >
+                  {showFavoritesOnly ? (
+                    <Heart
+                      size={isMobile ? 24 : 30}
+                      strokeWidth={1.5}
+                      fill="red"
+                      stroke="red"
+                    />
+                  ) : (
+                    <Heart size={isMobile ? 24 : 30} strokeWidth={1.5} />
+                  )}
+                </button>
+              )}
+              <div className={classes.searchBoxWrapper}>
+                <SearchBox
+                  searchTerm=""
+                  onSearchChange={() => setShowSearch(true)}
+                  onFocus={() => setShowSearch(true)}
+                  placeholder={t("common", "search")}
+                  size="large"
+                />
+              </div>
+              <div className={classes.headerControls}>
+                <SortButton
+                  sortField={sortField}
+                  sortDirection={sortDirection}
+                  onSortChange={handleRecipeSortChange}
+                  options={recipeSortOptions}
+                />
+              </div>
             </div>
-            <div className={classes.headerControls}>
-              <SortButton
-                sortField={sortField}
-                sortDirection={sortDirection}
-                onSortChange={handleRecipeSortChange}
-                options={recipeSortOptions}
-              />
-            </div>
-          </div>
-        )}
+          )}
       </div>
 
       {showSearch ? (
@@ -1045,6 +1133,7 @@ function RecipesView({
           userRatings={userRatings}
           onToggleFavorite={handleToggleFavorite}
           isSimpleView={isSimpleView}
+          onToggleView={!showTabs ? toggleView : undefined}
           onClose={closeSearch}
           showCategories={showCategories}
           selectedCategories={selectedCategories}
@@ -1053,6 +1142,7 @@ function RecipesView({
           getTranslatedGroup={getTranslatedGroup}
           selectedCategoryObjects={selectedCategoryObjects}
           isAllSelected={isAllSelected}
+          onRecipeNavigate={recentlyViewedKey ? trackRecentlyViewed : undefined}
         />
       ) : showChat ? (
         <ChatWindow showImageButton showGreeting={showGreeting} />
@@ -1071,7 +1161,11 @@ function RecipesView({
                   <div
                     key={person.id}
                     className={classes.recentlyViewedCard}
-                    onClick={() => navigate(`/recipe/${person.id}`)}
+                    onClick={() =>
+                      recentlyViewedKey
+                        ? trackRecentlyViewed(person.id)
+                        : navigate(`/recipe/${person.id}`)
+                    }
                   >
                     {person.image_src && (
                       <img
@@ -1316,7 +1410,11 @@ function RecipesView({
                 <div
                   key={person.id}
                   className={classes.compactItem}
-                  onClick={() => navigate(`/recipe/${person.id}`)}
+                  onClick={() =>
+                    recentlyViewedKey
+                      ? trackRecentlyViewed(person.id)
+                      : navigate(`/recipe/${person.id}`)
+                  }
                 >
                   {person.image || person.image_src ? (
                     <img
@@ -1397,6 +1495,9 @@ function RecipesView({
                   onCopyRecipe={onCopyRecipe}
                   onRate={onRate}
                   userRating={userRatings[person.id] || 0}
+                  onCardClick={
+                    recentlyViewedKey ? trackRecentlyViewed : undefined
+                  }
                 />
               ))}
             </div>

@@ -1,29 +1,7 @@
 .page {
   max-width: 900px;
   margin: 0 auto;
-  padding: 1rem 1.5rem 3rem;
-}
-
-.headerBar {
-  display: flex;
-  align-items: center;
-  margin-bottom: 1.5rem;
-}
-
-.backBtn {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  background: none;
-  border: none;
-  color: var(--text-primary);
-  font-size: var(--basic-font);
-  cursor: pointer;
-  padding: 0.4rem 0;
-  font-weight: 500;
-}
-.backBtn:hover {
-  text-decoration: underline;
+  padding: 0 1.5rem;
 }
 
 .profileSection {
@@ -31,7 +9,7 @@
   flex-direction: column;
   align-items: center;
   gap: 0.6rem;
-  margin-bottom: 2rem;
+  padding: 1.5rem 0;
 }
 
 .avatar {
@@ -92,21 +70,12 @@
   margin-top: 0.25rem;
 }
 
-.empty {
-  text-align: center;
-  color: var(--text-secondary);
-  font-size: var(--basic-font);
-  padding: 3rem 1rem;
-}
+@media (max-width: 768px) {
+  .page {
+    padding: 0 0.5rem;
+  }
 
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-  gap: 1.25rem;
-}
-
-@media (min-width: 768px) {
-  .grid {
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  .profileSection {
+    padding: 1rem 0;
   }
 }

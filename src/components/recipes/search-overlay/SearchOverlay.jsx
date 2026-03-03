@@ -7,6 +7,8 @@ import {
   Search,
   RotateCcw,
   Trash2,
+  LayoutGrid,
+  Rows4,
 } from "lucide-react";
 import { useLanguage } from "../../../context";
 import { SearchBox } from "../../controls/search";
@@ -59,7 +61,9 @@ function SearchOverlay({
   userRatings = {},
   onToggleFavorite,
   isSimpleView,
+  onToggleView,
   onClose,
+  onRecipeNavigate,
   showCategories = false,
   selectedCategories = [],
   toggleCategory,
@@ -149,9 +153,13 @@ function SearchOverlay({
         }),
       );
       if (searchTerm.trim()) saveRecentSearch(searchTerm);
-      navigate(`/recipe/${personId}`);
+      if (onRecipeNavigate) {
+        onRecipeNavigate(personId);
+      } else {
+        navigate(`/recipe/${personId}`);
+      }
     },
-    [searchTerm, sortField, sortDirection, searchViewedIds, navigate],
+    [searchTerm, sortField, sortDirection, searchViewedIds, navigate, onRecipeNavigate],
   );
 
   useEffect(() => {
@@ -591,12 +599,15 @@ function SearchOverlay({
   return (
     <>
       {/* Search header */}
-      <div className={parentClasses.searchHeader}>
-        <BackButton onClick={onClose} size={35}/>
-        <div
-          className={`${parentClasses.searchBoxWrapper} ${classes.searchBoxRelative}`}
-          ref={suggestionsRef}
-        >
+      <div
+        className={`${parentClasses.searchHeader} ${onToggleView ? classes.searchHeaderEdges : ""}`}
+      >
+        <BackButton onClick={onClose} size={28} className={parentClasses.desktopHeaderBtn} />
+        <div className={onToggleView ? classes.searchCenter : classes.searchCenterDefault}>
+          <div
+            className={`${parentClasses.searchBoxWrapper} ${classes.searchBoxRelative}`}
+            ref={suggestionsRef}
+          >
           <SearchBox
             searchTerm={searchTerm}
             onSearchChange={(val) => {
@@ -650,7 +661,7 @@ function SearchOverlay({
               <span className={parentClasses.hideOnMobile}>
                 {t("recipesView", "filter")}
               </span>
-              <span className={parentClasses.hideOnMobile}>
+              <span className={`${parentClasses.hideOnMobile} ${showFilterMenu ? parentClasses.chevronOpen : ""}`}>
                 <ChevronDown size={16} />
               </span>
             </button>
@@ -707,6 +718,15 @@ function SearchOverlay({
             </button>
           )}
         </div>
+        </div>
+        {onToggleView && (
+          <button
+            className={parentClasses.desktopHeaderBtn}
+            onClick={onToggleView}
+          >
+            {isSimpleView ? <LayoutGrid size={28} /> : <Rows4 size={28} />}
+          </button>
+        )}
       </div>
 
       {/* Category chips */}

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FiSun, FiMoon, FiChevronRight, FiChevronLeft } from "react-icons/fi";
-import { Palette, Accessibility, ShieldCheck, Globe } from "lucide-react";
+import { FiSun, FiMoon } from "react-icons/fi";
+import { Palette, Accessibility, ShieldCheck, Globe, ChevronDown } from "lucide-react";
 import { applyFontScale } from "../../utils/applyFontScale";
 import { getStoredTheme, applyTheme } from "../../utils/theme";
 import { useLanguage, useRecipeBook } from "../../context";
@@ -61,7 +61,6 @@ function Settings() {
   };
 
   const isRtl = RTL_LANGUAGES.includes(language);
-  const ChevronIcon = isRtl ? FiChevronLeft : FiChevronRight;
 
   const currentLang = LANGUAGES.find((l) => l.code === language);
   const currentThemeLabel =
@@ -109,7 +108,10 @@ function Settings() {
                 <span className={classes.settingItemLabel}>{item.label}</span>
                 <span className={classes.settingItemValue}>{item.value}</span>
               </span>
-              <ChevronIcon className={classes.settingItemChevron} />
+              <ChevronDown
+                className={`${classes.settingItemChevron} ${openSetting === item.id ? classes.chevronOpen : ""}`}
+                size={20}
+              />
             </button>
 
             {openSetting === "accessibility" && item.id === "accessibility" && (

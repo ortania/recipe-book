@@ -76,7 +76,7 @@ function SortButton({ sortField, sortDirection, onSortChange, options }) {
         <span className={classes.hideOnMobile}>
           {t("recipesView", "sorting")}
         </span>
-        <span className={classes.arrow}>
+        <span className={`${classes.arrow} ${showMenu ? classes.arrowOpen : ""}`}>
           <ChevronDown size={16} />
         </span>
       </button>

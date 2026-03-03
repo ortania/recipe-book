@@ -79,7 +79,11 @@
   font-size: 1.2rem;
   color: var(--text-muted);
   flex-shrink: 0;
-  transform: rotate(-90deg) scale(1.5);
+  transition: transform 0.25s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
 }
 
 .modalHeader {
