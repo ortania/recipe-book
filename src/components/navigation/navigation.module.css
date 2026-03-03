@@ -117,7 +117,7 @@
   background-color: var(--bg-hover);
   font-weight: 700;
 
-  /* color: var(--active-color); */
+  /* color: var(--active-color-primary); */
   font-weight: 800;
 }
 
@@ -548,7 +548,7 @@
 .chatBackBtn {
   background: none;
   border: none;
-  color: var(--clr-blue-3);
+  color: var(--text-primary);
   cursor: pointer;
   font-size: var(--basic-font);
   font-weight: 500;

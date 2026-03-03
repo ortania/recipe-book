@@ -28,7 +28,7 @@
 
 .option.active {
   font-weight: 800;
-  /* color: var(--active-color); */
+  /* color: var(--active-color-primary); */
   background: var(--bg-hover, #f5f5f5);
 }
 
@@ -44,5 +44,8 @@
 }
 
 .option.active .arrow {
-  color: var(--active-color, #4a90d9);
+  color: var(--active-color-primary);
+}
+.option.active .arrow svg{
+  stroke-width: 3;
 }

@@ -49,13 +49,17 @@
 
 .sharerName {
   font-size: var(--small-font);
-  color: var(--text-primary);
+  color: var(--accent-color-1);
+  font-weight: var(--font-weight-secondary);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
   cursor: pointer;
   margin-bottom: 0.25rem;
   text-align: start;
 }
+
 .sharerName:hover {
-  text-decoration: underline;
+  opacity: var(--hover-opacity);
 }
 
 .recipeMetadata {
@@ -163,21 +167,21 @@
   padding: 0.45em 1em;
   font-size: var(--small-font);
   font-weight: 500;
-  /* color: var(--clr-blue-3, #2563eb); */
+
   color: var(--text-primary);
   font-weight: 700;
   cursor: pointer;
-  transition: all 0.25s ease;
+  transition: var(--transition);
   z-index: 2;
   white-space: nowrap;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
 }
 
 .copyButton:hover {
-  /* background: var(--clr-blue-3, #2563eb); */
+
   background: var(--text-primary);
   color: white;
-  transform: translateX(-50%) scale(1.04);
+  transform: translateX(-50%) scale(var(--scale));
 }
 
 .copyButton:disabled {

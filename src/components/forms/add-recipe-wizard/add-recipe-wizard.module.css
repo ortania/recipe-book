@@ -35,7 +35,7 @@
 .backLink:hover {
   /* color: var(--text-primary); */
   /* transform: scale(1.2); */
-  opacity: .8;
+  opacity: 0.8;
 }
 
 /* ========== Method Selection ========== */
@@ -1142,7 +1142,7 @@
 
 .categoryChip:hover {
   /* border-color: #1a9c5a; */
-  border-color: var(--active-color);
+  border-color: var(--active-color-primary);
 }
 
 @media (hover: none) {
@@ -1153,7 +1153,7 @@
 
 .categoryChipActive {
   background: var(--bg-hover);
-  color: var(--active-color);
+  color: var(--active-color-primary);
 }
 
 .addCategoryChip {
@@ -1171,15 +1171,15 @@
 }
 
 .addCategoryChip:hover {
-  border-color: var(--active-color);
-  color: var(--active-color);
+  border-color: var(--active-color-primary);
+  color: var(--active-color-primary);
 }
 
 .newCategoryInline {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  border: 1px solid var(--active-color);
+  border: 1px solid var(--active-color-primary);
   border-radius: 20px;
   padding: 0.25em 0.5em;
   background: var(--bg-card);
@@ -1205,7 +1205,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--active-color);
+  background: var(--active-color-primary);
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -1277,10 +1277,10 @@
   padding: 0.6em 1.2em;
   background: var(--bg-card);
   /* border: 2px solid #1a9c5a; */
-  border: 1px solid var(--active-color);
+  border: 1px solid var(--active-color-primary);
   border-radius: 12px;
   /* color: #1a9c5a; */
-  color: var(--active-color);
+  color: var(--active-color-primary);
   font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
@@ -1289,7 +1289,7 @@
 
 .previewBtn:hover {
   /* background: #1a9c5a; */
-  background: var(--active-color);
+  background: var(--active-color-primary);
   color: white;
 }
 

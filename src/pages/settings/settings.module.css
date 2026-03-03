@@ -177,7 +177,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--clr-blue-3);
+  background: var(--bg-accent-primary);
   cursor: pointer;
   border: 2px solid #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
@@ -223,12 +223,12 @@
 }
 
 .languageButton:hover {
-  border-color: var(--clr-blue-3);
+  border-color: var(--border-accent-primary);
   background: var(--bg-hover);
 }
 
 .languageButtonActive {
-  border-color: var(--clr-blue-3);
+  border-color: var(--border-accent-primary);
   background: var(--bg-tertiary);
 }
 
@@ -278,12 +278,12 @@
 }
 
 .themeBtn:hover {
-  border-color: var(--clr-blue-3);
+  border-color: var(---border-accent-primary);
 }
 
 .themeBtnActive {
-  border-color: var(--clr-blue-3);
-  background: var(--clr-blue-3);
+  border-color: var(--border-accent-primary);
+  background: var(--bg-accent-primary);
   color: #fff;
 }
 
@@ -301,11 +301,6 @@
 }
 .privacyCheckbox {
   margin-top: 0.15rem;
-  /* width: 1.2rem;
-  height: 1.2rem;
-  accent-color: var(--clr-blue-3);
-  cursor: pointer;
-  flex-shrink: 0; */
 }
 .privacyContent {
   display: flex;

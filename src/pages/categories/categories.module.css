@@ -101,7 +101,7 @@
 
 .groupName {
   font-weight: 600;
-  color: var(--clr-blue-3);
+  color: var(--text-primary);
 }
 
 .groupActions {

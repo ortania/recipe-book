@@ -62,8 +62,7 @@
   padding: 0.6em 1.2em;
   border: none;
   border-radius: 8px;
-  /* background: var(--clr-blue-3); */
-  background: var(--text-primary);
+  background: var(--bg-accent-primary);
   color: var(--bg-primary);
   font-size: var(--basic-font);
   font-weight: 600;

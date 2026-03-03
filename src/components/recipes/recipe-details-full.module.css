@@ -1034,9 +1034,9 @@
 }
 
 .checkbox:checked {
-  background: var(--active-color);
+  background: var(--active-color-secondary);
   /* border-color: #4caf50; */
-  border-color: var(--active-color);
+  border-color: var(--active-color-secondary);
   position: relative;
 }
 
@@ -1083,7 +1083,7 @@
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
-  color: #2e7d32;
+  color: var(--active-color-secondary);
   transition: background-color 0.2s;
 }
 

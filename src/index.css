@@ -74,7 +74,9 @@ Variables
   --primary-color: var(--clr-brown-1);
   --secondary-color: var(--clr-brown-2);
 
-  --active-color: #1a9c5a;
+  --active-color-primary: #1a9c5a;
+
+  --active-color-secondary: #2e7d32;
 
   --accent-color-1: #914c03;
   --accent-color-2: #9a652d;
@@ -96,10 +98,9 @@ Variables
   --font-weight-heading: 600;
   --font-weight-primary: 400;
   --font-weight-secondary: 500;
-  --font-weight-tertiary: 600;      
+  --font-weight-tertiary: 600;
   --font-weight-quaternary: 700;
   --font-weight-quinary: 800;
-
 
   /* fonts variables */
   --huge-font: 2.2rem;
@@ -112,7 +113,7 @@ Variables
   /* forms */
 
   --error-color: var(--clr-red);
-  --success-color: var(--cactive-color);
+  --success-color: var(--active-color-primary);
   --warning-color: var(--clr-yellow);
   --info-color: var(--secondary-color);
 

@@ -569,7 +569,7 @@ function SearchOverlay({
             ))}
           </div>
         )}
-      </div>
+      </div>   
       {hasActiveFilters && isMobile && (
         <>
           <div className={parentClasses.filterDivider} />
@@ -696,7 +696,7 @@ function SearchOverlay({
             sortDirection={sortDirection}
             onSortChange={handleSortChange}
             options={SORT_OPTIONS}
-          />
+          /> 
 
           {hasAnythingActive && (
             <button className={classes.clearAllButton} onClick={clearSearch}>

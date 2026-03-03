@@ -21,7 +21,7 @@
 
 .title {
   font-size: var(--large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-quaternary);
   margin: 0;
   color: var(--text-primary);
 }
@@ -170,20 +170,21 @@
 .addNewBtn {
   display: flex;
   align-items: center;
+  justify-content: center;
   gap: 0.4rem;
   padding: 0.75rem 1rem;
   background: transparent;
   border: none;
-  color: #4f9dde;
+  color: var(--text-secondary);
   font-size: var(--basic-font);
-  font-weight: 500;
+  font-weight: var(--font-weight-quaternary);
   cursor: pointer;
-  transition: color 0.15s ease;
+  transition: var(--transition);
   width: 100%;
 }
 
 .addNewBtn:hover {
-  color: #2980b9;
+  opacity: var(--hover-opacity);
 }
 
 /* Inline form */

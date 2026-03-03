@@ -712,26 +712,6 @@
   border-top: 1px solid var(--border-light);
 }
 
-.navBtn {
-  /*
-  padding: 0.5em 1.2em;
-  border-radius: 8px;
-  border: none;
-  font-size: 15px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  font-family: inherit; */
-}
-
-/* .navBtnPrimary {
-  background: var(--clr-blue-3);
-  color: #fff;
-}
-
-.navBtnPrimary:hover {
-  opacity: 0.9;
-} */
 
 .navBtnSecondary {
   background: var(--bg-tertiary);

@@ -12,7 +12,7 @@
 }
 
 .formTitle {
-  color: var(--clr-blue-3);
+  color: var(--text-primary);
   margin: 0 0 1rem;
   text-align: center;
   font-size: var(--large-font);
@@ -29,7 +29,7 @@
 
 .form input:focus {
   outline: none;
-  border-color: var(--clr-blue-3);
+  border-color: var(--bg-accent-primary);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
 }
 
@@ -51,12 +51,12 @@
 }
 
 .submitBtn {
-  background-color: var(--clr-blue-3);
+  background-color: var(--bg-accent-primary);
   color: white;
 }
 
 .submitBtn:hover {
-  background-color: var(--clr-blue-4);
+  background-color: var(--bg-accent-primary);
 }
 
 .cancelBtn {
@@ -168,7 +168,7 @@
 
 .textarea:focus {
   outline: none;
-  border-color: var(--clr-blue-3);
+  border-color: var(--border-accent-primary);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
 }
 
@@ -420,7 +420,7 @@
 
 .itemInput:focus {
   outline: none;
-  border-color: var(--clr-blue-3);
+  border-color: var(--border-accent-primary);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
 }
 
@@ -438,7 +438,7 @@
 
 .itemTextarea:focus {
   outline: none;
-  border-color: var(--clr-blue-3);
+  border-color: var(--border-accent-primary);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
 }
 

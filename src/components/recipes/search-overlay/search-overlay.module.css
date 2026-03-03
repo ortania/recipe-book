@@ -46,9 +46,9 @@
 }
 
 .noResultsTitle {
-  font-size: 1.15rem;
-  font-weight: 600;
-  color: var(--text-primary, #333);
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-tertiary);
+  color: var(--text-primary);
   margin: 0;
 }
 
@@ -168,8 +168,8 @@
 
 .previousSearchChip:hover {
   background: var(--bg-hover, #f0f0f0);
-  border-color: var(--active-color);
-  color: var(--active-color);
+  border-color: var(--active-color-primary);
+  color: var(--active-color-primary);
 }
 
 .foundTermLabel {
