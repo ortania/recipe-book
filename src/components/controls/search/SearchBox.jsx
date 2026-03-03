@@ -1,8 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, forwardRef } from "react";
 import { Search } from "lucide-react";
 import classes from "./search-box.module.css";
 
-function SearchBox({
+const SearchBox = forwardRef(function SearchBox({
   searchTerm,
   onSearchChange,
   onKeyDown,
@@ -12,7 +12,7 @@ function SearchBox({
   size = "medium",
   className = "",
   autoFocus = false,
-}) {
+}, ref) {
   const [currentExample, setCurrentExample] = useState(0);
 
   useEffect(() => {
@@ -40,6 +40,7 @@ function SearchBox({
         onFocus={onFocus}
         className={classes.searchInput}
         autoFocus={autoFocus}
+        ref={ref}
       />
       {searchTerm && (
         <button
@@ -52,6 +53,6 @@ function SearchBox({
       )}
     </div>
   );
-}
+});
 
 export default SearchBox;

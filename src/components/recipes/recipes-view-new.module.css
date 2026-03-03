@@ -18,7 +18,7 @@
   padding: 1rem 0;
   min-height: 50px;
   position: relative;
-  z-index: 2;
+  z-index: 101;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -114,6 +114,10 @@
   .recipesContainer.chatMode {
     padding-top: 3.5rem;
     padding-bottom: 0;
+  }
+
+  .compactList {
+    padding-bottom: 5rem;
   }
 
   .stickyTop {
@@ -1169,7 +1173,8 @@
 
 .compactSharer {
   font-size: var(--small-font);
-  color: var(--text-primary);
+  color: var(--accent-color-1);
+  text-decoration: underline;
   cursor: pointer;
   white-space: nowrap;
   margin-inline-end: 0.5rem;
@@ -1511,4 +1516,45 @@
 
 .categoriesPopup .categoriesSheetList {
   max-height: 45vh;
+}
+
+/* ── Sharer list (bottom-sheet + desktop popup) ── */
+.sharerList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem;
+  overflow-y: auto;
+  max-height: 50vh;
+}
+
+.sharerItem {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.7rem 1rem;
+  border: none;
+  border-radius: 10px;
+  background: none;
+  color: var(--text-primary);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  text-align: start;
+  transition: background 0.15s;
+}
+
+.sharerItem:hover {
+  background: var(--bg-hover);
+}
+
+.sharerItemActive {
+  background: var(--bg-accent-primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.sharerItemActive:hover {
+  background: var(--bg-accent-primary);
+  opacity: 0.9;
 }

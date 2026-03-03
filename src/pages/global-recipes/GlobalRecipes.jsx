@@ -121,23 +121,12 @@ function GlobalRecipes() {
     [currentUser, language, setRecipes],
   );
 
-  const sharerSelector = sharerOptions.length > 0 ? (
-    <select
-      className={classes.sharerSelect}
-      value={selectedSharer}
-      onChange={(e) => setSelectedSharer(e.target.value)}
-    >
-      <option value="all">{t("globalRecipes", "allSharers")}</option>
-      {sharerOptions.map((s) => (
-        <option key={s.id} value={s.id}>{s.name}</option>
-      ))}
-    </select>
-  ) : null;
-
   return (
     <div>
       <RecipesView
-        headerAction={sharerSelector}
+        sharerOptions={sharerOptions}
+        selectedSharer={selectedSharer}
+        onSelectSharer={setSelectedSharer}
         persons={filteredRecipes}
         groups={[]}
         showAddAndFavorites={false}

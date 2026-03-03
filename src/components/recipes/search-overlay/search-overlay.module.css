@@ -221,6 +221,15 @@
   min-width: 0;
 }
 
+/* Mobile: same sticky pattern as .stickyTop */
+@media (max-width: 768px) {
+  .mobileSearchHeader {
+    margin-top: -3.5rem !important;
+    padding-top: 0.3rem !important;
+    z-index: 100;
+  }
+}
+
 @media (max-width: 768px) {
   .resultsCount {
     padding-inline-start: 1rem;

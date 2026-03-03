@@ -114,6 +114,7 @@ function SearchOverlay({
 
   const filterRef = useRef(null);
   const suggestionsRef = useRef(null);
+  const searchInputRef = useRef(null);
   const [filterMenuStyle, setFilterMenuStyle] = useState({});
 
   useEffect(() => {
@@ -123,6 +124,12 @@ function SearchOverlay({
     mql.addEventListener("change", update);
     return () => mql.removeEventListener("change", update);
   }, []);
+
+  useEffect(() => {
+    if (open && searchInputRef.current) {
+      searchInputRef.current.focus({ preventScroll: true });
+    }
+  }, [open]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchTerm), 200);
@@ -596,18 +603,16 @@ function SearchOverlay({
 
   if (!open) return null;
 
-  return (
-    <>
-      {/* Search header */}
-      <div
-        className={`${parentClasses.searchHeader} ${onToggleView ? classes.searchHeaderEdges : ""}`}
-      >
-        <BackButton onClick={onClose} size={28} className={parentClasses.desktopHeaderBtn} />
-        <div className={onToggleView ? classes.searchCenter : classes.searchCenterDefault}>
-          <div
-            className={`${parentClasses.searchBoxWrapper} ${classes.searchBoxRelative}`}
-            ref={suggestionsRef}
-          >
+  const searchHeaderJSX = (
+    <div
+      className={`${parentClasses.searchHeader} ${onToggleView ? classes.searchHeaderEdges : ""} ${isMobile ? classes.mobileSearchHeader : ""}`}
+    >
+      <BackButton onClick={onClose} size={28} className={parentClasses.desktopHeaderBtn} />
+      <div className={onToggleView ? classes.searchCenter : classes.searchCenterDefault}>
+        <div
+          className={`${parentClasses.searchBoxWrapper} ${classes.searchBoxRelative}`}
+          ref={suggestionsRef}
+        >
           <SearchBox
             searchTerm={searchTerm}
             onSearchChange={(val) => {
@@ -628,28 +633,8 @@ function SearchOverlay({
               t("recipesView", "searchExample4"),
             ]}
             size="large"
-            autoFocus
+            ref={searchInputRef}
           />
-          {/* {showRecentSearches && !searchTerm && recentSearches.length > 0 && (
-            <div className={classes.suggestions}>
-              <div className={classes.recentHeader}>
-                <Search size={14} />
-                <span>
-                  {t("recipesView", "recentSearches") || "חיפושים אחרונים"}
-                </span>
-              </div>
-              {recentSearches.map((term, i) => (
-                <button
-                  key={i}
-                  className={classes.suggestionItem}
-                  onClick={() => handleRecentSearchClick(term)}
-                >
-                  <History size={14} className={classes.recentIcon} />
-                  <span className={classes.suggestionName}>{term}</span>
-                </button>
-              ))}
-            </div>
-          )} */}
         </div>
         <div className={parentClasses.headerControls}>
           <div className={parentClasses.dropdownContainer} ref={filterRef}>
@@ -707,7 +692,7 @@ function SearchOverlay({
             sortDirection={sortDirection}
             onSortChange={handleSortChange}
             options={SORT_OPTIONS}
-          /> 
+          />
 
           {hasAnythingActive && (
             <button className={classes.clearAllButton} onClick={clearSearch}>
@@ -718,17 +703,20 @@ function SearchOverlay({
             </button>
           )}
         </div>
-        </div>
-        {onToggleView && (
-          <button
-            className={parentClasses.desktopHeaderBtn}
-            onClick={onToggleView}
-          >
-            {isSimpleView ? <LayoutGrid size={28} /> : <Rows4 size={28} />}
-          </button>
-        )}
       </div>
+      {onToggleView && (
+        <button
+          className={parentClasses.desktopHeaderBtn}
+          onClick={onToggleView}
+        >
+          {isSimpleView ? <LayoutGrid size={28} /> : <Rows4 size={28} />}
+        </button>
+      )}
+    </div>
+  );
 
+  const contentJSX = (
+    <>
       {/* Category chips */}
       {showCategories &&
         !isAllSelected &&
@@ -805,29 +793,6 @@ function SearchOverlay({
           </>
         ) : (
           <>
-            {/* Recent search terms */}
-            {/* {recentSearches.length > 0 && (
-              <div className={classes.previousSearchesSection}>
-                <h3 className={classes.previousSearchesTitle}>
-                  <History size={16} />
-                  {t("recipesView", "recentSearches") || "חיפושים אחרונים"}
-                </h3>
-                <div className={classes.previousSearchesList}>
-                  {recentSearches.map((term, i) => (
-                    <button
-                      key={i}
-                      className={classes.previousSearchChip}
-                      onClick={() => handleRecentSearchClick(term)}
-                    >
-                      <Search size={14} />
-                      {term}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )} */}
-
-            {/* "Found recently" - last search results */}
             {lastFoundData.recipes.length > 0 && (
               <div className={parentClasses.recentlyViewedSection}>
                 <div className={parentClasses.sectionHeader}>
@@ -878,6 +843,13 @@ function SearchOverlay({
           </>
         )}
       </div>
+    </>
+  );
+
+  return (
+    <>
+      {searchHeaderJSX}
+      {contentJSX}
     </>
   );
 }

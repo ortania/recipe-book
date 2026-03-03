@@ -28,6 +28,7 @@
   background: var(--bg-input);
   color: var(--text-primary);
   box-sizing: border-box;
+  text-overflow: ellipsis;
   transition:
     border-color 0.2s,
     background-color 0.3s;
@@ -35,6 +36,7 @@
 
 .searchInput::placeholder {
   color: var(--text-muted);
+  font-size: var(--small-font);
 }
 
 .searchInput:focus {
