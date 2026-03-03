@@ -2,6 +2,10 @@
   padding: 2rem;
   max-width: 600px;
   margin: 0 auto;
+  /* display: flex;
+  flex-direction: column;
+  justify-content: center; */
+  min-height: 100dvh;
 }
 
 .header {
@@ -18,8 +22,8 @@
 
 .title {
   font-size: var(--very-large-font);
-  color: var(--clr-blue-3);
-  font-weight: 600;
+  color: var(--clr-heading);
+  font-weight: var(--font-weight-heading);
   margin: 0;
 }
 
@@ -45,11 +49,11 @@
 
 .settingItem:hover {
   background: var(--bg-hover);
-  border-color: var(--clr-blue-3);
+  border-color: var(--border-accent-primary);
 }
 
 .settingItemIcon {
-  font-size: 1.6rem;
+  font-size: var(--basic-font);
   flex-shrink: 0;
 }
 
@@ -75,6 +79,7 @@
   font-size: 1.2rem;
   color: var(--text-muted);
   flex-shrink: 0;
+  transform: rotate(-90deg) scale(1.5);
 }
 
 .modalHeader {
@@ -116,8 +121,8 @@
 
 .fontSizeLabel {
   font-size: var(--basic-font);
-  color: var(--text-secondary);
-  font-weight: 500;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-secondary);
 }
 
 .fontSizeSlider {
@@ -127,14 +132,14 @@
 }
 
 .sliderLabel {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: var(--text-muted);
   min-width: 30px;
   text-align: center;
 }
 
 .sliderLabelLarge {
-  font-size: var(--very-large-font);
+  font-size: var(--huge-font);
   color: var(--text-muted);
   min-width: 30px;
   text-align: center;
@@ -142,8 +147,8 @@
 
 .scaleValue {
   font-size: var(--basic-font);
-  color: var(--clr-blue-3);
-  font-weight: 600;
+  color: var(--text-primary);
+  font-weight: var(--font-weight-tertiary);
   text-align: center;
 }
 
@@ -162,7 +167,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--clr-blue-3);
+  background: var(--bg-accent-primary);
   cursor: pointer;
   border: 2px solid #fff;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
@@ -282,9 +287,61 @@
   color: #fff;
 }
 
+.privacyToggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  padding: 0.75rem;
+  border-radius: 10px;
+  transition: var(--transition);
+}
+.privacyToggle:hover {
+  background: var(--bg-hover);
+}
+.privacyCheckbox {
+  margin-top: 0.15rem;
+  /* width: 1.2rem;
+  height: 1.2rem;
+  accent-color: var(--clr-blue-3);
+  cursor: pointer;
+  flex-shrink: 0; */
+}
+.privacyContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.privacyLabel {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-tertiary);
+  color: var(--text-primary);
+}
+.privacyDesc {
+  font-size: var(--basic-font);
+  color: var(--text-primary);
+  line-height: 1.4;
+}
+
+.expandedPanel {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-top: 0.5rem;
+}
+
 @media (max-width: 768px) {
   .settingsPage {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: var(--bg-primary);
     padding: 1rem;
+    justify-content: flex-start;
+    min-height: unset;
+    max-width: unset;
+    overflow-y: auto;
   }
 
   .header {

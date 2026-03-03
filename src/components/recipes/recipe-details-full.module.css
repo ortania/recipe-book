@@ -245,7 +245,7 @@
 }
 
 .backButton:hover {
-  color: var(--accent-color, #0066cc);
+  color: var(--primary-color, #0066cc);
 }
 
 .headerSpacer {
@@ -1030,23 +1030,27 @@
   -webkit-appearance: none;
   -moz-appearance: none;
   position: relative;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .checkbox:checked {
-  background: #4caf50;
-  border-color: #4caf50;
+  background: var(--active-color);
+  /* border-color: #4caf50; */
+  border-color: var(--active-color);
+  position: relative;
 }
 
 .checkbox:checked::after {
-  content: "✓";
+  content: "";
   position: absolute;
+  width: 0.4rem;
+  height: 0.8rem;
+  border: solid white;
+  border-width: 0 0.2rem 0.2rem 0;
+  transform: translate(-50%, -50%) rotate(45deg);
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
-  color: white;
-  font-size: 0.8rem;
-  font-weight: bold;
+  box-sizing: border-box;
 }
 
 .checkboxLabel span {

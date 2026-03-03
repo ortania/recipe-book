@@ -41,7 +41,7 @@
   padding: 0.5em 1em;
   transition: 0.2s ease;
   background: var(--bg-primary);
-  border-radius: var(--button-border-radius);
+  border-radius: var(--btn-border-radius);
   border: 2px solid var(--border-color);
   display: flex;
   align-items: center;
@@ -50,7 +50,7 @@
 
 .clearBtn:hover {
   /* background: var(--bg-hover); */
-  /* border-color: var(--border-special-primary); */
+  /* border-color: var(--border-accent-primary); */
   color: var(--border-error);
   border-color: var(--border-error);
 }

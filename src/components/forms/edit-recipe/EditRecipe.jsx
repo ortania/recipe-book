@@ -8,6 +8,7 @@ import {
   Save,
   Trash2,
   Globe,
+  UserCircle,
   Heart,
   FileText,
   List,
@@ -133,6 +134,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     notes: person.notes || "",
     rating: person.rating || 0,
     shareToGlobal: person.shareToGlobal || false,
+    showMyName: person.showMyName || false,
     nutrition: {
       calories: "",
       protein: "",
@@ -384,6 +386,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       notes: editedPerson.notes,
       rating: editedPerson.rating || 0,
       shareToGlobal: editedPerson.shareToGlobal,
+      showMyName: editedPerson.shareToGlobal ? editedPerson.showMyName : false,
       nutrition,
     };
     console.log(
@@ -604,11 +607,32 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               name="shareToGlobal"
               className={buttonClasses.checkBox}
               checked={editedPerson.shareToGlobal}
-              onChange={handleChange}
+              onChange={(e) => {
+                handleChange(e);
+                if (!e.target.checked) {
+                  setEditedPerson((prev) => ({ ...prev, showMyName: false }));
+                }
+              }}
             />
             <Globe size={16} />
             <span>{t("recipes", "shareToGlobal")}</span>
           </label>
+          {editedPerson.shareToGlobal && (
+            <label
+              className={classes.checkboxLabel}
+              style={{ paddingInlineStart: "1.5rem" }}
+            >
+              <input
+                type="checkbox"
+                name="showMyName"
+                className={buttonClasses.checkBox}
+                checked={editedPerson.showMyName}
+                onChange={handleChange}
+              />
+              <UserCircle size={16} />
+              <span>{t("recipes", "showMyName")}</span>
+            </label>
+          )}
         </div>
       )}
     </>

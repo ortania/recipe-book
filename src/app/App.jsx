@@ -30,6 +30,7 @@ const ConversionTables = React.lazy(
   () => import("../components/conversion-tables"),
 );
 const Settings = React.lazy(() => import("../pages/settings/Settings"));
+const SharerProfile = React.lazy(() => import("../pages/sharer-profile/SharerProfile"));
 const MigratePage = React.lazy(() => import("../pages/migrate"));
 const Repair = React.lazy(() => import("../pages/repair/Repair"));
 
@@ -281,6 +282,7 @@ function skeletonForPath(path) {
   if (path.startsWith("/shopping-list")) return <ShoppingListSkeleton />;
   if (path.startsWith("/recipe/")) return <RecipeDetailSkeleton />;
   if (path.startsWith("/global-recipes")) return <RecipeGridSkeleton />;
+  if (path.startsWith("/sharer/")) return <RecipeGridSkeleton />;
   return <RecipeGridSkeleton count={12} />;
 }
 
@@ -380,6 +382,10 @@ function AppContent() {
         <Route
           path="/global-recipes"
           element={<Lazy><GlobalRecipes /></Lazy>}
+        />
+        <Route
+          path="/sharer/:userId"
+          element={<Lazy><SharerProfile /></Lazy>}
         />
       </Route>
 

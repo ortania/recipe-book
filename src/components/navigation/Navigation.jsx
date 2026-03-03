@@ -9,7 +9,6 @@ import {
   CalendarDays,
   ShoppingCart,
   Globe,
-  BookOpenText,
   BookOpen,
   Menu,
   MessageSquareMore,
@@ -125,7 +124,6 @@ function Navigation({ onLogout, links }) {
     };
     window.addEventListener("resize", handleResize);
 
-    // Swipe gesture for hamburger menu on mobile
     let touchStartX = 0;
     let touchStartY = 0;
     const SWIPE_THRESHOLD = 60;
@@ -137,17 +135,15 @@ function Navigation({ onLogout, links }) {
 
     const handleTouchEnd = (e) => {
       if (window.innerWidth > 768) return;
-      // Disable hamburger swipe on recipe detail/cooking pages (tabs use swipe there)
       if (window.location.pathname.startsWith("/recipe/")) return;
       const touchEndX = e.changedTouches[0].clientX;
       const touchEndY = e.changedTouches[0].clientY;
       const diffX = touchEndX - touchStartX;
       const diffY = Math.abs(touchEndY - touchStartY);
-      if (diffY > Math.abs(diffX)) return; // vertical scroll, ignore
+      if (diffY > Math.abs(diffX)) return;
 
       const isRTL = document.documentElement.dir === "rtl";
       if (isRTL) {
-        // RTL: swipe left opens, swipe right closes
         if (diffX < -SWIPE_THRESHOLD && touchStartX > window.innerWidth - 40) {
           setIsOpen(true);
           document.body.classList.add("sidebar-open");
@@ -156,7 +152,6 @@ function Navigation({ onLogout, links }) {
           document.body.classList.remove("sidebar-open");
         }
       } else {
-        // LTR: swipe right opens, swipe left closes
         if (diffX > SWIPE_THRESHOLD && touchStartX < 40) {
           setIsOpen(true);
           document.body.classList.add("sidebar-open");
@@ -219,14 +214,18 @@ function Navigation({ onLogout, links }) {
   const selectedCount = isAllSelected ? 0 : selectedCategories.length;
   const isRecipeDetailsPage = location.pathname.startsWith("/recipe/");
   const isGlobalRecipesPage = location.pathname === "/global-recipes";
+  const isSharerPage = location.pathname.startsWith("/sharer/");
+  const isSettingsPage = location.pathname === "/settings";
 
   return (
     <>
-      {!isRecipeDetailsPage && (
+      {!isRecipeDetailsPage && !isSettingsPage && (
         <div className={classes.mobileTopBar}>
-          <button className={classes.hamburger} onClick={toggleSidebar}>
-            {isOpen ? null : <Menu size={22} />}
-          </button>
+          {!isSharerPage && (
+            <button className={classes.hamburger} onClick={toggleSidebar}>
+              {isOpen ? null : <Menu size={22} />}
+            </button>
+          )}
           <div id="mobile-tabs-portal" className={classes.mobileTabsSlot} />
           <div
             id="mobile-header-actions-portal"
@@ -235,133 +234,134 @@ function Navigation({ onLogout, links }) {
         </div>
       )}
 
-      <nav className={`${classes.nav} ${isOpen ? classes.open : ""}`}>
-        <div ref={navScrollableRef} className={classes.navScrollable}>
-          <div className={classes.mobileCloseRow}>
-            <CloseButton
-              onClick={closeSidebar}
-              type="plain"
-              className={classes.sidebarCloseBtn}
-            />
-          </div>
-          <div className={classes.desktopOnly}>
-            <span className={classes.logo}>Cooki</span>
-            <span className={classes.logoTail}>Pal</span>
-          </div>
+      {!isSharerPage && (
+        <nav className={`${classes.nav} ${isOpen ? classes.open : ""}`}>
+          <div ref={navScrollableRef} className={classes.navScrollable}>
+            <div className={classes.mobileCloseRow}>
+              <CloseButton
+                onClick={closeSidebar}
+                type="plain"
+                className={classes.sidebarCloseBtn}
+              />
+            </div>
+            <div className={classes.desktopOnly}>
+              <span className={classes.logo}>Cooki</span>
+              <span className={classes.logoTail}>Pal</span>
+            </div>
 
-          <div className={classes.desktopOnly}>
-            {filteredLinks.map((el) => {
-              const Icon = iconMap[el.name];
-              return (
-                <NavLink
-                  key={el.name}
-                  to={el.link}
-                  onClick={closeSidebar}
-                  className={({ isActive }) =>
-                    `${classes.navLink} ${isActive ? classes.active : ""}`
-                  }
+            <div className={classes.desktopOnly}>
+              {filteredLinks.map((el) => {
+                const Icon = iconMap[el.name];
+                return (
+                  <NavLink
+                    key={el.name}
+                    to={el.link}
+                    onClick={closeSidebar}
+                    className={({ isActive }) =>
+                      `${classes.navLink} ${isActive ? classes.active : ""}`
+                    }
+                  >
+                    {Icon && <Icon size={18} className={classes.icon} />}
+                    {t(
+                      "nav",
+                      navTranslationMap[el.name] || el.name.toLowerCase(),
+                    )}
+                  </NavLink>
+                );
+              })}
+            </div>
+
+            <div className={classes.separator}></div>
+
+            {!isGlobalRecipesPage && (
+              <>
+                <button
+                  className={classes.navLink}
+                  onClick={() => {
+                    managementFromSheetRef.current = false;
+                    setShowManagement(true);
+                    closeSidebar();
+                  }}
                 >
-                  {Icon && <Icon size={18} className={classes.icon} />}
-                  {t(
-                    "nav",
-                    navTranslationMap[el.name] || el.name.toLowerCase(),
-                  )}
-                </NavLink>
-              );
-            })}
+                  <Settings2 size={18} className={classes.icon} />
+                  {t("categories", "manage")}
+                </button>
+
+                <button
+                  className={classes.navLink}
+                  onClick={() => {
+                    setShowCategoriesSheet(true);
+                    closeSidebar();
+                  }}
+                >
+                  <Tags size={18} className={classes.icon} />
+                  {t("nav", "categories")}
+                </button>
+                <div className={classes.separator}></div>
+              </>
+            )}
+            <button
+              className={classes.navLink}
+              onClick={() => {
+                setShowChatHistory(true);
+                closeSidebar();
+              }}
+            >
+              <MessageSquareMore size={18} className={classes.icon} />
+              {t("nav", "chatLog")}
+            </button>
+            <div className={classes.separator}></div>
           </div>
 
-          <div className={classes.separator}></div>
+          <div className={classes.navGradient} />
+          <div className={classes.navBottom}>
+            <div className={classes.separator}></div>
 
-          {!isGlobalRecipesPage && (
-            <>
-              <button
-                className={classes.navLink}
-                onClick={() => {
-                  managementFromSheetRef.current = false;
-                  setShowManagement(true);
-                  closeSidebar();
-                }}
-              >
-                <Settings2 size={18} className={classes.icon} />
-                {t("categories", "manage")}
-              </button>
+            <button
+              className={classes.navLink}
+              onClick={() => {
+                closeSidebar();
+                setShowTour(true);
+              }}
+            >
+              <HelpCircle size={18} className={classes.icon} />
+              {t("home", "showTutorial")}
+            </button>
+            <button className={classes.navLink} onClick={() => setShowHelp(true)}>
+              <HelpCircle size={18} className={classes.icon} />
+              {t("nav", "help")}
+            </button>
 
-              <button
-                className={classes.navLink}
-                onClick={() => {
-                  setShowCategoriesSheet(true);
-                  closeSidebar();
-                }}
-              >
-                <Tags size={18} className={classes.icon} />
-                {t("nav", "categories")}
-              </button>
-              <div className={classes.separator}></div>
-            </>
-          )}
-          {/* Chat Log Section */}
-          <button
-            className={classes.navLink}
-            onClick={() => {
-              setShowChatHistory(true);
-              closeSidebar();
-            }}
-          >
-            <MessageSquareMore size={18} className={classes.icon} />
-            {t("nav", "chatLog")}
-          </button>
-          <div className={classes.separator}></div>
-        </div>
+            <div className={classes.separator}></div>
+            <NavLink
+              to="/settings"
+              onClick={closeSidebar}
+              className={({ isActive }) =>
+                `${classes.navLink} ${isActive ? classes.active : ""}`
+              }
+            >
+              <Settings size={18} className={classes.icon} />
+              {t("nav", "settings")}
+            </NavLink>
+            <div className={classes.separator}></div>
+            <button className={classes.logoutButton} onClick={handleLogout}>
+              <LogOut size={18} className={classes.icon} />
+              <span className={classes.logoutText}>
+                {t("nav", "logout")}
+                {currentUser && (
+                  <span className={classes.userName}>
+                    {currentUser.displayName || currentUser.email}
+                  </span>
+                )}
+              </span>
+            </button>
+          </div>
+        </nav>
+      )}
 
-        <div className={classes.navGradient} />
-        <div className={classes.navBottom}>
-          <div className={classes.separator}></div>
-
-          {/* <div className={classes.separator}></div> */}
-
-          <button
-            className={classes.navLink}
-            onClick={() => {
-              closeSidebar();
-              setShowTour(true);
-            }}
-          >
-            <HelpCircle size={18} className={classes.icon} />
-            {t("home", "showTutorial")}
-          </button>
-          <button className={classes.navLink} onClick={() => setShowHelp(true)}>
-            <HelpCircle size={18} className={classes.icon} />
-            {t("nav", "help")}
-          </button>
-
-          <div className={classes.separator}></div>
-          <NavLink
-            to="/settings"
-            onClick={closeSidebar}
-            className={({ isActive }) =>
-              `${classes.navLink} ${isActive ? classes.active : ""}`
-            }
-          >
-            <Settings size={18} className={classes.icon} />
-            {t("nav", "settings")}
-          </NavLink>
-          <div className={classes.separator}></div>
-          <button className={classes.logoutButton} onClick={handleLogout}>
-            <LogOut size={18} className={classes.icon} />
-            <span className={classes.logoutText}>
-              {t("nav", "logout")}
-              {currentUser && (
-                <span className={classes.userName}>
-                  {currentUser.displayName || currentUser.email}
-                </span>
-              )}
-            </span>
-          </button>
-        </div>
-      </nav>
-
-      {isOpen && <div className={classes.overlay} onClick={closeSidebar} />}
+      {isOpen && !isSharerPage && (
+        <div className={classes.overlay} onClick={closeSidebar} />
+      )}
 
       {showManagement && (
         <CategoriesManagement
@@ -413,7 +413,6 @@ function Navigation({ onLogout, links }) {
                   onClick={() => setShowCategoriesSheet(false)}
                   size={25}
                 />
-
               </div>
               <CategoriesSheetContent
                 onManage={() => {

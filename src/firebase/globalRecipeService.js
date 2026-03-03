@@ -5,56 +5,64 @@ import {
   doc,
   query,
   where,
-  orderBy,
-  limit,
-  startAfter,
   getDoc,
 } from "firebase/firestore";
 import { db } from "./config";
 import { translateRecipeContent } from "../utils/translateContent";
 
 const RECIPES_COLLECTION = "recipes";
-const FETCH_SIZE = 40;
 
-export const fetchGlobalRecipes = async (currentUserId, lastDoc = null) => {
+export const fetchGlobalRecipes = async (currentUserId) => {
   try {
     const ref = collection(db, RECIPES_COLLECTION);
+    const snap = await getDocs(
+      query(ref, where("shareToGlobal", "==", true)),
+    );
 
-    const constraints = [
-      where("shareToGlobal", "==", true),
-      orderBy("avgRating", "desc"),
-      limit(FETCH_SIZE),
-    ];
-    if (lastDoc) {
-      constraints.splice(2, 0, startAfter(lastDoc));
-    }
-
-    let snap;
-    try {
-      snap = await getDocs(query(ref, ...constraints));
-    } catch (indexError) {
-      console.warn(
-        "⚠️ fetchGlobalRecipes composite index missing, falling back:",
-        indexError.message,
-      );
-      const fallback = [where("shareToGlobal", "==", true), limit(FETCH_SIZE)];
-      if (lastDoc) fallback.splice(1, 0, startAfter(lastDoc));
-      snap = await getDocs(query(ref, ...fallback));
-    }
-
-    const recipes = [];
+    const allRecipes = [];
     snap.forEach((d) => {
       const data = d.data();
       if (currentUserId && data.userId === currentUserId) return;
-      recipes.push({ id: d.id, ...data });
+      allRecipes.push({ id: d.id, ...data });
     });
 
-    const lastVisible = snap.docs[snap.docs.length - 1] || null;
-    const hasMore = snap.docs.length === FETCH_SIZE;
-    return { recipes, lastVisible, hasMore };
+    allRecipes.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+
+    console.log("🔍 fetchGlobalRecipes total:", snap.size, "| shown:", allRecipes.length);
+    return { recipes: allRecipes, lastVisible: null, hasMore: false };
   } catch (error) {
     console.error("Error fetching global recipes:", error);
     return { recipes: [], lastVisible: null, hasMore: false };
+  }
+};
+
+export const fetchSharerRecipes = async (sharerUserId, isPublicProfile) => {
+  try {
+    const ref = collection(db, RECIPES_COLLECTION);
+
+    console.log("🔍 fetchSharerRecipes query:", { sharerUserId, isPublicProfile });
+
+    const snap = await getDocs(query(ref, where("userId", "==", sharerUserId)));
+    console.log("🔍 fetchSharerRecipes raw docs from Firestore:", snap.size);
+
+    let recipes = [];
+    snap.forEach((d) => {
+      const data = d.data();
+      console.log("🔍 sharerDoc:", data.name, "| shareToGlobal:", data.shareToGlobal, "| userId:", data.userId);
+      recipes.push({ id: d.id, ...data });
+    });
+
+    if (!isPublicProfile) {
+      recipes = recipes.filter((r) => r.shareToGlobal === true);
+      console.log("🔍 after shareToGlobal filter:", recipes.length);
+    }
+
+    recipes.sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+    console.log("🔍 fetchSharerRecipes final:", recipes.length, "recipes");
+    return recipes;
+  } catch (error) {
+    console.error("Error fetching sharer recipes:", error);
+    return [];
   }
 };
 

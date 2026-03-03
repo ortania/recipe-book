@@ -1,12 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiSun, FiMoon, FiChevronRight, FiChevronLeft } from "react-icons/fi";
+import { Palette, Accessibility, ShieldCheck, Globe } from "lucide-react";
 import { applyFontScale } from "../../utils/applyFontScale";
 import { getStoredTheme, applyTheme } from "../../utils/theme";
-import { useLanguage } from "../../context";
+import { useLanguage, useRecipeBook } from "../../context";
+import { updateUserProfile } from "../../firebase/authService";
 import { CloseButton } from "../../components/controls/close-button";
 import { Modal } from "../../components/modal";
 import { LANGUAGES, RTL_LANGUAGES } from "../../utils/translations";
+import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./settings.module.css";
 
 const DEFAULT_SCALE = 1;
@@ -16,6 +19,7 @@ const STEP = 0.1;
 
 function Settings() {
   const { language, setLanguage, t } = useLanguage();
+  const { currentUser } = useRecipeBook();
   const navigate = useNavigate();
   const [openSetting, setOpenSetting] = useState(null);
 
@@ -25,6 +29,22 @@ function Settings() {
   });
 
   const [theme, setTheme] = useState(getStoredTheme);
+
+  const [publicProfile, setPublicProfile] = useState(
+    () => currentUser?.publicProfile || false,
+  );
+
+  const handlePublicProfileToggle = async () => {
+    const next = !publicProfile;
+    setPublicProfile(next);
+    if (currentUser?.uid) {
+      try {
+        await updateUserProfile(currentUser.uid, { publicProfile: next });
+      } catch (err) {
+        setPublicProfile(!next);
+      }
+    }
+  };
 
   useEffect(() => {
     applyFontScale(scale);
@@ -47,25 +67,20 @@ function Settings() {
   const currentThemeLabel =
     theme === "dark" ? t("settings", "darkMode") : t("settings", "lightMode");
 
+  const closePanel = () => setOpenSetting(null);
+
   const settingItems = [
-    // Language selector hidden for now
-    // {
-    //   id: "language",
-    //   icon: "🌐",
-    //   label: t("settings", "language"),
-    //   value: currentLang ? `${currentLang.flag} ${currentLang.label}` : "",
-    // },
-    {
-      id: "appearance",
-      icon: "🎨",
-      label: t("settings", "appearance"),
-      value: currentThemeLabel,
-    },
     {
       id: "accessibility",
-      icon: "♿",
+      icon: <Accessibility size={20} />,
       label: t("settings", "accessibility"),
       value: `×${scale.toFixed(1)}`,
+    },
+    {
+      id: "privacy",
+      icon: <ShieldCheck size={20} />,
+      label: t("settings", "privacy"),
+      value: publicProfile ? t("settings", "publicProfile") : "",
     },
   ];
 
@@ -82,29 +97,90 @@ function Settings() {
 
       <div className={classes.settingsList}>
         {settingItems.map((item) => (
-          <button
-            key={item.id}
-            className={classes.settingItem}
-            onClick={() => setOpenSetting(item.id)}
-          >
-            <span className={classes.settingItemIcon}>{item.icon}</span>
-            <span className={classes.settingItemContent}>
-              <span className={classes.settingItemLabel}>{item.label}</span>
-              <span className={classes.settingItemValue}>{item.value}</span>
-            </span>
-            <ChevronIcon className={classes.settingItemChevron} />
-          </button>
+          <div key={item.id}>
+            <button
+              className={classes.settingItem}
+              onClick={() =>
+                setOpenSetting(openSetting === item.id ? null : item.id)
+              }
+            >
+              <span className={classes.settingItemIcon}>{item.icon}</span>
+              <span className={classes.settingItemContent}>
+                <span className={classes.settingItemLabel}>{item.label}</span>
+                <span className={classes.settingItemValue}>{item.value}</span>
+              </span>
+              <ChevronIcon className={classes.settingItemChevron} />
+            </button>
+
+            {openSetting === "accessibility" && item.id === "accessibility" && (
+              <div className={classes.expandedPanel}>
+                <div className={classes.fontSizeControl}>
+                  <div className={classes.fontSizeLabel}>
+                    {t("settings", "fontSize")}
+                  </div>
+                  <div className={classes.fontSizeSlider}>
+                    <span className={classes.sliderLabel}>א</span>
+                    <input
+                      type="range"
+                      min={MIN_SCALE}
+                      max={MAX_SCALE}
+                      step={STEP}
+                      value={scale}
+                      onChange={(e) => setScale(parseFloat(e.target.value))}
+                      className={classes.slider}
+                    />
+                    <span className={classes.sliderLabelLarge}>א</span>
+                  </div>
+                  <div className={classes.scaleValue}>×{scale.toFixed(1)}</div>
+                  <div className={classes.previewBox}>
+                    <div className={classes.previewTitle}>
+                      {t("settings", "preview")}
+                    </div>
+                    <div className={classes.previewText}>
+                      {t("settings", "previewText")}
+                    </div>
+                  </div>
+                  {scale !== DEFAULT_SCALE && (
+                    <button
+                      className={classes.resetButton}
+                      onClick={handleReset}
+                    >
+                      {t("settings", "resetFont")} (×1.0)
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {openSetting === "privacy" && item.id === "privacy" && (
+              <div className={classes.expandedPanel}>
+                <label className={classes.privacyToggle}>
+                  <input
+                    type="checkbox"
+                    checked={publicProfile}
+                    onChange={handlePublicProfileToggle}
+                    className={`${classes.privacyCheckbox} ${buttonClasses.checkBox}`}
+                  />
+                  <div className={classes.privacyContent}>
+                    <span className={classes.privacyLabel}>
+                      {t("settings", "publicProfile")}
+                    </span>
+                    <span className={classes.privacyDesc}>
+                      {t("settings", "publicProfileDesc")}
+                    </span>
+                  </div>
+                </label>
+              </div>
+            )}
+          </div>
         ))}
       </div>
 
       {openSetting === "language" && (
-        <Modal onClose={() => setOpenSetting(null)} maxWidth="420px">
+        <Modal onClose={closePanel} maxWidth="420px">
           <div className={classes.modalHeader}>
-            <h2 className={classes.modalTitle}>
-              <span className={classes.sectionIcon}>🌐</span>
-              {t("settings", "language")}
-            </h2>
-            <CloseButton onClick={() => setOpenSetting(null)} />
+            <h2 className={classes.modalTitle}>{t("settings", "language")}</h2>
+            <CloseButton onClick={closePanel} />
           </div>
           <div className={classes.modalBody}>
             <div className={classes.languageGrid}>
@@ -126,13 +202,12 @@ function Settings() {
       )}
 
       {openSetting === "appearance" && (
-        <Modal onClose={() => setOpenSetting(null)} maxWidth="420px">
+        <Modal onClose={closePanel} maxWidth="420px">
           <div className={classes.modalHeader}>
             <h2 className={classes.modalTitle}>
-              <span className={classes.sectionIcon}>🎨</span>
               {t("settings", "appearance")}
             </h2>
-            <CloseButton onClick={() => setOpenSetting(null)} />
+            <CloseButton onClick={closePanel} />
           </div>
           <div className={classes.modalBody}>
             <div className={classes.themeToggle}>
@@ -150,56 +225,6 @@ function Settings() {
                 <FiMoon />
                 <span>{t("settings", "darkMode")}</span>
               </button>
-            </div>
-          </div>
-        </Modal>
-      )}
-
-      {openSetting === "accessibility" && (
-        <Modal onClose={() => setOpenSetting(null)} maxWidth="420px">
-          <div className={classes.modalHeader}>
-            <h2 className={classes.modalTitle}>
-              <span className={classes.sectionIcon}>♿</span>
-              {t("settings", "accessibility")}
-            </h2>
-            <CloseButton onClick={() => setOpenSetting(null)} />
-          </div>
-          <div className={classes.modalBody}>
-            <div className={classes.fontSizeControl}>
-              <div className={classes.fontSizeLabel}>
-                {t("settings", "fontSize")}
-              </div>
-
-              <div className={classes.fontSizeSlider}>
-                <span className={classes.sliderLabel}>א</span>
-                <input
-                  type="range"
-                  min={MIN_SCALE}
-                  max={MAX_SCALE}
-                  step={STEP}
-                  value={scale}
-                  onChange={(e) => setScale(parseFloat(e.target.value))}
-                  className={classes.slider}
-                />
-                <span className={classes.sliderLabelLarge}>א</span>
-              </div>
-
-              <div className={classes.scaleValue}>×{scale.toFixed(1)}</div>
-
-              <div className={classes.previewBox}>
-                <div className={classes.previewTitle}>
-                  {t("settings", "preview")}
-                </div>
-                <div className={classes.previewText}>
-                  {t("settings", "previewText")}
-                </div>
-              </div>
-
-              {scale !== DEFAULT_SCALE && (
-                <button className={classes.resetButton} onClick={handleReset}>
-                  {t("settings", "resetFont")} (×1.0)
-                </button>
-              )}
             </div>
           </div>
         </Modal>

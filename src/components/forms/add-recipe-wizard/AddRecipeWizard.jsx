@@ -25,6 +25,7 @@ import {
   ChevronUp,
   ChevronDown,
   Globe,
+  UserCircle,
   HelpCircle,
   Mic,
   Heart,
@@ -72,6 +73,7 @@ const INITIAL_RECIPE = {
   notes: "",
   rating: 0,
   shareToGlobal: false,
+  showMyName: false,
   nutrition: {
     calories: "",
     protein: "",
@@ -815,6 +817,7 @@ function AddRecipeWizard({
       notes: recipe.notes,
       rating: recipe.rating || 0,
       shareToGlobal: recipe.shareToGlobal,
+      showMyName: recipe.shareToGlobal ? recipe.showMyName : false,
       nutrition,
     };
     console.log(
@@ -1588,13 +1591,32 @@ function AddRecipeWizard({
           type="checkbox"
           className={classes.favoriteCheckbox + " " + buttonClasses.checkBox}
           checked={recipe.shareToGlobal}
-          onChange={() => updateRecipe("shareToGlobal", !recipe.shareToGlobal)}
+          onChange={() => {
+            const next = !recipe.shareToGlobal;
+            updateRecipe("shareToGlobal", next);
+            if (!next) updateRecipe("showMyName", false);
+          }}
         />
         <Globe size={16} />
         <span className={classes.favoriteLabel}>
           {t("recipes", "shareToGlobal")}
         </span>
       </label>
+
+      {recipe.shareToGlobal && (
+        <label className={classes.favoriteToggle} style={{ paddingInlineStart: "1.5rem" }}>
+          <input
+            type="checkbox"
+            className={classes.favoriteCheckbox + " " + buttonClasses.checkBox}
+            checked={recipe.showMyName}
+            onChange={() => updateRecipe("showMyName", !recipe.showMyName)}
+          />
+          <UserCircle size={16} />
+          <span className={classes.favoriteLabel}>
+            {t("recipes", "showMyName")}
+          </span>
+        </label>
+      )}
     </div>
   );
 

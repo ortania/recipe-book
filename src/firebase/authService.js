@@ -16,6 +16,7 @@ import {
   doc,
   setDoc,
   getDoc,
+  updateDoc,
   collection,
   getDocs,
   query,
@@ -198,6 +199,33 @@ export const resetPassword = async (email) => {
     return { success: true };
   } catch (error) {
     console.error("Error sending password reset email:", error);
+    throw error;
+  }
+};
+
+export const updateUserProfile = async (userId, fields) => {
+  try {
+    await updateDoc(doc(db, USERS_COLLECTION, userId), fields);
+  } catch (error) {
+    console.error("Error updating user profile:", error);
+    throw error;
+  }
+};
+
+export const toggleFollowUser = async (currentUserId, targetUserId) => {
+  try {
+    const userRef = doc(db, USERS_COLLECTION, currentUserId);
+    const userDoc = await getDoc(userRef);
+    const data = userDoc.data();
+    const following = data.following || [];
+    const isFollowing = following.includes(targetUserId);
+    const updated = isFollowing
+      ? following.filter((id) => id !== targetUserId)
+      : [...following, targetUserId];
+    await updateDoc(userRef, { following: updated });
+    return updated;
+  } catch (error) {
+    console.error("Error toggling follow:", error);
     throw error;
   }
 };

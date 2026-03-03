@@ -4,7 +4,7 @@
   justify-content: center;
   border: none;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   padding: 0;
   line-height: 1;
   color: var(--text-primary);
@@ -26,8 +26,8 @@
   width: var(--btn-circle-primary);
   height: var(--btn-circle-primary);
   font-size: var(--btn-icon-primary);
-  border: 1.5px solid var(--border-special-primary);
-  background: var(--button-bg-primary);
+  border: 1.5px solid var(--border-accent-primary);
+  background: var(--btn-bg-primary);
   color: var(--text-on-primary);
 }
 
@@ -41,7 +41,7 @@
 }
 
 .addButton:hover {
-  transform: scale(1.05);
+  transform: scale(var(--scale));
 }
 
 .addButton:focus,

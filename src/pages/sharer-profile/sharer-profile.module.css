@@ -1,0 +1,112 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem 1.5rem 3rem;
+}
+
+.headerBar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.backBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  padding: 0.4rem 0;
+  font-weight: 500;
+}
+.backBtn:hover {
+  text-decoration: underline;
+}
+
+.profileSection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 2rem;
+}
+
+.avatar {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--text-primary);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.6rem;
+  font-weight: 700;
+}
+
+.profileName {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.recipeCount {
+  font-size: var(--small-font);
+  color: var(--text-secondary);
+}
+
+.followBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  border: 1.5px solid var(--text-primary);
+  background: transparent;
+  color: var(--text-primary);
+  font-size: var(--small-font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.followBtn:hover {
+  background: var(--text-primary);
+  color: #fff;
+}
+.followBtnActive {
+  background: var(--text-primary);
+  color: #fff;
+}
+.followBtnActive:hover {
+  opacity: 0.85;
+}
+
+.privateNote {
+  font-size: var(--small-font);
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+.empty {
+  text-align: center;
+  color: var(--text-secondary);
+  font-size: var(--basic-font);
+  padding: 3rem 1rem;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  }
+}

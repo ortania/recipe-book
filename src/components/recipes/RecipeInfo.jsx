@@ -187,6 +187,17 @@ function RecipeInfo({
 
         <div className={classes.recipeInfo}>
           <h3 className={classes.recipeName}>{translatedName}</h3>
+          {onCopyRecipe && person.sharerName && (
+            <div
+              className={classes.sharerName}
+              onClick={(e) => {
+                e.stopPropagation();
+                navigate(`/sharer/${person.sharerUserId}`);
+              }}
+            >
+              {t("recipes", "sharedBy")} {person.sharerName}
+            </div>
+          )}
           <div className={classes.recipeMetadata}>
             {person.prepTime && (
               <p className={classes.recipeTime}>

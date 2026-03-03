@@ -1330,6 +1330,17 @@ function RecipesView({
                     </span>
                   )}
                   <span className={classes.compactName}>{person.name}</span>
+                  {onCopyRecipe && person.sharerName && (
+                    <span
+                      className={classes.compactSharer}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        navigate(`/sharer/${person.sharerUserId}`);
+                      }}
+                    >
+                      {person.sharerName}
+                    </span>
+                  )}
                   {showAddAndFavorites && (
                     <div className={classes.compactActions}>
                       <button

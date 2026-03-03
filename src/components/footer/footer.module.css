@@ -35,28 +35,19 @@
   background: none;
   cursor: pointer;
   font-family: inherit;
-  transition:
-    color 0.2s ease,
-    background-color 0.2s ease;
+  transition: var(--transition);
 }
-
-/* .footerLink:hover {
-  color: var(--text-primary);
-  background-color: var(--bg-hover);
-} */
 
 .footerLink.active {
   color: var(--active-color);
   background-color: var(--bg-hover);
-  font-weight: 800;
-  border-bottom: 1px solid currentColor;
+  border-bottom: 2px solid currentColor;
   border-radius: 0;
 }
 
-/* .footerLink.active .footerIcon {
-  fill: var(--active-color);
-  stroke: none;
-} */
+.footerLink.active .footerIcon {
+  stroke-width: 3;
+}
 
 .footerIcon {
   font-size: 2rem;
@@ -64,7 +55,7 @@
 
 .footerLabel {
   font-size: var(--small-font);
-  font-weight: 500;
+  font-weight: var(--font-weight-quinary);
   white-space: nowrap;
 }
 

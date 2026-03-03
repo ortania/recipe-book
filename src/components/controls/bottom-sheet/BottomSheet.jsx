@@ -9,7 +9,7 @@ const ANIM_MS = 300;
 const TRANSITION_TRANSFORM = `transform ${ANIM_MS}ms cubic-bezier(0.32, 0.72, 0, 1)`;
 const TRANSITION_OPACITY = `opacity ${ANIM_MS}ms ease`;
 
-function BottomSheet({ open, onClose, title, children }) {
+function BottomSheet({ open, onClose, title, children, fullHeight }) {
   const [mounted, setMounted] = useState(false);
   const sheetRef = useRef(null);
   const overlayRef = useRef(null);
@@ -232,7 +232,7 @@ function BottomSheet({ open, onClose, title, children }) {
   return createPortal(
     <div className={classes.root} role="dialog" aria-modal="true">
       <div ref={overlayRef} className={classes.overlay} onClick={handleClose} />
-      <div ref={sheetRef} className={classes.sheet}>
+      <div ref={sheetRef} className={`${classes.sheet} ${fullHeight ? classes.fullHeight : ""}`}>
         <div className={classes.handleArea} onTouchStart={onHandleTouchStart}>
           <div className={classes.handle} />
         </div>

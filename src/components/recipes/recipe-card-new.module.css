@@ -47,6 +47,17 @@
   text-align: start;
 }
 
+.sharerName {
+  font-size: var(--small-font);
+  color: var(--text-primary);
+  cursor: pointer;
+  margin-bottom: 0.25rem;
+  text-align: start;
+}
+.sharerName:hover {
+  text-decoration: underline;
+}
+
 .recipeMetadata {
   display: flex;
   align-items: center;
@@ -62,7 +73,7 @@
 
 .recipeDifficulty {
   font-size: var(--small-font);
-  color: var(--text-secondary);
+  color: var(--text-muted);
   font-weight: 500;
 }
 
@@ -302,7 +313,7 @@
 
 .ratingMeta {
   font-size: var(--small-font);
-  color: var(--text-secondary);
+  color: var(--text-muted);
 }
 
 @media (max-width: 600px) {

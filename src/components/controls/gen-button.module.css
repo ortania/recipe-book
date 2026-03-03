@@ -6,14 +6,14 @@
   justify-content: center;
   gap: 0.5rem;
   border: none;
-  border-radius: var(--button-border-radius);
+  border-radius: var(--btn-border-radius);
   color: var(--text-on-primary);
-  background: var(--button-bg-primary);
+  background: var(--btn-bg-primary);
   font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  padding: .8em 1.5em;
+  padding: 0.8em 1.5em;
 }
 
 .genButton svg {
@@ -22,7 +22,7 @@
 }
 
 .genButton:hover {
-  background: var(--button-bg-secondary);
+  background: var(--btn-bg-secondary);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -33,7 +33,7 @@
 
 .genButton:hover:not(:disabled) {
   color: var(--text-on-primary);
-  background: var(--button-bg-secondary);
+  background: var(--btn-bg-secondary);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -44,7 +44,7 @@
   padding: 0.2rem;
   width: 2rem;
   height: 2rem;
-  border: 0.15rem solid var(--button-bg-primary);
+  border: 0.15rem solid var(--btn-bg-primary);
   border-radius: 0.3rem;
   display: inline-flex;
   align-items: center;
@@ -54,7 +54,7 @@
 }
 
 .checkBox:checked {
-  background-color: var(--button-bg-primary);
+  background-color: var(--btn-bg-primary);
 }
 
 .checkBox:checked::after {
@@ -67,6 +67,6 @@
 }
 
 /* .checkBox:hover {
-  border-color: var(--button-bg-primary);
+  border-color: var(--btn-bg-primary);
   opacity: 0.6;
 } */

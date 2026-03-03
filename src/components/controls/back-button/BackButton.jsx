@@ -2,7 +2,7 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useLanguage } from "../../../context";
 import classes from "./back-button.module.css";
 
-function BackButton({ onClick, size = 28, color, className = "", title }) {
+function BackButton({ onClick, size = 30, color, className = "", title }) {
   const { t } = useLanguage();
   const isRTL = document.documentElement.dir === "rtl";
   const Icon = isRTL ? ChevronRight : ChevronLeft;

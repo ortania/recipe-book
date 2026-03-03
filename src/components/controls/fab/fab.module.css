@@ -10,15 +10,18 @@
   justify-content: center;
   gap: 0.6rem;
   padding: 0 2rem;
-  background: var(--button-bg-primary);
+  background: var(--btn-bg-primary);
   color: var(--bg-primary);
   border: none;
   font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
   z-index: 1000;
-  transition: height 220ms ease-out, padding 220ms ease-out,
-    border-radius 220ms ease-out, box-shadow 220ms ease-out,
+  transition:
+    height 220ms ease-out,
+    padding 220ms ease-out,
+    border-radius 220ms ease-out,
+    box-shadow 220ms ease-out,
     gap 220ms ease-out;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
   white-space: nowrap;
@@ -51,7 +54,9 @@
   max-width: 20rem;
   overflow: hidden;
   opacity: 1;
-  transition: max-width 220ms ease-out, opacity 180ms ease-out,
+  transition:
+    max-width 220ms ease-out,
+    opacity 180ms ease-out,
     margin 220ms ease-out;
   margin-inline-start: 0.2rem;
 }

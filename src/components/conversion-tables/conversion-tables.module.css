@@ -93,14 +93,14 @@
 }
 
 .activeTab {
-  background: var(--button-bg-primary);
+  background: var(--btn-bg-primary);
   border-color: var(--text-primary);
   color: var(--text-on-primary);
 }
 
 .activeTab:hover {
-  background: var(--button-bg-secondary) !important;
-  border: 1px solid var(--button-bg-secondary);
+  background: var(--btn-bg-secondary) !important;
+  border: 1px solid var(--btn-bg-secondary);
   color: var(--text-on-primary) !important;
 }
 
@@ -155,7 +155,7 @@
 
 .itemAmount {
   font-weight: 600;
-  color: var(--accent-color-1);
+  color: var(--primary-color-1);
   /* color: #667eea; */
   font-size: var(--basic-font);
 }
@@ -199,7 +199,7 @@
   margin-top: 1.5rem;
   padding: 1rem;
   background: var(--bg-primary);
-  border-inline-start: 2px solid var(--border-special-primary);
+  border-inline-start: 2px solid var(--border-accent-primary);
   color: var(--text-primary);
   line-height: 1.6;
   grid-column: 1 / -1;
@@ -216,7 +216,7 @@
   background: var(--bg-tertiary);
   /* border-radius: 8px; */
   /* border-inline-start: 4px solid #667eea; */
-  border-inline-start: 1px solid var(--accent-color-1);
+  border-inline-start: 1px solid var(--primary-color-1);
 }
 
 .question {
@@ -228,7 +228,7 @@
 
 .answer {
   /* color: #667eea; */
-  color: var(--accent-color-1);
+  color: var(--primary-color-1);
   font-size: var(--basic-font);
   font-weight: 600;
 }

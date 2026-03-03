@@ -92,7 +92,7 @@ export const RecipeBookProvider = ({ children }) => {
 
         // Load user's data BEFORE setting isLoggedIn
         // so the redirect to /categories happens only after data is ready
-        await loadUserData(user.uid);
+        await loadUserData(user.uid, userData || user);
         setIsLoggedIn(true);
         if (loginResolverRef.current) {
           loginResolverRef.current();
@@ -114,7 +114,7 @@ export const RecipeBookProvider = ({ children }) => {
   }, []);
 
   // Load user's categories and recipes
-  const loadUserData = async (userId) => {
+  const loadUserData = async (userId, authUser) => {
     try {
       let categoriesFromFirestore = await fetchCategories(userId);
 
@@ -148,6 +148,7 @@ export const RecipeBookProvider = ({ children }) => {
       setLastRecipeDoc(lastVisible);
       setHasMoreRecipes(hasMore);
       setRecipesLoaded(true);
+
     } catch (error) {
       console.error("Error loading user data:", error);
     }
@@ -250,17 +251,37 @@ export const RecipeBookProvider = ({ children }) => {
   const addRecipe = async (newRecipe) => {
     try {
       if (!currentUser) throw new Error("No user logged in");
+      const enriched = { ...newRecipe };
+      if (enriched.showMyName && enriched.shareToGlobal) {
+        enriched.sharerName = currentUser.displayName || currentUser.email?.split("@")[0] || "";
+        enriched.sharerUserId = currentUser.uid;
+      } else {
+        enriched.sharerName = "";
+        enriched.sharerUserId = "";
+      }
       const addedRecipe = await handleAddRecipe(
         setRecipes,
         currentUser.uid,
-      )(newRecipe);
+      )(enriched);
       return addedRecipe;
     } catch (error) {
       console.error("Error adding recipe:", error);
       throw error;
     }
   };
-  const editRecipe = handleEditRecipe(setRecipes);
+  const _editRecipeBase = handleEditRecipe(setRecipes);
+  const editRecipe = async (editedRecipe) => {
+    const enriched = { ...editedRecipe };
+    if (enriched.showMyName && enriched.shareToGlobal && currentUser) {
+      enriched.sharerName = currentUser.displayName || currentUser.email?.split("@")[0] || "";
+      enriched.sharerUserId = currentUser.uid;
+    } else {
+      enriched.sharerName = "";
+      enriched.sharerUserId = "";
+    }
+    console.log("🔍 editRecipe - showMyName:", enriched.showMyName, "shareToGlobal:", enriched.shareToGlobal, "sharerName:", enriched.sharerName, "sharerUserId:", enriched.sharerUserId);
+    return _editRecipeBase(enriched);
+  };
   const deleteRecipe = handleDeleteRecipe(setRecipes);
 
   const clearAllRecipes = async () => {

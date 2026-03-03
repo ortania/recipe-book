@@ -193,6 +193,27 @@
   cursor: not-allowed;
 }
 
+.sharerFilter {
+  display: flex;
+  justify-content: flex-start;
+  padding: 0 1rem 0.75rem;
+}
+
+.sharerSelect {
+  padding: 0.4rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--bg-card);
+  color: var(--text-primary);
+  font-size: var(--small-font);
+  cursor: pointer;
+  min-width: 160px;
+}
+.sharerSelect:focus {
+  outline: none;
+  border-color: var(--text-primary);
+}
+
 /* Responsive */
 @media (max-width: 700px) {
   .container {

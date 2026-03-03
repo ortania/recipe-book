@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import { useRecipeBook } from "../../context";
 import { Navigation, Header, Footer } from "../../components";
 
@@ -8,6 +8,8 @@ import classes from "../app.module.css";
 
 function ProtectedLayout() {
   const { isLoggedIn, logout } = useRecipeBook();
+  const location = useLocation();
+  const isSharerPage = location.pathname.startsWith("/sharer/");
 
   useEffect(() => {
     document.body.classList.remove("sidebar-open", "modal-open");
@@ -19,11 +21,11 @@ function ProtectedLayout() {
 
   return (
     <div className={classes.app}>
-      {/* ✅ Left Sidebar Navigation */}
       <Navigation onLogout={logout} links={links} />
 
-      {/* ✅ Main content area with content and footer */}
-      <div className={classes.contentWrapper}>
+      <div
+        className={`${classes.contentWrapper} ${isSharerPage ? classes.noSidebar : ""}`}
+      >
         <main className={classes.main}>
           <Outlet />
         </main>

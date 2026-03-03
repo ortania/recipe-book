@@ -169,6 +169,27 @@ const translations = {
       de: "Zurücksetzen",
       mixed: "איפוס לברירת מחדל",
     },
+    publicProfile: {
+      he: "פרופיל ציבורי",
+      en: "Public profile",
+      ru: "Публичный профиль",
+      de: "Öffentliches Profil",
+      mixed: "Public profile",
+    },
+    publicProfileDesc: {
+      he: "כשמופעל, לחיצה על שמך תציג את כל המתכונים שלך",
+      en: "When on, clicking your name shows all your recipes",
+      ru: "Когда включено, нажатие на ваше имя покажет все ваши рецепты",
+      de: "Wenn aktiviert, zeigt ein Klick auf Ihren Namen alle Ihre Rezepte",
+      mixed: "When on, clicking your name shows all your recipes",
+    },
+    privacy: {
+      he: "פרטיות",
+      en: "Privacy",
+      ru: "Конфиденциальность",
+      de: "Datenschutz",
+      mixed: "Privacy",
+    },
     language: {
       he: "שפה",
       en: "Language",
@@ -637,6 +658,20 @@ const translations = {
     },
     shareToGlobal: {
       he: "שתף במתכוני קהילה",
+    },
+    showMyName: {
+      he: "הצג את שמי כמשתף",
+      en: "Show my name as sharer",
+      ru: "Показать моё имя",
+      de: "Meinen Namen anzeigen",
+      mixed: "Show my name as sharer",
+    },
+    sharedBy: {
+      he: "שותף ע\"י",
+      en: "Shared by",
+      ru: "Поделился",
+      de: "Geteilt von",
+      mixed: "Shared by",
     },
     notes: {
       he: "הערות",
@@ -1503,7 +1538,7 @@ const translations = {
       de: "Sortierung",
       mixed: "Sorting",
     },
-    sortByName: { he: "שם", en: "Name", ru: "Имя", de: "Name", mixed: "Name" },
+    sortByName: { he: "שם מתכון", en: "Recipe Name", ru: "Название рецепта", de: "Rezeptname", mixed: "Recipe Name" },
     sortByPrepTime: {
       he: "זמן הכנה",
       en: "Prep Time",
@@ -2797,6 +2832,80 @@ const translations = {
       ru: "Вид — переключение между сеткой и списком",
       de: "Ansicht — zwischen Raster- und Listenansicht wechseln",
       mixed: "View — switch between grid and list view",
+    },
+    filterBySharer: {
+      he: "סנן לפי משתף",
+      en: "Filter by sharer",
+      ru: "Фильтр по автору",
+      de: "Nach Teiler filtern",
+      mixed: "Filter by sharer",
+    },
+    allSharers: {
+      he: "כל המשתפים",
+      en: "All sharers",
+      ru: "Все авторы",
+      de: "Alle Teiler",
+      mixed: "All sharers",
+    },
+  },
+
+  // ===================== SHARER PROFILE =====================
+  sharerProfile: {
+    title: {
+      he: "המתכונים של",
+      en: "Recipes by",
+      ru: "Рецепты от",
+      de: "Rezepte von",
+      mixed: "Recipes by",
+    },
+    follow: {
+      he: "עקוב",
+      en: "Follow",
+      ru: "Подписаться",
+      de: "Folgen",
+      mixed: "Follow",
+    },
+    unfollow: {
+      he: "הפסק מעקב",
+      en: "Unfollow",
+      ru: "Отписаться",
+      de: "Entfolgen",
+      mixed: "Unfollow",
+    },
+    following: {
+      he: "עוקב",
+      en: "Following",
+      ru: "Подписан",
+      de: "Folgend",
+      mixed: "Following",
+    },
+    recipeCount: {
+      he: "מתכונים",
+      en: "recipes",
+      ru: "рецептов",
+      de: "Rezepte",
+      mixed: "recipes",
+    },
+    noRecipes: {
+      he: "אין מתכונים להצגה",
+      en: "No recipes to display",
+      ru: "Нет рецептов для отображения",
+      de: "Keine Rezepte zum Anzeigen",
+      mixed: "No recipes to display",
+    },
+    privateProfile: {
+      he: "הפרופיל של המשתמש הזה פרטי",
+      en: "This user's profile is private",
+      ru: "Профиль этого пользователя приватный",
+      de: "Das Profil dieses Benutzers ist privat",
+      mixed: "This user's profile is private",
+    },
+    back: {
+      he: "חזרה למתכוני קהילה",
+      en: "Back to community recipes",
+      ru: "Назад к рецептам сообщества",
+      de: "Zurück zu Community-Rezepten",
+      mixed: "Back to community recipes",
     },
   },
 

@@ -25,8 +25,6 @@ Variables
   --clr-blue-9: hsl(205, 90%, 88%);
   --clr-blue-10: hsl(205, 100%, 96%);
 
-  /* --clr-blue-11: #f5f5f5; */
-
   --clr-white: #fff;
   --clr-black: #222;
   --clr-red: hsl(0, 100%, 50%);
@@ -63,27 +61,73 @@ Variables
   --dark-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
   --wide-shadow: 5px 0px 15px rgba(0, 0, 0, 0.2);
 
-  --clr-heading: var(--clr-blue-3);
-  --clr-footer: var(--clr-blue-3);
+  --clr-heading: var(--clr-brown-1);
+  --clr-footer: var(--clr-brown-1);
 
-  --transition: all 0.4s linear;
+  --transition: all 0.2s ease;
+  --scale: 1.1;
   --spacing: 0;
-  --radius: 0.25rem;
 
   --max-width: 900px;
 
-  /* ===== Circle-button sizing (mobile-first) ===== */
-  --btn-circle-primary: 2.75rem;
-  --btn-icon-primary: 1.4rem;
-  --btn-circle: 3rem;
-  --btn-icon: 1.5rem;
+  /* basic colors and variables*/
+  --primary-color: var(--clr-brown-1);
+  --secondary-color: var(--clr-brown-2);
 
+  --active-color: #1a9c5a;
+
+  --accent-color-1: #914c03;
+  --accent-color-2: #9a652d;
+  --accent-color-3: #1a9c5a;
+  --accent-color-4: #1a9c5a;
+  --accent-color-5: #1a9c5a;
+
+  /* text */
+
+  /* --text-primary: #222222;  */
+  --text-primary: var(--clr-brown-1);
+  --text-secondary: var(--clr-brown-2);
+  --text-muted: #888888;
+  --text-on-primary: #ffffff;
+
+  --font-primary: "Noto Sans Hebrew", sans-serif;
+  --font-heading: var(--font-primary);
+  --font-heading: var(--font-primary);
+  --font-weight-heading: 600;
+  --font-weight-primary: 400;
+  --font-weight-secondary: 500;
+  --font-weight-tertiary: 600;      
+  --font-weight-quaternary: 700;
+  --font-weight-quinary: 800;
+
+
+  /* fonts variables */
   --huge-font: 2.2rem;
   --very-large-font: 1.9rem;
   --large-font: 1.7rem;
   --basic-font: 1.5rem;
   --small-font: 1.3rem;
   --very-small-font: 1.1rem;
+
+  /* forms */
+
+  --error-color: var(--clr-red);
+  --success-color: var(--cactive-color);
+  --warning-color: var(--clr-yellow);
+  --info-color: var(--secondary-color);
+
+  /* =====button sizing (mobile-first) ===== */
+  --btn-circle-primary: 2.75rem;
+  --btn-icon-primary: 1.4rem;
+  --btn-circle: 3rem;
+  --btn-icon: 1.5rem;
+
+  --btn-bg-primary: var(--clr-brown-1);
+  --btn-bg-secondary: var(--clr-brown-2);
+  --btn-bg-tertiary: var(--tertiary-color);
+  --btn-border-radius: 2rem;
+
+  --icon-primary-color: var(--clr-brown-1);
 
   /* ===== Semantic theme tokens (light = default) ===== */
   --bg-primary: #f7f5f4;
@@ -92,61 +136,34 @@ Variables
   --bg-input: #ffffff;
   --bg-card: #ffffff;
   --bg-sidebar: #ffffff;
-  --bg-hover: #f0f0f0;
+  --bg-hover: #f5f5f5;
   --bg-chip: #ffffff;
   --bg-chip-hover: #f0e6ff;
 
   --bg-error: var(--clr-red-very-light);
+  --bg-accent-primary: var(--clr-brown-1);
 
-  --accent-color-1: #914c03;
-  --accent-color-2: #9a652d;
-  --accent-color-3: #1a9c5a;
-  --accent-color-4: #1a9c5a;
-  --accent-color-5: #1a9c5a;
-
-  /* --text-primary: #222222; */
-  --text-primary: var(--clr-brown-1);
-  --text-secondary: var(--clr-brown-2);
-  --text-muted: #888888;
-  --text-on-primary: #ffffff;
-
+  /* border colors */
   --border-color: #e0e0e0;
   --border-error: var(--clr-red-dark);
   --border-light: #eeeeee;
+  --border-accent-primary: var(--clr-brown-1);
+  --border-accent-secondary: var(--clr-brown-1);
+  --input-border-radius: 1.2rem;
   --divider: #dddddd;
-  --border-special-primary: var(--clr-brown-1);
 
-  --button-bg-primary: var(--clr-brown-1);
-  --button-bg-secondary: var(--clr-brown-2);
-  --button-bg-tertiary: var(--tertiary-color);
+  /* chat variables */
+  --bubble-user: #e8e8e8;
+  --bubble-assistant: #ffffff;
+  --bubble-user-text: #333333;
+  --bubble-assistant-text: var(--clr-brown-1);
 
-  --button-border-radius: 20px;
-  --input-border-radius: 12px;
+  /* shadow */
 
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-  --accent-color: #000000;
-  --active-color: #1a9c5a;
-  /* --active-color: #1a9c5a; */
-  --font-heading: "Noto Sans Hebrew", sans-serif;
-  --font-heading: "Noto Sans Hebrew", sans-serif;
-
-  --bubble-user: #e8e8e8;
-  --bubble-assistant: #ffffff;
-  --bubble-user-text: #333333;
-  --bubble-assistant-text: #333333;
-
-  --error-color: var(--clr-red);
-  --success-color: var(--clr-green);
-  --warning-color: var(--clr-yellow);
-  --info-color: var(--clr-blue);
-  --primary-color: var(--clr-brown-1);
-  --secondary-color: var(--clr-brown-2);
-  /* 
-  --tertiary-color: var(--clr-blue);
-  --quaternary-color: var(--clr-blue);
-  --quinary-color: var(--clr-blue); */
+  --hover-opacity: 0.7;
 }
 
 [data-theme="dark"] {
@@ -176,7 +193,8 @@ Variables
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
 
   --accent-color: #000000;
-  --active-color: green;
+  /* --active-color: green; */
+  --active-color: #2e7d32;
 
   --bubble-user: #2a3550;
   --bubble-assistant: #1e2a45;

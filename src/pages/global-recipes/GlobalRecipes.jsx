@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from "react";
+import { useState, useCallback, useRef, useEffect, useMemo } from "react";
 import { PiArrowFatLineUp } from "react-icons/pi";
 import { IoCopyOutline, IoSearchOutline } from "react-icons/io5";
 import { IoMdStarOutline } from "react-icons/io";
@@ -27,7 +27,23 @@ function GlobalRecipes() {
   const [hasMore, setHasMore] = useState(false);
   const [ready, setReady] = useState(false);
   const [userRatings, setUserRatings] = useState({});
+  const [selectedSharer, setSelectedSharer] = useState("all");
   const lastDocRef = useRef(null);
+
+  const sharerOptions = useMemo(() => {
+    const map = new Map();
+    allRecipes.forEach((r) => {
+      if (r.sharerName && r.sharerUserId) {
+        map.set(r.sharerUserId, r.sharerName);
+      }
+    });
+    return Array.from(map.entries()).map(([id, name]) => ({ id, name }));
+  }, [allRecipes]);
+
+  const filteredRecipes = useMemo(() => {
+    if (selectedSharer === "all") return allRecipes;
+    return allRecipes.filter((r) => r.sharerUserId === selectedSharer);
+  }, [allRecipes, selectedSharer]);
 
   const loadRecipes = useCallback(
     async (reset = false) => {
@@ -107,8 +123,22 @@ function GlobalRecipes() {
 
   return (
     <div>
+      {sharerOptions.length > 0 && (
+        <div className={classes.sharerFilter}>
+          <select
+            className={classes.sharerSelect}
+            value={selectedSharer}
+            onChange={(e) => setSelectedSharer(e.target.value)}
+          >
+            <option value="all">{t("globalRecipes", "allSharers")}</option>
+            {sharerOptions.map((s) => (
+              <option key={s.id} value={s.id}>{s.name}</option>
+            ))}
+          </select>
+        </div>
+      )}
       <RecipesView
-        persons={allRecipes}
+        persons={filteredRecipes}
         groups={[]}
         showAddAndFavorites={false}
         showCategories={false}

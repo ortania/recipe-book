@@ -433,7 +433,7 @@
   background: var(--bg-tertiary);
   padding: 1rem;
   /* border-radius: 8px; */
-  border-inline-start: 2px solid var(--border-special-primary);
+  border-inline-start: 2px solid var(--border-accent-primary);
 }
 
 .chatLogHeader {
