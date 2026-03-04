@@ -2,7 +2,14 @@ import React from "react";
 import classes from "./recipe-card-new.module.css";
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { Heart, Pencil, FilePenLine, Trash2, Copy } from "lucide-react";
+import {
+  Heart,
+  Pencil,
+  FilePenLine,
+  Trash2,
+  Copy,
+  UserCheck,
+} from "lucide-react";
 import { Button } from "../controls/button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { formatDifficulty, formatTime } from "./utils";
@@ -22,6 +29,7 @@ function RecipeInfo({
   userRating = 0,
   onRate,
   onCardClick,
+  followingList = [],
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -195,6 +203,12 @@ function RecipeInfo({
                 navigate(`/sharer/${person.sharerUserId}`);
               }}
             >
+              {followingList.includes(person.sharerUserId) && (
+                <UserCheck
+                  size={14}
+                  style={{ marginInlineEnd: "0.2rem", verticalAlign: "middle" }}
+                />
+              )}
               {t("recipes", "sharedBy")} {person.sharerName}
             </div>
           )}
@@ -264,8 +278,8 @@ function RecipeInfo({
                     </div> */}
                   </div>
                   <span className={classes.ratingMeta}>
-                    {Number(person.avgRating).toFixed(1)} ({" "}
-                    {person.ratingCount})
+                    {Number(person.avgRating).toFixed(1)} ( {person.ratingCount}
+                    )
                   </span>
                 </div>
               )}

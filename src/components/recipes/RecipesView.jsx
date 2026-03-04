@@ -26,6 +26,7 @@ import {
   Rows4,
   X,
   Users,
+  UserCheck,
 } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
@@ -90,6 +91,10 @@ function RecipesView({
   sharerOptions = [],
   selectedSharer = "all",
   onSelectSharer,
+  followingList = [],
+  searchPlaceholder,
+  hasContentAbove = false,
+  backLabel,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -830,18 +835,26 @@ function RecipesView({
         {isSimpleView ? <LayoutGrid size={20} /> : <Rows4 size={20} />}
       </button>
     </>
+  ) : backAction ? (
+    showSearch ? (
+      <button className={classes.mobileCloseWithLabel} onClick={closeSearch}>
+        <X size={18} />
+        <span>{backLabel}</span>
+      </button>
+    ) : (
+      <CloseButton onClick={backAction} size={22} type="plain" />
+    )
   ) : null;
 
   const mobileTabsContent = showTabs ? (
     viewToggleElement
   ) : showSearch ? null : (
     <div className={classes.mobileSearchSort}>
-      {backAction && <BackButton onClick={backAction} size={22} />}
       <SearchBox
         searchTerm=""
         onSearchChange={() => setShowSearch(true)}
         onFocus={() => setShowSearch(true)}
-        placeholder={t("common", "search")}
+        placeholder={searchPlaceholder || t("common", "search")}
       />
       <SortButton
         sortField={sortField}
@@ -876,7 +889,9 @@ function RecipesView({
       <div
         className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}
       >
-        {mobileTabsEl && createPortal(mobileTabsContent, mobileTabsEl)}
+        {showTabs &&
+          mobileTabsEl &&
+          createPortal(mobileTabsContent, mobileTabsEl)}
         {mobileActionsEl &&
           mobileHeaderActions &&
           createPortal(mobileHeaderActions, mobileActionsEl)}
@@ -889,7 +904,7 @@ function RecipesView({
             </span>
           ) : backAction ? (
             <span className={classes.desktopOnly}>
-              <BackButton onClick={backAction} />
+              <CloseButton onClick={backAction} />
             </span>
           ) : null}
           {showTabs && !mobileTabsEl && (
@@ -999,7 +1014,7 @@ function RecipesView({
           )}
         </div>
 
-        {showAddAndFavorites && !showChat && (
+        {onAddPerson && !showChat && (
           <Fab label={t("recipesView", "addNewRecipe")}>
             <AddRecipeMenu onSelect={onAddPerson} t={t} />
           </Fab>
@@ -1010,14 +1025,19 @@ function RecipesView({
 
   return (
     <div
-      className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}
+      className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""} ${!showTabs && !hasContentAbove ? classes.noTabsContainer : ""}`}
     >
-      {mobileTabsEl && createPortal(mobileTabsContent, mobileTabsEl)}
+      {showTabs &&
+        mobileTabsEl &&
+        createPortal(mobileTabsContent, mobileTabsEl)}
       {mobileActionsEl &&
         mobileHeaderActions &&
         createPortal(mobileHeaderActions, mobileActionsEl)}
 
-      <div className={classes.stickyTop} style={showSearch ? { display: "none" } : undefined}>
+      <div
+        className={`${classes.stickyTop} ${!showTabs ? classes.noTabsMode : ""}`}
+        style={showSearch ? { display: "none" } : undefined}
+      >
         <div className={classes.viewToggleWrapper}>
           {headerAction ? (
             <span className={classes.desktopOnly}>{headerAction}</span>
@@ -1027,7 +1047,7 @@ function RecipesView({
             </span>
           ) : backAction ? (
             <span className={classes.desktopOnly}>
-              <BackButton onClick={backAction} />
+              <CloseButton onClick={backAction} />
             </span>
           ) : null}
           {showTabs && !mobileTabsEl && (
@@ -1040,7 +1060,7 @@ function RecipesView({
                   searchTerm=""
                   onSearchChange={() => setShowSearch(true)}
                   onFocus={() => setShowSearch(true)}
-                  placeholder={t("common", "search")}
+                  placeholder={searchPlaceholder || t("common", "search")}
                   size="large"
                 />
               </div>
@@ -1125,7 +1145,7 @@ function RecipesView({
                   searchTerm=""
                   onSearchChange={() => setShowSearch(true)}
                   onFocus={() => setShowSearch(true)}
-                  placeholder={t("common", "search")}
+                  placeholder={searchPlaceholder || t("common", "search")}
                   size="large"
                 />
               </div>
@@ -1459,6 +1479,15 @@ function RecipesView({
                         navigate(`/sharer/${person.sharerUserId}`);
                       }}
                     >
+                      {followingList.includes(person.sharerUserId) && (
+                        <UserCheck
+                          size={14}
+                          style={{
+                            marginInlineEnd: "0.2rem",
+                            verticalAlign: "middle",
+                          }}
+                        />
+                      )}
                       {person.sharerName}
                     </span>
                   )}
@@ -1521,6 +1550,7 @@ function RecipesView({
                   onCardClick={
                     recentlyViewedKey ? trackRecentlyViewed : undefined
                   }
+                  followingList={followingList}
                 />
               ))}
             </div>
@@ -1539,7 +1569,7 @@ function RecipesView({
         </div>
       )}
 
-      {showAddAndFavorites && !showChat && !showSearch && (
+      {onAddPerson && !showChat && !showSearch && (
         <Fab label={t("recipesView", "addNewRecipe")}>
           <AddRecipeMenu onSelect={onAddPerson} t={t} />
         </Fab>
@@ -1603,71 +1633,72 @@ function RecipesView({
         />
       )}
 
-      {sharerOptions.length > 0 && onSelectSharer && (
-        isMobile ? (
-          <BottomSheet
-            open={showSharerSheet}
-            onClose={() => setShowSharerSheet(false)}
-            title={t("globalRecipes", "filterBySharer")}
-          >
+      {sharerOptions.length > 0 &&
+        onSelectSharer &&
+        (() => {
+          const sorted = [...sharerOptions].sort((a, b) => {
+            const aF = followingList.includes(a.id) ? 0 : 1;
+            const bF = followingList.includes(b.id) ? 0 : 1;
+            return aF - bF;
+          });
+          const sharerListContent = (
             <div className={classes.sharerList}>
               <button
                 className={`${classes.sharerItem} ${selectedSharer === "all" ? classes.sharerItemActive : ""}`}
-                onClick={() => { onSelectSharer("all"); setShowSharerSheet(false); }}
+                onClick={() => {
+                  onSelectSharer("all");
+                  setShowSharerSheet(false);
+                }}
               >
                 {t("globalRecipes", "allSharers")}
               </button>
-              {sharerOptions.map((s) => (
+              {sorted.map((s) => (
                 <button
                   key={s.id}
                   className={`${classes.sharerItem} ${selectedSharer === s.id ? classes.sharerItemActive : ""}`}
-                  onClick={() => { onSelectSharer(s.id); setShowSharerSheet(false); }}
+                  onClick={() => {
+                    onSelectSharer(s.id);
+                    setShowSharerSheet(false);
+                  }}
                 >
+                  {followingList.includes(s.id) && <UserCheck size={16} />}
                   {s.name}
                 </button>
               ))}
             </div>
-          </BottomSheet>
-        ) : (
-          showSharerSheet && (
-            <>
-              <div
-                className={classes.categoriesPopupOverlay}
-                onClick={() => setShowSharerSheet(false)}
-              />
-              <div className={classes.categoriesPopup}>
-                <div className={classes.categoriesPopupHeader}>
-                  <span className={classes.categoriesPopupTitle}>
-                    {t("globalRecipes", "filterBySharer")}
-                  </span>
-                  <CloseButton
-                    className={classes.categoriesPopupClose}
-                    onClick={() => setShowSharerSheet(false)}
-                    size={25}
-                  />
+          );
+          return isMobile ? (
+            <BottomSheet
+              open={showSharerSheet}
+              onClose={() => setShowSharerSheet(false)}
+              title={t("globalRecipes", "filterBySharer")}
+            >
+              {sharerListContent}
+            </BottomSheet>
+          ) : (
+            showSharerSheet && (
+              <>
+                <div
+                  className={classes.categoriesPopupOverlay}
+                  onClick={() => setShowSharerSheet(false)}
+                />
+                <div className={classes.categoriesPopup}>
+                  <div className={classes.categoriesPopupHeader}>
+                    <span className={classes.categoriesPopupTitle}>
+                      {t("globalRecipes", "filterBySharer")}
+                    </span>
+                    <CloseButton
+                      className={classes.categoriesPopupClose}
+                      onClick={() => setShowSharerSheet(false)}
+                      size={25}
+                    />
+                  </div>
+                  {sharerListContent}
                 </div>
-                <div className={classes.sharerList}>
-                  <button
-                    className={`${classes.sharerItem} ${selectedSharer === "all" ? classes.sharerItemActive : ""}`}
-                    onClick={() => { onSelectSharer("all"); setShowSharerSheet(false); }}
-                  >
-                    {t("globalRecipes", "allSharers")}
-                  </button>
-                  {sharerOptions.map((s) => (
-                    <button
-                      key={s.id}
-                      className={`${classes.sharerItem} ${selectedSharer === s.id ? classes.sharerItemActive : ""}`}
-                      onClick={() => { onSelectSharer(s.id); setShowSharerSheet(false); }}
-                    >
-                      {s.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </>
-          )
-        )
-      )}
+              </>
+            )
+          );
+        })()}
     </div>
   );
 }

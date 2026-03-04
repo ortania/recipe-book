@@ -667,7 +667,7 @@ const translations = {
       mixed: "Show my name as sharer",
     },
     sharedBy: {
-      he: "שותף ע\"י",
+      he: 'שותף ע"י',
       en: "Shared by",
       ru: "Поделился",
       de: "Geteilt von",
@@ -1538,7 +1538,13 @@ const translations = {
       de: "Sortierung",
       mixed: "Sorting",
     },
-    sortByName: { he: "שם מתכון", en: "Recipe Name", ru: "Название рецепта", de: "Rezeptname", mixed: "Recipe Name" },
+    sortByName: {
+      he: "שם מתכון",
+      en: "Recipe Name",
+      ru: "Название рецепта",
+      de: "Rezeptname",
+      mixed: "Recipe Name",
+    },
     sortByPrepTime: {
       he: "זמן הכנה",
       en: "Prep Time",
@@ -2906,6 +2912,20 @@ const translations = {
       ru: "Назад к рецептам сообщества",
       de: "Zurück zu Community-Rezepten",
       mixed: "Back to community recipes",
+    },
+    inRecipesOf: {
+      he: "במתכונים של",
+      en: "in recipes of",
+      ru: "в рецептах",
+      de: "in Rezepten von",
+      mixed: "in recipes of",
+    },
+    backToRecipesOf: {
+      he: "חזרה למתכוני",
+      en: "Back to recipes of",
+      ru: "Назад к рецептам",
+      de: "Zurück zu Rezepten von",
+      mixed: "Back to recipes of",
     },
   },
 

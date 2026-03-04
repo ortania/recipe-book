@@ -29,20 +29,7 @@ export const fetchRecipes = async (
 
     let q;
     if (userId) {
-      q = lastDoc
-        ? query(
-            recipesRef,
-            where("userId", "==", userId),
-            orderBy("order"),
-            startAfter(lastDoc),
-            limit(limitCount),
-          )
-        : query(
-            recipesRef,
-            where("userId", "==", userId),
-            orderBy("order"),
-            limit(limitCount),
-          );
+      q = query(recipesRef, where("userId", "==", userId), orderBy("order"));
     } else {
       q = lastDoc
         ? query(
@@ -63,7 +50,7 @@ export const fetchRecipes = async (
         indexError.message,
       );
       if (userId) {
-        q = query(recipesRef, where("userId", "==", userId), limit(limitCount));
+        q = query(recipesRef, where("userId", "==", userId));
       } else {
         q = query(recipesRef, limit(limitCount));
       }

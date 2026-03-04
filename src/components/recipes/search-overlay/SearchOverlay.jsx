@@ -607,7 +607,9 @@ function SearchOverlay({
     <div
       className={`${parentClasses.searchHeader} ${onToggleView ? classes.searchHeaderEdges : ""} ${isMobile ? classes.mobileSearchHeader : ""}`}
     >
-      <BackButton onClick={onClose} size={28} className={parentClasses.desktopHeaderBtn} />
+      <span className={parentClasses.desktopOnly}>
+        <BackButton onClick={onClose} size={28} className={parentClasses.desktopHeaderBtn} />
+      </span>
       <div className={onToggleView ? classes.searchCenter : classes.searchCenterDefault}>
         <div
           className={`${parentClasses.searchBoxWrapper} ${classes.searchBoxRelative}`}

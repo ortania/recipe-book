@@ -214,18 +214,15 @@ function Navigation({ onLogout, links }) {
   const selectedCount = isAllSelected ? 0 : selectedCategories.length;
   const isRecipeDetailsPage = location.pathname.startsWith("/recipe/");
   const isGlobalRecipesPage = location.pathname === "/global-recipes";
-  const isSharerPage = location.pathname.startsWith("/sharer/");
   const isSettingsPage = location.pathname === "/settings";
 
   return (
     <>
       {!isRecipeDetailsPage && !isSettingsPage && (
         <div className={classes.mobileTopBar}>
-          {!isSharerPage && (
-            <button className={classes.hamburger} onClick={toggleSidebar}>
-              {isOpen ? null : <Menu size={22} />}
-            </button>
-          )}
+          <button className={classes.hamburger} onClick={toggleSidebar}>
+            {isOpen ? null : <Menu size={22} />}
+          </button>
           <div id="mobile-tabs-portal" className={classes.mobileTabsSlot} />
           <div
             id="mobile-header-actions-portal"
@@ -234,8 +231,7 @@ function Navigation({ onLogout, links }) {
         </div>
       )}
 
-      {!isSharerPage && (
-        <nav className={`${classes.nav} ${isOpen ? classes.open : ""}`}>
+      <nav className={`${classes.nav} ${isOpen ? classes.open : ""}`}>
           <div ref={navScrollableRef} className={classes.navScrollable}>
             <div className={classes.mobileCloseRow}>
               <CloseButton
@@ -357,9 +353,8 @@ function Navigation({ onLogout, links }) {
             </button>
           </div>
         </nav>
-      )}
 
-      {isOpen && !isSharerPage && (
+      {isOpen && (
         <div className={classes.overlay} onClick={closeSidebar} />
       )}
 

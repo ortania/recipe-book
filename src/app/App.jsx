@@ -19,6 +19,7 @@ import {
   LanguageProvider,
 } from "../context";
 import { Onboarding } from "../pages/onboarding";
+import { ErrorBoundary } from "../components/error-boundary";
 
 const RecipeDetailsPage = React.lazy(
   () => import("../pages/recipe-details/RecipeDetailsPage"),
@@ -30,19 +31,38 @@ const ConversionTables = React.lazy(
   () => import("../components/conversion-tables"),
 );
 const Settings = React.lazy(() => import("../pages/settings/Settings"));
-const SharerProfile = React.lazy(() => import("../pages/sharer-profile/SharerProfile"));
+const SharerProfile = React.lazy(
+  () => import("../pages/sharer-profile/SharerProfile"),
+);
 const MigratePage = React.lazy(() => import("../pages/migrate"));
 const Repair = React.lazy(() => import("../pages/repair/Repair"));
 
 const SKELETON_WIDTHS = [70, 85, 60, 78, 65, 80, 72, 58, 82, 66, 75, 62];
-const DAY_COLORS = ["#e74c3c", "#f39c12", "#2ecc71", "#3498db", "#9b59b6", "#1abc9c", "#e67e22"];
+const DAY_COLORS = [
+  "#e74c3c",
+  "#f39c12",
+  "#2ecc71",
+  "#3498db",
+  "#9b59b6",
+  "#1abc9c",
+  "#e67e22",
+];
 
 function RecipeCardSkeleton() {
   return (
     <div>
-      <Skeleton height={0} style={{ paddingBottom: "100%" }} borderRadius={25} />
+      <Skeleton
+        height={0}
+        style={{ paddingBottom: "100%" }}
+        borderRadius={25}
+      />
       <div style={{ padding: "0.75rem" }}>
-        <Skeleton width="75%" height="1.2rem" borderRadius={6} style={{ marginBottom: "0.3rem" }} />
+        <Skeleton
+          width="75%"
+          height="1.2rem"
+          borderRadius={6}
+          style={{ marginBottom: "0.3rem" }}
+        />
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <Skeleton width="30%" height="0.9rem" borderRadius={6} />
           <Skeleton width="25%" height="0.9rem" borderRadius={6} />
@@ -54,12 +74,18 @@ function RecipeCardSkeleton() {
 
 function RecipeListSkeleton() {
   return (
-    <div style={{
-      display: "flex", alignItems: "center", gap: "1rem",
-      padding: "0.75rem 1rem", marginBottom: "0.5rem",
-      background: "var(--bg-card)", borderRadius: 4,
-      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-    }}>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: "1rem",
+        padding: "0.75rem 1rem",
+        marginBottom: "0.5rem",
+        background: "var(--bg-card)",
+        borderRadius: 4,
+        boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+      }}
+    >
       <Skeleton width={32} height={32} borderRadius={6} />
       <div style={{ flex: 1 }}>
         <Skeleton width="60%" height="0.9rem" borderRadius={6} />
@@ -77,7 +103,11 @@ function RecipeGridSkeleton({ count = 8 }) {
       </div>
       <div className={classes.skeletonSearchRow}>
         <Skeleton width={24} height={24} circle />
-        <Skeleton height={32} borderRadius={22} containerClassName={classes.flexGrow} />
+        <Skeleton
+          height={32}
+          borderRadius={22}
+          containerClassName={classes.flexGrow}
+        />
         <Skeleton width={24} height={24} circle />
       </div>
       <div className={classes.skeletonGrid}>
@@ -93,13 +123,25 @@ function ConversionsSkeleton() {
   return (
     <div className={classes.convSkeleton}>
       <div style={{ textAlign: "center", paddingBottom: "1rem" }}>
-        <Skeleton width={180} height="1.4rem" style={{ margin: "0 auto 0.5rem" }} />
+        <Skeleton
+          width={180}
+          height="1.4rem"
+          style={{ margin: "0 auto 0.5rem" }}
+        />
         <Skeleton width={260} height="1rem" style={{ margin: "0 auto" }} />
       </div>
       <div style={{ maxWidth: 400, margin: "1.5rem auto 0" }}>
         <Skeleton height="2.5rem" borderRadius={22} />
       </div>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", justifyContent: "center", padding: "0.5rem 0" }}>
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.5rem",
+          justifyContent: "center",
+          padding: "0.5rem 0",
+        }}
+      >
         {[85, 70, 90, 80, 65, 75, 60, 95, 70].map((w, i) => (
           <Skeleton key={i} width={w} height="2.6rem" borderRadius={8} />
         ))}
@@ -143,7 +185,11 @@ function MealPlannerSkeleton() {
     <div className={classes.mealSkeleton}>
       <div className={classes.mealTopRow}>
         <div>
-          <Skeleton width={160} height="1.4rem" style={{ marginBottom: "0.4rem" }} />
+          <Skeleton
+            width={160}
+            height="1.4rem"
+            style={{ marginBottom: "0.4rem" }}
+          />
           <Skeleton width={120} height="0.75rem" />
         </div>
         <div style={{ display: "flex", gap: "0.5rem" }}>
@@ -157,8 +203,12 @@ function MealPlannerSkeleton() {
             <div className={classes.mealDayHeader}>
               <div
                 style={{
-                  width: 34, height: 34, borderRadius: "50%",
-                  background: DAY_COLORS[i], opacity: 0.4, flexShrink: 0,
+                  width: 34,
+                  height: 34,
+                  borderRadius: "50%",
+                  background: DAY_COLORS[i],
+                  opacity: 0.4,
+                  flexShrink: 0,
                 }}
               />
               <div style={{ flex: 1 }}>
@@ -166,14 +216,26 @@ function MealPlannerSkeleton() {
                 <Skeleton width="40%" height="0.6rem" />
               </div>
             </div>
-            <div style={{ padding: "0 1.1rem 0.5rem", display: "flex", flexDirection: "column", gap: "0.5rem", flex: 1 }}>
+            <div
+              style={{
+                padding: "0 1.1rem 0.5rem",
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.5rem",
+                flex: 1,
+              }}
+            >
               {[45, 60, 75].map((w, j) => (
                 <div key={j} className={classes.mealBlock}>
                   <Skeleton width={`${w}%`} height="0.75rem" />
                 </div>
               ))}
             </div>
-            <Skeleton height="2rem" borderRadius="0 0 12px 12px" style={{ opacity: 0.4 }} />
+            <Skeleton
+              height="2rem"
+              borderRadius="0 0 12px 12px"
+              style={{ opacity: 0.4 }}
+            />
           </div>
         ))}
       </div>
@@ -183,13 +245,27 @@ function MealPlannerSkeleton() {
 
 function ShoppingListSkeleton() {
   const catColors = [
-    "#6366f1", "#ef4444", "#f59e0b", "#22c55e", "#3b82f6", "#a855f7",
-    "#ec4899", "#14b8a6", "#f97316", "#8b5cf6", "#06b6d4", "#84cc16",
+    "#6366f1",
+    "#ef4444",
+    "#f59e0b",
+    "#22c55e",
+    "#3b82f6",
+    "#a855f7",
+    "#ec4899",
+    "#14b8a6",
+    "#f97316",
+    "#8b5cf6",
+    "#06b6d4",
+    "#84cc16",
   ];
   return (
     <div className={classes.shopSkeleton}>
       <div className={classes.shopHeaderBlock}>
-        <Skeleton width={160} height="1.3rem" style={{ marginBottom: "0.4rem" }} />
+        <Skeleton
+          width={160}
+          height="1.3rem"
+          style={{ marginBottom: "0.4rem" }}
+        />
         <Skeleton width={200} height="0.7rem" />
       </div>
       <div className={classes.shopCatList}>
@@ -197,8 +273,12 @@ function ShoppingListSkeleton() {
           <div key={i} className={classes.shopCatRow}>
             <div
               style={{
-                width: 36, height: 36, borderRadius: 10, flexShrink: 0,
-                background: `${color}18`, border: `1px solid ${color}30`,
+                width: 36,
+                height: 36,
+                borderRadius: 10,
+                flexShrink: 0,
+                background: `${color}18`,
+                border: `1px solid ${color}30`,
               }}
             />
             <div style={{ flex: 1 }}>
@@ -226,7 +306,9 @@ function RecipeDetailSkeleton() {
         <Skeleton circle width="2rem" height="2rem" />
       </div>
       <div className={classes.detailBody}>
-        <div style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}>
+        <div
+          style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}
+        >
           <Skeleton width={90} height="1.8rem" borderRadius={20} />
           <Skeleton width={90} height="1.8rem" borderRadius={20} />
           <Skeleton width={90} height="1.8rem" borderRadius={20} />
@@ -246,28 +328,61 @@ function RecipeDetailSkeleton() {
 
 function LoginSkeleton() {
   return (
-    <div style={{
-      display: "flex", justifyContent: "center", alignItems: "center",
-      minHeight: "100vh", width: "100vw", padding: "2rem",
-      background: "var(--bg-primary)",
-    }}>
-      <div style={{
-        width: "100%", maxWidth: 440, display: "flex",
-        flexDirection: "column", alignItems: "center", gap: "2rem",
-      }}>
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        minHeight: "100vh",
+        width: "100vw",
+        padding: "2rem",
+        background: "var(--bg-primary)",
+      }}
+    >
+      <div
+        style={{
+          width: "100%",
+          maxWidth: 440,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          gap: "2rem",
+        }}
+      >
         <Skeleton width={180} height={50} borderRadius={12} />
-        <div style={{
-          width: "100%", padding: "3rem",
-          background: "var(--bg-card)", borderRadius: 20,
-          display: "flex", flexDirection: "column", gap: "1.5rem",
-        }}>
-          <Skeleton width="40%" height="2rem" borderRadius={8} style={{ alignSelf: "center" }} />
+        <div
+          style={{
+            width: "100%",
+            padding: "3rem",
+            background: "var(--bg-card)",
+            borderRadius: 20,
+            display: "flex",
+            flexDirection: "column",
+            gap: "1.5rem",
+          }}
+        >
+          <Skeleton
+            width="40%"
+            height="2rem"
+            borderRadius={8}
+            style={{ alignSelf: "center" }}
+          />
           <Skeleton height="3.2rem" borderRadius={12} />
           <Skeleton height="3.2rem" borderRadius={12} />
           <Skeleton width="35%" height="1rem" borderRadius={6} />
           <Skeleton height="3rem" borderRadius={12} />
-          <Skeleton width="50%" height="0.9rem" borderRadius={6} style={{ alignSelf: "center" }} />
-          <Skeleton width="60%" height="0.9rem" borderRadius={6} style={{ alignSelf: "center" }} />
+          <Skeleton
+            width="50%"
+            height="0.9rem"
+            borderRadius={6}
+            style={{ alignSelf: "center" }}
+          />
+          <Skeleton
+            width="60%"
+            height="0.9rem"
+            borderRadius={6}
+            style={{ alignSelf: "center" }}
+          />
         </div>
       </div>
     </div>
@@ -275,7 +390,8 @@ function LoginSkeleton() {
 }
 
 function skeletonForPath(path) {
-  if (path.startsWith("/login") || path.startsWith("/signup")) return <LoginSkeleton />;
+  if (path.startsWith("/login") || path.startsWith("/signup"))
+    return <LoginSkeleton />;
   if (path.startsWith("/conversions")) return <ConversionsSkeleton />;
   if (path.startsWith("/settings")) return <SettingsSkeleton />;
   if (path.startsWith("/meal-planner")) return <MealPlannerSkeleton />;
@@ -362,30 +478,77 @@ function AppContent() {
         <Route path="/categories" element={<Categories />} />
         <Route
           path="/conversions"
-          element={<Lazy fallback={<ConversionsSkeleton />}><ConversionTables /></Lazy>}
+          element={
+            <Lazy fallback={<ConversionsSkeleton />}>
+              <ConversionTables />
+            </Lazy>
+          }
         />
-        <Route path="/settings" element={<Lazy fallback={<SettingsSkeleton />}><Settings /></Lazy>} />
-        <Route path="/migrate" element={<Lazy><MigratePage /></Lazy>} />
-        <Route path="/repair" element={<Lazy><Repair /></Lazy>} />
+        <Route
+          path="/settings"
+          element={
+            <Lazy fallback={<SettingsSkeleton />}>
+              <Settings />
+            </Lazy>
+          }
+        />
+        <Route
+          path="/migrate"
+          element={
+            <Lazy>
+              <MigratePage />
+            </Lazy>
+          }
+        />
+        <Route
+          path="/repair"
+          element={
+            <Lazy>
+              <Repair />
+            </Lazy>
+          }
+        />
         <Route
           path="/recipe/:id"
-          element={<Lazy fallback={<RecipeDetailSkeleton />}><RecipeDetailsPage /></Lazy>}
+          element={
+            <ErrorBoundary fallbackMessage="שגיאה בטעינת המתכון">
+              <Lazy fallback={<RecipeDetailSkeleton />}>
+                <RecipeDetailsPage />
+              </Lazy>
+            </ErrorBoundary>
+          }
         />
         <Route
           path="/meal-planner"
-          element={<Lazy fallback={<MealPlannerSkeleton />}><MealPlanner /></Lazy>}
+          element={
+            <Lazy fallback={<MealPlannerSkeleton />}>
+              <MealPlanner />
+            </Lazy>
+          }
         />
         <Route
           path="/shopping-list"
-          element={<Lazy fallback={<ShoppingListSkeleton />}><ShoppingList /></Lazy>}
+          element={
+            <Lazy fallback={<ShoppingListSkeleton />}>
+              <ShoppingList />
+            </Lazy>
+          }
         />
         <Route
           path="/global-recipes"
-          element={<Lazy><GlobalRecipes /></Lazy>}
+          element={
+            <Lazy>
+              <GlobalRecipes />
+            </Lazy>
+          }
         />
         <Route
           path="/sharer/:userId"
-          element={<Lazy><SharerProfile /></Lazy>}
+          element={
+            <Lazy>
+              <SharerProfile />
+            </Lazy>
+          }
         />
       </Route>
 

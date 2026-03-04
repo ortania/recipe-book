@@ -19,7 +19,7 @@ function SharerProfile() {
   const { userId: sharerUserId } = useParams();
   const navigate = useNavigate();
   const { t, language } = useLanguage();
-  const { currentUser, setRecipes } = useRecipeBook();
+  const { currentUser, setCurrentUser, setRecipes } = useRecipeBook();
 
   const [sharerData, setSharerData] = useState(null);
   const [recipes, setSharerRecipes] = useState([]);
@@ -40,10 +40,6 @@ function SharerProfile() {
         } else {
           setSharerRecipes([]);
         }
-
-        if (currentUser?.following) {
-          setIsFollowing(currentUser.following.includes(sharerUserId));
-        }
       } catch (err) {
         console.error("Error loading sharer profile:", err);
       } finally {
@@ -51,7 +47,13 @@ function SharerProfile() {
       }
     };
     if (sharerUserId) load();
-  }, [sharerUserId, currentUser]);
+  }, [sharerUserId]);
+
+  useEffect(() => {
+    if (currentUser?.following) {
+      setIsFollowing(currentUser.following.includes(sharerUserId));
+    }
+  }, [currentUser?.following, sharerUserId]);
 
   useEffect(() => {
     if (!currentUser || recipes.length === 0) return;
@@ -68,6 +70,7 @@ function SharerProfile() {
     try {
       const updated = await toggleFollowUser(currentUser.uid, sharerUserId);
       setIsFollowing(updated.includes(sharerUserId));
+      setCurrentUser((prev) => ({ ...prev, following: updated }));
     } catch (err) {
       console.error("Follow toggle failed:", err);
     }
@@ -109,8 +112,10 @@ function SharerProfile() {
       <div className={classes.page}>
         <div className={classes.profileSection}>
           <Skeleton circle width={56} height={56} />
-          <Skeleton width={140} height="1.4rem" />
-          <Skeleton width={80} height="0.9rem" />
+          <div>
+            <Skeleton width={140} height="1.4rem" />
+            <Skeleton width={80} height="0.9rem" />
+          </div>
         </div>
       </div>
     );
@@ -125,35 +130,40 @@ function SharerProfile() {
         <div className={classes.avatar}>
           {sharerName.charAt(0).toUpperCase()}
         </div>
-        <h1 className={classes.profileName}>
-          {t("sharerProfile", "title")} {sharerName}
-        </h1>
+        <div className={classes.profileHeader}>
+          <h1 className={classes.profileName}>
+            {t("sharerProfile", "title")} {sharerName}
+          </h1>
+          {isPublic ? (
+            <>
+              <span className={classes.recipeCount}>
+                {recipes.length} {t("sharerProfile", "recipeCount")}
+              </span>
 
-        {isPublic ? (
-          <>
-            <span className={classes.recipeCount}>
-              {recipes.length} {t("sharerProfile", "recipeCount")}
+              {currentUser?.uid !== sharerUserId && (
+                <button
+                  className={`${classes.followBtn} ${isFollowing ? classes.followBtnActive : ""}`}
+                  onClick={handleFollow}
+                >
+                  {isFollowing ? (
+                    <UserCheck size={16} />
+                  ) : (
+                    <UserPlus size={16} />
+                  )}
+                  <span>
+                    {isFollowing
+                      ? t("sharerProfile", "following")
+                      : t("sharerProfile", "follow")}
+                  </span>
+                </button>
+              )}
+            </>
+          ) : (
+            <span className={classes.privateNote}>
+              {t("sharerProfile", "privateProfile")}
             </span>
-
-            {currentUser?.uid !== sharerUserId && (
-              <button
-                className={`${classes.followBtn} ${isFollowing ? classes.followBtnActive : ""}`}
-                onClick={handleFollow}
-              >
-                {isFollowing ? <UserCheck size={16} /> : <UserPlus size={16} />}
-                <span>
-                  {isFollowing
-                    ? t("sharerProfile", "following")
-                    : t("sharerProfile", "follow")}
-                </span>
-              </button>
-            )}
-          </>
-        ) : (
-          <span className={classes.privateNote}>
-            {t("sharerProfile", "privateProfile")}
-          </span>
-        )}
+          )}
+        </div>
       </div>
 
       {isPublic && (
@@ -173,8 +183,10 @@ function SharerProfile() {
           defaultSortDirection="desc"
           sortStorageKey="sharerRecipesSortPreference"
           backAction={() => navigate(-1)}
+          backLabel={`${t("sharerProfile", "backToRecipesOf")} ${sharerName}`}
           showTabs={false}
-          recentlyViewedKey={`recentlyViewed_sharer_${sharerUserId}`}
+          hasContentAbove
+          searchPlaceholder={`${t("common", "search")} ${t("sharerProfile", "inRecipesOf")} ${sharerName}...`}
         />
       )}
     </div>

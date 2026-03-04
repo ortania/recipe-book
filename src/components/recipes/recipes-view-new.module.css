@@ -6,6 +6,10 @@
   padding: 0 1.5rem 1.5rem 1.5rem;
 }
 
+.mobileCloseWithLabel {
+  display: none;
+}
+
 .stickyTop {
   position: sticky;
   top: 0;
@@ -103,6 +107,22 @@
 }
 
 @media (max-width: 768px) {
+  .mobileCloseWithLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: none;
+    border: none;
+    color: var(--text-primary);
+    font-size: var(--basic-font);
+    padding: 0.2rem 0.4rem;
+    cursor: pointer;
+    white-space: nowrap;
+    max-width: 60vw;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .recipesContainer {
     padding-top: 3.5rem;
     padding-left: 0;
@@ -129,6 +149,16 @@
     margin-top: -3.5rem;
   }
 
+  .noTabsContainer {
+    padding-top: 0;
+  }
+
+  .noTabsContainer .stickyTop.noTabsMode {
+    margin-top: 0;
+    padding-top: 0;
+    top: 3.5rem;
+  }
+
   :global(body.sidebar-open) .viewToggleWrapper,
   :global(body.sidebar-open) .iconButtons,
   :global(body.sidebar-open) .searchHeader,
@@ -145,6 +175,25 @@
     min-height: 0;
     display: none;
     background: var(--bg-primary);
+  }
+
+  .noTabsMode .viewToggleWrapper {
+    display: flex !important;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+  }
+
+  .noTabsMode .desktopSearchSort {
+    display: flex !important;
+    flex: 1;
+    min-width: 0;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .noTabsMode .desktopHeaderActions {
+    display: flex !important;
   }
 
   .viewToggleWrapper::before {
@@ -1172,7 +1221,7 @@
 }
 
 .compactSharer {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: var(--accent-color-1);
   text-decoration: underline;
   cursor: pointer;
@@ -1180,7 +1229,8 @@
   margin-inline-end: 0.5rem;
 }
 .compactSharer:hover {
-  text-decoration: underline;
+  opacity: var(--hover-opacity);
+  transform: scale(var(--scale));
 }
 
 .compactActions {

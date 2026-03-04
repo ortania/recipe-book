@@ -138,17 +138,14 @@ export const RecipeBookProvider = ({ children }) => {
       setCategories(finalCategories);
       setCategoriesLoaded(true);
 
-      // Load recipes with pagination
-      const {
-        recipes: fetchedRecipes,
-        lastVisible,
-        hasMore,
-      } = await fetchRecipes(RECIPES_PER_PAGE, userId);
+      // Load all user recipes (no pagination for personal recipes)
+      const { recipes: fetchedRecipes } = await fetchRecipes(
+        RECIPES_PER_PAGE,
+        userId,
+      );
       setRecipes(fetchedRecipes);
-      setLastRecipeDoc(lastVisible);
-      setHasMoreRecipes(hasMore);
+      setHasMoreRecipes(false);
       setRecipesLoaded(true);
-
     } catch (error) {
       console.error("Error loading user data:", error);
     }
@@ -253,7 +250,8 @@ export const RecipeBookProvider = ({ children }) => {
       if (!currentUser) throw new Error("No user logged in");
       const enriched = { ...newRecipe };
       if (enriched.showMyName && enriched.shareToGlobal) {
-        enriched.sharerName = currentUser.displayName || currentUser.email?.split("@")[0] || "";
+        enriched.sharerName =
+          currentUser.displayName || currentUser.email?.split("@")[0] || "";
         enriched.sharerUserId = currentUser.uid;
       } else {
         enriched.sharerName = "";
@@ -273,13 +271,23 @@ export const RecipeBookProvider = ({ children }) => {
   const editRecipe = async (editedRecipe) => {
     const enriched = { ...editedRecipe };
     if (enriched.showMyName && enriched.shareToGlobal && currentUser) {
-      enriched.sharerName = currentUser.displayName || currentUser.email?.split("@")[0] || "";
+      enriched.sharerName =
+        currentUser.displayName || currentUser.email?.split("@")[0] || "";
       enriched.sharerUserId = currentUser.uid;
     } else {
       enriched.sharerName = "";
       enriched.sharerUserId = "";
     }
-    console.log("🔍 editRecipe - showMyName:", enriched.showMyName, "shareToGlobal:", enriched.shareToGlobal, "sharerName:", enriched.sharerName, "sharerUserId:", enriched.sharerUserId);
+    console.log(
+      "🔍 editRecipe - showMyName:",
+      enriched.showMyName,
+      "shareToGlobal:",
+      enriched.shareToGlobal,
+      "sharerName:",
+      enriched.sharerName,
+      "sharerUserId:",
+      enriched.sharerUserId,
+    );
     return _editRecipeBase(enriched);
   };
   const deleteRecipe = handleDeleteRecipe(setRecipes);
@@ -455,6 +463,7 @@ export const RecipeBookProvider = ({ children }) => {
     recipesLoaded,
     categoriesLoaded,
     currentUser,
+    setCurrentUser,
     hasMoreRecipes,
     selectedCategories,
     toggleCategory,

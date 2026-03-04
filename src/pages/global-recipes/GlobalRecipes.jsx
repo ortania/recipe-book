@@ -13,15 +13,17 @@ import {
   setUserRating,
 } from "../../firebase/ratingService";
 import Skeleton from "react-loading-skeleton";
-import { RecipesView, UpButton } from "../../components";
+import { RecipesView, UpButton, AddRecipeWizard } from "../../components";
 import { scrollToTop } from "../utils";
 import classes from "./global-recipes.module.css";
 
 function GlobalRecipes() {
   const { t, language } = useLanguage();
-  const { currentUser, addRecipe, setRecipes } = useRecipeBook();
+  const { currentUser, addRecipe, setRecipes, categories } = useRecipeBook();
 
   const [allRecipes, setAllRecipes] = useState([]);
+  const [showAddPerson, setShowAddPerson] = useState(false);
+  const [addMethod, setAddMethod] = useState("method");
   const [loading, setLoading] = useState(false);
   const [lastDoc, setLastDoc] = useState(null);
   const [hasMore, setHasMore] = useState(false);
@@ -123,10 +125,27 @@ function GlobalRecipes() {
 
   return (
     <div>
+      {showAddPerson && (
+        <AddRecipeWizard
+          onAddPerson={addRecipe}
+          onCancel={(lastScreen) => {
+            setShowAddPerson(false);
+            if (lastScreen) setAddMethod(lastScreen);
+          }}
+          groups={categories}
+          initialScreen={addMethod}
+        />
+      )}
+
       <RecipesView
+        onAddPerson={(method) => {
+          setAddMethod(method || "method");
+          setShowAddPerson(true);
+        }}
         sharerOptions={sharerOptions}
         selectedSharer={selectedSharer}
         onSelectSharer={setSelectedSharer}
+        followingList={currentUser?.following || []}
         persons={filteredRecipes}
         groups={[]}
         showAddAndFavorites={false}
