@@ -24,12 +24,15 @@ import {
   Users,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
   List,
   ListOrdered,
   Lightbulb,
   MessageCircle,
   Apple,
   Files,
+  Info,
 } from "lucide-react";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
@@ -96,6 +99,13 @@ function RecipeDetailsFull({
   const [chatAppliedFields, setChatAppliedFields] = useState({});
   const [showMoreMenu, setShowMoreMenu] = useState(false);
   const [showImageLightbox, setShowImageLightbox] = useState(false);
+  const [activeImageIndex, setActiveImageIndex] = useState(0);
+  const allImages = useMemo(() => {
+    if (recipe.images?.length > 0) return recipe.images;
+    if (recipe.image_src) return [recipe.image_src];
+    return [];
+  }, [recipe.images, recipe.image_src]);
+  const imageTouchRef = useRef({ startX: 0, startY: 0, swiping: false });
   const moreMenuRef = useRef(null);
   const stickyHeaderRef = useRef(null);
   const actionBarSentinelRef = useRef(null);
@@ -261,22 +271,124 @@ function RecipeDetailsFull({
         <h2 className={classes.headerTitle}>{recipe.name}</h2>
         <span className={classes.headerSpacer} />
       </div>
-      <div className={classes.imageContainer}>
-        {recipe.image_src && (
+      {allImages.length > 0 && (
+        <div
+          className={classes.imageContainer}
+          onTouchStart={(e) => {
+            if (allImages.length <= 1) return;
+            imageTouchRef.current.startX = e.touches[0].clientX;
+            imageTouchRef.current.startY = e.touches[0].clientY;
+            imageTouchRef.current.swiping = false;
+          }}
+          onTouchMove={(e) => {
+            if (allImages.length <= 1) return;
+            const dx = Math.abs(
+              e.touches[0].clientX - imageTouchRef.current.startX,
+            );
+            const dy = Math.abs(
+              e.touches[0].clientY - imageTouchRef.current.startY,
+            );
+            if (dx > 10 && dx > dy) {
+              imageTouchRef.current.swiping = true;
+              e.preventDefault();
+            }
+          }}
+          onTouchEnd={(e) => {
+            if (allImages.length <= 1 || !imageTouchRef.current.swiping) return;
+            const dx =
+              e.changedTouches[0].clientX - imageTouchRef.current.startX;
+            if (Math.abs(dx) > 40) {
+              if (dx < 0 && activeImageIndex < allImages.length - 1) {
+                setActiveImageIndex((i) => i + 1);
+              } else if (dx > 0 && activeImageIndex > 0) {
+                setActiveImageIndex((i) => i - 1);
+              }
+            }
+          }}
+        >
           <img
-            src={recipe.image_src}
+            src={allImages[activeImageIndex]}
             alt={recipe.name}
             className={classes.recipeImage}
             loading="lazy"
             onClick={() => setShowImageLightbox(true)}
           />
-        )}
-      </div>
+          {allImages.length > 1 && (
+            <>
+              <button
+                className={`${classes.imageNav} ${classes.imageNavPrev}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveImageIndex((i) => i - 1);
+                }}
+                disabled={activeImageIndex === 0}
+              >
+                <ChevronLeft size={22} />
+              </button>
+              <button
+                className={`${classes.imageNav} ${classes.imageNavNext}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveImageIndex((i) => i + 1);
+                }}
+                disabled={activeImageIndex === allImages.length - 1}
+              >
+                <ChevronRight size={22} />
+              </button>
+              <div className={classes.imageDots}>
+                {allImages.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`${classes.imageDot} ${i === activeImageIndex ? classes.imageDotActive : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex(i);
+                    }}
+                  />
+                ))}
+              </div>
+              <span className={classes.imageCounter}>
+                {activeImageIndex + 1}/{allImages.length}
+              </span>
+            </>
+          )}
+        </div>
+      )}
 
-      {showImageLightbox && recipe.image_src && (
+      {showImageLightbox && allImages.length > 0 && (
         <div
           className={classes.lightboxOverlay}
           onClick={() => setShowImageLightbox(false)}
+          onTouchStart={(e) => {
+            imageTouchRef.current.startX = e.touches[0].clientX;
+            imageTouchRef.current.startY = e.touches[0].clientY;
+            imageTouchRef.current.swiping = false;
+          }}
+          onTouchMove={(e) => {
+            if (allImages.length <= 1) return;
+            const dx = Math.abs(
+              e.touches[0].clientX - imageTouchRef.current.startX,
+            );
+            const dy = Math.abs(
+              e.touches[0].clientY - imageTouchRef.current.startY,
+            );
+            if (dx > 10 && dx > dy) {
+              imageTouchRef.current.swiping = true;
+            }
+          }}
+          onTouchEnd={(e) => {
+            if (allImages.length <= 1 || !imageTouchRef.current.swiping) return;
+            e.stopPropagation();
+            const dx =
+              e.changedTouches[0].clientX - imageTouchRef.current.startX;
+            if (Math.abs(dx) > 40) {
+              if (dx < 0 && activeImageIndex < allImages.length - 1) {
+                setActiveImageIndex((i) => i + 1);
+              } else if (dx > 0 && activeImageIndex > 0) {
+                setActiveImageIndex((i) => i - 1);
+              }
+            }
+          }}
         >
           <CloseButton
             className={classes.lightboxClose}
@@ -284,11 +396,52 @@ function RecipeDetailsFull({
             title={t("common", "close")}
           />
           <img
-            src={recipe.image_src}
+            src={allImages[activeImageIndex]}
             alt={recipe.name}
             className={classes.lightboxImage}
             onClick={(e) => e.stopPropagation()}
           />
+          {allImages.length > 1 && (
+            <>
+              <button
+                className={`${classes.lightboxNav} ${classes.lightboxPrev}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveImageIndex((i) => Math.max(0, i - 1));
+                }}
+                disabled={activeImageIndex === 0}
+              >
+                <ChevronLeft size={28} />
+              </button>
+              <button
+                className={`${classes.lightboxNav} ${classes.lightboxNext}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setActiveImageIndex((i) =>
+                    Math.min(allImages.length - 1, i + 1),
+                  );
+                }}
+                disabled={activeImageIndex === allImages.length - 1}
+              >
+                <ChevronRight size={28} />
+              </button>
+              <div className={classes.lightboxDots}>
+                {allImages.map((_, i) => (
+                  <button
+                    key={i}
+                    className={`${classes.imageDot} ${i === activeImageIndex ? classes.imageDotActive : ""}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setActiveImageIndex(i);
+                    }}
+                  />
+                ))}
+              </div>
+              <span className={classes.lightboxCounter}>
+                {activeImageIndex + 1} / {allImages.length}
+              </span>
+            </>
+          )}
         </div>
       )}
 
@@ -486,7 +639,9 @@ function RecipeDetailsFull({
                     }}
                     onMouseEnter={() => setHoverStar(star)}
                     onMouseLeave={() => setHoverStar(0)}
-                    onClick={() => onRate(recipe.id, star === userRating ? 0 : star)}
+                    onClick={() =>
+                      onRate(recipe.id, star === userRating ? 0 : star)
+                    }
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ")
                         onRate(recipe.id, star === userRating ? 0 : star);
@@ -668,6 +823,10 @@ function RecipeDetailsFull({
                     {recipe.nutrition.note ? `, ${recipe.nutrition.note}` : ""}
                     ):
                   </p>
+                  <p className={classes.nutritionDisclaimer}>
+                    <Info size={14} className={classes.disclaimerIcon} />
+                    {t("recipeDetails", "nutritionDisclaimer")}
+                  </p>
                   <ul className={classes.nutritionList}>
                     {recipe.nutrition.calories && (
                       <li>
@@ -832,7 +991,9 @@ function RecipeDetailsFull({
                           type="checkbox"
                           checked={checkedIngredients[index] || false}
                           onChange={() => toggleIngredient(index)}
-                          className={classes.checkbox + ' ' + buttonClasses.checkBox}
+                          className={
+                            classes.checkbox + " " + buttonClasses.checkBox
+                          }
                         />
                         <span
                           className={
@@ -861,7 +1022,9 @@ function RecipeDetailsFull({
                         type="checkbox"
                         checked={checkedInstructions[index] || false}
                         onChange={() => toggleInstruction(index)}
-                        className={classes.checkbox + ' ' + buttonClasses.checkBox}
+                        className={
+                          classes.checkbox + " " + buttonClasses.checkBox
+                        }
                       />
                       <span
                         className={

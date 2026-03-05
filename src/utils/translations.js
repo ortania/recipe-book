@@ -2262,6 +2262,14 @@ const translations = {
       de: "Nährwerte",
       mixed: "Nutritional values",
     },
+    nutritionDisclaimer: {
+      he: "הערכים התזונתיים הם הערכה בלבד ומבוססים על מאגר USDA ו-AI. ייתכנו סטיות בהתאם למותג, לגודל המנה ולאופן ההכנה.",
+      en: "Nutritional values are estimates only, based on USDA database and AI. Actual values may vary depending on brand, portion size, and preparation method.",
+      ru: "Пищевая ценность является приблизительной оценкой на основе базы данных USDA и ИИ. Фактические значения могут отличаться в зависимости от бренда, размера порции и способа приготовления.",
+      de: "Nährwerte sind nur Schätzungen, basierend auf der USDA-Datenbank und KI. Tatsächliche Werte können je nach Marke, Portionsgröße und Zubereitungsart abweichen.",
+      mixed:
+        "הערכים התזונתיים הם הערכה בלבד ומבוססים על מאגר USDA ו-AI. ייתכנו סטיות בהתאם למותג, לגודל המנה ולאופן ההכנה.",
+    },
   },
 
   // ===================== CHAT =====================
@@ -3147,11 +3155,12 @@ const translations = {
       mixed: "צילום או העלאת תמונה",
     },
     fromPhotoSubtitle: {
-      he: "צלם או בחר תמונה של מתכון - והמערכת תשלוף את כל הנתונים",
-      en: "Take a photo or select an image of a recipe - the system will extract all data",
-      ru: "Сфотографируйте или выберите изображение рецепта - система извлечёт все данные",
-      de: "Fotografieren oder wählen Sie ein Bild eines Rezepts - das System extrahiert alle Daten",
-      mixed: "צלם או בחר תמונה של מתכון - והמערכת תשלוף את כל הנתונים",
+      he: "צלם או בחר תמונות של מתכון - והמערכת תשלוף את כל הנתונים. ניתן לבחור מספר תמונות",
+      en: "Take photos or select images of a recipe - the system will extract all data. You can select multiple images",
+      ru: "Сфотографируйте или выберите изображения рецепта - система извлечёт все данные. Можно выбрать несколько фото",
+      de: "Fotografieren oder wählen Sie Bilder eines Rezepts - das System extrahiert alle Daten. Sie können mehrere Bilder auswählen",
+      mixed:
+        "צלם או בחר תמונות של מתכון - והמערכת תשלוף את כל הנתונים. ניתן לבחור מספר תמונות",
     },
     selectPhoto: {
       he: "לחץ לצילום או בחירת תמונה",
@@ -3722,6 +3731,13 @@ const translations = {
       de: "Aus Datei",
       mixed: "בחר מקובץ",
     },
+    addMoreImages: {
+      he: "הוסף תמונות",
+      en: "Add Images",
+      ru: "Добавить фото",
+      de: "Bilder hinzufügen",
+      mixed: "הוסף תמונות",
+    },
     categories: {
       he: "קטגוריות",
       en: "Categories",
@@ -3869,6 +3885,27 @@ const translations = {
       ru: "Назад",
       de: "Zurück",
       mixed: "הקודם",
+    },
+    requiredName: {
+      he: "יש להזין שם למתכון",
+      en: "Recipe name is required",
+      ru: "Необходимо указать название рецепта",
+      de: "Rezeptname ist erforderlich",
+      mixed: "יש להזין שם למתכון",
+    },
+    requiredIngredients: {
+      he: "יש להוסיף לפחות מרכיב אחד",
+      en: "At least one ingredient is required",
+      ru: "Необходимо добавить хотя бы один ингредиент",
+      de: "Mindestens eine Zutat ist erforderlich",
+      mixed: "יש להוסיף לפחות מרכיב אחד",
+    },
+    requiredInstructions: {
+      he: "יש להוסיף לפחות שלב הכנה אחד",
+      en: "At least one instruction step is required",
+      ru: "Необходимо добавить хотя бы один шаг",
+      de: "Mindestens ein Zubereitungsschritt ist erforderlich",
+      mixed: "יש להוסיף לפחות שלב הכנה אחד",
     },
     saveRecipe: {
       he: "שמור מתכון",

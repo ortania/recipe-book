@@ -27,7 +27,6 @@ import classes from "./edit-recipe.module.css";
 import { CloseButton } from "../../controls";
 import {
   calculateNutrition,
-  clearNutritionCache,
 } from "../../../services/openai";
 import {
   isGroupHeader,
@@ -84,6 +83,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const [uploadingImage, setUploadingImage] = useState(false);
   const [dragIndex, setDragIndex] = useState(null);
   const [dragField, setDragField] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
   const [savedMessage, setSavedMessage] = useState("");
   const [saving, setSaving] = useState(false);
 
@@ -96,8 +96,13 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     });
   }, []);
 
-  const { handleTouchStart, handleTouchMove, handleTouchEnd } =
-    useTouchDragDrop(handleTouchReorder);
+  const {
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    isActive: isTouchDragActive,
+  } = useTouchDragDrop(handleTouchReorder);
+  const touchDragJustFinishedRef = useRef(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 600);
@@ -107,7 +112,13 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
 
   useEffect(() => {
     const onMove = (e) => handleTouchMove(e);
-    const onEnd = (e) => handleTouchEnd(e);
+    const onEnd = (e) => {
+      handleTouchEnd(e);
+      touchDragJustFinishedRef.current = true;
+      setTimeout(() => {
+        touchDragJustFinishedRef.current = false;
+      }, 300);
+    };
     document.addEventListener("touchmove", onMove, { passive: false });
     document.addEventListener("touchend", onEnd);
     return () => {
@@ -118,6 +129,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const [editedPerson, setEditedPerson] = useState({
     name: person.name,
     image_src: person.image_src || "",
+    images: person.images || (person.image_src ? [person.image_src] : []),
     ingredients: Array.isArray(person.ingredients)
       ? [...person.ingredients]
       : [],
@@ -164,6 +176,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     setEditedPerson({
       name: person.name,
       image_src: person.image_src || "",
+      images: person.images || (person.image_src ? [person.image_src] : []),
       ingredients: Array.isArray(person.ingredients)
         ? [...person.ingredients]
         : [],
@@ -207,20 +220,31 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setUploadingImage(true);
-      try {
-        const userId = currentUser?.uid;
-        const url = await uploadRecipeImage(userId, person.id, file);
-        setEditedPerson((prev) => ({ ...prev, image_src: url }));
-      } catch (err) {
-        console.error("Image upload failed:", err);
-        alert("Error uploading image");
-      } finally {
-        setUploadingImage(false);
-      }
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
+    setUploadingImage(true);
+    try {
+      const userId = currentUser?.uid;
+      const urls = await Promise.all(
+        files.map((file) => uploadRecipeImage(userId, person.id, file)),
+      );
+      setEditedPerson((prev) => {
+        const allImages = [...(prev.images || []), ...urls];
+        return { ...prev, images: allImages, image_src: allImages[0] || "" };
+      });
+    } catch (err) {
+      console.error("Image upload failed:", err);
+    } finally {
+      setUploadingImage(false);
+      e.target.value = "";
     }
+  };
+
+  const handleRemoveImage = (index) => {
+    setEditedPerson((prev) => {
+      const updated = (prev.images || []).filter((_, i) => i !== index);
+      return { ...prev, images: updated, image_src: updated[0] || "" };
+    });
   };
 
   const handleIngredientChange = (index, value) => {
@@ -290,18 +314,24 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     }));
   };
 
-  const handleDragStart = (index, field) => {
+  const handleDragStart = (e, index, field) => {
+    if (isTouchDragActive()) {
+      e.preventDefault();
+      return;
+    }
     setDragIndex(index);
     setDragField(field);
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e, index) => {
     e.preventDefault();
+    setDragOverIndex(index);
   };
 
   const handleDrop = (dropIndex, field) => {
     if (dragIndex === null || dragField !== field || dragIndex === dropIndex)
       return;
+    if (touchDragJustFinishedRef.current) return;
     setEditedPerson((prev) => {
       const items = [...prev[field]];
       const draggedItem = items[dragIndex];
@@ -311,11 +341,13 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     });
     setDragIndex(null);
     setDragField(null);
+    setDragOverIndex(null);
   };
 
   const handleDragEnd = () => {
     setDragIndex(null);
     setDragField(null);
+    setDragOverIndex(null);
   };
 
   const handleMoveItem = (index, direction, field) => {
@@ -340,10 +372,16 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     let nutrition = { ...editedPerson.nutrition };
     let nutritionCalculated = false;
 
-    if (filledIngredients.length > 0) {
+    const origIngredients = (person.ingredients || []).join("|");
+    const newIngredients = filledAll.join("|");
+    const origServings = String(person.servings || "");
+    const newServings = String(editedPerson.servings || "");
+    const ingredientsChanged =
+      origIngredients !== newIngredients || origServings !== newServings;
+
+    if (filledIngredients.length > 0 && ingredientsChanged) {
       try {
         setSavedMessage("⏳ מחשב ערכים תזונתיים...");
-        clearNutritionCache();
         const result = await calculateNutrition(
           filledIngredients,
           editedPerson.servings,
@@ -371,7 +409,8 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     const updatedPerson = {
       ...person,
       name: editedPerson.name,
-      image_src: editedPerson.image_src,
+      image_src: editedPerson.images?.[0] || editedPerson.image_src,
+      images: editedPerson.images || [],
       ingredients: filledAll,
       instructions: editedPerson.instructions
         .map((i) => i.trim())
@@ -411,11 +450,30 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const handleAddNewCategory = async () => {
     const name = newCategoryName.trim();
     if (!name) return;
-    const COLORS = ["#FF6B6B", "#4ECDC4", "#45B7D1", "#96CEB4", "#9B59B6", "#3498DB", "#F1C40F", "#2ECC71", "#E67E22", "#1ABC9C"];
+    const COLORS = [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#45B7D1",
+      "#96CEB4",
+      "#9B59B6",
+      "#3498DB",
+      "#F1C40F",
+      "#2ECC71",
+      "#E67E22",
+      "#1ABC9C",
+    ];
     const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    const newCat = await addCategory({ id: Date.now().toString(), name, description: `${name}`, color });
+    const newCat = await addCategory({
+      id: Date.now().toString(),
+      name,
+      description: `${name}`,
+      color,
+    });
     if (newCat) {
-      setEditedPerson((prev) => ({ ...prev, categories: [...prev.categories, newCat.id] }));
+      setEditedPerson((prev) => ({
+        ...prev,
+        categories: [...prev.categories, newCat.id],
+      }));
     }
     setNewCategoryName("");
     setShowNewCategoryInput(false);
@@ -599,9 +657,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
 
       {!person.copiedFrom && (
         <div className={classes.formGroup}>
-          <label
-            className={classes.checkboxLabel}
-          >
+          <label className={classes.checkboxLabel}>
             <input
               type="checkbox"
               name="shareToGlobal"
@@ -651,10 +707,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               <div
                 key={i}
                 data-drag-item
-                className={`${isGroup ? classes.groupItem : classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""}`}
+                className={`${isGroup ? classes.groupItem : classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "ingredients" && dragIndex !== i ? (dragIndex > i ? classes.dragOverAbove : classes.dragOverBelow) : ""}`}
                 draggable
-                onDragStart={() => handleDragStart(i, "ingredients")}
-                onDragOver={handleDragOver}
+                onDragStart={(e) => handleDragStart(e, i, "ingredients")}
+                onDragOver={(e) => handleDragOver(e, i)}
                 onDrop={() => handleDrop(i, "ingredients")}
                 onDragEnd={handleDragEnd}
               >
@@ -751,10 +807,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           <div
             key={i}
             data-drag-item
-            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "instructions" ? classes.dragging : ""}`}
+            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "instructions" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "instructions" && dragIndex !== i ? (dragIndex > i ? classes.dragOverAbove : classes.dragOverBelow) : ""}`}
             draggable
-            onDragStart={() => handleDragStart(i, "instructions")}
-            onDragOver={handleDragOver}
+            onDragStart={(e) => handleDragStart(e, i, "instructions")}
+            onDragOver={(e) => handleDragOver(e, i)}
             onDrop={() => handleDrop(i, "instructions")}
             onDragEnd={handleDragEnd}
           >
@@ -815,43 +871,52 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       <input
         type="file"
         accept="image/*"
+        multiple
         ref={fileInputRef}
         onChange={handleImageUpload}
         style={{ display: "none" }}
       />
-      <div
-        className={classes.imageUploadArea}
-        onClick={() => fileInputRef.current?.click()}
-      >
-        {editedPerson.image_src ? (
-          <>
-            <img
-              src={editedPerson.image_src}
-              alt="Preview"
-              className={classes.imagePreview}
-            />
-            <button
-              type="button"
-              className={classes.imageRemoveBtn}
-              onClick={(e) => {
-                e.stopPropagation();
-                setEditedPerson((prev) => ({ ...prev, image_src: "" }));
-              }}
-            >
-              <X size={16} />
-            </button>
-          </>
-        ) : (
-          <>
-            <Camera className={classes.imageUploadIcon} />
-            <span className={classes.imageUploadText}>
-              {uploadingImage
-                ? t("recipes", "uploading")
-                : t("addWizard", "uploadImage")}
-            </span>
-          </>
-        )}
-      </div>
+      {editedPerson.images?.length > 0 ? (
+        <>
+          <div className={classes.imageGrid}>
+            {editedPerson.images.map((url, i) => (
+              <div key={i} className={classes.imageGridItem}>
+                <img
+                  src={url}
+                  alt={`${i + 1}`}
+                  className={classes.imageGridPreview}
+                />
+                <button
+                  type="button"
+                  className={classes.imageRemoveBtn}
+                  onClick={() => handleRemoveImage(i)}
+                >
+                  <X size={14} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            className={classes.addImageBtn}
+            onClick={() => fileInputRef.current?.click()}
+          >
+            <Plus size={16} /> {t("addWizard", "addMoreImages")}
+          </button>
+        </>
+      ) : (
+        <div
+          className={classes.imageUploadArea}
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <Camera className={classes.imageUploadIcon} />
+          <span className={classes.imageUploadText}>
+            {uploadingImage
+              ? t("recipes", "uploading")
+              : t("addWizard", "uploadImage")}
+          </span>
+        </div>
+      )}
     </>
   );
 
@@ -909,20 +974,42 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
                 onKeyDown={(e) => {
-                  if (e.key === "Enter") { e.preventDefault(); handleAddNewCategory(); }
-                  if (e.key === "Escape") { setShowNewCategoryInput(false); setNewCategoryName(""); }
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddNewCategory();
+                  }
+                  if (e.key === "Escape") {
+                    setShowNewCategoryInput(false);
+                    setNewCategoryName("");
+                  }
                 }}
                 autoFocus
               />
-              <button type="button" className={classes.newCategoryConfirmBtn} onClick={handleAddNewCategory} disabled={!newCategoryName.trim()}>
+              <button
+                type="button"
+                className={classes.newCategoryConfirmBtn}
+                onClick={handleAddNewCategory}
+                disabled={!newCategoryName.trim()}
+              >
                 <Check size={18} />
               </button>
-              <button type="button" className={classes.newCategoryCancelBtn} onClick={() => { setShowNewCategoryInput(false); setNewCategoryName(""); }}>
+              <button
+                type="button"
+                className={classes.newCategoryCancelBtn}
+                onClick={() => {
+                  setShowNewCategoryInput(false);
+                  setNewCategoryName("");
+                }}
+              >
                 <X size={14} />
               </button>
             </div>
           ) : (
-            <button type="button" className={classes.addCategoryChip} onClick={() => setShowNewCategoryInput(true)}>
+            <button
+              type="button"
+              className={classes.addCategoryChip}
+              onClick={() => setShowNewCategoryInput(true)}
+            >
               <Plus size={14} /> {t("categories", "addCategory")}
             </button>
           )}

@@ -233,6 +233,7 @@ function RecipeDetailsPage() {
       difficulty: recipe.difficulty,
       sourceUrl: recipe.sourceUrl,
       image_src: recipe.image_src,
+      images: recipe.images ? [...recipe.images] : [],
       categories: [...(recipe.categories || [])],
       isFavorite: false,
       notes: recipe.notes,

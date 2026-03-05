@@ -581,7 +581,7 @@
 }
 
 .formInput:focus {
-  border-color: #1a9c5a;
+  border-color: var(--active-color-primary);
 }
 
 .formSelect {
@@ -618,7 +618,7 @@
 }
 
 .formTextarea:focus {
-  border-color: #1a9c5a;
+  border-color: var(--active-color-primary);
 }
 
 /* ========== Dynamic Lists (Ingredients/Instructions) ========== */
@@ -649,7 +649,7 @@
 }
 
 .inputBox:focus-within {
-  border-color: #1a9c5a;
+  border-color: var(--active-color-primary);
 }
 
 .dynamicItemNumber {
@@ -733,7 +733,7 @@
 }
 
 .instructionBox:focus-within {
-  border-color: #1a9c5a;
+  border-color: var(--active-color-primary);
 }
 
 .instructionContent {
@@ -842,8 +842,8 @@
 }
 
 .addItemBtn:hover {
-  border-color: #1a9c5a;
-  color: #1a9c5a;
+  border-color: currentColor;
+  color: var(--active-color-primary);
 }
 
 .addGroupBtn {
@@ -1047,7 +1047,7 @@
 }
 
 .imageUploadArea:hover {
-  border-color: #1a9c5a;
+  border-color: var(--active-color-primary);
   background: #f0fff5;
 }
 
@@ -1084,9 +1084,9 @@
 }
 
 .imageOptionBtn:hover {
-  border-color: #1a9c5a;
+  border-color: currentColor;
   background: #f0fff5;
-  color: #1a9c5a;
+  color: var(--active-color-primary);
 }
 
 .imageOptionIcon {
@@ -1095,7 +1095,7 @@
 }
 
 .imageOptionBtn:hover .imageOptionIcon {
-  color: #1a9c5a;
+  color: var(--active-color-primary);
 }
 
 .imagePreview {
@@ -1122,6 +1122,40 @@
   font-size: 0.9rem;
 }
 
+/* ========== Image Grid (multiple images) ========== */
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.imageGridItem {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: var(--bg-tertiary);
+}
+
+.imageGridPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageGridItem .imageRemoveBtn {
+  width: 24px;
+  height: 24px;
+  top: 0.35rem;
+  right: 0.35rem;
+}
+
+.addMoreImages {
+  display: flex;
+  gap: 0.5rem;
+}
+
 /* ========== Category Chips ========== */
 .categoryChips {
   display: flex;
@@ -1141,7 +1175,6 @@
 }
 
 .categoryChip:hover {
-  /* border-color: #1a9c5a; */
   border-color: var(--active-color-primary);
 }
 
@@ -1253,7 +1286,7 @@
 
 .summaryIcon {
   font-size: 3rem;
-  color: #1a9c5a;
+  color: var(--active-color-primary);
   margin-bottom: 0.5rem;
 }
 
@@ -1276,10 +1309,10 @@
   gap: 0.6rem;
   padding: 0.6em 1.2em;
   background: var(--bg-card);
-  /* border: 2px solid #1a9c5a; */
+
   border: 1px solid var(--active-color-primary);
   border-radius: 12px;
-  /* color: #1a9c5a; */
+
   color: var(--active-color-primary);
   font-size: var(--basic-font);
   font-weight: 600;
@@ -1288,7 +1321,6 @@
 }
 
 .previewBtn:hover {
-  /* background: #1a9c5a; */
   background: var(--active-color-primary);
   color: white;
 }
@@ -1483,10 +1515,19 @@
   color: var(--text-secondary);
 }
 
-.dynamicItem.dragging {
+.dynamicItem.dragging,
+.groupItem.dragging {
   opacity: 0.4;
-  background: #e8f5ee;
-  border-style: dashed;
+  background: var(--bg-tertiary, #f5f5f5);
+  border: 2px dashed var(--border-color, #ccc);
+}
+
+.dragOverAbove {
+  box-shadow: 0 -3px 0 0 var(--active-color-primary);
+}
+
+.dragOverBelow {
+  box-shadow: 0 3px 0 0 var(--active-color-primary);
 }
 
 /* ========== Star Rating ========== */
@@ -1515,11 +1556,41 @@
   color: #f5a623;
 }
 
+.stepErrorText {
+  color: var(--error-color);
+  font-size: var(--basic-font, 0.9rem);
+  text-align: center;
+  margin: 0.75rem 0 0;
+  padding: 0.5rem 1rem;
+  background: var(--bg-error);
+  /* border: 1px solid #fecaca; */
+  border: 1px solid var(--border-error);
+  border-radius: 8px;
+  animation: fadeInError 0.3s ease;
+}
+
+@keyframes fadeInError {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 /* ========== Navigation Buttons ========== */
 .navButtons {
   display: flex;
-  gap: 1rem;
+  flex-direction: column;
+  gap: 0.5rem;
   margin-top: 1.5rem;
+}
+
+.navButtonsRow {
+  display: flex;
+  gap: 1rem;
 }
 
 .prevBtn {
@@ -1603,12 +1674,18 @@
     left: 0;
     right: 0;
     margin: 0;
-    padding: 1rem 1rem;
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    padding: 0.75rem 1rem;
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
     background: var(--bg-card, #fff);
     border-top: 1px solid var(--border-color);
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
     z-index: 100;
+  }
+
+  .stepErrorText {
+    margin: 0;
+    padding: 0.35rem 0.75rem;
+    font-size: var(--basic-font, 0.85rem);
   }
 }
 

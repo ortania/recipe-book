@@ -1,9 +1,11 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import classes from "./modal.module.css";
 
 function Modal({ children, onClose, className, fullscreen, maxWidth }) {
+  const overlayRef = useRef(null);
+  const contentRef = useRef(null);
+
   useEffect(() => {
-    // Add class to body when modal is open
     document.body.classList.add("modal-open");
 
     if (!fullscreen) {
@@ -38,16 +40,54 @@ function Modal({ children, onClose, className, fullscreen, maxWidth }) {
     };
   }, [fullscreen]);
 
+  useEffect(() => {
+    const overlay = overlayRef.current;
+    const content = contentRef.current;
+    if (!overlay) return;
+
+    const syncHeight = () => {
+      const h = window.visualViewport
+        ? window.visualViewport.height
+        : window.innerHeight;
+      overlay.style.height = `${h}px`;
+      if (content) content.style.maxHeight = `${h}px`;
+    };
+
+    const onFocusIn = (e) => {
+      if (e.target.matches("input, textarea, select, [contenteditable]")) {
+        setTimeout(() => {
+          syncHeight();
+          e.target.scrollIntoView({ block: "center", behavior: "smooth" });
+        }, 300);
+      }
+    };
+
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener("resize", syncHeight);
+    }
+    window.addEventListener("resize", syncHeight);
+    overlay.addEventListener("focusin", onFocusIn);
+
+    return () => {
+      if (vv) vv.removeEventListener("resize", syncHeight);
+      window.removeEventListener("resize", syncHeight);
+      overlay.removeEventListener("focusin", onFocusIn);
+      overlay.style.height = "";
+      if (content) content.style.maxHeight = "";
+    };
+  }, []);
+
   const handleOverlayClick = (e) => {
-    // Only close if clicking directly on the overlay, not when text is selected
     if (e.target === e.currentTarget && !window.getSelection().toString()) {
       onClose();
     }
   };
 
   return (
-    <div className={classes.modalOverlay} onClick={handleOverlayClick}>
+    <div ref={overlayRef} className={classes.modalOverlay} onClick={handleOverlayClick}>
       <div
+        ref={contentRef}
         className={`${classes.modalContent} ${className || ""} ${fullscreen ? classes.fullscreen : ""}`}
         style={maxWidth ? { maxWidth } : undefined}
         onClick={(e) => e.stopPropagation()}

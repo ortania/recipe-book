@@ -18,6 +18,9 @@ export function useTouchDragDrop(onReorder) {
     if (s.clone && s.clone.parentNode) {
       s.clone.parentNode.removeChild(s.clone);
     }
+    if (s.indicator && s.indicator.parentNode) {
+      s.indicator.parentNode.removeChild(s.indicator);
+    }
     if (s.scrollInterval) {
       clearInterval(s.scrollInterval);
     }
@@ -27,58 +30,85 @@ export function useTouchDragDrop(onReorder) {
       item.style.opacity = "";
       item.classList.remove("touch-drag-over");
     });
+    if (s.sourceItem) {
+      s.sourceItem.style.opacity = "";
+      s.sourceItem.style.border = "";
+      s.sourceItem.style.background = "";
+      s.sourceItem = null;
+    }
     s.active = false;
     s.clone = null;
+    s.indicator = null;
     s.items = [];
     s.listEl = null;
     s.scrollInterval = null;
   }, []);
 
-  const handleTouchStart = useCallback(
-    (e, index, field, listRef) => {
-      const handle = e.currentTarget;
-      const item = handle.closest("[data-drag-item]");
-      if (!item) return;
+  const handleTouchStart = useCallback((e, index, field, listRef) => {
+    const handle = e.currentTarget;
+    const item = handle.closest("[data-drag-item]");
+    if (!item) return;
 
-      const list = listRef?.current || item.parentNode;
-      const items = Array.from(list.querySelectorAll("[data-drag-item]"));
-      const rect = item.getBoundingClientRect();
-      const touch = e.touches[0];
+    const list = listRef?.current || item.parentNode;
+    const items = Array.from(list.querySelectorAll("[data-drag-item]"));
+    const rect = item.getBoundingClientRect();
+    const touch = e.touches[0];
 
-      const clone = item.cloneNode(true);
-      clone.style.position = "fixed";
-      clone.style.left = `${rect.left}px`;
-      clone.style.top = `${rect.top}px`;
-      clone.style.width = `${rect.width}px`;
-      clone.style.height = `${rect.height}px`;
-      clone.style.zIndex = "99999";
-      clone.style.opacity = "0.85";
-      clone.style.boxShadow = "0 4px 20px rgba(0,0,0,0.2)";
-      clone.style.borderRadius = "12px";
-      clone.style.pointerEvents = "none";
-      clone.style.transition = "none";
-      clone.style.background = "white";
-      document.body.appendChild(clone);
+    const clone = item.cloneNode(true);
+    clone.style.position = "fixed";
+    clone.style.left = `${rect.left}px`;
+    clone.style.top = `${rect.top}px`;
+    clone.style.width = `${rect.width}px`;
+    clone.style.height = `${rect.height}px`;
+    clone.style.zIndex = "99999";
+    clone.style.opacity = "0.9";
+    clone.style.boxShadow = "0 6px 24px rgba(0,0,0,0.18)";
+    clone.style.borderRadius = "12px";
+    clone.style.pointerEvents = "none";
+    clone.style.transition = "none";
+    clone.style.background = "var(--bg-card, white)";
+    clone.style.border = "2px solid var(--active-color-primary)";
+    clone.style.transform = "scale(1.02)";
+    document.body.appendChild(clone);
 
-      item.style.opacity = "0.3";
+    // Drop indicator line
+    const indicator = document.createElement("div");
+    indicator.style.position = "absolute";
+    indicator.style.left = "0";
+    indicator.style.right = "0";
+    indicator.style.height = "3px";
+    indicator.style.background = "var(--active-color-primary)";
+    indicator.style.borderRadius = "2px";
+    indicator.style.zIndex = "99998";
+    indicator.style.display = "none";
+    indicator.style.pointerEvents = "none";
+    // Add dot decorations on ends
+    indicator.style.boxShadow =
+      "-4px 0 0 0 var(--active-color-primary), 4px 0 0 0 var(--active-color-primary)";
+    list.style.position = "relative";
+    list.appendChild(indicator);
 
-      const s = dragState.current;
-      s.active = true;
-      s.field = field;
-      s.startIndex = index;
-      s.currentIndex = index;
-      s.startY = touch.clientY;
-      s.clone = clone;
-      s.items = items;
-      s.listEl = list;
-      s.itemHeight = rect.height;
-      s.initialTop = rect.top;
+    item.style.opacity = "0.3";
+    item.style.border = "2px dashed var(--border-color, #ccc)";
+    item.style.background = "var(--bg-tertiary, #f5f5f5)";
 
-      // Prevent page scroll while dragging
-      e.preventDefault();
-    },
-    [],
-  );
+    const s = dragState.current;
+    s.active = true;
+    s.field = field;
+    s.startIndex = index;
+    s.currentIndex = index;
+    s.startY = touch.clientY;
+    s.clone = clone;
+    s.indicator = indicator;
+    s.sourceItem = item;
+    s.items = items;
+    s.listEl = list;
+    s.itemHeight = rect.height;
+    s.initialTop = rect.top;
+
+    // Prevent page scroll while dragging
+    e.preventDefault();
+  }, []);
 
   const handleTouchMove = useCallback((e) => {
     const s = dragState.current;
@@ -138,6 +168,23 @@ export function useTouchDragDrop(onReorder) {
         item.style.transform = shift ? `translateY(${shift}px)` : "";
       });
     }
+
+    // Position the drop indicator line
+    if (s.indicator && newIndex !== s.startIndex) {
+      s.indicator.style.display = "block";
+      const targetItem = s.items[newIndex];
+      if (targetItem) {
+        const targetRect = targetItem.getBoundingClientRect();
+        const listRect = s.listEl.getBoundingClientRect();
+        const y =
+          newIndex > s.startIndex
+            ? targetRect.bottom - listRect.top + s.listEl.scrollTop
+            : targetRect.top - listRect.top + s.listEl.scrollTop;
+        s.indicator.style.top = `${y - 1}px`;
+      }
+    } else if (s.indicator) {
+      s.indicator.style.display = "none";
+    }
   }, []);
 
   const handleTouchEnd = useCallback(
@@ -157,7 +204,9 @@ export function useTouchDragDrop(onReorder) {
     [onReorder, cleanUp],
   );
 
-  return { handleTouchStart, handleTouchMove, handleTouchEnd };
+  const isActive = useCallback(() => dragState.current.active, []);
+
+  return { handleTouchStart, handleTouchMove, handleTouchEnd, isActive };
 }
 
 function findScrollParent(el) {

@@ -27,7 +27,7 @@ Variables
 
   --clr-white: #fff;
   --clr-black: #222;
-  --clr-red: hsl(0, 100%, 50%);
+  --clr-red: rgb(255, 0, 0);
   --clr-red-dark: hsl(0, 67%, 44%);
   --clr-red-light: hsl(360, 71%, 66%);
   --clr-red-very-light: rgb(250, 238, 238);

@@ -402,6 +402,143 @@
   }
 }
 
+/* Image dots & counter */
+.imageDots {
+  position: absolute;
+  bottom: 0.75rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.4rem;
+  z-index: 2;
+}
+
+.imageDot {
+  width: 15px;
+  height: 15px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  background: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+  transition: var(--transition);
+  border: 1px solid var(--border-accent-primary);
+}
+
+.imageDotActive {
+  background: #fff;
+  transform: scale(1.25);
+}
+
+.imageCounter {
+  position: absolute;
+  top: 0.8rem;
+  inset-inline-end: 0.75rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: var(--basic-font);
+  padding: 0.15rem 0.5rem;
+  border-radius: 10px;
+  z-index: 2;
+}
+
+/* Image carousel arrows */
+.imageNav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0, 0, 0, 0.4);
+  border: none;
+  color: #fff;
+  width: 2.2rem;
+  height: 2.2rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3;
+  transition: background 0.2s;
+  padding: 0;
+}
+
+.imageNav:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.65);
+}
+
+.imageNav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.imageNavPrev {
+  left: 0.5rem;
+}
+
+.imageNavNext {
+  right: 0.5rem;
+}
+
+/* Lightbox navigation */
+.lightboxNav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  color: #fff;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10000;
+  padding: 0;
+}
+
+.lightboxNav:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.lightboxNav:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.lightboxPrev {
+  left: 1rem;
+}
+
+.lightboxNext {
+  right: 1rem;
+}
+
+.lightboxDots {
+  position: absolute;
+  bottom: 3.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 0.5rem;
+  z-index: 10000;
+}
+
+.lightboxCounter {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  font-size: 0.9rem;
+  padding: 0.3rem 0.8rem;
+  border-radius: 12px;
+  z-index: 10000;
+}
+
 .ratingSection {
   margin: 0.5rem 0;
 }
@@ -981,8 +1118,8 @@
 
 .ingredientGroupHeader {
   padding: 0.6rem 0 0.3rem;
-  font-weight: 700;
-  color: #9810fa;
+  font-weight: var(--font-weight-quaternary);
+  color: var(--text-primary);
   font-size: var(--basic-font);
   border-bottom: 2px solid rgba(152, 16, 250, 0.15);
   margin-top: 0.3rem;
@@ -1158,6 +1295,24 @@
   font-weight: 600;
 }
 
+.nutritionDisclaimer {
+  display: flex;
+  align-items: center;
+  font-size: var(--basic-font, 0.9rem);
+  color: var(--text-tertiary);
+  margin: 0 0 0.75rem;
+  line-height: 1.5;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.4rem;
+}
+
+.disclaimerIcon {
+  flex-shrink: 0;
+  margin-top: 0.2rem;
+  opacity: 0.7;
+}
+
 /* ===== Mobile Responsive ===== */
 @media (max-width: 768px) {
   .stickyHeader {
@@ -1194,6 +1349,10 @@
 
   .headerCookingBtn svg {
     font-size: 1.6rem;
+  }
+  .imageCounter {
+    top: 2rem;
+    inset-inline-end: 0.75rem;
   }
 }
 

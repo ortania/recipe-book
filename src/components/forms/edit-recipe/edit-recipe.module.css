@@ -254,7 +254,7 @@
 }
 
 .formInput:focus {
-  border-color: #1a9c5a;
+  border-color: var(--active-color-primary);
 }
 
 .formTextarea {
@@ -277,7 +277,7 @@
 }
 
 .formTextarea:focus {
-  border-color: #1a9c5a;
+  border-color: var(--active-color-primary);
 }
 
 .formSelect {
@@ -392,6 +392,16 @@
 
 .dynamicItem.dragging {
   opacity: 0.4;
+  background: var(--bg-tertiary, #f5f5f5);
+  border: 2px dashed var(--border-color, #ccc);
+}
+
+.dragOverAbove {
+  box-shadow: 0 -3px 0 0 var(--active-color-primary);
+}
+
+.dragOverBelow {
+  box-shadow: 0 3px 0 0 var(--active-color-primary);
 }
 
 .dynamicItemNumber {
@@ -417,7 +427,7 @@
 }
 
 .inputBox:focus-within {
-  border-color: #1a9c5a;
+  border-color: var(--active-color-primary);
 }
 
 .dynamicItemInput {
@@ -488,7 +498,7 @@
 }
 
 .instructionBox:focus-within {
-  border-color: #1a9c5a;
+  border-color: var(--active-color-primary);
 }
 
 .instructionContent {
@@ -532,6 +542,8 @@
 
 .groupItem.dragging {
   opacity: 0.4;
+  background: var(--bg-tertiary, #f5f5f5);
+  border: 2px dashed var(--border-color, #ccc);
 }
 
 .groupInputBox {
@@ -597,8 +609,8 @@
 }
 
 .addItemBtn:hover {
-  border-color: #1a9c5a;
-  color: #1a9c5a;
+  border-color: var(--active-color-primary);
+  color: var(--active-color-primary);
 }
 
 .addGroupBtn {
@@ -658,7 +670,7 @@
 }
 
 .imageUploadArea:hover {
-  border-color: #1a9c5a;
+  border-color: var(--active-color-primary);
 }
 
 .imagePreview {
@@ -696,6 +708,56 @@
   font-size: 0.9rem;
 }
 
+/* ========== Image Grid (multiple images) ========== */
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.imageGridItem {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: var(--bg-tertiary);
+}
+
+.imageGridPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageGridItem .imageRemoveBtn {
+  width: 24px;
+  height: 24px;
+  top: 0.35rem;
+  right: 0.35rem;
+}
+
+.addImageBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px dashed var(--border-color);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--text-muted);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addImageBtn:hover {
+  border-color: var(--active-color-primary);
+  color: var(--active-color-primary);
+}
+
 /* ========== Categories ========== */
 .categorySection {
   margin-bottom: 1.25rem;
@@ -726,7 +788,6 @@
 }
 
 .categoryChip:hover {
-  /* border-color: #1a9c5a; */
   border-color: var(--active-color-primary);
 }
 

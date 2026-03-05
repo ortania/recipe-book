@@ -9,7 +9,6 @@ import {
 import {
   extractRecipeFromImage,
   calculateNutrition,
-  clearNutritionCache,
   parseFreeSpeechRecipe,
 } from "../../../services/openai";
 import {
@@ -68,6 +67,7 @@ const INITIAL_RECIPE = {
   difficulty: "Unknown",
   sourceUrl: "",
   image_src: "",
+  images: [],
   categories: [],
   isFavorite: false,
   notes: "",
@@ -131,6 +131,8 @@ function AddRecipeWizard({
   const recordingTextRef = useRef("");
   const [dragIndex, setDragIndex] = useState(null);
   const [dragField, setDragField] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [stepError, setStepError] = useState("");
   const [visitedSteps, setVisitedSteps] = useState(new Set([0]));
   const [showPreview, setShowPreview] = useState(false);
   const [importProgress, setImportProgress] = useState(0);
@@ -157,12 +159,23 @@ function AddRecipeWizard({
     });
   }, []);
 
-  const { handleTouchStart, handleTouchMove, handleTouchEnd } =
-    useTouchDragDrop(handleTouchReorder);
+  const {
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    isActive: isTouchDragActive,
+  } = useTouchDragDrop(handleTouchReorder);
+  const touchDragJustFinishedRef = useRef(false);
 
   useEffect(() => {
     const onMove = (e) => handleTouchMove(e);
-    const onEnd = (e) => handleTouchEnd(e);
+    const onEnd = (e) => {
+      handleTouchEnd(e);
+      touchDragJustFinishedRef.current = true;
+      setTimeout(() => {
+        touchDragJustFinishedRef.current = false;
+      }, 300);
+    };
     document.addEventListener("touchmove", onMove, { passive: false });
     document.addEventListener("touchend", onEnd);
     return () => {
@@ -173,6 +186,7 @@ function AddRecipeWizard({
 
   const updateRecipe = (field, value) => {
     setRecipe((prev) => ({ ...prev, [field]: value }));
+    if (stepError) setStepError("");
   };
 
   const needsTranslationRef = useRef(false);
@@ -225,6 +239,7 @@ function AddRecipeWizard({
         cookTime: parsed.cookTime || prev.cookTime,
         servings: parsed.servings || prev.servings,
         image_src: parsed.image_src || prev.image_src,
+        images: parsed.image_src ? [parsed.image_src] : prev.images,
         sourceUrl: recipeUrl,
       }));
       setImportProgress(100);
@@ -587,18 +602,20 @@ function AddRecipeWizard({
   };
 
   const handleImportFromPhoto = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
     setIsImporting(true);
     setImportError("");
     try {
-      const base64 = await new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
-      const parsed = await extractRecipeFromImage(base64);
+      const readFile = (file) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+      const base64Images = await Promise.all(files.map(readFile));
+      const parsed = await extractRecipeFromImage(base64Images);
       if (parsed.error) {
         setImportError(parsed.error);
         return;
@@ -627,6 +644,7 @@ function AddRecipeWizard({
     } finally {
       setIsImporting(false);
       if (photoInputRef.current) photoInputRef.current.value = "";
+      if (photoFileInputRef.current) photoFileInputRef.current.value = "";
     }
   };
 
@@ -634,19 +652,39 @@ function AddRecipeWizard({
 
   // ========== Image upload ==========
   const handleImageUpload = async (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const files = Array.from(e.target.files || []);
+    if (files.length === 0) return;
     setUploadingImage(true);
     try {
       const userId = currentUser?.uid;
-      const url = await uploadRecipeImage(userId, null, file);
-      updateRecipe("image_src", url);
+      const urls = await Promise.all(
+        files.map((file) => uploadRecipeImage(userId, null, file)),
+      );
+      setRecipe((prev) => {
+        const allImages = [...(prev.images || []), ...urls];
+        return {
+          ...prev,
+          images: allImages,
+          image_src: allImages[0] || "",
+        };
+      });
     } catch (err) {
       console.error("Image upload failed:", err);
     } finally {
       setUploadingImage(false);
       e.target.value = "";
     }
+  };
+
+  const handleRemoveImage = (index) => {
+    setRecipe((prev) => {
+      const updated = (prev.images || []).filter((_, i) => i !== index);
+      return {
+        ...prev,
+        images: updated,
+        image_src: updated[0] || "",
+      };
+    });
   };
 
   // ========== Ingredient/Instruction handlers ==========
@@ -692,28 +730,36 @@ function AddRecipeWizard({
     );
   };
 
-  const handleDragStart = (index, field) => {
+  const handleDragStart = (e, index, field) => {
+    if (isTouchDragActive()) {
+      e.preventDefault();
+      return;
+    }
     setDragIndex(index);
     setDragField(field);
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e, index) => {
     e.preventDefault();
+    setDragOverIndex(index);
   };
 
   const handleDrop = (targetIndex, field) => {
     if (dragIndex === null || dragField !== field) return;
+    if (touchDragJustFinishedRef.current) return;
     const items = [...recipe[field]];
     const [moved] = items.splice(dragIndex, 1);
     items.splice(targetIndex, 0, moved);
     updateRecipe(field, items);
     setDragIndex(null);
     setDragField(null);
+    setDragOverIndex(null);
   };
 
   const handleDragEnd = () => {
     setDragIndex(null);
     setDragField(null);
+    setDragOverIndex(null);
   };
 
   const handleMoveItem = (index, direction, field) => {
@@ -773,9 +819,9 @@ function AddRecipeWizard({
     const filledAll = recipe.ingredients.filter(Boolean);
     const filledIngredients = ingredientsOnly(filledAll);
     let nutrition = recipe.nutrition || {};
-    if (filledIngredients.length > 0) {
+    const hasNutrition = nutrition.calories && String(nutrition.calories) !== "0";
+    if (filledIngredients.length > 0 && !hasNutrition) {
       try {
-        clearNutritionCache();
         const result = await calculateNutrition(
           filledIngredients,
           recipe.servings,
@@ -802,6 +848,7 @@ function AddRecipeWizard({
         console.error("Nutrition calculation failed:", err);
       }
     }
+    const images = recipe.images?.length > 0 ? recipe.images : [];
     const newRecipe = {
       name: recipe.name,
       ingredients: filledAll,
@@ -811,7 +858,8 @@ function AddRecipeWizard({
       servings: recipe.servings ? parseInt(recipe.servings) : null,
       difficulty: recipe.difficulty,
       sourceUrl: recipe.sourceUrl,
-      image_src: recipe.image_src,
+      image_src: images[0] || recipe.image_src,
+      images,
       categories: recipe.categories,
       isFavorite: recipe.isFavorite,
       notes: recipe.notes,
@@ -1015,10 +1063,10 @@ function AddRecipeWizard({
               <div
                 key={i}
                 data-drag-item
-                className={`${isGroup ? classes.groupItem : classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""}`}
+                className={`${isGroup ? classes.groupItem : classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "ingredients" && dragIndex !== i ? (dragIndex > i ? classes.dragOverAbove : classes.dragOverBelow) : ""}`}
                 draggable
-                onDragStart={() => handleDragStart(i, "ingredients")}
-                onDragOver={handleDragOver}
+                onDragStart={(e) => handleDragStart(e, i, "ingredients")}
+                onDragOver={(e) => handleDragOver(e, i)}
                 onDrop={() => handleDrop(i, "ingredients")}
                 onDragEnd={handleDragEnd}
               >
@@ -1235,10 +1283,10 @@ function AddRecipeWizard({
           <div
             key={i}
             data-drag-item
-            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "instructions" ? classes.dragging : ""}`}
+            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "instructions" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "instructions" && dragIndex !== i ? (dragIndex > i ? classes.dragOverAbove : classes.dragOverBelow) : ""}`}
             draggable
-            onDragStart={() => handleDragStart(i, "instructions")}
-            onDragOver={handleDragOver}
+            onDragStart={(e) => handleDragStart(e, i, "instructions")}
+            onDragOver={(e) => handleDragOver(e, i)}
             onDrop={() => handleDrop(i, "instructions")}
             onDragEnd={handleDragEnd}
           >
@@ -1307,6 +1355,7 @@ function AddRecipeWizard({
         <input
           type="file"
           accept="image/*"
+          multiple
           ref={fileInputRef}
           onChange={handleImageUpload}
           style={{ display: "none" }}
@@ -1319,21 +1368,45 @@ function AddRecipeWizard({
           onChange={handleImageUpload}
           style={{ display: "none" }}
         />
-        {recipe.image_src ? (
-          <div className={classes.imageUploadArea}>
-            <img
-              src={recipe.image_src}
-              alt="Preview"
-              className={classes.imagePreview}
-            />
-            <button
-              type="button"
-              className={classes.imageRemoveBtn}
-              onClick={() => updateRecipe("image_src", "")}
-            >
-              <X size={16} />
-            </button>
-          </div>
+        {recipe.images?.length > 0 ? (
+          <>
+            <div className={classes.imageGrid}>
+              {recipe.images.map((url, i) => (
+                <div key={i} className={classes.imageGridItem}>
+                  <img
+                    src={url}
+                    alt={`${i + 1}`}
+                    className={classes.imageGridPreview}
+                  />
+                  <button
+                    type="button"
+                    className={classes.imageRemoveBtn}
+                    onClick={() => handleRemoveImage(i)}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className={classes.addMoreImages}>
+              {isMobileDevice && (
+                <button
+                  type="button"
+                  className={classes.addItemBtn}
+                  onClick={() => cameraInputRef.current?.click()}
+                >
+                  <Camera size={16} /> {t("addWizard", "takePhoto")}
+                </button>
+              )}
+              <button
+                type="button"
+                className={classes.addItemBtn}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                <Plus size={16} /> {t("addWizard", "addMoreImages")}
+              </button>
+            </div>
+          </>
         ) : (
           <div className={classes.imageUploadButtons}>
             {isMobileDevice && (
@@ -1604,7 +1677,10 @@ function AddRecipeWizard({
       </label>
 
       {recipe.shareToGlobal && (
-        <label className={classes.favoriteToggle} style={{ paddingInlineStart: "1.5rem" }}>
+        <label
+          className={classes.favoriteToggle}
+          style={{ paddingInlineStart: "1.5rem" }}
+        >
           <input
             type="checkbox"
             className={classes.favoriteCheckbox + " " + buttonClasses.checkBox}
@@ -1638,19 +1714,49 @@ function AddRecipeWizard({
     }
   };
 
-  const canProceed = () => {
-    if (manualStep === 0) return recipe.name.trim().length > 0;
-    return true;
+  const isStepValid = (step) => {
+    switch (step) {
+      case 0:
+        return recipe.name.trim().length > 0;
+      case 1:
+        return recipe.ingredients.some((ing) => ing && ing.trim().length > 0);
+      case 2:
+        return recipe.instructions.some(
+          (inst) => inst && inst.trim().length > 0,
+        );
+      default:
+        return true;
+    }
   };
+
+  const getStepError = (step) => {
+    switch (step) {
+      case 0:
+        return t("addWizard", "requiredName");
+      case 1:
+        return t("addWizard", "requiredIngredients");
+      case 2:
+        return t("addWizard", "requiredInstructions");
+      default:
+        return "";
+    }
+  };
+
+  const canProceed = () => isStepValid(manualStep);
 
   const canNavigateToStep = (targetStep) => {
     for (let s = 0; s < targetStep; s++) {
-      if (s === 0 && recipe.name.trim().length === 0) return false;
+      if (!isStepValid(s)) return false;
     }
     return true;
   };
 
   const handleNext = async () => {
+    if (!isStepValid(manualStep)) {
+      setStepError(getStepError(manualStep));
+      return;
+    }
+    setStepError("");
     if (manualStep === 4) {
       await handleSubmit();
     } else {
@@ -1661,10 +1767,22 @@ function AddRecipeWizard({
   };
 
   const handlePrev = () => {
+    setStepError("");
     setManualStep(manualStep - 1);
   };
 
   const handleStepClick = (stepIndex) => {
+    if (stepIndex > manualStep && !canNavigateToStep(stepIndex)) {
+      const firstInvalidStep = Array.from(
+        { length: stepIndex },
+        (_, i) => i,
+      ).find((s) => !isStepValid(s));
+      if (firstInvalidStep !== undefined) {
+        setStepError(getStepError(firstInvalidStep));
+      }
+      return;
+    }
+    setStepError("");
     setManualStep(stepIndex);
     setVisitedSteps((prev) => new Set([...prev, stepIndex]));
   };
@@ -2108,6 +2226,7 @@ function AddRecipeWizard({
         ref={photoFileInputRef}
         type="file"
         accept="image/*"
+        multiple
         style={{ display: "none" }}
         onChange={handleImportFromPhoto}
       />
@@ -2200,33 +2319,36 @@ function AddRecipeWizard({
       {renderManualStep()}
 
       <div className={classes.navButtons}>
-        {manualStep > 0 && (
+        {stepError && <p className={classes.stepErrorText}>{stepError}</p>}
+        <div className={classes.navButtonsRow}>
+          {manualStep > 0 && (
+            <button
+              type="button"
+              className={classes.prevBtn}
+              onClick={handlePrev}
+            >
+              {t("addWizard", "previous")}
+            </button>
+          )}
           <button
             type="button"
-            className={classes.prevBtn}
-            onClick={handlePrev}
+            className={classes.nextBtn}
+            onClick={handleNext}
+            disabled={!canProceed() || saving}
           >
-            {t("addWizard", "previous")}
+            {saving ? (
+              <>
+                <Loader2 size={16} className={classes.spinning} />{" "}
+                {t("common", "loading") || "..."}
+              </>
+            ) : manualStep === 4 ? (
+              t("addWizard", "saveRecipe")
+            ) : (
+              t("addWizard", "continue")
+            )}
+            {/* <ChevronRight /> */}
           </button>
-        )}
-        <button
-          type="button"
-          className={classes.nextBtn}
-          onClick={handleNext}
-          disabled={!canProceed() || saving}
-        >
-          {saving ? (
-            <>
-              <Loader2 size={16} className={classes.spinning} />{" "}
-              {t("common", "loading") || "..."}
-            </>
-          ) : manualStep === 4 ? (
-            t("addWizard", "saveRecipe")
-          ) : (
-            t("addWizard", "continue")
-          )}
-          {/* <ChevronRight /> */}
-        </button>
+        </div>
       </div>
     </div>
   );

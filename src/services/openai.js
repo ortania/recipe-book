@@ -83,13 +83,31 @@ export const analyzeImageForNutrition = async (base64Image, options = {}) => {
   }, options);
 };
 
-export const extractRecipeFromImage = async (base64Image, language = "he") => {
+export const extractRecipeFromImage = async (base64Images, language = "he") => {
+  const images = Array.isArray(base64Images) ? base64Images : [base64Images];
+  const imageCount = images.length;
+
+  const userContent = [
+    {
+      type: "text",
+      text:
+        imageCount > 1
+          ? `Please extract the recipe from these ${imageCount} images. They may show different parts of the same recipe (e.g. ingredients on one page, instructions on another). Combine all information into a single recipe.`
+          : "Please extract the recipe from this image.",
+    },
+    ...images.map((img) => ({
+      type: "image_url",
+      image_url: { url: img, detail: "high" },
+    })),
+  ];
+
   const result = await callOpenAI({
     model: "gpt-4o",
     messages: [
       {
         role: "system",
         content: `You are a recipe extraction expert. When shown an image of a recipe (from a book, website screenshot, handwritten note, etc.), extract all recipe information from it.
+You may receive multiple images that together form a single recipe (e.g. different pages). Combine all information into one complete recipe.
 You MUST respond with valid JSON in this exact format:
 {
   "name": "recipe name",
@@ -104,28 +122,16 @@ You MUST respond with valid JSON in this exact format:
 - Always write quantities as digits, not words. For example: "3 ביצים" not "שלוש ביצים", "2 cups" not "two cups". Always put the number BEFORE the ingredient.
 - ONLY use "::" group prefixes for SPECIFIC named sub-sections like "::לבצק", "::למילוי", "::לציפוי", "::For the dough", "::For the filling". Do NOT create groups for generic words like "מרכיבים" (ingredients) or "הוראות" (instructions) - these are NOT groups. If there are no specific named sub-sections, just list all ingredients without any group headers.
 - Extract ALL instructions as separate steps.
-- If you cannot read or identify a recipe in the image, return: {"error": "Could not extract recipe from image"}
+- CRITICAL: ONLY extract instructions that are ACTUALLY WRITTEN in the source. NEVER invent, generate, or add instructions that do not appear in the original text. If there are no instructions, return an empty array for "instructions".
 - CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part.`,
       },
       {
         role: "user",
-        content: [
-          {
-            type: "text",
-            text: "Please extract the recipe from this image.",
-          },
-          {
-            type: "image_url",
-            image_url: {
-              url: base64Image,
-              detail: "high",
-            },
-          },
-        ],
+        content: userContent,
       },
     ],
     temperature: 0.2,
-    max_tokens: 2000,
+    max_tokens: 3000,
   });
 
   try {
@@ -172,6 +178,7 @@ You MUST respond with valid JSON in this exact format:
 - CRITICAL - Multiple Hebrew sections: The page often has headers like "לבלילה:" (for batter), "למלית:" (for filling), "לציפוי", "לעיטור" (decoration), "לבלילת העוגה:", "לקישוט העוגה:", "להגשה", etc. You MUST output ingredients for EVERY such section. Never output only the first section and stop. Always scan the full text for every section header (e.g. לבלילה:, למלית:, לציפוי, לעיטור, לבלילת העוגה, לקישוט העוגה, להגשה) and add "::header" plus that section's ingredients. If you see "לבלילה:" you must also find and output "למלית:" (or whatever comes after) with its ingredients.
 - Explicit rule: When the source text contains multiple sections (e.g. "לבלילה:" and "למלית:", or "לבלילת העוגה:" and "לקישוט העוגה:"), your ingredients array MUST include a group and ingredients for EACH section (e.g. "::לבלילה" and "::למלית"). One section alone is wrong.
 - Extract ALL instructions as separate steps in order.
+- CRITICAL: ONLY extract instructions that are ACTUALLY WRITTEN in the source text. NEVER invent, generate, or add instructions that do not appear in the original text. If there are no instructions in the text, return an empty array for "instructions".
 - prepTime and cookTime should be numbers in minutes only (no units).
 - CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
 - IMPORTANT: ONLY extract the actual recipe content. Completely IGNORE any of these: advertisements, recommendations, "you might also like", related articles, comments, social media links, navigation, author bio, newsletter signup, or any other non-recipe content.
@@ -263,6 +270,7 @@ You MUST respond with valid JSON in this exact format:
 - ONLY use "::" group prefixes for SPECIFIC named sub-sections like "::לבלילה", "::למלית", "::לציפוי", "::לעיטור", "::לקישוט", "::לבצק", "::למילוי", "::For the dough", "::For the filling". Do NOT create groups for generic words like "מרכיבים" (ingredients) or "הוראות" (instructions) - these are NOT groups.
 - CRITICAL for Hebrew: If the user said "לבלילה", "למלית", "לציפוי", "לעיטור", "לקישוט" or similar before a set of ingredients, you MUST output a "::group name" line and then the ingredients for that group. For example: if they said "לבלילה מרכיב 2 ביצים למלית מרכיב 500 גרם גבינה", output ["::לבלילה", "2 ביצים", "::למלית", "500 גרם גבינה"]. Never merge multiple sections into one.
 - Extract ALL instructions as separate steps in order.
+- CRITICAL: ONLY extract instructions that the user ACTUALLY SAID or WROTE. NEVER invent, generate, or add instructions that do not appear in the original text. If the user did not mention any instructions, return an empty array for "instructions".
 - prepTime and cookTime should be numbers in minutes only (no units).
 - CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
 - If difficulty is mentioned, map it to: VeryEasy, Easy, Medium, or Hard.
@@ -303,7 +311,78 @@ const NUTRITION_FIELDS = [
   "saturatedFat",
 ];
 
-const lookupSingleIngredient = async (ingredient) => {
+const USDA_API_KEY = import.meta.env.VITE_USDA_API_KEY || "";
+const USDA_API_BASE = "https://api.nal.usda.gov/fdc/v1";
+
+const USDA_NUTRIENT_MAP = {
+  1008: "calories",
+  1003: "protein",
+  1004: "fat",
+  1005: "carbs",
+  2000: "sugars",
+  1079: "fiber",
+  1093: "sodium",
+  1087: "calcium",
+  1089: "iron",
+  1253: "cholesterol",
+  1258: "saturatedFat",
+};
+
+const parseIngredientWithGPT = async (ingredient) => {
+  const result = await callOpenAI({
+    model: "gpt-4o",
+    messages: [
+      {
+        role: "system",
+        content: `You translate food ingredients to English and estimate their total weight in grams.
+Return ONLY a JSON object, no markdown:
+{"english":"<USDA search term in English>","grams":<total weight in grams as number>}
+
+Rules:
+- "english" should be a simple USDA-friendly food name (e.g. "carrot raw", "egg whole raw", "all purpose flour", "chicken breast raw").
+- Do NOT include quantities in "english", only the food name.
+- "grams" is the TOTAL weight of the ingredient as stated.
+- When size is not specified, assume MEDIUM size.
+- When a weight has a range, use the MIDPOINT.
+- Common weights: 1 medium egg = 50g, 1 medium carrot = 61g, 1 medium onion = 110g, 1 medium potato = 150g, 1 cup flour = 125g, 1 cup sugar = 200g, 1 cup milk = 244g, 1 tablespoon oil = 14g, 1 tablespoon butter = 14g.
+- For "כוס" (cup), "כף" (tablespoon), "כפית" (teaspoon) use standard metric conversions.`,
+      },
+      { role: "user", content: ingredient },
+    ],
+    temperature: 0,
+    seed: 42,
+    max_tokens: 100,
+  });
+
+  let cleaned = result
+    .replace(/```json\s*/gi, "")
+    .replace(/```\s*/g, "")
+    .trim();
+  const objMatch = cleaned.match(/\{[\s\S]*\}/);
+  if (objMatch) cleaned = objMatch[0];
+  return JSON.parse(cleaned);
+};
+
+const searchUSDA = async (englishFoodName) => {
+  const nutrientIds = Object.keys(USDA_NUTRIENT_MAP).join(",");
+  const url = `${USDA_API_BASE}/foods/search?query=${encodeURIComponent(englishFoodName)}&dataType=SR%20Legacy,Foundation&pageSize=3&nutrients=${nutrientIds}&api_key=${USDA_API_KEY}`;
+  const response = await fetch(url);
+  if (!response.ok) throw new Error(`USDA API error: ${response.status}`);
+  const data = await response.json();
+  if (!data.foods || data.foods.length === 0) return null;
+
+  const food = data.foods[0];
+  const per100g = {};
+  for (const nutrient of food.foodNutrients || []) {
+    const fieldName = USDA_NUTRIENT_MAP[nutrient.nutrientId];
+    if (fieldName) {
+      per100g[fieldName] = nutrient.value || 0;
+    }
+  }
+  return per100g;
+};
+
+const lookupWithGPTFallback = async (ingredient) => {
   const result = await callOpenAI({
     model: "gpt-4o",
     messages: [
@@ -315,14 +394,14 @@ Return ONLY a JSON object, no markdown, no explanation:
 
 Rules:
 - Values are for the FULL quantity stated (e.g. "10 eggs" = 10 × single egg).
-- 1 large egg = 72 cal, 6g protein, 5g fat, 0.4g carbs, 186mg cholesterol.
-- 1 cup flour = 455 cal, 13g protein, 1g fat, 95g carbs.
-- 100g chicken breast = 165 cal, 31g protein, 3.6g fat.
+- When size is not specified, ALWAYS assume MEDIUM size.
+- When a weight or nutritional value has a known range, use the MIDPOINT.
 - Use USDA values. All numbers are integers. Unknown fields = 0.`,
       },
       { role: "user", content: ingredient },
     ],
     temperature: 0,
+    seed: 42,
     max_tokens: 150,
   });
 
@@ -333,6 +412,28 @@ Rules:
   const objMatch = cleaned.match(/\{[\s\S]*\}/);
   if (objMatch) cleaned = objMatch[0];
   return JSON.parse(cleaned);
+};
+
+const lookupSingleIngredient = async (ingredient) => {
+  if (USDA_API_KEY) {
+    try {
+      const parsed = await parseIngredientWithGPT(ingredient);
+      if (parsed.english && parsed.grams > 0) {
+        const usdaPer100g = await searchUSDA(parsed.english);
+        if (usdaPer100g) {
+          const factor = parsed.grams / 100;
+          const result = {};
+          for (const f of NUTRITION_FIELDS) {
+            result[f] = Math.round((usdaPer100g[f] || 0) * factor);
+          }
+          return result;
+        }
+      }
+    } catch (err) {
+      console.warn("USDA lookup failed, falling back to GPT:", err);
+    }
+  }
+  return lookupWithGPTFallback(ingredient);
 };
 
 export const calculateNutrition = async (ingredients, servings) => {

@@ -637,7 +637,8 @@ function RecipeDetailsCookingMode({
                             type="number"
                             min="0"
                             max="180"
-                            value={customTimerInput || "00"}
+                            placeholder='0'
+                            value={customTimerInput}
                             onChange={(e) =>
                               setCustomTimerInput(e.target.value)
                             }
