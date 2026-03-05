@@ -1,6 +1,19 @@
-import { useState, useRef, useEffect, useCallback, useImperativeHandle, forwardRef } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  useImperativeHandle,
+  forwardRef,
+} from "react";
 import { IoPlay, IoPause, IoVolumeHigh, IoVolumeMute } from "react-icons/io5";
-import { MdSkipNext, MdSkipPrevious, MdClose, MdDragIndicator } from "react-icons/md";
+import {
+  MdSkipNext,
+  MdSkipPrevious,
+  MdClose,
+  MdDragIndicator,
+} from "react-icons/md";
+import { Minimize2, Music } from "lucide-react";
 import { useLanguage } from "../../context";
 import STATIONS from "./stations";
 import classes from "./radio-player.module.css";
@@ -17,7 +30,7 @@ function getGlobalAudio() {
   return _globalAudio;
 }
 
-function RadioPlayer({ open, onClose }, ref) {
+function RadioPlayer({ open, onClose, minimized, onMinimize, onExpand }, ref) {
   const { t, language } = useLanguage();
   const audioRef = useRef(getGlobalAudio());
   const fallbackHandlerRef = useRef(null);
@@ -49,14 +62,23 @@ function RadioPlayer({ open, onClose }, ref) {
 
   // --- drag state ---
   const panelRef = useRef(null);
-  const dragState = useRef({ dragging: false, startX: 0, startY: 0, offsetX: 0, offsetY: 0 });
+  const dragState = useRef({
+    dragging: false,
+    startX: 0,
+    startY: 0,
+    offsetX: 0,
+    offsetY: 0,
+  });
   const [pos, setPos] = useState({ x: 0, y: 0 });
 
-  const onDragStart = useCallback((clientX, clientY) => {
-    dragState.current.dragging = true;
-    dragState.current.startX = clientX - pos.x;
-    dragState.current.startY = clientY - pos.y;
-  }, [pos]);
+  const onDragStart = useCallback(
+    (clientX, clientY) => {
+      dragState.current.dragging = true;
+      dragState.current.startX = clientX - pos.x;
+      dragState.current.startY = clientY - pos.y;
+    },
+    [pos],
+  );
 
   useEffect(() => {
     const onMove = (e) => {
@@ -68,7 +90,9 @@ function RadioPlayer({ open, onClose }, ref) {
         y: clientY - dragState.current.startY,
       });
     };
-    const onEnd = () => { dragState.current.dragging = false; };
+    const onEnd = () => {
+      dragState.current.dragging = false;
+    };
 
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onEnd);
@@ -89,7 +113,12 @@ function RadioPlayer({ open, onClose }, ref) {
 
   const removeFallbackHandler = useCallback(() => {
     if (fallbackHandlerRef.current) {
-      try { getGlobalAudio().removeEventListener("error", fallbackHandlerRef.current); } catch {}
+      try {
+        getGlobalAudio().removeEventListener(
+          "error",
+          fallbackHandlerRef.current,
+        );
+      } catch {}
       fallbackHandlerRef.current = null;
     }
   }, []);
@@ -98,9 +127,17 @@ function RadioPlayer({ open, onClose }, ref) {
     const audio = getGlobalAudio();
     audioRef.current = audio;
 
-    const onPlaying = () => { setLoading(false); setError(false); };
+    const onPlaying = () => {
+      setLoading(false);
+      setError(false);
+    };
     const onWaiting = () => setLoading(true);
-    const onError = () => { setLoading(false); setError(true); setIsPlaying(false); wantPlayingRef.current = false; };
+    const onError = () => {
+      setLoading(false);
+      setError(true);
+      setIsPlaying(false);
+      wantPlayingRef.current = false;
+    };
 
     let resumeTimer = null;
     const onPause = () => {
@@ -133,52 +170,60 @@ function RadioPlayer({ open, onClose }, ref) {
   }, [removeFallbackHandler]);
 
   useEffect(() => {
-    if (audioRef.current && !micMutedRef.current) audioRef.current.volume = volume;
-    try { localStorage.setItem(VOLUME_STORAGE_KEY, String(volume)); } catch {}
+    if (audioRef.current && !micMutedRef.current)
+      audioRef.current.volume = volume;
+    try {
+      localStorage.setItem(VOLUME_STORAGE_KEY, String(volume));
+    } catch {}
   }, [volume]);
 
   useEffect(() => {
-    try { localStorage.setItem(STATION_STORAGE_KEY, String(stationIndex)); } catch {}
+    try {
+      localStorage.setItem(STATION_STORAGE_KEY, String(stationIndex));
+    } catch {}
   }, [stationIndex]);
 
-  const play = useCallback((idx) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    removeFallbackHandler();
+  const play = useCallback(
+    (idx) => {
+      const audio = audioRef.current;
+      if (!audio) return;
+      removeFallbackHandler();
 
-    const target = idx !== undefined ? STATIONS[idx] : STATIONS[stationIndex];
-    audio.pause();
-    audio.src = target.url;
-    audio.load();
-    setLoading(true);
-    setError(false);
+      const target = idx !== undefined ? STATIONS[idx] : STATIONS[stationIndex];
+      audio.pause();
+      audio.src = target.url;
+      audio.load();
+      setLoading(true);
+      setError(false);
 
-    const tryFallback = () => {
-      if (target.fallbackUrl) {
-        audio.src = target.fallbackUrl;
-        audio.load();
-        audio.play().catch(() => {
+      const tryFallback = () => {
+        if (target.fallbackUrl) {
+          audio.src = target.fallbackUrl;
+          audio.load();
+          audio.play().catch(() => {
+            setError(true);
+            setLoading(false);
+          });
+        } else {
           setError(true);
           setLoading(false);
-        });
-      } else {
-        setError(true);
-        setLoading(false);
-      }
-    };
+        }
+      };
 
-    audio.play().catch(tryFallback);
+      audio.play().catch(tryFallback);
 
-    const errorHandler = () => {
-      fallbackHandlerRef.current = null;
-      tryFallback();
-    };
-    fallbackHandlerRef.current = errorHandler;
-    audio.addEventListener("error", errorHandler, { once: true });
+      const errorHandler = () => {
+        fallbackHandlerRef.current = null;
+        tryFallback();
+      };
+      fallbackHandlerRef.current = errorHandler;
+      audio.addEventListener("error", errorHandler, { once: true });
 
-    wantPlayingRef.current = true;
-    setIsPlaying(true);
-  }, [stationIndex, removeFallbackHandler]);
+      wantPlayingRef.current = true;
+      setIsPlaying(true);
+    },
+    [stationIndex, removeFallbackHandler],
+  );
 
   const pause = useCallback(() => {
     wantPlayingRef.current = false;
@@ -196,19 +241,25 @@ function RadioPlayer({ open, onClose }, ref) {
     }
   }, [isPlaying, play, pause]);
 
-  const changeStation = useCallback((direction) => {
-    const newIdx =
-      direction === "next"
-        ? (stationIndex + 1) % STATIONS.length
-        : (stationIndex - 1 + STATIONS.length) % STATIONS.length;
-    setStationIndex(newIdx);
-    if (isPlaying) play(newIdx);
-  }, [stationIndex, isPlaying, play]);
+  const changeStation = useCallback(
+    (direction) => {
+      const newIdx =
+        direction === "next"
+          ? (stationIndex + 1) % STATIONS.length
+          : (stationIndex - 1 + STATIONS.length) % STATIONS.length;
+      setStationIndex(newIdx);
+      if (isPlaying) play(newIdx);
+    },
+    [stationIndex, isPlaying, play],
+  );
 
-  const selectStation = useCallback((idx) => {
-    setStationIndex(idx);
-    play(idx);
-  }, [play]);
+  const selectStation = useCallback(
+    (idx) => {
+      setStationIndex(idx);
+      play(idx);
+    },
+    [play],
+  );
 
   const duckVolume = useCallback(() => {
     getGlobalAudio().volume = volume * 0.08;
@@ -241,41 +292,84 @@ function RadioPlayer({ open, onClose }, ref) {
     setVolume((v) => Math.max(0, +(v - VOLUME_STEP).toFixed(3)));
   }, []);
 
-  const selectStationByName = useCallback((name) => {
-    const lower = name.toLowerCase();
-    const idx = STATIONS.findIndex((s) => {
-      if (s.id === lower) return true;
-      if (Object.values(s.name).some((n) => n.toLowerCase() === lower)) return true;
-      if (s.aliases?.some((a) => a.toLowerCase() === lower || lower.includes(a.toLowerCase()))) return true;
+  const selectStationByName = useCallback(
+    (name) => {
+      const lower = name.toLowerCase();
+      const idx = STATIONS.findIndex((s) => {
+        if (s.id === lower) return true;
+        if (Object.values(s.name).some((n) => n.toLowerCase() === lower))
+          return true;
+        if (
+          s.aliases?.some(
+            (a) => a.toLowerCase() === lower || lower.includes(a.toLowerCase()),
+          )
+        )
+          return true;
+        return false;
+      });
+      if (idx >= 0) {
+        setStationIndex(idx);
+        play(idx);
+        return true;
+      }
       return false;
-    });
-    if (idx >= 0) {
-      setStationIndex(idx);
-      play(idx);
-      return true;
-    }
-    return false;
-  }, [play]);
+    },
+    [play],
+  );
 
-  useImperativeHandle(ref, () => ({
-    play: () => { if (!isPlaying) play(); },
-    pause,
-    togglePlay,
-    isPlaying: () => isPlaying,
-    duckVolume,
-    softDuckVolume,
-    restoreVolume,
-    muteForMic,
-    unmuteForMic,
-    volumeUp,
-    volumeDown,
-    changeStation,
-    selectStation,
-    selectStationByName,
-    getStations: () => STATIONS,
-  }), [isPlaying, play, pause, togglePlay, duckVolume, softDuckVolume, restoreVolume, muteForMic, unmuteForMic, volumeUp, volumeDown, changeStation, selectStation, selectStationByName]);
+  useImperativeHandle(
+    ref,
+    () => ({
+      play: () => {
+        if (!isPlaying) play();
+      },
+      pause,
+      togglePlay,
+      isPlaying: () => isPlaying,
+      duckVolume,
+      softDuckVolume,
+      restoreVolume,
+      muteForMic,
+      unmuteForMic,
+      volumeUp,
+      volumeDown,
+      changeStation,
+      selectStation,
+      selectStationByName,
+      getStations: () => STATIONS,
+    }),
+    [
+      isPlaying,
+      play,
+      pause,
+      togglePlay,
+      duckVolume,
+      softDuckVolume,
+      restoreVolume,
+      muteForMic,
+      unmuteForMic,
+      volumeUp,
+      volumeDown,
+      changeStation,
+      selectStation,
+      selectStationByName,
+    ],
+  );
 
   if (!open) return null;
+
+  if (minimized) {
+    return (
+      <button
+        className={`${classes.floatingBtn} ${isPlaying ? classes.floatingPlaying : ""}`}
+        onClick={onExpand}
+        title={t("radio", "title")}
+      >
+        <Music size={22} />
+        {isPlaying && <span className={classes.floatingPulse} />}
+      </button>
+    );
+  }
 
   return (
     <div
@@ -285,11 +379,25 @@ function RadioPlayer({ open, onClose }, ref) {
     >
       <div
         className={classes.header}
-        onMouseDown={(e) => { e.preventDefault(); onDragStart(e.clientX, e.clientY); }}
-        onTouchStart={(e) => { onDragStart(e.touches[0].clientX, e.touches[0].clientY); }}
+        onMouseDown={(e) => {
+          e.preventDefault();
+          onDragStart(e.clientX, e.clientY);
+        }}
+        onTouchStart={(e) => {
+          onDragStart(e.touches[0].clientX, e.touches[0].clientY);
+        }}
       >
         <MdDragIndicator className={classes.dragIcon} />
         <span className={classes.title}>{t("radio", "title")}</span>
+        {onMinimize && (
+          <button
+            className={classes.closeBtn}
+            onClick={onMinimize}
+            title="Minimize"
+          >
+            <Minimize2 size={16} />
+          </button>
+        )}
         <button className={classes.closeBtn} onClick={onClose}>
           <MdClose />
         </button>
@@ -303,13 +411,18 @@ function RadioPlayer({ open, onClose }, ref) {
             onClick={() => selectStation(i)}
           >
             <span className={classes.stationIcon}>{s.icon}</span>
-            <span className={classes.stationName}>{s.name[language] || s.name.en}</span>
+            <span className={classes.stationName}>
+              {s.name[language] || s.name.en}
+            </span>
           </button>
         ))}
       </div>
 
       <div className={classes.controls}>
-        <button className={classes.controlBtn} onClick={() => changeStation("prev")}>
+        <button
+          className={classes.controlBtn}
+          onClick={() => changeStation("prev")}
+        >
           <MdSkipPrevious />
         </button>
         <button
@@ -325,14 +438,15 @@ function RadioPlayer({ open, onClose }, ref) {
             <IoPlay />
           )}
         </button>
-        <button className={classes.controlBtn} onClick={() => changeStation("next")}>
+        <button
+          className={classes.controlBtn}
+          onClick={() => changeStation("next")}
+        >
           <MdSkipNext />
         </button>
       </div>
 
-      {error && (
-        <div className={classes.error}>{t("radio", "error")}</div>
-      )}
+      {error && <div className={classes.error}>{t("radio", "error")}</div>}
 
       <div className={classes.volumeRow}>
         <IoVolumeMute className={classes.volumeIcon} />

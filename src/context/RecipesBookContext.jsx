@@ -53,6 +53,7 @@ export const RecipeBookProvider = ({ children }) => {
   const [selectedCategories, setSelectedCategories] = useState(["all"]);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const loginResolverRef = useRef(null);
+  const initialLoadDone = useRef(false);
 
   const toggleCategory = (categoryId) => {
     setSelectedCategories((prev) => {
@@ -80,6 +81,15 @@ export const RecipeBookProvider = ({ children }) => {
 
     const unsubscribe = onAuthStateChange(async (user) => {
       if (user) {
+        if (initialLoadDone.current) {
+          // Token refresh — update user object but skip full reload
+          const userData = await getUserData(user.uid);
+          if (userData) {
+            setCurrentUser({ uid: user.uid, ...userData });
+          }
+          return;
+        }
+
         setIsLoading(true);
         await ensureGoogleUserDoc(user);
         let userData = await getUserData(user.uid);
@@ -90,15 +100,16 @@ export const RecipeBookProvider = ({ children }) => {
         setCurrentUser({ uid: user.uid, ...userData });
         setIsAdmin(true);
 
-        // Load user's data BEFORE setting isLoggedIn
-        // so the redirect to /categories happens only after data is ready
         await loadUserData(user.uid, userData || user);
         setIsLoggedIn(true);
+        initialLoadDone.current = true;
         if (loginResolverRef.current) {
           loginResolverRef.current();
           loginResolverRef.current = null;
         }
+        setIsLoading(false);
       } else {
+        initialLoadDone.current = false;
         setCurrentUser(null);
         setIsAdmin(false);
         setIsLoggedIn(false);
@@ -106,8 +117,8 @@ export const RecipeBookProvider = ({ children }) => {
         setCategories([]);
         setRecipesLoaded(false);
         setCategoriesLoaded(false);
+        setIsLoading(false);
       }
-      setIsLoading(false);
     });
 
     return () => unsubscribe();
@@ -439,6 +450,7 @@ export const RecipeBookProvider = ({ children }) => {
 
   const logout = async () => {
     try {
+      initialLoadDone.current = false;
       await logoutUser();
       setCurrentUser(null);
       setIsAdmin(false);

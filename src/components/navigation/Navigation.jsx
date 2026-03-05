@@ -14,10 +14,11 @@ import {
   MessageSquareMore,
   Settings2,
   Tags,
+  Music,
 } from "lucide-react";
 import { AnimatePresence } from "framer-motion";
 import { ProductTour } from "../product-tour";
-import { useRecipeBook, useLanguage } from "../../context";
+import { useRecipeBook, useLanguage, useRadio } from "../../context";
 import { CategoriesManagement } from "../categories-management";
 import { Modal } from "../modal";
 import { CloseButton } from "../controls/close-button";
@@ -63,6 +64,7 @@ function Navigation({ onLogout, links }) {
     sortCategoriesAlphabetically,
   } = useRecipeBook();
   const { t } = useLanguage();
+  const { toggleRadio, showRadio } = useRadio();
   const [isOpen, setIsOpen] = useState(false);
   const [chatHistory, setChatHistory] = useState([]);
   const [expandedChats, setExpandedChats] = useState(new Set());
@@ -232,131 +234,140 @@ function Navigation({ onLogout, links }) {
       )}
 
       <nav className={`${classes.nav} ${isOpen ? classes.open : ""}`}>
-          <div ref={navScrollableRef} className={classes.navScrollable}>
-            <div className={classes.mobileCloseRow}>
-              <CloseButton
-                onClick={closeSidebar}
-                type="plain"
-                className={classes.sidebarCloseBtn}
-              />
-            </div>
-            <div className={classes.desktopOnly}>
-              <span className={classes.logo}>Cooki</span>
-              <span className={classes.logoTail}>Pal</span>
-            </div>
-
-            <div className={classes.desktopOnly}>
-              {filteredLinks.map((el) => {
-                const Icon = iconMap[el.name];
-                return (
-                  <NavLink
-                    key={el.name}
-                    to={el.link}
-                    onClick={closeSidebar}
-                    className={({ isActive }) =>
-                      `${classes.navLink} ${isActive ? classes.active : ""}`
-                    }
-                  >
-                    {Icon && <Icon size={18} className={classes.icon} />}
-                    {t(
-                      "nav",
-                      navTranslationMap[el.name] || el.name.toLowerCase(),
-                    )}
-                  </NavLink>
-                );
-              })}
-            </div>
-
-            <div className={classes.separator}></div>
-
-            {!isGlobalRecipesPage && (
-              <>
-                <button
-                  className={classes.navLink}
-                  onClick={() => {
-                    managementFromSheetRef.current = false;
-                    setShowManagement(true);
-                    closeSidebar();
-                  }}
-                >
-                  <Settings2 size={18} className={classes.icon} />
-                  {t("categories", "manage")}
-                </button>
-
-                <button
-                  className={classes.navLink}
-                  onClick={() => {
-                    setShowCategoriesSheet(true);
-                    closeSidebar();
-                  }}
-                >
-                  <Tags size={18} className={classes.icon} />
-                  {t("nav", "categories")}
-                </button>
-                <div className={classes.separator}></div>
-              </>
-            )}
-            <button
-              className={classes.navLink}
-              onClick={() => {
-                setShowChatHistory(true);
-                closeSidebar();
-              }}
-            >
-              <MessageSquareMore size={18} className={classes.icon} />
-              {t("nav", "chatLog")}
-            </button>
-            <div className={classes.separator}></div>
-          </div>
-
-          <div className={classes.navGradient} />
-          <div className={classes.navBottom}>
-            <div className={classes.separator}></div>
-
-            <button
-              className={classes.navLink}
-              onClick={() => {
-                closeSidebar();
-                setShowTour(true);
-              }}
-            >
-              <HelpCircle size={18} className={classes.icon} />
-              {t("home", "showTutorial")}
-            </button>
-            <button className={classes.navLink} onClick={() => setShowHelp(true)}>
-              <HelpCircle size={18} className={classes.icon} />
-              {t("nav", "help")}
-            </button>
-
-            <div className={classes.separator}></div>
-            <NavLink
-              to="/settings"
+        <div ref={navScrollableRef} className={classes.navScrollable}>
+          <div className={classes.mobileCloseRow}>
+            <CloseButton
               onClick={closeSidebar}
-              className={({ isActive }) =>
-                `${classes.navLink} ${isActive ? classes.active : ""}`
-              }
-            >
-              <Settings size={18} className={classes.icon} />
-              {t("nav", "settings")}
-            </NavLink>
-            <div className={classes.separator}></div>
-            <button className={classes.logoutButton} onClick={handleLogout}>
-              <LogOut size={18} className={classes.icon} />
-              <span className={classes.logoutText}>
-                {t("nav", "logout")}
-                {currentUser && (
-                  <span className={classes.userName}>
-                    {currentUser.displayName || currentUser.email}
-                  </span>
-                )}
-              </span>
-            </button>
+              type="plain"
+              className={classes.sidebarCloseBtn}
+            />
           </div>
-        </nav>
+          <div className={classes.desktopOnly}>
+            <span className={classes.logo}>Cooki</span>
+            <span className={classes.logoTail}>Pal</span>
+          </div>
 
-      {isOpen && (
-        <div className={classes.overlay} onClick={closeSidebar} />
-      )}
+          <div className={classes.desktopOnly}>
+            {filteredLinks.map((el) => {
+              const Icon = iconMap[el.name];
+              return (
+                <NavLink
+                  key={el.name}
+                  to={el.link}
+                  onClick={closeSidebar}
+                  className={({ isActive }) =>
+                    `${classes.navLink} ${isActive ? classes.active : ""}`
+                  }
+                >
+                  {Icon && <Icon size={18} className={classes.icon} />}
+                  {t(
+                    "nav",
+                    navTranslationMap[el.name] || el.name.toLowerCase(),
+                  )}
+                </NavLink>
+              );
+            })}
+          </div>
+
+          <div className={classes.separator}></div>
+
+          {!isGlobalRecipesPage && (
+            <>
+              <button
+                className={classes.navLink}
+                onClick={() => {
+                  managementFromSheetRef.current = false;
+                  setShowManagement(true);
+                  closeSidebar();
+                }}
+              >
+                <Settings2 size={18} className={classes.icon} />
+                {t("categories", "manage")}
+              </button>
+
+              <button
+                className={classes.navLink}
+                onClick={() => {
+                  setShowCategoriesSheet(true);
+                  closeSidebar();
+                }}
+              >
+                <Tags size={18} className={classes.icon} />
+                {t("nav", "categories")}
+              </button>
+              <div className={classes.separator}></div>
+            </>
+          )}
+          <button
+            className={classes.navLink}
+            onClick={() => {
+              setShowChatHistory(true);
+              closeSidebar();
+            }}
+          >
+            <MessageSquareMore size={18} className={classes.icon} />
+            {t("nav", "chatLog")}
+          </button>
+          <div className={classes.separator}></div>
+        </div>
+
+        <div className={classes.navGradient} />
+        <div className={classes.navBottom}>
+          <button
+            className={`${classes.navLink} ${showRadio ? classes.active : ""}`}
+            onClick={() => {
+              toggleRadio();
+              closeSidebar();
+            }}
+          >
+            <Music size={18} className={classes.icon} />
+            {t("radio", "title")}
+          </button>
+
+          <div className={classes.separator}></div>
+
+          <button
+            className={classes.navLink}
+            onClick={() => {
+              closeSidebar();
+              setShowTour(true);
+            }}
+          >
+            <HelpCircle size={18} className={classes.icon} />
+            {t("home", "showTutorial")}
+          </button>
+          <button className={classes.navLink} onClick={() => setShowHelp(true)}>
+            <HelpCircle size={18} className={classes.icon} />
+            {t("nav", "help")}
+          </button>
+
+          <div className={classes.separator}></div>
+          <NavLink
+            to="/settings"
+            onClick={closeSidebar}
+            className={({ isActive }) =>
+              `${classes.navLink} ${isActive ? classes.active : ""}`
+            }
+          >
+            <Settings size={18} className={classes.icon} />
+            {t("nav", "settings")}
+          </NavLink>
+          <div className={classes.separator}></div>
+          <button className={classes.logoutButton} onClick={handleLogout}>
+            <LogOut size={18} className={classes.icon} />
+            <span className={classes.logoutText}>
+              {t("nav", "logout")}
+              {currentUser && (
+                <span className={classes.userName}>
+                  {currentUser.displayName || currentUser.email}
+                </span>
+              )}
+            </span>
+          </button>
+        </div>
+      </nav>
+
+      {isOpen && <div className={classes.overlay} onClick={closeSidebar} />}
 
       {showManagement && (
         <CategoriesManagement

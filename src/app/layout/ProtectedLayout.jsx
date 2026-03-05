@@ -1,10 +1,32 @@
 import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useRecipeBook } from "../../context";
+import { useRecipeBook, RadioProvider, useRadio } from "../../context";
 import { Navigation, Header, Footer } from "../../components";
+import { RadioPlayer } from "../../components/radio-player";
 
 import { links } from "../data/navLinks";
 import classes from "../app.module.css";
+
+function GlobalRadioPlayer() {
+  const {
+    radioRef,
+    showRadio,
+    radioMinimized,
+    closeRadio,
+    minimizeRadio,
+    expandRadio,
+  } = useRadio();
+  return (
+    <RadioPlayer
+      ref={radioRef}
+      open={showRadio}
+      minimized={radioMinimized}
+      onClose={closeRadio}
+      onMinimize={minimizeRadio}
+      onExpand={expandRadio}
+    />
+  );
+}
 
 function ProtectedLayout() {
   const { isLoggedIn, logout } = useRecipeBook();
@@ -17,19 +39,20 @@ function ProtectedLayout() {
   }
 
   return (
-    <div className={classes.app}>
-      <Navigation onLogout={logout} links={links} />
+    <RadioProvider>
+      <div className={classes.app}>
+        <Navigation onLogout={logout} links={links} />
 
-      <div
-        className={classes.contentWrapper}
-      >
-        <main className={classes.main}>
-          <Outlet />
-        </main>
+        <div className={classes.contentWrapper}>
+          <main className={classes.main}>
+            <Outlet />
+          </main>
 
-        <Footer />
+          <Footer />
+        </div>
+        <GlobalRadioPlayer />
       </div>
-    </div>
+    </RadioProvider>
   );
 }
 

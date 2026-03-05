@@ -17,13 +17,16 @@ import {
   Timer,
 } from "lucide-react";
 import { CookingVoiceChat } from "../cooking-voice-chat";
-import { RadioPlayer } from "../radio-player";
-import { isGroupHeader, getGroupName, parseIngredients } from "../../utils/ingredientUtils";
+import {
+  isGroupHeader,
+  getGroupName,
+  parseIngredients,
+} from "../../utils/ingredientUtils";
 import { CloseButton } from "../controls/close-button";
 import { BackButton } from "../controls/back-button";
 import { AddButton } from "../controls/add-button";
 import { ChatHelpButton } from "../controls/chat-help-button";
-import { useLanguage } from "../../context";
+import { useLanguage, useRadio } from "../../context";
 import classes from "./recipe-details-cooking.module.css";
 
 function RecipeDetailsCookingMode({
@@ -46,8 +49,7 @@ function RecipeDetailsCookingMode({
   const [totalSeconds, setTotalSeconds] = useState(0);
   const [fontSizeLevel, setFontSizeLevel] = useState(1);
   const [showHelp, setShowHelp] = useState(false);
-  const [showRadio, setShowRadio] = useState(false);
-  const radioRef = useRef(null);
+  const { radioRef } = useRadio();
   const touchRef = useRef({ startX: 0, startY: 0 });
   // Remember step position per tab so switching back restores position
   const savedStepRef = useRef({ ingredients: 0, instructions: 0 });
@@ -88,19 +90,6 @@ function RecipeDetailsCookingMode({
   const handlePrevStepRef = useRef();
   const timerStartTimeRef = useRef(null);
   const isFirstTickRef = useRef(false);
-
-  const stopRadio = useCallback(() => {
-    try { radioRef.current?.pause(); } catch {}
-  }, []);
-
-  useEffect(() => {
-    const handleBeforeUnload = () => stopRadio();
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => {
-      window.removeEventListener("beforeunload", handleBeforeUnload);
-      stopRadio();
-    };
-  }, [stopRadio]);
 
   useEffect(() => {
     if (!showVolumeNotification) return;
@@ -314,8 +303,15 @@ function RecipeDetailsCookingMode({
                 {
                   content: (
                     <>
-                      <Mic size={16} style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
-                      {t("cookingMode", "chatTitle")} — {t("cookingMode", "chatText")}
+                      <Mic
+                        size={16}
+                        style={{
+                          verticalAlign: "middle",
+                          marginInlineEnd: "0.25rem",
+                        }}
+                      />
+                      {t("cookingMode", "chatTitle")} —{" "}
+                      {t("cookingMode", "chatText")}
                     </>
                   ),
                 },
@@ -328,7 +324,13 @@ function RecipeDetailsCookingMode({
                 {
                   content: (
                     <>
-                      <Music size={16} style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
+                      <Music
+                        size={16}
+                        style={{
+                          verticalAlign: "middle",
+                          marginInlineEnd: "0.25rem",
+                        }}
+                      />
                       {t("cookingMode", "radioFeature")}
                     </>
                   ),
@@ -347,16 +349,6 @@ function RecipeDetailsCookingMode({
           >
             <Type size={20} />
           </button>
-          <div className={classes.helpWrapper}>
-            <button
-              className={`${classes.radioBtn} ${showRadio ? classes.radioBtnActive : ""}`}
-              onClick={() => setShowRadio((v) => !v)}
-              title={t("radio", "title")}
-            >
-              <Music size={20} />
-            </button>
-            {showHelp && <div className={classes.helpArrow} />}
-          </div>
           <div className={classes.helpWrapper}>
             <CookingVoiceChat
               recipe={recipe}
@@ -387,12 +379,6 @@ function RecipeDetailsCookingMode({
           </div>
         </div>
       </div>
-
-      <RadioPlayer
-        ref={radioRef}
-        open={showRadio}
-        onClose={() => setShowRadio(false)}
-      />
 
       <div className={classes.recipeContent}>
         {recipe.servings && (
@@ -637,7 +623,7 @@ function RecipeDetailsCookingMode({
                             type="number"
                             min="0"
                             max="180"
-                            placeholder='0'
+                            placeholder="0"
                             value={customTimerInput}
                             onChange={(e) =>
                               setCustomTimerInput(e.target.value)
