@@ -10,9 +10,9 @@
   color: var(--text-on-primary);
   background: var(--btn-bg-primary);
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-tertiary);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition);
   padding: 0.8em 1.5em;
 }
 
