@@ -52,7 +52,7 @@ export const TimerProvider = ({ children }) => {
     return () => clearInterval(id);
   }, [hasAnyRunning, tick]);
 
-  const addTimer = useCallback((minutes, label = "") => {
+  const addTimer = useCallback((minutes, label = "", { silent = false } = {}) => {
     const id = nextId++;
     const totalSeconds = minutes * 60;
     const endTime = Date.now() + totalSeconds * 1000;
@@ -61,16 +61,18 @@ export const TimerProvider = ({ children }) => {
       { id, label, remaining: totalSeconds, endTime, running: true },
     ]);
 
-    try {
-      const isHebrew = label && /[\u0590-\u05FF]/.test(label);
-      const text = isHebrew
-        ? `טיימר הופעל ל-${minutes} דקות${label ? `, ${label}` : ""}`
-        : `Timer started for ${minutes} minutes${label ? `, ${label}` : ""}`;
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = isHebrew ? "he-IL" : "en-US";
-      utterance.rate = 0.9;
-      window.speechSynthesis.speak(utterance);
-    } catch {}
+    if (!silent) {
+      try {
+        const isHebrew = label && /[\u0590-\u05FF]/.test(label);
+        const text = isHebrew
+          ? `טיימר הופעל ל-${minutes} דקות${label ? `, ${label}` : ""}`
+          : `Timer started for ${minutes} minutes${label ? `, ${label}` : ""}`;
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = isHebrew ? "he-IL" : "en-US";
+        utterance.rate = 0.9;
+        window.speechSynthesis.speak(utterance);
+      } catch {}
+    }
 
     return id;
   }, []);

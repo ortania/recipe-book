@@ -359,10 +359,75 @@ function RadioPlayer({ open, onClose, minimized, onMinimize, onExpand }, ref) {
   if (!open) return null;
 
   if (minimized) {
+    const floatingDrag = {
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      moved: false,
+    };
+
+    const onFloatingPointerDown = (e) => {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      floatingDrag.isDragging = true;
+      floatingDrag.startX = clientX;
+      floatingDrag.startY = clientY;
+      floatingDrag.moved = false;
+
+      const btn = e.currentTarget;
+      const rect = btn.getBoundingClientRect();
+      const offsetX = clientX - rect.left - rect.width / 2;
+      const offsetY = clientY - rect.top - rect.height / 2;
+
+      const onMove = (ev) => {
+        if (!floatingDrag.isDragging) return;
+        const cx = ev.touches ? ev.touches[0].clientX : ev.clientX;
+        const cy = ev.touches ? ev.touches[0].clientY : ev.clientY;
+        if (
+          !floatingDrag.moved &&
+          Math.abs(cx - floatingDrag.startX) < 5 &&
+          Math.abs(cy - floatingDrag.startY) < 5
+        )
+          return;
+        floatingDrag.moved = true;
+        const x = Math.max(
+          btn.offsetWidth / 2,
+          Math.min(window.innerWidth - btn.offsetWidth / 2, cx - offsetX),
+        );
+        const y = Math.max(
+          btn.offsetHeight / 2,
+          Math.min(window.innerHeight - btn.offsetHeight / 2, cy - offsetY),
+        );
+        btn.style.left = `${x}px`;
+        btn.style.top = `${y}px`;
+        btn.style.right = "auto";
+        btn.style.bottom = "auto";
+        btn.style.transform = "translate(-50%, -50%)";
+      };
+
+      const onUp = () => {
+        floatingDrag.isDragging = false;
+        window.removeEventListener("mousemove", onMove);
+        window.removeEventListener("mouseup", onUp);
+        window.removeEventListener("touchmove", onMove);
+        window.removeEventListener("touchend", onUp);
+        if (!floatingDrag.moved) {
+          onExpand();
+        }
+      };
+
+      window.addEventListener("mousemove", onMove);
+      window.addEventListener("mouseup", onUp);
+      window.addEventListener("touchmove", onMove, { passive: false });
+      window.addEventListener("touchend", onUp);
+    };
+
     return (
       <button
         className={`${classes.floatingBtn} ${isPlaying ? classes.floatingPlaying : ""}`}
-        onClick={onExpand}
+        onMouseDown={onFloatingPointerDown}
+        onTouchStart={onFloatingPointerDown}
+        onClick={(e) => e.preventDefault()}
         title={t("radio", "title")}
       >
         <Music size={22} />

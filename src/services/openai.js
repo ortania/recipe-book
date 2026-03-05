@@ -521,51 +521,58 @@ export const sendCookingChatMessage = async (
       ? ingredients[currentStep] || ""
       : instructions[currentStep] || "";
 
+  const nextStepIdx = currentStep + 1;
+  const prevStepIdx = currentStep - 1;
+  const nextStepText = instructions[nextStepIdx] || null;
+  const prevStepText = instructions[prevStepIdx] || null;
+
   const tabLabel = activeTab === "ingredients" ? "Ingredients" : "Instructions";
 
   const systemMessage = {
     role: "system",
-    content: `You are a helpful voice cooking assistant for "${recipeName}" (${servings} servings).
-Currently on ${tabLabel} tab. ${activeTab === "ingredients" ? `Ingredient ${currentStep + 1}/${ingredients.length}: "${currentItemText}"` : `Step ${currentStep + 1}/${instructions.length}: "${currentItemText}"`}
-Timer: ${isTimerRunning ? "running" : "off"}
+    content: `You are a voice cooking assistant inside a recipe app. You respond in ${langName}.
 
-INGREDIENTS:
+Current recipe: "${recipeName}" (${servings} servings).
+Current step: ${currentStep + 1} of ${instructions.length}.
+
+Ingredients:
 ${ingredients.map((ing, i) => `${i + 1}. ${ing}`).join("\n")}
 
-INSTRUCTIONS:
+Instructions:
 ${instructions.map((inst, i) => `${i + 1}. ${inst}`).join("\n")}
 
-You MUST respond with valid JSON: {"text": "your answer", "action": null}
-Possible actions: {"type":"next"}, {"type":"prev"}, {"type":"goto","step":N}, {"type":"timer","minutes":N}, {"type":"stop_timer"}, {"type":"switch_tab","tab":"ingredients"}, {"type":"switch_tab","tab":"instructions"}, {"type":"play_music"}, {"type":"pause_music"}, {"type":"toggle_music"}, {"type":"volume_up"}, {"type":"volume_down"}
+The user speaks to you via voice (Hebrew). You must classify their intent and respond.
 
-RULES:
-- Always respond in ${langName}, 1-2 sentences max (read aloud).
-- Write numbers as Hebrew words: "מאתיים" not "200", "שתי כפות" not "2 כפות".
-- When user asks about an ingredient (e.g. "כמה סוכר", "כמה תפוחים"), find ALL matching ingredients and quote their EXACT quantities.
-- When reading or describing an instruction step, ALWAYS mention the specific ingredient quantities needed for that step.
-- "סיימתי שלב" / "סיימתי" / "finished" / "done" → advance to next step with action {"type":"next"} and read the next step with its ingredient quantities.
-- "תגיד לי" / "מה השלב" / "tell me" → read the current step content with ingredient quantities.
-- "מה הבא" / "השלב הבא" / "next" / "הבא" → read next step with action {"type":"next"}.
-- Do NOT switch tabs automatically. Only use switch_tab action if user explicitly says "תעבור למרכיבים" or "תעבור להוראות". Answer ingredient questions without switching tabs.
-- "תפעיל מוסיקה" / "play music" / "שים רדיו" → play music with action {"type":"play_music"}.
-- "עצור מוסיקה" / "stop music" / "הפסק מוסיקה" → pause music with action {"type":"pause_music"}.
-- "הגבר" / "תגביר" / "louder" / "volume up" → raise volume with action {"type":"volume_up"}.
-- "הנמך" / "תנמיך" / "quieter" / "volume down" → lower volume with action {"type":"volume_down"}.
-- ALWAYS try to answer. Never say you don't understand unless truly unrelated to cooking.
+Respond ONLY in JSON:
+{
+  "action": "next_step | previous_step | goto_step | repeat_step | answer_question",
+  "step_number": number or null,
+  "message": "short spoken response in ${langName}"
+}
 
-EXAMPLES:
-"כמה סוכר?" → {"text": "יש מאתיים גרם סוכר ושתי כפות סוכר חום", "action": null}
-"כמה תפוחים?" → {"text": "צריך ארבעה תפוחים", "action": null}
-"סיימתי שלב" → {"text": "מעולה! השלב הבא הוא להוסיף מאתיים גרם סוכר ושלוש ביצים לקערה ולערבב", "action": {"type": "next"}}
-"תגיד לי" → {"text": "בשלב הזה מוסיפים מאתיים גרם סוכר לקערה ומערבבים", "action": null}
-"מה השלב הבא?" → {"text": "בשלב הבא מוסיפים שלוש ביצים ומערבבים", "action": {"type": "next"}}
-"תפעיל טיימר ל-10 דקות" → {"text": "מפעיל טיימר לעשר דקות", "action": {"type": "timer", "minutes": 10}}`,
+NOTE: Timer, radio, and volume commands are handled separately. You will NOT receive them. Focus only on step navigation and answering questions.
+
+Intent classification:
+- "שלב הבא", "המשך", "תתקדם", "סיימתי", "קדימה", "מה השלב הבא" → next_step
+- "שלב קודם", "תחזור", "אחורה", "מה השלב הקודם" → previous_step
+- "שלב 3", "מה השלב הראשון", "תחזור לשלב 2", "תתקדם לשלב 5" → goto_step (set step_number: ראשון=1, שני=2, שלישי=3, רביעי=4, חמישי=5)
+- "מה עושים עכשיו", "תקריא שוב", "חזור על השלב" → repeat_step
+- "כמה ביצים", "איזה מרכיבים", "כמה סוכר", "מה כמות..." → answer_question (look up in the ingredients list and answer with exact quantity)
+
+Rules:
+1. Keep message very short (1-2 sentences in ${langName}).
+2. For ingredient questions: find the ingredient in the list above and state the exact quantity. Never say "search the list" — YOU search it and answer directly!
+3. If the user mentions a step number with context of steps (שלב + number, or "הראשון/השני/השלישי") → goto_step.
+4. A bare number alone (like "2" or "שתיים") is NOT a step command — respond with answer_question asking what they mean.
+5. If you don't understand the request, use answer_question with a helpful message. Never default to goto_step.
+6. Never invent information not in the recipe.
+7. Numbers in message should be written as words ("שלוש" not "3").`,
   };
 
   const result = await callOpenAI({
     model: "gpt-4o-mini",
     messages: [systemMessage, { role: "user", content: userText }],
-    temperature: 0.3,
+    temperature: 0.1,
     max_tokens: 200,
   });
 
@@ -575,28 +582,26 @@ EXAMPLES:
       .replace(/```\n?/g, "")
       .trim();
     const parsed = JSON.parse(cleaned);
+
+    const actionMap = {
+      next_step: { type: "next" },
+      previous_step: { type: "prev" },
+      goto_step: { type: "goto", step: parsed.step_number },
+      repeat_step: { type: "read_step" },
+      answer_question: null,
+      none: null,
+    };
+
     return {
-      text: parsed.text || result,
-      action: parsed.action || null,
+      text: parsed.message || "לא הצלחתי להבין",
+      action: actionMap[parsed.action] ?? null,
     };
   } catch {
-    // Try to extract "text" value from malformed JSON
-    const textMatch = result.match(/"text"\s*:\s*"((?:[^"\\]|\\.)*)"/);
-    let action = null;
-    // Try to extract action from malformed JSON
-    const actionMatch = result.match(/"action"\s*:\s*(\{[^}]+\})/);
-    if (actionMatch) {
-      try {
-        action = JSON.parse(actionMatch[1]);
-      } catch {
-        /* ignore */
-      }
+    const msgMatch = result.match(/"message"\s*:\s*"((?:[^"\\]|\\.)*)"/);
+    if (msgMatch && msgMatch[1].length > 2) {
+      return { text: msgMatch[1], action: null };
     }
-    if (textMatch && textMatch[1].length > 2) {
-      return { text: textMatch[1], action };
-    }
-    // If no valid text found, return a generic response instead of gibberish
-    return { text: "לא הצלחתי להבין, אנא נסה שוב", action: null };
+    return { text: "לא הצלחתי להבין, אנא נסי שוב", action: null };
   }
 };
 

@@ -56,7 +56,7 @@ function RecipeDetailsCookingMode({
   const [customTimerInput, setCustomTimerInput] = useState("");
   const [fontSizeLevel, setFontSizeLevel] = useState(1);
   const [showHelp, setShowHelp] = useState(false);
-  const { radioRef, closeRadio } = useRadio();
+  const { radioRef } = useRadio();
   const touchRef = useRef({ startX: 0, startY: 0 });
   // Remember step position per tab so switching back restores position
   const savedStepRef = useRef({ ingredients: 0, instructions: 0 });
@@ -88,22 +88,9 @@ function RecipeDetailsCookingMode({
   const cycleFontSize = () =>
     setFontSizeLevel((prev) => (prev + 1) % fontSizes.length);
 
-  const isMobile = typeof window !== "undefined" && window.innerWidth <= 768;
-  const [showVolumeNotification, setShowVolumeNotification] =
-    useState(isMobile);
-
   const originalServings = recipe.servings || 4;
   const handleNextStepRef = useRef();
   const handlePrevStepRef = useRef();
-
-  useEffect(() => {
-    if (!showVolumeNotification) return;
-    const timer = setTimeout(() => {
-      setShowVolumeNotification(false);
-    }, 5000);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   // Parse ingredients and instructions
   const ingredientsRaw = useMemo(() => parseIngredients(recipe), [recipe]);
@@ -222,8 +209,8 @@ function RecipeDetailsCookingMode({
   const recipeLabel = recipe.name || t("recipes", "timer");
   const recipeTimers = timers.filter((tm) => tm.label === recipeLabel);
 
-  const startTimer = (minutes) => {
-    addTimer(minutes, recipeLabel);
+  const startTimer = (minutes, opts) => {
+    addTimer(minutes, recipeLabel, opts);
   };
 
   // Keyboard navigation
@@ -247,20 +234,10 @@ function RecipeDetailsCookingMode({
 
   return (
     <div className={classes.recipeCardCooking}>
-      {showVolumeNotification && (
-        <div
-          className={classes.volumeNotification}
-          onClick={() => setShowVolumeNotification(false)}
-        >
-          � {t("cookingMode", "volumeWarning")}
-        </div>
-      )}
-
       <div className={classes.headerButtonsCooking}>
         <div className={classes.headerLeft}>
           <BackButton
             onClick={() => {
-              closeRadio();
               onClose();
             }}
           />
@@ -335,7 +312,7 @@ function RecipeDetailsCookingMode({
                 setCurrentStep(step);
                 setShowCompletion(false);
               }}
-              onStartTimer={(minutes) => startTimer(minutes)}
+              onStartTimer={(minutes, opts) => startTimer(minutes, opts)}
               onStopTimer={() => {
                 stopAll();
                 setCustomTimerInput("");
@@ -468,209 +445,208 @@ function RecipeDetailsCookingMode({
               )}
             </ol>
           )}
-          {!showCompletion && (
-            <div className={classes.progressSection}>
-              <div className={classes.progressHeader}>
-                <div className={classes.stepInfo}>
-                  {activeTab === "ingredients"
-                    ? t("recipes", "ingredient")
-                    : t("recipes", "step")}{" "}
-                  {currentStep + 1} {t("recipes", "of")}{" "}
-                  {activeTab === "ingredients"
-                    ? cookingIngredients.length
-                    : instructionsArray.length}
-                </div>
-                <div className={classes.progressBadge}>
-                  {Math.round(
-                    ((currentStep + 1) /
-                      (activeTab === "ingredients"
-                        ? cookingIngredients.length
-                        : instructionsArray.length)) *
-                      100,
-                  )}
-                  %
-                </div>
-              </div>
+          {!showCompletion &&
+            (() => {
+              const totalSteps =
+                activeTab === "ingredients"
+                  ? cookingIngredients.length
+                  : instructionsArray.length;
+              const progress =
+                totalSteps > 0
+                  ? Math.round(((currentStep + 1) / totalSteps) * 100)
+                  : 0;
+              return totalSteps > 0 ? (
+                <div className={classes.progressSection}>
+                  <div className={classes.progressHeader}>
+                    <div className={classes.stepInfo}>
+                      {activeTab === "ingredients"
+                        ? t("recipes", "ingredient")
+                        : t("recipes", "step")}{" "}
+                      {currentStep + 1} {t("recipes", "of")} {totalSteps}
+                    </div>
+                    <div className={classes.progressBadge}>{progress}%</div>
+                  </div>
 
-              {/* Interactive Progress Slider */}
-              <div className={classes.sliderContainer}>
-                <input
-                  type="range"
-                  min="0"
-                  max={
-                    (activeTab === "ingredients"
-                      ? cookingIngredients.length
-                      : instructionsArray.length) - 1
-                  }
-                  value={currentStep}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    setCurrentStep(parseInt(e.target.value));
-                    setShowCompletion(false);
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                  onMouseDown={(e) => e.stopPropagation()}
-                  className={classes.progressSlider}
-                  style={{
-                    background: `linear-gradient(to right, #10b981 0%, #10b981 ${((currentStep + 1) / (activeTab === "ingredients" ? cookingIngredients.length : instructionsArray.length)) * 100}%, #e5e7eb ${((currentStep + 1) / (activeTab === "ingredients" ? cookingIngredients.length : instructionsArray.length)) * 100}%, #e5e7eb 100%)`,
-                  }}
-                />
-              </div>
+                  {/* Interactive Progress Slider */}
+                  <div className={classes.sliderContainer}>
+                    <input
+                      type="range"
+                      min="0"
+                      max={totalSteps - 1}
+                      value={currentStep}
+                      onChange={(e) => {
+                        e.stopPropagation();
+                        setCurrentStep(parseInt(e.target.value));
+                        setShowCompletion(false);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      onMouseDown={(e) => e.stopPropagation()}
+                      className={classes.progressSlider}
+                      style={{
+                        background: `linear-gradient(to right, #10b981 0%, #10b981 ${progress}%, #e5e7eb ${progress}%, #e5e7eb 100%)`,
+                      }}
+                    />
+                  </div>
 
-              {/* Navigation Buttons */}
-              <div className={classes.navigationButtons}>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handlePrevStep();
-                  }}
-                  disabled={currentStep === 0}
-                  className={classes.navButton}
-                  style={{
-                    backgroundColor: currentStep === 0 ? "#f3f4f6" : "##e8eaed",
-                    color: currentStep === 0 ? "#9ca3af" : "#6b7280",
-                    cursor: currentStep === 0 ? "not-allowed" : "pointer",
-                    opacity: currentStep === 0 ? 0.6 : 1,
-                  }}
-                >
-                  → {t("recipes", "prev")}
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentStep(0);
-                    setShowCompletion(false);
-                  }}
-                  className={classes.restartButton}
-                >
-                  <RotateCcw size={16} /> {t("recipes", "resetTimer")}
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleNextStep();
-                  }}
-                  className={classes.nextButton}
-                >
-                  {t("recipes", "next")} ←
-                </button>
-              </div>
+                  {/* Navigation Buttons */}
+                  <div className={classes.navigationButtons}>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePrevStep();
+                      }}
+                      disabled={currentStep === 0}
+                      className={classes.navButton}
+                      style={{
+                        backgroundColor:
+                          currentStep === 0 ? "#f3f4f6" : "##e8eaed",
+                        color: currentStep === 0 ? "#9ca3af" : "#6b7280",
+                        cursor: currentStep === 0 ? "not-allowed" : "pointer",
+                        opacity: currentStep === 0 ? 0.6 : 1,
+                      }}
+                    >
+                      → {t("recipes", "prev")}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setCurrentStep(0);
+                        setShowCompletion(false);
+                      }}
+                      className={classes.restartButton}
+                    >
+                      <RotateCcw size={16} /> {t("recipes", "resetTimer")}
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleNextStep();
+                      }}
+                      className={classes.nextButton}
+                    >
+                      {t("recipes", "next")} ←
+                    </button>
+                  </div>
 
-              {/* Timer Section - Only show in Instructions tab */}
-              {activeTab === "instructions" && (
-                <div className={classes.timerSection}>
-                  <div className={classes.timerContent}>
-                    {timers.length > 0 && (
-                      <div className={classes.activeTimersList}>
-                        {timers.map((tm) => (
-                          <div
-                            key={tm.id}
-                            className={`${classes.activeTimerRow} ${tm.remaining <= 0 && !tm.running ? classes.timerDone : ""}`}
-                          >
-                            <Clock
-                              size={14}
-                              className={classes.timerClockIcon}
-                            />
-                            <span className={classes.activeTimerLabel}>
-                              {tm.label}
+                  {/* Timer Section - Only show in Instructions tab */}
+                  {activeTab === "instructions" && (
+                    <div className={classes.timerSection}>
+                      <div className={classes.timerContent}>
+                        {timers.length > 0 && (
+                          <div className={classes.activeTimersList}>
+                            {timers.map((tm) => (
+                              <div
+                                key={tm.id}
+                                className={`${classes.activeTimerRow} ${tm.remaining <= 0 && !tm.running ? classes.timerDone : ""}`}
+                              >
+                                <Clock
+                                  size={14}
+                                  className={classes.timerClockIcon}
+                                />
+                                <span className={classes.activeTimerLabel}>
+                                  {tm.label}
+                                </span>
+                                <span className={classes.activeTimerTime}>
+                                  {tm.remaining <= 0 && !tm.running
+                                    ? t("recipes", "timerDone")
+                                    : `${String(Math.floor(tm.remaining / 60)).padStart(2, "0")}:${String(tm.remaining % 60).padStart(2, "0")}`}
+                                </span>
+                                <button
+                                  className={classes.timerRemoveBtn}
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    removeTimer(tm.id);
+                                  }}
+                                >
+                                  <X size={14} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        <div className={classes.timerInputGroup}>
+                          <div className={classes.timerControlsFrame}>
+                            <span className={classes.timerLabel}>
+                              {t("recipes", "timeInMinutes")}
                             </span>
-                            <span className={classes.activeTimerTime}>
-                              {tm.remaining <= 0 && !tm.running
-                                ? t("recipes", "timerDone")
-                                : `${String(Math.floor(tm.remaining / 60)).padStart(2, "0")}:${String(tm.remaining % 60).padStart(2, "0")}`}
-                            </span>
-                            <button
-                              className={classes.timerRemoveBtn}
+
+                            <AddButton
+                              sign="-"
+                              type="circle"
                               onClick={(e) => {
                                 e.stopPropagation();
-                                removeTimer(tm.id);
+                                const currentValue =
+                                  parseInt(customTimerInput) || 0;
+                                if (currentValue > 0) {
+                                  setCustomTimerInput(String(currentValue - 1));
+                                }
                               }}
-                            >
-                              <X size={14} />
-                            </button>
+                            />
+
+                            <div className={classes.timerDisplay}>
+                              <input
+                                // type="number"
+                                min="0"
+                                max="180"
+                                placeholder="0"
+                                value={customTimerInput}
+                                onChange={(e) =>
+                                  setCustomTimerInput(e.target.value)
+                                }
+                                onClick={(e) => e.stopPropagation()}
+                                className={classes.timerInput}
+                              />
+                            </div>
+
+                            <AddButton
+                              sign="+"
+                              type="circle"
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                const currentValue =
+                                  parseInt(customTimerInput) || 0;
+                                setCustomTimerInput(String(currentValue + 1));
+                              }}
+                            />
                           </div>
-                        ))}
-                      </div>
-                    )}
 
-                    <div className={classes.timerInputGroup}>
-                      <div className={classes.timerControlsFrame}>
-                        <span className={classes.timerLabel}>
-                          {t("recipes", "timeInMinutes")}
-                        </span>
-
-                        <AddButton
-                          sign="-"
-                          type="circle"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const currentValue =
-                              parseInt(customTimerInput) || 0;
-                            if (currentValue > 0) {
-                              setCustomTimerInput(String(currentValue - 1));
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const minutes = parseInt(customTimerInput);
+                              if (minutes && minutes > 0) {
+                                startTimer(minutes);
+                                setCustomTimerInput("");
+                              }
+                            }}
+                            disabled={
+                              !customTimerInput ||
+                              parseInt(customTimerInput) <= 0
                             }
-                          }}
-                        />
-
-                        <div className={classes.timerDisplay}>
-                          <input
-                            // type="number"
-                            min="0"
-                            max="180"
-                            placeholder="0"
-                            value={customTimerInput}
-                            onChange={(e) =>
-                              setCustomTimerInput(e.target.value)
-                            }
-                            onClick={(e) => e.stopPropagation()}
-                            className={classes.timerInput}
-                          />
+                            className={classes.startButton}
+                            style={{
+                              cursor:
+                                customTimerInput &&
+                                parseInt(customTimerInput) > 0
+                                  ? "pointer"
+                                  : "not-allowed",
+                              opacity:
+                                customTimerInput &&
+                                parseInt(customTimerInput) > 0
+                                  ? 1
+                                  : 0.5,
+                            }}
+                          >
+                            ▶ {t("recipes", "addTimer")}
+                          </button>
                         </div>
-
-                        <AddButton
-                          sign="+"
-                          type="circle"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const currentValue =
-                              parseInt(customTimerInput) || 0;
-                            setCustomTimerInput(String(currentValue + 1));
-                          }}
-                        />
                       </div>
-
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          const minutes = parseInt(customTimerInput);
-                          if (minutes && minutes > 0) {
-                            startTimer(minutes);
-                            setCustomTimerInput("");
-                          }
-                        }}
-                        disabled={
-                          !customTimerInput || parseInt(customTimerInput) <= 0
-                        }
-                        className={classes.startButton}
-                        style={{
-                          cursor:
-                            customTimerInput && parseInt(customTimerInput) > 0
-                              ? "pointer"
-                              : "not-allowed",
-                          opacity:
-                            customTimerInput && parseInt(customTimerInput) > 0
-                              ? 1
-                              : 0.5,
-                        }}
-                      >
-                        ▶ {t("recipes", "addTimer")}
-                      </button>
                     </div>
-                  </div>
+                  )}
                 </div>
-              )}
-            </div>
-          )}
+              ) : null;
+            })()}
 
           {showCompletion && (
             <div className={classes.completionSection}>

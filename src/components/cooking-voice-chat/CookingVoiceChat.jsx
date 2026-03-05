@@ -116,9 +116,17 @@ function CookingVoiceChat({
   const recognitionRef = useRef(null);
   const isActiveRef = useRef(false);
   const isProcessingRef = useRef(false);
+  const intentionalStopRef = useRef(false);
+  const ttsEndTimeRef = useRef(0);
+  const stepOffsetRef = useRef(0);
   const audioRef = useRef(null);
   const audioCtxRef = useRef(null);
   const audioSourceRef = useRef(null);
+
+  // Reset step offset when React state catches up
+  useEffect(() => {
+    stepOffsetRef.current = 0;
+  }, [currentStep]);
 
   // Single ref holding ALL current values - updated synchronously every render
   const $ = useRef({});
@@ -157,6 +165,10 @@ function CookingVoiceChat({
   async function speakText(text) {
     if (!text) return;
     setIsSpeaking(true);
+    // Cancel any browser SpeechSynthesis (e.g. timer announcements) to avoid overlap
+    try { window.speechSynthesis?.cancel(); } catch {}
+    // Duck radio while speaking
+    $.current.radioRef?.current?.duckVolume();
     try {
       const response = await fetch(
         "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts",
@@ -252,57 +264,17 @@ function CookingVoiceChat({
     } catch (e) {
       console.error("OpenAI TTS error:", e);
     }
+    // Restore radio volume after speaking
+    $.current.radioRef?.current?.restoreVolume();
+    ttsEndTimeRef.current = Date.now();
     setIsSpeaking(false);
-  }
-
-  // ---- Helper: execute an action from AI response ----
-  function doAction(action) {
-    if (!action) return;
-    const p = $.current;
-    switch (action.type) {
-      case "next":
-        p.onNextStep?.();
-        break;
-      case "prev":
-        p.onPrevStep?.();
-        break;
-      case "goto":
-        if (action.step > 0) p.onGotoStep?.(action.step - 1);
-        break;
-      case "timer":
-        if (action.minutes > 0) p.onStartTimer?.(action.minutes);
-        break;
-      case "stop_timer":
-        p.onStopTimer?.();
-        break;
-      case "switch_tab":
-        if (action.tab) p.onSwitchTab?.(action.tab);
-        break;
-      case "play_music":
-        p.radioRef?.current?.play();
-        break;
-      case "pause_music":
-        p.radioRef?.current?.pause();
-        break;
-      case "toggle_music":
-        p.radioRef?.current?.togglePlay();
-        break;
-      case "volume_up":
-        p.radioRef?.current?.volumeUp();
-        break;
-      case "volume_down":
-        p.radioRef?.current?.volumeDown();
-        break;
-      default:
-        break;
-    }
   }
 
   // ---- Helper: kill current recognition ----
   function killRecognition() {
     if (recognitionRef.current) {
+      intentionalStopRef.current = true;
       try {
-        recognitionRef.current.onend = null;
         recognitionRef.current.onresult = null;
         recognitionRef.current.onerror = null;
         recognitionRef.current.stop();
@@ -324,130 +296,137 @@ function CookingVoiceChat({
 
     try {
       const p = $.current;
-      const lower = text.toLowerCase();
+      const isHe = p.lang === "he" || p.lang === "mixed";
+      const effectiveStep = p.currentStep + stepOffsetRef.current;
+      const steps = p.instructions || [];
+      const lower = text.toLowerCase().replace(/\s+/g, " ").trim();
 
-      // Client-side: detect "סיימתי שלב" and handle BEFORE calling AI
-      const finishedPatterns = [
-        "סיימתי שלב",
-        "סיימתי",
-        "סיים",
-        "שלב הבא",
-        "finished step",
-        "done",
-        "finished",
-      ];
-      const wantsNext = finishedPatterns.some((pat) => lower.includes(pat));
+      // ===== CLIENT-SIDE: Timer & Music (keyword-based, 100% reliable) =====
+      const hasTimer = lower.includes("טיימר") || lower.includes("טימר") || lower.includes("timer") || lower.includes("תיימר") || lower.includes("תימר");
+      const hasMinutes = lower.includes("דקה") || lower.includes("דקות") || lower.includes("minute");
+      const hasStop = lower.includes("עצור") || lower.includes("תעצור") || lower.includes("בטל") || lower.includes("כבה") || lower.includes("הפסק") || lower.includes("stop");
+      const hasRadio = lower.includes("רדיו") || lower.includes("מוסיקה") || lower.includes("מוזיקה") || lower.includes("radio") || lower.includes("music");
+      const hasVolUp = lower.includes("הגבר") || lower.includes("תגביר") || lower.includes("louder");
+      const hasVolDown = lower.includes("הנמך") || lower.includes("תנמיך") || lower.includes("נמיך") || lower.includes("quieter");
+      const hasPlay = lower.includes("תפעיל") || lower.includes("הפעל") || lower.includes("play");
+      const hasMute = lower.includes("תשתיק") || lower.includes("השתק") || lower.includes("mute");
 
-      // Handle "סיימתי שלב" entirely client-side — skip AI
-      if (wantsNext) {
-        p.onNextStep?.();
-        const msg =
-          p.lang === "he" || p.lang === "mixed"
-            ? "עוברים לשלב הבא"
-            : "Moving to the next step";
-        setLastResponse(msg);
-        setStatusText("מדבר...");
-        await speakText(msg);
-        return;
+      // Any mention of timer keywords OR minutes (דקה/דקות) = timer command
+      const isTimerCommand = hasTimer || hasMinutes;
+
+      console.log(`🎤 "${lower}" | timer=${hasTimer} mins=${hasMinutes} stop=${hasStop} isTimer=${isTimerCommand}`);
+
+      let localResult = null;
+
+      // TIMER: stop
+      if (isTimerCommand && hasStop) {
+        p.onStopTimer?.();
+        localResult = isHe ? "עוצרת את כל הטיימרים" : "All timers stopped";
       }
-
-      // Volume commands first — speech recognition often confuses "תנמיך" with "תפעיל"
-      const volumeUpPatterns = ["הגבר", "תגביר", "תעלה", "העלה", "יותר חזק", "חזק יותר", "louder", "volume up", "הגבר מוסיקה", "תגביר מוסיקה", "הגבר רדיו"];
-      const volumeDownPatterns = ["הנמך", "תנמיך", "נמיך", "תוריד", "הוריד", "יותר נמוך", "נמוך יותר", "יותר שקט", "שקט יותר", "quieter", "lower", "volume down", "הנמך מוסיקה", "תנמיך מוסיקה", "הנמך רדיו", "נמוך", "תנמיך רדיו"];
-
-      const wantsVolumeUp = volumeUpPatterns.some((pat) => lower.includes(pat));
-      const wantsVolumeDown = volumeDownPatterns.some((pat) => lower.includes(pat));
-
-      if (wantsVolumeUp && p.radioRef?.current) {
-        p.radioRef.current.volumeUp();
-        setLastResponse(p.lang === "he" || p.lang === "mixed" ? "מגביר 🔊" : "Louder 🔊");
-        return;
-      }
-      if (wantsVolumeDown && p.radioRef?.current) {
-        p.radioRef.current.volumeDown();
-        setLastResponse(p.lang === "he" || p.lang === "mixed" ? "מנמיך 🔉" : "Quieter 🔉");
-        return;
-      }
-
-      // Play/pause music commands
-      const playPatterns = ["תפעיל מוסיקה", "שים מוסיקה", "play music", "הפעל רדיו", "תפעיל רדיו"];
-      const pausePatterns = ["עצור מוסיקה", "תעצור מוסיקה", "עצור רדיו", "הפסק מוסיקה", "stop music", "pause music", "השתק מוסיקה"];
-      const wantsPlayMusic = playPatterns.some((pat) => lower.includes(pat));
-      const wantsPauseMusic = pausePatterns.some((pat) => lower.includes(pat));
-
-      if (wantsPlayMusic) {
-        p.radioRef?.current?.play();
-        const msg = p.lang === "he" || p.lang === "mixed" ? "מפעיל מוסיקה" : "Playing music";
-        setLastResponse(msg);
-        setStatusText("מדבר...");
-        await speakText(msg);
-        return;
-      }
-      if (wantsPauseMusic) {
-        p.radioRef?.current?.pause();
-        const msg = p.lang === "he" || p.lang === "mixed" ? "עוצר מוסיקה" : "Music paused";
-        setLastResponse(msg);
-        setStatusText("מדבר...");
-        await speakText(msg);
-        return;
-      }
-
-      // Handle station selection by voice - search for station name/alias anywhere in text
-      if (p.radioRef?.current) {
-        const stations = p.radioRef.current.getStations?.() || [];
-        for (let i = 0; i < stations.length; i++) {
-          const s = stations[i];
-          const allNames = [
-            ...Object.values(s.name).map((n) => n.toLowerCase()),
-            s.id,
-            ...(s.aliases || []).map((a) => a.toLowerCase()),
-          ];
-          const matched = allNames.find((n) => n.length > 1 && lower.includes(n));
-          if (matched) {
-            p.radioRef.current.selectStation(i);
-            const displayName = s.name[p.lang] || s.name.he;
-            const isHe = p.lang === "he" || p.lang === "mixed";
-            const msg = isHe ? `מעביר ל${displayName}` : `Switching to ${displayName}`;
-            setLastResponse(msg);
-            setStatusText("מדבר...");
-            await speakText(msg);
-            return;
+      // TIMER: start
+      else if (isTimerCommand && !hasStop) {
+        const heNums = [
+          ["חצי", 0.5], ["אחת", 1], ["שתיים", 2], ["שתי", 2], ["שניים", 2],
+          ["שלוש", 3], ["ארבע", 4], ["חמש עשרה", 15], ["חמש", 5], ["שש", 6],
+          ["שבע", 7], ["שמונה", 8], ["תשע", 9], ["עשרים", 20], ["שלושים", 30],
+          ["עשר", 10],
+        ];
+        let mins = 0;
+        const digitMatch = lower.match(/(\d+)/);
+        if (digitMatch) mins = parseInt(digitMatch[1]);
+        if (!mins) {
+          for (const [word, val] of heNums) {
+            if (lower.includes(word)) { mins = val; break; }
           }
         }
+        if (!mins && hasMinutes) mins = 1;
+        if (mins > 0) {
+          // silent: true → suppress SpeechSynthesis in TimerContext (we have our own TTS)
+          p.onStartTimer?.(mins, { silent: true });
+          localResult = isHe ? `מפעילה טיימר ל-${mins} דקות` : `Timer set for ${mins} minutes`;
+        } else {
+          localResult = isHe ? "לכמה דקות להפעיל טיימר?" : "How many minutes for the timer?";
+        }
+      }
+      // VOLUME
+      else if (hasVolUp) {
+        p.radioRef?.current?.volumeUp();
+        localResult = isHe ? "מגבירה" : "Louder";
+      } else if (hasVolDown) {
+        p.radioRef?.current?.volumeDown();
+        localResult = isHe ? "מנמיכה" : "Quieter";
+      }
+      // MUTE / RADIO
+      else if (hasMute) {
+        p.radioRef?.current?.pause();
+        localResult = isHe ? "משתיקה" : "Muted";
+      } else if (hasStop && hasRadio) {
+        p.radioRef?.current?.pause();
+        localResult = isHe ? "עוצרת רדיו" : "Radio stopped";
+      } else if (hasPlay && hasRadio) {
+        p.radioRef?.current?.play();
+        localResult = isHe ? "מפעילה רדיו" : "Playing radio";
       }
 
-      // Only switch to ingredients if user explicitly says "מרכיבים" or "ingredients"
-      const wantsSwitchToIngredients = [
-        "מרכיבים",
-        "תעבור למרכיבים",
-        "switch to ingredients",
-        "show ingredients",
-      ].some((pat) => lower.includes(pat));
+      if (localResult) {
+        setLastResponse(localResult);
+        setStatusText("מדבר...");
+        await speakText(localResult);
+        return;
+      }
 
+      // ===== AI: Steps, ingredients, cooking questions =====
       const recipeData = {
         recipeName: p.recipe.name,
         ingredients: p.ingredients,
         instructions: p.instructions,
         activeTab: p.activeTab || "instructions",
-        currentStep: p.currentStep,
+        currentStep: effectiveStep,
         servings: p.servings,
         isTimerRunning: p.isTimerRunning,
       };
 
       const response = await sendCookingChatMessage(text, recipeData, p.lang);
-      const responseText = response.text || "לא הצלחתי להבין";
+      let responseText = response.text || "לא הצלחתי להבין";
 
-      setLastResponse(responseText);
-      setStatusText("מדבר...");
-      if (response.action) doAction(response.action);
-
-      // Only switch to ingredients if user EXPLICITLY asked (e.g. "תעבור למרכיבים")
-      if (wantsSwitchToIngredients && p.activeTab !== "ingredients") {
-        if (!response.action || response.action.type !== "switch_tab") {
-          p.onSwitchTab?.("ingredients");
+      if (response.action) {
+        const act = response.action;
+        if (act.type === "next") {
+          p.onNextStep?.();
+          stepOffsetRef.current++;
+          const nextIdx = effectiveStep + 1;
+          if (nextIdx < steps.length) {
+            responseText = isHe
+              ? `שלב ${nextIdx + 1}: ${steps[nextIdx]}`
+              : `Step ${nextIdx + 1}: ${steps[nextIdx]}`;
+          }
+        } else if (act.type === "prev") {
+          p.onPrevStep?.();
+          if (stepOffsetRef.current > 0) stepOffsetRef.current--;
+          const prevIdx = effectiveStep - 1;
+          if (prevIdx >= 0) {
+            responseText = isHe
+              ? `שלב ${prevIdx + 1}: ${steps[prevIdx]}`
+              : `Step ${prevIdx + 1}: ${steps[prevIdx]}`;
+          }
+        } else if (act.type === "goto" && act.step > 0) {
+          const idx = act.step - 1;
+          p.onGotoStep?.(idx);
+          stepOffsetRef.current = 0;
+          if (idx >= 0 && idx < steps.length) {
+            responseText = isHe
+              ? `שלב ${act.step}: ${steps[idx]}`
+              : `Step ${act.step}: ${steps[idx]}`;
+          }
+        } else if (act.type === "read_step") {
+          responseText = isHe
+            ? `שלב ${effectiveStep + 1}: ${steps[effectiveStep] || ""}`
+            : `Step ${effectiveStep + 1}: ${steps[effectiveStep] || ""}`;
         }
       }
 
+      setLastResponse(responseText);
+      setStatusText("מדבר...");
       await speakText(responseText);
     } catch (error) {
       console.error("Voice chat error:", error);
@@ -458,11 +437,13 @@ function CookingVoiceChat({
       isProcessingRef.current = false;
       setStatusText("");
       if (isActiveRef.current) {
+        const elapsed = Date.now() - ttsEndTimeRef.current;
+        const delay = Math.max(800, 1200 - elapsed);
         setTimeout(() => {
           if (isActiveRef.current && !isProcessingRef.current) {
             listenRef.current?.();
           }
-        }, 1500);
+        }, delay);
       }
     }
   };
@@ -487,63 +468,61 @@ function CookingVoiceChat({
     recognition.lang = $.current.speechLang;
     recognition.maxAlternatives = 1;
 
-    let lastText = "";
     let debounceTimer = null;
-    let processedIdx = -1;
 
     recognition.onstart = () => {
-      console.log("🎤 Recognition started (continuous)");
+      intentionalStopRef.current = false;
       setStatusText("מקשיב...");
     };
 
     recognition.onresult = (event) => {
       if (isProcessingRef.current) return;
-      const last = event.results.length - 1;
-      if (last <= processedIdx) return;
+      if (Date.now() - ttsEndTimeRef.current < 1500) return;
 
-      const result = event.results[last][0];
-      const text = result.transcript.trim();
-      if (!text) return;
+      // Always use ONLY the LAST result's transcript to avoid duplication.
+      // With continuous=true, overlapping segments can duplicate text if concatenated.
+      const lastIdx = event.results.length - 1;
+      const result = event.results[lastIdx];
+      const text = result[0].transcript.trim();
+      if (!text || text.length < 2) return;
 
-      if (event.results[last].isFinal) {
-        if (text.length < 2) {
-          processedIdx = last;
-          return;
-        }
-        processedIdx = last;
-        if (debounceTimer) { clearTimeout(debounceTimer); debounceTimer = null; }
-        killRecognition();
-        setStatusText(`"${text}"`);
-        processRef.current?.(text);
-        return;
-      }
-
-      lastText = text;
-      setStatusText(`"${text}"...`);
       if (debounceTimer) clearTimeout(debounceTimer);
-      debounceTimer = setTimeout(() => {
-        if (isProcessingRef.current || last <= processedIdx) return;
-        processedIdx = last;
-        if (lastText && lastText.length >= 2 && isActiveRef.current) {
+
+      if (result.isFinal) {
+        setStatusText(`"${text}"`);
+        debounceTimer = setTimeout(() => {
+          if (isProcessingRef.current) return;
           killRecognition();
-          setStatusText(`"${lastText}"`);
-          processRef.current?.(lastText);
-        }
-      }, 2000);
+          processRef.current?.(text);
+        }, 500);
+      } else {
+        setStatusText(`"${text}"...`);
+        debounceTimer = setTimeout(() => {
+          if (isProcessingRef.current) return;
+          if (text.length >= 2 && isActiveRef.current) {
+            killRecognition();
+            setStatusText(`"${text}"`);
+            processRef.current?.(text);
+          }
+        }, 3000);
+      }
     };
 
     recognition.onend = () => {
+      if (intentionalStopRef.current) {
+        intentionalStopRef.current = false;
+        return;
+      }
       if (isActiveRef.current && !isProcessingRef.current) {
         setTimeout(() => {
           if (isActiveRef.current && !isProcessingRef.current) {
             listenRef.current?.();
           }
-        }, 1000);
+        }, 300);
       }
     };
 
     recognition.onerror = (event) => {
-      console.error("🎤 Voice chat error:", event.error);
       if (event.error === "not-allowed") {
         alert("יש לאפשר גישה למיקרופון");
         setIsActive(false);
@@ -554,11 +533,10 @@ function CookingVoiceChat({
     };
 
     recognitionRef.current = recognition;
+    intentionalStopRef.current = false;
     try {
       recognition.start();
-      console.log("🎤 Recognition.start() called successfully");
     } catch (e) {
-      console.error("🎤 Failed to start recognition:", e);
       recognitionRef.current = null;
       setTimeout(() => {
         if (isActiveRef.current && !isProcessingRef.current) {
@@ -595,7 +573,7 @@ function CookingVoiceChat({
       isActiveRef.current = true;
       setIsActive(true);
       ensureAudioContext();
-      $.current.radioRef?.current?.muteForMic();
+      $.current.radioRef?.current?.softDuckVolume();
       listenRef.current?.();
     }
   }

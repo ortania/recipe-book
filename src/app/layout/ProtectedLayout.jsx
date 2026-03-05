@@ -1,6 +1,11 @@
 import { useEffect } from "react";
 import { Navigate, Outlet } from "react-router-dom";
-import { useRecipeBook, RadioProvider, useRadio, TimerProvider } from "../../context";
+import {
+  useRecipeBook,
+  RadioProvider,
+  useRadio,
+  TimerProvider,
+} from "../../context";
 import { Navigation, Header, Footer } from "../../components";
 import { RadioPlayer } from "../../components/radio-player";
 import TimerWidget from "../../components/timer-widget/TimerWidget";

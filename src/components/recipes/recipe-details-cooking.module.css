@@ -685,13 +685,13 @@
 .timerControlsFrame {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0rem;
   border: 1px solid var(--border-color);
   border-radius: var(--btn-border-radius);
-  padding: 0.6rem .8rem;
+  padding: 0.6rem 0.8rem;
   background: var(--bg-card);
 }
-.timerControlsFrame  button {
+.timerControlsFrame button {
   border: 1px solid var(--border-color);
   width: 30px;
   height: 30px;
@@ -807,7 +807,7 @@
 .startButton,
 .stopButton {
   padding: 0.6em 1.2em;
-  font-size: var(--basic-font);
+  font-size: var(--small-font);
   background: var(--bg-card);
   color: var(--btn-bg-primary);
   border: 1px solid var(--btn-bg-primary);
@@ -1015,5 +1015,13 @@
 
   .timerContent {
     flex-direction: column;
+  }
+
+  .timerLabel {
+    font-size: var(--small-font);
+  }
+
+  .startButton {
+    font-size: var(--small-font);
   }
 }
