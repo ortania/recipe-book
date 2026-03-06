@@ -75,6 +75,21 @@ function ChatHelpButton({ items, title, description, onToggle }) {
   const renderItems = () => (
     <ul>
       {items.map((item, i) => {
+        if (typeof item === "object" && item?.section) {
+          return (
+            <li key={i} className={classes.sectionHeader}>
+              {item.icon && <span className={classes.sectionIcon}>{item.icon}</span>}
+              <span>{item.section}</span>
+            </li>
+          );
+        }
+        if (typeof item === "object" && item?.examples) {
+          return (
+            <li key={i} className={classes.exampleBlock}>
+              {item.examples}
+            </li>
+          );
+        }
         const hasContent = typeof item === "object" && item?.content != null;
         const text = typeof item === "string" ? item : item?.text ?? "";
         const indent = typeof item === "object" && item?.indent;

@@ -33,6 +33,7 @@ import {
   Apple,
   Files,
   Info,
+  Menu,
 } from "lucide-react";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
@@ -269,7 +270,12 @@ function RecipeDetailsFull({
       <div ref={stickyHeaderRef} className={classes.stickyHeader}>
         <BackButton onClick={onClose} />
         <h2 className={classes.headerTitle}>{recipe.name}</h2>
-        <span className={classes.headerSpacer} />
+        <button
+          className={classes.headerHamburger}
+          onClick={() => window.dispatchEvent(new Event("toggle-sidebar"))}
+        >
+          <Menu size={22} />
+        </button>
       </div>
       {allImages.length > 0 && (
         <div

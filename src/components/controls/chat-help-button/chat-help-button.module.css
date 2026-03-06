@@ -18,7 +18,9 @@
   color: var(--primary-color);
   cursor: pointer;
   padding: 0;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
   flex-shrink: 0;
 }
 
@@ -140,21 +142,24 @@
   margin: 0;
   display: flex;
   flex-direction: column;
+  gap: 0.5rem;
 }
 
 .content li {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
-  padding: 0.75rem 0.6rem;
+  padding: 0.7rem 0.75rem;
   font-size: var(--basic-font);
   line-height: 1.5;
   white-space: pre-line;
-  border-bottom: 1px solid var(--border-light);
+  border: 1.5px solid var(--border-light);
+  border-radius: 10px;
+  background: var(--bg-secondary, rgba(0, 0, 0, 0.02));
 }
 
 .content li:last-child {
-  border-bottom: none;
+  border-bottom: 1.5px solid var(--border-light);
 }
 
 .content li.indent {
@@ -165,4 +170,43 @@
 .content li.indent::before {
   content: "− ";
   margin-inline-end: 0.25rem;
+}
+
+/* ── Section headers (voice chat subsections) ────────── */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem !important;
+  font-weight: 700;
+  font-size: calc(var(--basic-font) * 0.95);
+  color: var(--primary-color);
+  border: none !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  margin-inline-start: 0.6rem;
+  margin-bottom: -0.4rem;
+}
+
+.sectionIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Example blocks (voice chat examples) ────────────── */
+.exampleBlock {
+  display: block !important;
+  padding: 0.45rem 0.75rem 0.55rem !important;
+  font-size: calc(var(--basic-font) * 0.88);
+  color: var(--text-secondary);
+  line-height: 1.7;
+  border: 1px dashed var(--border-light) !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  margin-inline-start: 0.6rem;
+}
+
+.exampleBlock::before {
+  content: none !important;
 }

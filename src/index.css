@@ -127,6 +127,8 @@ Variables
   --btn-bg-secondary: var(--clr-brown-2);
   --btn-bg-tertiary: var(--tertiary-color);
   --btn-border-radius: 2rem;
+  --btn-border-color: var(--clr-brown-1);
+  --btn-small-border-radius: 12px;
 
   --icon-primary-color: var(--clr-brown-1);
 

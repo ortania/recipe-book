@@ -135,6 +135,8 @@ function AddRecipeWizard({
   const [stepError, setStepError] = useState("");
   const [visitedSteps, setVisitedSteps] = useState(new Set([0]));
   const [showPreview, setShowPreview] = useState(false);
+  const [imageDragOver, setImageDragOver] = useState(false);
+  const [photoDragOver, setPhotoDragOver] = useState(false);
   const [importProgress, setImportProgress] = useState(0);
   const progressRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -687,6 +689,28 @@ function AddRecipeWizard({
     });
   };
 
+  const handleImageDrop = (e) => {
+    e.preventDefault();
+    setImageDragOver(false);
+    const files = Array.from(e.dataTransfer.files).filter((f) =>
+      f.type.startsWith("image/"),
+    );
+    if (files.length === 0) return;
+    handleImageUpload({ target: { files }, preventDefault: () => {} });
+  };
+
+  const handlePhotoDrop = (e) => {
+    e.preventDefault();
+    setPhotoDragOver(false);
+    const files = Array.from(e.dataTransfer.files).filter((f) =>
+      f.type.startsWith("image/"),
+    );
+    if (files.length === 0) return;
+    handleImportFromPhoto({ target: { files }, preventDefault: () => {} });
+  };
+
+  const preventDragDefault = (e) => e.preventDefault();
+
   // ========== Ingredient/Instruction handlers ==========
   const handleIngredientChange = (index, value) => {
     const updated = [...recipe.ingredients];
@@ -819,7 +843,8 @@ function AddRecipeWizard({
     const filledAll = recipe.ingredients.filter(Boolean);
     const filledIngredients = ingredientsOnly(filledAll);
     let nutrition = recipe.nutrition || {};
-    const hasNutrition = nutrition.calories && String(nutrition.calories) !== "0";
+    const hasNutrition =
+      nutrition.calories && String(nutrition.calories) !== "0";
     if (filledIngredients.length > 0 && !hasNutrition) {
       try {
         const result = await calculateNutrition(
@@ -1370,7 +1395,12 @@ function AddRecipeWizard({
         />
         {recipe.images?.length > 0 ? (
           <>
-            <div className={classes.imageGrid}>
+            <div
+              className={`${classes.imageGrid} ${imageDragOver ? classes.dropActive : ""}`}
+              onDragOver={(e) => { preventDragDefault(e); setImageDragOver(true); }}
+              onDragLeave={() => setImageDragOver(false)}
+              onDrop={handleImageDrop}
+            >
               {recipe.images.map((url, i) => (
                 <div key={i} className={classes.imageGridItem}>
                   <img
@@ -1408,7 +1438,12 @@ function AddRecipeWizard({
             </div>
           </>
         ) : (
-          <div className={classes.imageUploadButtons}>
+          <div
+            className={`${classes.imageUploadButtons} ${imageDragOver ? classes.dropActive : ""}`}
+            onDragOver={(e) => { preventDragDefault(e); setImageDragOver(true); }}
+            onDragLeave={() => setImageDragOver(false)}
+            onDrop={handleImageDrop}
+          >
             {isMobileDevice && (
               <button
                 type="button"
@@ -2242,7 +2277,12 @@ function AddRecipeWizard({
           </p>
         </div>
       ) : (
-        <div className={classes.imageUploadButtons}>
+        <div
+          className={`${classes.imageUploadButtons} ${photoDragOver ? classes.dropActive : ""}`}
+          onDragOver={(e) => { preventDragDefault(e); setPhotoDragOver(true); }}
+          onDragLeave={() => setPhotoDragOver(false)}
+          onDrop={handlePhotoDrop}
+        >
           {isMobileDevice && (
             <button
               type="button"

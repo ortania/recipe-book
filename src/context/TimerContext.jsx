@@ -116,7 +116,38 @@ export const TimerProvider = ({ children }) => {
   );
 };
 
+function playAlarmBeep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const playTone = (startTime, freq, duration) => {
+      const osc = ctx.createOscillator();
+      const gain = ctx.createGain();
+      osc.type = "sine";
+      osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.5, startTime);
+      gain.gain.exponentialRampToValueAtTime(0.01, startTime + duration);
+      osc.connect(gain);
+      gain.connect(ctx.destination);
+      osc.start(startTime);
+      osc.stop(startTime + duration);
+    };
+    const now = ctx.currentTime;
+    for (let i = 0; i < 3; i++) {
+      playTone(now + i * 0.4, 880, 0.25);
+    }
+    setTimeout(() => ctx.close(), 2000);
+  } catch {}
+}
+
 function announceFinished(label) {
+  playAlarmBeep();
+
+  try {
+    if ("vibrate" in navigator) {
+      navigator.vibrate([300, 100, 300, 100, 300]);
+    }
+  } catch {}
+
   try {
     const isHebrew = label && /[\u0590-\u05FF]/.test(label);
     const text = label
@@ -127,13 +158,7 @@ function announceFinished(label) {
     utterance.rate = 0.9;
     utterance.volume = 1.0;
     window.speechSynthesis.cancel();
-    setTimeout(() => window.speechSynthesis.speak(utterance), 100);
-  } catch {}
-
-  try {
-    if ("vibrate" in navigator) {
-      navigator.vibrate([300, 100, 300, 100, 300]);
-    }
+    setTimeout(() => window.speechSynthesis.speak(utterance), 1500);
   } catch {}
 }
 

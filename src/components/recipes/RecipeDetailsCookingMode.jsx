@@ -6,6 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import {
+  Lightbulb,
   RotateCcw,
   Square,
   Users,
@@ -16,7 +17,10 @@ import {
   Mic,
   Timer,
   Clock,
+  Volume2,
+  Smartphone,
   X,
+  UtensilsCrossed,
 } from "lucide-react";
 import { CookingVoiceChat } from "../cooking-voice-chat";
 import {
@@ -245,15 +249,71 @@ function RecipeDetailsCookingMode({
             <ChatHelpButton
               title={t("cookingMode", "howToUse")}
               items={[
-                `🔊 ${t("cookingMode", "helpVolume")}`,
+                {
+                  content: (
+                    <>
+                      <Lightbulb
+                        size="1.5em"
+                        style={{
+                          verticalAlign: "middle",
+                          marginInlineEnd: "0.25rem",
+                        }}
+                      />
+                      {t("cookingMode", "helpVolume")}
+                    </>
+                  ),
+                },
+                {
+                  content: (
+                    <>
+                      <Smartphone
+                        size="1.2em"
+                        style={{
+                          verticalAlign: "middle",
+                          marginInlineEnd: "0.25rem",
+                        }}
+                      />
+                      {t("cookingMode", "screenOn")}
+                    </>
+                  ),
+                },
                 t("cookingMode", "navTabs"),
                 t("cookingMode", "navSteps"),
-                `⏱️ ${t("cookingMode", "timerTitle")} — ${t("cookingMode", "timerText")}`,
+                {
+                  content: (
+                    <>
+                      <Timer
+                        size="3.5em"
+                        style={{
+                          verticalAlign: "middle",
+                          marginInlineEnd: "0.25rem",
+                        }}
+                      />
+                      {t("cookingMode", "timerTitle")} —{" "}
+                      {t("cookingMode", "timerText")}
+                    </>
+                  ),
+                },
+                {
+                  content: (
+                    <>
+                      <Music
+                        size="1.5em"
+                        style={{
+                          verticalAlign: "middle",
+                          marginInlineEnd: "0.25rem",
+                        }}
+                      />
+                      {t("cookingMode", "radioTitle")} —{" "}
+                      {t("cookingMode", "radioText")}
+                    </>
+                  ),
+                },
                 {
                   content: (
                     <>
                       <Mic
-                        size={16}
+                        size="1.5em"
                         style={{
                           verticalAlign: "middle",
                           marginInlineEnd: "0.25rem",
@@ -264,26 +324,26 @@ function RecipeDetailsCookingMode({
                     </>
                   ),
                 },
-                t("cookingMode", "chatExamplesLabel"),
-                { text: t("cookingMode", "chatFeature1"), indent: true },
-                { text: t("cookingMode", "chatFeature2"), indent: true },
-                { text: t("cookingMode", "chatFeature3"), indent: true },
-                { text: t("cookingMode", "chatFeature4"), indent: true },
-                { text: t("cookingMode", "chatFeature5"), indent: true },
                 {
-                  content: (
-                    <>
-                      <Music
-                        size={16}
-                        style={{
-                          verticalAlign: "middle",
-                          marginInlineEnd: "0.25rem",
-                        }}
-                      />
-                      {t("cookingMode", "radioFeature")}
-                    </>
-                  ),
+                  section: t("cookingMode", "voiceSectionSteps"),
+                  icon: <ListOrdered size={18} />,
                 },
+                { examples: t("cookingMode", "voiceStepsExamples") },
+                {
+                  section: t("cookingMode", "voiceSectionIngredients"),
+                  icon: <UtensilsCrossed size={18} />,
+                },
+                { examples: t("cookingMode", "voiceIngredientsExamples") },
+                {
+                  section: t("cookingMode", "voiceSectionTimer"),
+                  icon: <Timer size={18} />,
+                },
+                { examples: t("cookingMode", "voiceTimerExamples") },
+                {
+                  section: t("cookingMode", "voiceSectionRadio"),
+                  icon: <Music size={18} />,
+                },
+                { examples: t("cookingMode", "voiceRadioExamples") },
               ]}
               onToggle={setShowHelp}
             />
@@ -499,10 +559,11 @@ function RecipeDetailsCookingMode({
                       className={classes.navButton}
                       style={{
                         backgroundColor:
-                          currentStep === 0 ? "#f3f4f6" : "##e8eaed",
-                        color: currentStep === 0 ? "#9ca3af" : "#6b7280",
+                          currentStep === 0 ? "#f3f4f6" : "#e8eaed",
+                        color: currentStep === 0 ? "#9ca3af" : "#635555",
                         cursor: currentStep === 0 ? "not-allowed" : "pointer",
                         opacity: currentStep === 0 ? 0.6 : 1,
+                        border: "1px solid #635555",
                       }}
                     >
                       → {t("recipes", "prev")}

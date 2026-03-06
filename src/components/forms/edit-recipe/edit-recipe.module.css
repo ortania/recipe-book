@@ -673,6 +673,12 @@
   border-color: var(--active-color-primary);
 }
 
+.dropActive {
+  outline: 3px dashed var(--active-color-primary);
+  outline-offset: 4px;
+  background: rgba(46, 204, 113, 0.06);
+}
+
 .imagePreview {
   width: 100%;
   max-height: 300px;

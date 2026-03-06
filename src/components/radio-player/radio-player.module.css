@@ -33,7 +33,7 @@
   cursor: grab;
   user-select: none;
   touch-action: none;
-  gap: 0.3rem;
+  gap: 1rem;
 }
 
 .header:active {
@@ -47,8 +47,8 @@
 }
 
 .title {
-  font-weight: 700;
-  font-size: var(--basic-font);
+  font-weight:  var(--font-size-quaternary);
+  font-size: 2rem;
   color: var(--text-primary);
   flex: 1;
 }
@@ -58,7 +58,7 @@
   border: none;
   cursor: pointer;
   color: var(--text-secondary);
-  font-size: 1.3rem;
+  font-size: 2rem;
   padding: 0.2rem;
   display: flex;
   align-items: center;
@@ -186,7 +186,7 @@
 .error {
   text-align: center;
   color: #e53e3e;
-  font-size: var(--very-small-font);
+  font-size: var(--mall-font);
   margin-bottom: 0.5rem;
 }
 
@@ -198,7 +198,7 @@
 
 .volumeIcon {
   color: var(--text-secondary);
-  font-size: 1.1rem;
+  font-size: 2rem;
   flex-shrink: 0;
 }
 
@@ -235,7 +235,7 @@
 
 .duckingNote {
   text-align: center;
-  font-size: var(--very-small-font);
+  font-size: var(--small-font);
   color: var(--text-muted);
   margin-top: 0.5rem;
 }

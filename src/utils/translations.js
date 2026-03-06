@@ -2117,12 +2117,18 @@ const translations = {
       mixed: "Cooking Timer",
     },
     timerText: {
-      he: "מופיע רק בלשונית הוראות הכנה. הגדר טיימר בדקות, לחץ + או - לשינוי הזמן ולחץ התחל להפעלה",
-      en: "Only available in the instructions tab. Set a timer in minutes, press + or - to change the time and press Start to begin",
-      ru: "Доступен только на вкладке инструкций. Установите таймер в минутах, нажмите + или - для изменения времени и нажмите Старт",
-      de: "Nur auf der Registerkarte Anweisungen verfügbar. Stellen Sie einen Timer in Minuten ein, drücken Sie + oder - und dann Start",
-      mixed:
-        "Only available in the instructions tab. Set a timer in minutes, press + or - to change the time and press Start to begin",
+      he: "מופיע רק בלשונית הוראות הכנה. הגדר טיימר בדקות, לחץ + או - לשינוי הזמן ולחץ הוסף טיימר. ניתן להפעיל כמה טיימרים במקביל, והם ממשיכים גם אם עוברים לבישול מתכון אחר.",
+    },
+    radioTitle: {
+      he: "רדיו",
+      en: "Radio",
+      ru: "Радио",
+      de: "Radio",
+      mixed: "Radio",
+    },
+    radioText: {
+      he: "בחרו רדיו מהסרגל הצידי, בחרו תחנה ולחצו Play. בזמן צ'אט קולי הרדיו מוחלש אוטומטית.",
+      en: "Choose radio from the sidebar, pick a station and press Play. During voice chat the radio volume is lowered automatically.",
     },
     chatTitle: {
       he: "צ'אט קולי",
@@ -2132,47 +2138,39 @@ const translations = {
       mixed: "Voice Chat",
     },
     chatText: {
-      he: "לחצו מיקרופון ושאלו. מיקרופון ורדיו לא פועלים יחד. יש השהיה קצרה בין שאלה לתשובה.",
-      en: "Click mic and ask. Mic and radio don't work together. Short delay between question and answer.",
-      ru: "Нажмите микрофон и спросите. Микрофон и радио не работают вместе. Небольшая задержка между вопросом и ответом.",
-      de: "Mikrofon klicken und fragen. Mikrofon und Radio laufen nicht gleichzeitig. Kurze Verzögerung zwischen Frage und Antwort.",
-      mixed:
-        "לחצו מיקרופון ושאלו. מיקרופון ורדיו לא פועלים יחד. יש השהיה קצרה בין שאלה לתשובה.",
+      he: "לחצו על המיקרופון ודברו. להלן דוגמאות למשפטים שניתן לומר:",
     },
-    chatFeature1: {
-      he: "שאלות על המתכון והמרכיבים",
-      en: "Questions about recipe and ingredients",
-      ru: "Вопросы о рецепте и ингредиентах",
-      de: "Fragen zu Rezept und Zutaten",
-      mixed: "Questions about recipe and ingredients",
+    voiceSectionSteps: {
+      he: "ניווט שלבים",
+      en: "Step Navigation",
     },
-    chatFeature2: {
-      he: 'ניווט שלבים: "הבא", "הקודם", "שלב 3"',
-      en: 'Step navigation: "next", "previous", "step 3"',
-      ru: 'Навигация: "далее", "назад", "шаг 3"',
-      de: 'Schritte: "weiter", "zurück", "Schritt 3"',
-      mixed: 'Step navigation: "next", "previous", "step 3"',
+    voiceStepsExamples: {
+      he: '"שלב הבא" · "המשך" · "תתקדם" · "סיימתי"\n"שלב קודם" · "תחזור" · "אחורה"\n"שלב 3" · "מה השלב הראשון" · "תתקדם לשלב 5"\n"מה עושים עכשיו?" · "תקריא שוב" · "תסביר את השלב"',
+      en: '"Next step" · "Continue" · "Finished"\n"Previous step" · "Go back"\n"Step 3" · "First step" · "Go to step 5"\n"What now?" · "Read again" · "Explain the step"',
     },
-    chatFeature3: {
-      he: 'טיימר: "תפעיל טיימר 10 דקות"',
-      en: 'Timer: "set timer 10 minutes"',
-      ru: 'Таймер: "таймер 10 минут"',
-      de: 'Timer: "Timer 10 Minuten"',
-      mixed: 'Timer: "set timer 10 minutes"',
+    voiceSectionIngredients: {
+      he: "שאלות על מרכיבים",
+      en: "Ingredient Questions",
     },
-    chatFeature4: {
-      he: "הסבר לכל שלב",
-      en: "Explanation per step",
-      ru: "Объяснение каждого шага",
-      de: "Erklärung pro Schritt",
-      mixed: "Explanation per step",
+    voiceIngredientsExamples: {
+      he: '"כמה ביצים?" · "כמה סוכר?" · "מה כמות הקמח?"\n"איזה מרכיבים יש?" · "מה המרכיבים במתכון?"',
+      en: '"How many eggs?" · "How much sugar?"\n"What ingredients do I need?"',
     },
-    chatFeature5: {
-      he: '"סיימתי שלב" — לא חובה, מומלץ למעבר אוטומטי לשלב הבא',
-      en: '"Finished step" — optional, recommended for auto-advance to next',
-      ru: '"Готово" — не обязательно, рекомендуется для перехода к следующему',
-      de: '"Fertig" — optional, empfohlen für automatischen Wechsel',
-      mixed: '"Finished step" — optional, recommended for auto-advance to next',
+    voiceSectionTimer: {
+      he: "טיימר",
+      en: "Timer",
+    },
+    voiceTimerExamples: {
+      he: '"שים טיימר לשתי דקות" · "טיימר 5 דקות" · "דקה"\n"עצור טיימר" · "בטל טיימר" · "כבה טיימר"',
+      en: '"Set timer 2 minutes" · "Timer 5 minutes"\n"Stop timer" · "Cancel timer"',
+    },
+    voiceSectionRadio: {
+      he: "רדיו",
+      en: "Radio",
+    },
+    voiceRadioExamples: {
+      he: '"תפעיל רדיו" · "מוסיקה" · "רדיו"\n"עצור רדיו" · "כבה מוסיקה"\n"תשתיק" · "הגבר" · "הנמך"',
+      en: '"Play radio" · "Music"\n"Stop radio" · "Mute"\n"Louder" · "Quieter"',
     },
     chatExamplesLabel: {
       he: "דוגמאות לשאלות:",
@@ -2181,13 +2179,69 @@ const translations = {
       de: "Beispielfragen:",
       mixed: "Example questions:",
     },
+    screenOn: {
+      he: "המסך לא נכבה במצב בישול",
+      en: "Screen stays on during cooking mode",
+      ru: "Экран не выключается в режиме готовки",
+      de: "Der Bildschirm bleibt im Kochmodus an",
+      mixed: "Screen stays on during cooking mode",
+    },
+    timerExamplesLabel: {
+      he: "דוגמאות לטיימר:",
+      en: "Timer examples:",
+      ru: "Примеры таймера:",
+      de: "Timer-Beispiele:",
+      mixed: "Timer examples:",
+    },
+    timerExample1: {
+      he: '"תפעיל טיימר 10 דקות", "טיימר 5 דקות"',
+      en: '"Set timer 10 minutes", "Timer 5 minutes"',
+      ru: '"Таймер 10 минут", "Таймер 5 минут"',
+      de: '"Timer 10 Minuten", "Timer 5 Minuten"',
+      mixed: '"Set timer 10 minutes", "Timer 5 minutes"',
+    },
+    timerExample2: {
+      he: '"עצור טיימר", "בטל טיימר"',
+      en: '"Stop timer", "Cancel timer"',
+      ru: '"Остановить таймер", "Отменить таймер"',
+      de: '"Timer stoppen", "Timer abbrechen"',
+      mixed: '"Stop timer", "Cancel timer"',
+    },
+    radioExamplesLabel: {
+      he: "דוגמאות לרדיו:",
+      en: "Radio examples:",
+      ru: "Примеры радио:",
+      de: "Radio-Beispiele:",
+      mixed: "Radio examples:",
+    },
+    radioExample1: {
+      he: '"הפעל רדיו", "הפעל מוסיקה"',
+      en: '"Play radio", "Play music"',
+      ru: '"Включи радио", "Включи музыку"',
+      de: '"Radio abspielen", "Musik abspielen"',
+      mixed: '"Play radio", "Play music"',
+    },
+    radioExample2: {
+      he: '"עצור רדיו", "השתק"',
+      en: '"Stop radio", "Mute"',
+      ru: '"Останови радио", "Выключи звук"',
+      de: '"Radio stoppen", "Stumm"',
+      mixed: '"Stop radio", "Mute"',
+    },
+    radioExample3: {
+      he: '"הגבר", "הנמך"',
+      en: '"Louder", "Quieter"',
+      ru: '"Громче", "Тише"',
+      de: '"Lauter", "Leiser"',
+      mixed: '"Louder", "Quieter"',
+    },
     radioFeature: {
-      he: "רדיו — לחצו אייקון מוסיקה, בחרו תחנה ו-Play. מיקרופון ורדיו לא פועלים יחד (בזמן צ'אט קולי הרדיו מושתק).",
-      en: "Radio — click music icon, pick station, Play. Mic and radio don't work together (radio mutes during voice chat).",
-      ru: "Радио — нажмите иконку музыки, выберите станцию, Play. Микрофон и радио не работают вместе (радио отключается при голосовом чате).",
-      de: "Radio — Musiksymbol klicken, Sender wählen, Play. Mikrofon und Radio laufen nicht zusammen (Radio stumm bei Sprachchat).",
+      he: "רדיו — בחרו רדיו מהסרגל הצידי, בחרו תחנה ו-Play. בזמן צ'אט קולי הרדיו מוחלש.",
+      en: "Radio — choose radio from the sidebar, pick a station and Play. During voice chat the radio volume is lowered.",
+      ru: "Радио — выберите радио на боковой панели, выберите станцию и Play. Во время голосового чата громкость радио снижается.",
+      de: "Radio — wählen Sie Radio in der Seitenleiste, wählen Sie einen Sender und Play. Während des Sprachchats wird die Radiolautstärke verringert.",
       mixed:
-        "Radio — click music icon, pick station, Play. Mic and radio don't work together (radio mutes during voice chat).",
+        "Radio — choose radio from the sidebar, pick a station and Play. During voice chat the radio volume is lowered.",
     },
     navTabs: {
       he: 'לחצו על "מרכיבים" או "הוראות" כדי לעבור בין תצוגת המרכיבים להוראות ההכנה',

@@ -247,6 +247,18 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     });
   };
 
+  const [editImageDragOver, setEditImageDragOver] = useState(false);
+
+  const handleEditImageDrop = (e) => {
+    e.preventDefault();
+    setEditImageDragOver(false);
+    const files = Array.from(e.dataTransfer.files).filter((f) =>
+      f.type.startsWith("image/"),
+    );
+    if (files.length === 0) return;
+    handleImageUpload({ target: { files }, preventDefault: () => {} });
+  };
+
   const handleIngredientChange = (index, value) => {
     setEditedPerson((prev) => {
       const newIngredients = [...prev.ingredients];
@@ -878,7 +890,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       />
       {editedPerson.images?.length > 0 ? (
         <>
-          <div className={classes.imageGrid}>
+          <div
+            className={`${classes.imageGrid} ${editImageDragOver ? classes.dropActive : ""}`}
+            onDragOver={(e) => { e.preventDefault(); setEditImageDragOver(true); }}
+            onDragLeave={() => setEditImageDragOver(false)}
+            onDrop={handleEditImageDrop}
+          >
             {editedPerson.images.map((url, i) => (
               <div key={i} className={classes.imageGridItem}>
                 <img
@@ -906,8 +923,11 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </>
       ) : (
         <div
-          className={classes.imageUploadArea}
+          className={`${classes.imageUploadArea} ${editImageDragOver ? classes.dropActive : ""}`}
           onClick={() => fileInputRef.current?.click()}
+          onDragOver={(e) => { e.preventDefault(); setEditImageDragOver(true); }}
+          onDragLeave={() => setEditImageDragOver(false)}
+          onDrop={handleEditImageDrop}
         >
           <Camera className={classes.imageUploadIcon} />
           <span className={classes.imageUploadText}>

@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Mic, MicOff } from "lucide-react";
 import { sendCookingChatMessage } from "../../services/openai";
-import { useLanguage } from "../../context";
+import { useLanguage, useRadio } from "../../context";
 import classes from "./cooking-voice-chat.module.css";
 
 const SPEECH_LANG_MAP = {
@@ -104,6 +104,7 @@ function CookingVoiceChat({
   radioRef,
 }) {
   const { language } = useLanguage();
+  const { showRadio, openRadio, minimizeRadio } = useRadio();
   const lang = language || "he";
   const speechLang = SPEECH_LANG_MAP[lang] || "he-IL";
 
@@ -147,6 +148,9 @@ function CookingVoiceChat({
     onStopTimer,
     onSwitchTab,
     radioRef,
+    showRadio,
+    openRadio,
+    minimizeRadio,
   };
 
   // ---- Helper: ensure AudioContext is created & resumed (call on user gesture) ----
@@ -166,7 +170,9 @@ function CookingVoiceChat({
     if (!text) return;
     setIsSpeaking(true);
     // Cancel any browser SpeechSynthesis (e.g. timer announcements) to avoid overlap
-    try { window.speechSynthesis?.cancel(); } catch {}
+    try {
+      window.speechSynthesis?.cancel();
+    } catch {}
     // Duck radio while speaking
     $.current.radioRef?.current?.duckVolume();
     try {
@@ -302,19 +308,22 @@ function CookingVoiceChat({
       const lower = text.toLowerCase().replace(/\s+/g, " ").trim();
 
       // ===== CLIENT-SIDE: Timer & Music (keyword-based, 100% reliable) =====
-      const hasTimer = lower.includes("טיימר") || lower.includes("טימר") || lower.includes("timer") || lower.includes("תיימר") || lower.includes("תימר");
-      const hasMinutes = lower.includes("דקה") || lower.includes("דקות") || lower.includes("minute");
-      const hasStop = lower.includes("עצור") || lower.includes("תעצור") || lower.includes("בטל") || lower.includes("כבה") || lower.includes("הפסק") || lower.includes("stop");
-      const hasRadio = lower.includes("רדיו") || lower.includes("מוסיקה") || lower.includes("מוזיקה") || lower.includes("radio") || lower.includes("music");
-      const hasVolUp = lower.includes("הגבר") || lower.includes("תגביר") || lower.includes("louder");
-      const hasVolDown = lower.includes("הנמך") || lower.includes("תנמיך") || lower.includes("נמיך") || lower.includes("quieter");
-      const hasPlay = lower.includes("תפעיל") || lower.includes("הפעל") || lower.includes("play");
-      const hasMute = lower.includes("תשתיק") || lower.includes("השתק") || lower.includes("mute");
+      // Regex patterns use Hebrew roots to catch all verb conjugations
+      const hasTimer = /טיימר|טימר|תיימר|תימר|timer/.test(lower);
+      const hasMinutes = /דקה|דקות|minute/.test(lower);
+      const hasStop = /עצר|עצור|תעצר|תעצור|בטל|תבטל|כבה|תכב|הפסק|תפסיק|stop/.test(lower);
+      const hasRadio = /רדיו|מוסיקה|מוזיקה|radio|music/.test(lower);
+      const hasVolUp = /הגבר|תגביר|גביר|louder/.test(lower);
+      const hasVolDown = /הנמך|תנמיך|נמיך|נמוך|quieter/.test(lower);
+      const hasPlay = /תפעיל|הפעיל|הפעל|להפעיל|play/.test(lower);
+      const hasMute = /תשתיק|השתק|שתיקה|שתוק|mute/.test(lower);
 
       // Any mention of timer keywords OR minutes (דקה/דקות) = timer command
       const isTimerCommand = hasTimer || hasMinutes;
 
-      console.log(`🎤 "${lower}" | timer=${hasTimer} mins=${hasMinutes} stop=${hasStop} isTimer=${isTimerCommand}`);
+      console.log(
+        `🎤 "${lower}" | timer=${hasTimer} mins=${hasMinutes} stop=${hasStop} isTimer=${isTimerCommand}`,
+      );
 
       let localResult = null;
 
@@ -326,9 +335,21 @@ function CookingVoiceChat({
       // TIMER: start
       else if (isTimerCommand && !hasStop) {
         const heNums = [
-          ["חצי", 0.5], ["אחת", 1], ["שתיים", 2], ["שתי", 2], ["שניים", 2],
-          ["שלוש", 3], ["ארבע", 4], ["חמש עשרה", 15], ["חמש", 5], ["שש", 6],
-          ["שבע", 7], ["שמונה", 8], ["תשע", 9], ["עשרים", 20], ["שלושים", 30],
+          ["חצי", 0.5],
+          ["אחת", 1],
+          ["שתיים", 2],
+          ["שתי", 2],
+          ["שניים", 2],
+          ["שלוש", 3],
+          ["ארבע", 4],
+          ["חמש עשרה", 15],
+          ["חמש", 5],
+          ["שש", 6],
+          ["שבע", 7],
+          ["שמונה", 8],
+          ["תשע", 9],
+          ["עשרים", 20],
+          ["שלושים", 30],
           ["עשר", 10],
         ];
         let mins = 0;
@@ -336,16 +357,23 @@ function CookingVoiceChat({
         if (digitMatch) mins = parseInt(digitMatch[1]);
         if (!mins) {
           for (const [word, val] of heNums) {
-            if (lower.includes(word)) { mins = val; break; }
+            if (lower.includes(word)) {
+              mins = val;
+              break;
+            }
           }
         }
         if (!mins && hasMinutes) mins = 1;
         if (mins > 0) {
           // silent: true → suppress SpeechSynthesis in TimerContext (we have our own TTS)
           p.onStartTimer?.(mins, { silent: true });
-          localResult = isHe ? `מפעילה טיימר ל-${mins} דקות` : `Timer set for ${mins} minutes`;
+          localResult = isHe
+            ? `מפעילה טיימר ל-${mins} דקות`
+            : `Timer set for ${mins} minutes`;
         } else {
-          localResult = isHe ? "לכמה דקות להפעיל טיימר?" : "How many minutes for the timer?";
+          localResult = isHe
+            ? "לכמה דקות להפעיל טיימר?"
+            : "How many minutes for the timer?";
         }
       }
       // VOLUME
@@ -363,7 +391,11 @@ function CookingVoiceChat({
       } else if (hasStop && hasRadio) {
         p.radioRef?.current?.pause();
         localResult = isHe ? "עוצרת רדיו" : "Radio stopped";
-      } else if (hasPlay && hasRadio) {
+      } else if (hasRadio) {
+        if (!p.showRadio) {
+          p.openRadio();
+          p.minimizeRadio();
+        }
         p.radioRef?.current?.play();
         localResult = isHe ? "מפעילה רדיו" : "Playing radio";
       }
@@ -469,6 +501,7 @@ function CookingVoiceChat({
     recognition.maxAlternatives = 1;
 
     let debounceTimer = null;
+    let processedUpTo = -1;
 
     recognition.onstart = () => {
       intentionalStopRef.current = false;
@@ -479,30 +512,48 @@ function CookingVoiceChat({
       if (isProcessingRef.current) return;
       if (Date.now() - ttsEndTimeRef.current < 1500) return;
 
-      // Always use ONLY the LAST result's transcript to avoid duplication.
-      // With continuous=true, overlapping segments can duplicate text if concatenated.
       const lastIdx = event.results.length - 1;
-      const result = event.results[lastIdx];
-      const text = result[0].transcript.trim();
-      if (!text || text.length < 2) return;
+      // Display text: use last segment only (avoids visual duplication)
+      const displayText = event.results[lastIdx][0].transcript.trim();
+      if (!displayText || displayText.length < 2) return;
+
+      // Processing text: build from all unprocessed segments, dedup overlapping
+      let segments = [];
+      for (let i = processedUpTo + 1; i < event.results.length; i++) {
+        segments.push(event.results[i][0].transcript.trim());
+      }
+      // Dedup: if a later segment starts with the same text as an earlier one, keep the longer
+      let fullText = segments[0] || "";
+      for (let i = 1; i < segments.length; i++) {
+        const seg = segments[i];
+        if (seg.startsWith(fullText)) {
+          fullText = seg;
+        } else if (!fullText.includes(seg)) {
+          fullText = fullText + " " + seg;
+        }
+      }
+      fullText = fullText.replace(/\s+/g, " ").trim();
 
       if (debounceTimer) clearTimeout(debounceTimer);
 
-      if (result.isFinal) {
-        setStatusText(`"${text}"`);
+      const isFinal = event.results[lastIdx].isFinal;
+      if (isFinal) {
+        setStatusText(`"${displayText}"`);
         debounceTimer = setTimeout(() => {
           if (isProcessingRef.current) return;
+          processedUpTo = lastIdx;
           killRecognition();
-          processRef.current?.(text);
+          processRef.current?.(fullText);
         }, 500);
       } else {
-        setStatusText(`"${text}"...`);
+        setStatusText(`"${displayText}"...`);
         debounceTimer = setTimeout(() => {
           if (isProcessingRef.current) return;
-          if (text.length >= 2 && isActiveRef.current) {
+          if (fullText.length >= 2 && isActiveRef.current) {
+            processedUpTo = lastIdx;
             killRecognition();
-            setStatusText(`"${text}"`);
-            processRef.current?.(text);
+            setStatusText(`"${displayText}"`);
+            processRef.current?.(fullText);
           }
         }, 3000);
       }

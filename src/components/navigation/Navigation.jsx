@@ -169,12 +169,23 @@ function Navigation({ onLogout, links }) {
     });
     document.addEventListener("touchend", handleTouchEnd, { passive: true });
 
+    const handleToggleSidebar = () => {
+      setIsOpen((prev) => {
+        const next = !prev;
+        if (next) document.body.classList.add("sidebar-open");
+        else document.body.classList.remove("sidebar-open");
+        return next;
+      });
+    };
+    window.addEventListener("toggle-sidebar", handleToggleSidebar);
+
     return () => {
       window.removeEventListener("storage", handleStorageChange);
       clearInterval(interval);
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("touchstart", handleTouchStart);
       document.removeEventListener("touchend", handleTouchEnd);
+      window.removeEventListener("toggle-sidebar", handleToggleSidebar);
       document.body.classList.remove("sidebar-open");
     };
   }, []);
