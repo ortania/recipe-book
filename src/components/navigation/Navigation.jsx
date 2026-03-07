@@ -337,6 +337,10 @@ function Navigation({ onLogout, links }) {
 
           <div className={classes.separator}></div>
 
+          <button className={classes.navLink} onClick={() => setShowHelp(true)}>
+            <HelpCircle size={18} className={classes.icon} />
+            {t("nav", "help")}
+          </button>
           <button
             className={classes.navLink}
             onClick={() => {
@@ -346,10 +350,6 @@ function Navigation({ onLogout, links }) {
           >
             <HelpCircle size={18} className={classes.icon} />
             {t("home", "showTutorial")}
-          </button>
-          <button className={classes.navLink} onClick={() => setShowHelp(true)}>
-            <HelpCircle size={18} className={classes.icon} />
-            {t("nav", "help")}
           </button>
 
           <div className={classes.separator}></div>

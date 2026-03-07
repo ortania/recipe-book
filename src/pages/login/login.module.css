@@ -25,6 +25,7 @@
   gap: 2rem;
   width: 100%;
   max-width: 440px;
+  padding-bottom: 5rem;
 }
 
 .loginForm {
@@ -175,7 +176,6 @@
   margin: -0.25rem 0;
 }
 
-
 .rememberMe span {
   user-select: none;
 }
@@ -275,6 +275,10 @@
     padding: 2rem 1.5rem;
   }
 
+  .landingSubtitle {
+    margin-bottom: 0.75rem;
+  }
+
   .landingLogo {
     font-size: 2.8rem;
   }
@@ -337,8 +341,11 @@
 }
 
 .tourLink {
-  color: var(--text-muted);
-  font-size: var(--basic-font);
+  width: 100%;
+  text-align: center;
+  font-weight: var(-font-weight-tertiary);
+  color: var(--text-primary);
+  font-size: var(--large-font);
   cursor: pointer;
   text-decoration: underline;
   margin-top: 0.5rem;
@@ -347,12 +354,13 @@
 }
 
 .tourLink:hover {
-  color: var(--text-secondary);
+  opacity: var(--hover-opacity);
 }
 
 .success {
   background: #d4edda;
-  color: #155724;
+  color: var(--dark-active-color);
+  color: var(--success-color);
   padding: 1rem;
   border-radius: 12px;
   font-size: var(--basic-font);

@@ -340,11 +340,11 @@ const translations = {
       mixed: "Get Started",
     },
     showTutorial: {
-      he: "הדרכה",
-      en: "Tutorial",
-      ru: "Обучение",
-      de: "Tutorial",
-      mixed: "Tutorial",
+      he: " על CookiPal",
+      en: "About CookiPal",
+      ru: "О CookiPal",
+      de: "Über CookiPal",
+      mixed: "About CookiPal",
     },
   },
 

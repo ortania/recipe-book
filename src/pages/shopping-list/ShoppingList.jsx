@@ -1,14 +1,10 @@
-import { useState, useMemo } from "react";
-import {
-  FiFolder,
-  FiCheck,
-  FiShoppingCart,
-  FiPrinter,
-  FiTrash2,
-} from "react-icons/fi";
+import { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
+import { FiCheck, FiShoppingCart, FiPrinter, FiTrash2 } from "react-icons/fi";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { buildShoppingList } from "../../utils/ingredientUtils";
+import { getCategoryIcon } from "../../utils/categoryIcons";
 import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./shopping-list.module.css";
 
@@ -21,6 +17,25 @@ function ShoppingList() {
   const [selectedCat, setSelectedCat] = useState(null);
   const [checkedItems, setCheckedItems] = useState({});
   const [showList, setShowList] = useState(false);
+  const [mobileTabsEl, setMobileTabsEl] = useState(null);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 768px)");
+    const update = () => {
+      setMobileTabsEl(
+        mql.matches ? document.getElementById("mobile-tabs-portal") : null,
+      );
+    };
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
+
+  const mobileTitle = (
+    <span className={classes.mobileTitle}>
+      {t("mealPlanner", "shoppingList")}
+    </span>
+  );
 
   const getRecipesForCat = (catId) => {
     if (catId === "all") return recipes;
@@ -59,6 +74,7 @@ function ShoppingList() {
   if (showList && selectedRecipes.length > 0) {
     return (
       <div className={classes.page}>
+        {mobileTabsEl && createPortal(mobileTitle, mobileTabsEl)}
         <div className={classes.header}>
           <div>
             <h1 className={classes.title}>
@@ -121,9 +137,14 @@ function ShoppingList() {
 
   return (
     <div className={classes.page}>
+      {mobileTabsEl && createPortal(mobileTitle, mobileTabsEl)}
       <div className={classes.header}>
         <div>
-          <h1 className={classes.title}>{t("mealPlanner", "shoppingList")}</h1>
+          {!mobileTabsEl && (
+            <h1 className={classes.title}>
+              {t("mealPlanner", "shoppingList")}
+            </h1>
+          )}
           <span className={classes.subtitle}>
             {selectedRecipes.length > 0
               ? `${selectedRecipes.length} ${t("recipesView", "recipesCount")}`
@@ -153,7 +174,10 @@ function ShoppingList() {
               className={classes.catListIcon}
               style={{ background: "#6366f122", color: "#6366f1" }}
             >
-              <FiFolder />
+              {(() => {
+                const IC = getCategoryIcon("restaurant");
+                return <IC />;
+              })()}
             </span>
             <span className={classes.catListName}>
               {t("categories", "allRecipes")}
@@ -172,9 +196,12 @@ function ShoppingList() {
                 >
                   <span
                     className={classes.catListIcon}
-                    style={{ background: `${cat.color}18`, color: cat.color }}
+                    style={{ background: `${cat.color}22`, color: cat.color }}
                   >
-                    <FiFolder />
+                    {(() => {
+                      const IC = getCategoryIcon(cat.icon);
+                      return <IC />;
+                    })()}
                   </span>
                   <span className={classes.catListName}>
                     {getTranslated(cat)}

@@ -1,7 +1,9 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import { IoAdd } from "react-icons/io5";
-import { FiPrinter, FiShoppingCart, FiCheck, FiFolder } from "react-icons/fi";
+import { FiPrinter, FiShoppingCart, FiCheck } from "react-icons/fi";
+import { getCategoryIcon } from "../../utils/categoryIcons";
 import {
   MdOutlineFreeBreakfast,
   MdOutlineLunchDining,
@@ -78,6 +80,25 @@ function MealPlanner() {
 
   const [picker, setPicker] = useState(null);
   const [showShopping, setShowShopping] = useState(false);
+  const [mobileTabsEl, setMobileTabsEl] = useState(null);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 768px)");
+    const update = () => {
+      setMobileTabsEl(
+        mql.matches ? document.getElementById("mobile-tabs-portal") : null,
+      );
+    };
+    update();
+    mql.addEventListener("change", update);
+    return () => mql.removeEventListener("change", update);
+  }, []);
+
+  const mobileTitle = (
+    <span className={classes.mobileTitle}>
+      {t("mealPlanner", "weeklyPlan")}
+    </span>
+  );
 
   const weekDates = useMemo(() => getWeekDates(), []);
   const weekRange = useMemo(() => getWeekRange(weekDates), [weekDates]);
@@ -94,10 +115,13 @@ function MealPlanner() {
 
   return (
     <div className={classes.page}>
+      {mobileTabsEl && createPortal(mobileTitle, mobileTabsEl)}
       {/* ===== Header ===== */}
       <div className={classes.header}>
         <div>
-          <h1 className={classes.title}>{t("mealPlanner", "title")}</h1>
+          {!mobileTabsEl && (
+            <h1 className={classes.title}>{t("mealPlanner", "title")}</h1>
+          )}
           <span className={classes.dateRange}>{weekRange}</span>
         </div>
         <div className={classes.headerActions}>
@@ -237,7 +261,11 @@ function MealPlanner() {
                       <label key={key} className={classes.shoppingItem}>
                         <input
                           type="checkbox"
-                          className={classes.shoppingCheckbox  + ' ' + buttonClasses.checkBox}
+                          className={
+                            classes.shoppingCheckbox +
+                            " " +
+                            buttonClasses.checkBox
+                          }
                           checked={isChecked}
                           onChange={() => toggleChecked(key)}
                         />
@@ -330,7 +358,10 @@ function MealPickerWrapper({
                 className={classes.catListIcon}
                 style={{ background: "#6366f122", color: "#6366f1" }}
               >
-                <FiFolder />
+                {(() => {
+                  const IC = getCategoryIcon("restaurant");
+                  return <IC />;
+                })()}
               </span>
               <span className={classes.catListName}>
                 {t("categories", "allRecipes")}
@@ -349,9 +380,12 @@ function MealPickerWrapper({
                   >
                     <span
                       className={classes.catListIcon}
-                      style={{ background: `${cat.color}18`, color: cat.color }}
+                      style={{ background: `${cat.color}22`, color: cat.color }}
                     >
-                      <FiFolder />
+                      {(() => {
+                        const IC = getCategoryIcon(cat.icon);
+                        return <IC />;
+                      })()}
                     </span>
                     <span className={classes.catListName}>
                       {getTranslated(cat)}

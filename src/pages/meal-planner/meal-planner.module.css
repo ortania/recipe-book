@@ -1,3 +1,9 @@
+.mobileTitle {
+  font-size: var(--basic-font);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
 /* ===== Page ===== */
 .page {
   max-width: 1100px;
@@ -72,7 +78,7 @@
 
 .headerBtnOutline {
   padding: 0.5em 1.2em;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--btn-border-color);
   border-radius: 6px;
   background: var(--bg-card);
   color: var(--text-secondary);
@@ -583,7 +589,7 @@
 @media (max-width: 700px) {
   .page {
     padding: 0.75rem;
-    padding-top: 3.5rem;
+    padding-top: 1rem;
   }
 
   .header {

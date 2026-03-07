@@ -898,10 +898,6 @@ function RecipesView({
         <div className={classes.viewToggleWrapper}>
           {headerAction ? (
             <span className={classes.desktopOnly}>{headerAction}</span>
-          ) : showTabs ? (
-            <span className={classes.desktopOnly}>
-              <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
-            </span>
           ) : backAction ? (
             <span className={classes.desktopOnly}>
               <CloseButton onClick={backAction} />
@@ -1014,11 +1010,6 @@ function RecipesView({
           )}
         </div>
 
-        {onAddPerson && !showChat && (
-          <Fab label={t("recipesView", "addNewRecipe")}>
-            <AddRecipeMenu onSelect={onAddPerson} t={t} />
-          </Fab>
-        )}
       </div>
     );
   }
