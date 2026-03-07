@@ -1415,7 +1415,10 @@ function AddRecipeWizard({
           <>
             <div
               className={`${classes.imageGrid} ${imageDragOver ? classes.dropActive : ""}`}
-              onDragOver={(e) => { preventDragDefault(e); setImageDragOver(true); }}
+              onDragOver={(e) => {
+                preventDragDefault(e);
+                setImageDragOver(true);
+              }}
               onDragLeave={() => setImageDragOver(false)}
               onDrop={handleImageDrop}
             >
@@ -1458,7 +1461,10 @@ function AddRecipeWizard({
         ) : (
           <div
             className={`${classes.imageUploadButtons} ${imageDragOver ? classes.dropActive : ""}`}
-            onDragOver={(e) => { preventDragDefault(e); setImageDragOver(true); }}
+            onDragOver={(e) => {
+              preventDragDefault(e);
+              setImageDragOver(true);
+            }}
             onDragLeave={() => setImageDragOver(false)}
             onDrop={handleImageDrop}
           >
@@ -2297,7 +2303,10 @@ function AddRecipeWizard({
       ) : (
         <div
           className={`${classes.imageUploadButtons} ${photoDragOver ? classes.dropActive : ""}`}
-          onDragOver={(e) => { preventDragDefault(e); setPhotoDragOver(true); }}
+          onDragOver={(e) => {
+            preventDragDefault(e);
+            setPhotoDragOver(true);
+          }}
           onDragLeave={() => setPhotoDragOver(false)}
           onDrop={handlePhotoDrop}
         >
