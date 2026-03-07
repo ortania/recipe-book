@@ -117,6 +117,7 @@ function CookingVoiceChat({
   const recognitionRef = useRef(null);
   const isActiveRef = useRef(false);
   const isProcessingRef = useRef(false);
+  const isSpeakingRef = useRef(false);
   const intentionalStopRef = useRef(false);
   const ttsEndTimeRef = useRef(0);
   const stepOffsetRef = useRef(0);
@@ -168,6 +169,7 @@ function CookingVoiceChat({
   // ---- Helper: speak text aloud using OpenAI TTS via Cloud Function ----
   async function speakText(text) {
     if (!text) return;
+    isSpeakingRef.current = true;
     setIsSpeaking(true);
     // Cancel any browser SpeechSynthesis (e.g. timer announcements) to avoid overlap
     try {
@@ -190,11 +192,13 @@ function CookingVoiceChat({
         },
       );
       if (!response.ok || !isActiveRef.current) {
+        isSpeakingRef.current = false;
         setIsSpeaking(false);
         return;
       }
       const arrayBuffer = await response.arrayBuffer();
       if (!isActiveRef.current) {
+        isSpeakingRef.current = false;
         setIsSpeaking(false);
         return;
       }
@@ -273,6 +277,7 @@ function CookingVoiceChat({
     // Restore radio volume after speaking
     $.current.radioRef?.current?.restoreVolume();
     ttsEndTimeRef.current = Date.now();
+    isSpeakingRef.current = false;
     setIsSpeaking(false);
   }
 
@@ -283,7 +288,8 @@ function CookingVoiceChat({
       try {
         recognitionRef.current.onresult = null;
         recognitionRef.current.onerror = null;
-        recognitionRef.current.stop();
+        recognitionRef.current.onend = null;
+        recognitionRef.current.abort();
       } catch (e) {
         /* already stopped */
       }
@@ -467,15 +473,20 @@ function CookingVoiceChat({
     } finally {
       setIsProcessing(false);
       isProcessingRef.current = false;
-      setStatusText("");
       if (isActiveRef.current) {
-        const elapsed = Date.now() - ttsEndTimeRef.current;
-        const delay = Math.max(800, 1200 - elapsed);
-        setTimeout(() => {
-          if (isActiveRef.current && !isProcessingRef.current) {
-            listenRef.current?.();
-          }
-        }, delay);
+        setStatusText("מקשיב...");
+        // If recognition died during processing/TTS, restart it
+        if (!recognitionRef.current) {
+          const sinceTts = Date.now() - ttsEndTimeRef.current;
+          const delay = Math.max(500, 3500 - sinceTts + 200);
+          setTimeout(() => {
+            if (isActiveRef.current && !recognitionRef.current) {
+              listenRef.current?.();
+            }
+          }, delay);
+        }
+      } else {
+        setStatusText("");
       }
     }
   };
@@ -484,15 +495,13 @@ function CookingVoiceChat({
   // Uses continuous mode to avoid repeated start-beeps and audio-focus grabs on mobile
   const listenRef = useRef(null);
   listenRef.current = function startListening() {
-    if (isProcessingRef.current) return;
+    if (recognitionRef.current) return;
 
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) {
       alert("זיהוי קולי לא נתמך בדפדפן זה");
       return;
     }
-
-    killRecognition();
 
     const recognition = new SR();
     recognition.continuous = true;
@@ -509,67 +518,79 @@ function CookingVoiceChat({
     };
 
     recognition.onresult = (event) => {
-      if (isProcessingRef.current) return;
-      if (Date.now() - ttsEndTimeRef.current < 1500) return;
-
       const lastIdx = event.results.length - 1;
-      // Display text: use last segment only (avoids visual duplication)
-      const displayText = event.results[lastIdx][0].transcript.trim();
-      if (!displayText || displayText.length < 2) return;
 
-      // Processing text: build from all unprocessed segments, dedup overlapping
-      let segments = [];
-      for (let i = processedUpTo + 1; i < event.results.length; i++) {
-        segments.push(event.results[i][0].transcript.trim());
+      // While busy or within 3.5s of TTS end, skip all accumulated results
+      if (
+        isProcessingRef.current ||
+        isSpeakingRef.current ||
+        Date.now() - ttsEndTimeRef.current < 3500
+      ) {
+        processedUpTo = lastIdx;
+        return;
       }
-      // Dedup: if a later segment starts with the same text as an earlier one, keep the longer
-      let fullText = segments[0] || "";
-      for (let i = 1; i < segments.length; i++) {
-        const seg = segments[i];
-        if (seg.startsWith(fullText)) {
-          fullText = seg;
-        } else if (!fullText.includes(seg)) {
-          fullText = fullText + " " + seg;
-        }
-      }
-      fullText = fullText.replace(/\s+/g, " ").trim();
 
-      if (debounceTimer) clearTimeout(debounceTimer);
+      // Already processed this index
+      if (lastIdx <= processedUpTo) return;
 
-      const isFinal = event.results[lastIdx].isFinal;
-      if (isFinal) {
-        setStatusText(`"${displayText}"`);
-        debounceTimer = setTimeout(() => {
-          if (isProcessingRef.current) return;
-          processedUpTo = lastIdx;
-          killRecognition();
-          processRef.current?.(fullText);
-        }, 500);
-      } else {
-        setStatusText(`"${displayText}"...`);
-        debounceTimer = setTimeout(() => {
-          if (isProcessingRef.current) return;
-          if (fullText.length >= 2 && isActiveRef.current) {
-            processedUpTo = lastIdx;
-            killRecognition();
-            setStatusText(`"${displayText}"`);
-            processRef.current?.(fullText);
+      const result = event.results[lastIdx];
+      const text = result[0].transcript.trim();
+      if (!text || text.length < 2) return;
+
+      if (result.isFinal) {
+        // Gather unprocessed isFinal segments, deduplicating overlaps
+        let fullText = "";
+        for (let i = processedUpTo + 1; i <= lastIdx; i++) {
+          if (event.results[i].isFinal) {
+            const seg = event.results[i][0].transcript.trim();
+            if (!seg) continue;
+            if (!fullText) {
+              fullText = seg;
+            } else if (seg.includes(fullText)) {
+              fullText = seg;
+            } else if (!fullText.includes(seg)) {
+              fullText = fullText + " " + seg;
+            }
           }
-        }, 3000);
+        }
+        fullText = fullText.replace(/\s+/g, " ").trim();
+        if (!fullText || fullText.length < 2) return;
+
+        if (debounceTimer) clearTimeout(debounceTimer);
+        setStatusText(`"${fullText}"`);
+        const capturedText = fullText;
+        const capturedIdx = lastIdx;
+        debounceTimer = setTimeout(() => {
+          if (isProcessingRef.current || isSpeakingRef.current) return;
+          processedUpTo = capturedIdx;
+          processRef.current?.(capturedText);
+        }, 1500);
+      } else {
+        setStatusText(`"${text}"...`);
       }
     };
 
     recognition.onend = () => {
       if (intentionalStopRef.current) {
         intentionalStopRef.current = false;
+        recognitionRef.current = null;
         return;
       }
-      if (isActiveRef.current && !isProcessingRef.current) {
+      recognitionRef.current = null;
+      if (!isActiveRef.current) return;
+      // If busy, the finally block in processInput will handle restart.
+      // If idle (browser timeout), restart after a long delay to minimize clicks.
+      if (!isProcessingRef.current && !isSpeakingRef.current) {
         setTimeout(() => {
-          if (isActiveRef.current && !isProcessingRef.current) {
+          if (
+            isActiveRef.current &&
+            !recognitionRef.current &&
+            !isProcessingRef.current &&
+            !isSpeakingRef.current
+          ) {
             listenRef.current?.();
           }
-        }, 300);
+        }, 500);
       }
     };
 
@@ -593,7 +614,7 @@ function CookingVoiceChat({
         if (isActiveRef.current && !isProcessingRef.current) {
           listenRef.current?.();
         }
-      }, 1500);
+      }, 1000);
     }
   };
 
@@ -615,6 +636,7 @@ function CookingVoiceChat({
         audioRef.current.pause();
         audioRef.current = null;
       }
+      isSpeakingRef.current = false;
       setIsSpeaking(false);
       killRecognition();
       setStatusText("");

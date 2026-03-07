@@ -132,10 +132,36 @@ function playAlarmBeep() {
       osc.stop(startTime + duration);
     };
     const now = ctx.currentTime;
-    for (let i = 0; i < 3; i++) {
-      playTone(now + i * 0.4, 880, 0.25);
+    for (let i = 0; i < 5; i++) {
+      playTone(now + i * 0.35, 880, 0.2);
     }
-    setTimeout(() => ctx.close(), 2000);
+    setTimeout(() => ctx.close(), 3000);
+  } catch {}
+}
+
+async function speakViaCloud(text) {
+  try {
+    const res = await fetch(
+      "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: "tts-1",
+          input: text,
+          voice: "nova",
+          response_format: "mp3",
+        }),
+      },
+    );
+    if (!res.ok) return;
+    const buf = await res.arrayBuffer();
+    const blob = new Blob([buf], { type: "audio/mpeg" });
+    const url = URL.createObjectURL(blob);
+    const audio = new Audio(url);
+    audio.onended = () => URL.revokeObjectURL(url);
+    audio.onerror = () => URL.revokeObjectURL(url);
+    await audio.play();
   } catch {}
 }
 
@@ -148,18 +174,14 @@ function announceFinished(label) {
     }
   } catch {}
 
-  try {
+  // Speak after beeps finish (~2s for 5 beeps)
+  setTimeout(() => {
     const isHebrew = label && /[\u0590-\u05FF]/.test(label);
     const text = label
       ? isHebrew ? `טיימר הסתיים: ${label}` : `Timer finished: ${label}`
       : "Timer finished";
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = isHebrew ? "he-IL" : "en-US";
-    utterance.rate = 0.9;
-    utterance.volume = 1.0;
-    window.speechSynthesis.cancel();
-    setTimeout(() => window.speechSynthesis.speak(utterance), 1500);
-  } catch {}
+    speakViaCloud(text);
+  }, 2000);
 }
 
 export default TimerContext;

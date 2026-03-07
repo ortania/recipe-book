@@ -2267,11 +2267,12 @@ const translations = {
       mixed: "מומלץ להנמיך את עוצמת הקול של המערכת לפני הפעלת הצ'אט הקולי",
     },
     helpVolume: {
-      he: "מומלץ להנמיך את עוצמת הקול של המערכת לפני הפעלת הצ'אט הקולי",
-      en: "Lower the system volume before activating voice chat",
-      ru: "Уменьшите громкость системы перед активацией голосового чата",
-      de: "Verringern Sie die Systemlautstärke vor der Aktivierung des Sprachchats",
-      mixed: "Lower the system volume before activating voice chat",
+      he: "רצוי להעביר את הנייד למצב השתקה, רטט או נא לא להפריע (DND) בזמן השימוש בצ'אט הקולי",
+      en: "It is recommended to set your phone to silent, vibrate, or Do Not Disturb (DND) while using voice chat",
+      ru: "Рекомендуется перевести телефон в беззвучный режим, вибрацию или «Не беспокоить» при использовании голосового чата",
+      de: "Es wird empfohlen, das Telefon auf lautlos, Vibration oder Bitte nicht stören (DND) zu stellen, während Sie den Sprachchat verwenden",
+      mixed:
+        "רצוי להעביר את הנייד למצב השתקה, רטט או נא לא להפריע (DND) בזמן השימוש בצ'אט הקולי",
     },
     helpGuideTitle: {
       he: "בישול ללא ידיים 👨‍🍳",

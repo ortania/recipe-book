@@ -958,16 +958,22 @@ const parseStructuredText = (text, recipe) => {
   let instructionsStart = -1;
   let currentSection = "none";
 
+  const isSectionHeader = (line, keywords) => {
+    const clean = line.replace(/[:\s\-–—]/g, "");
+    if (clean.length > 35) return false;
+    return keywords.some((kw) => line.includes(kw));
+  };
+
   for (let i = 0; i < lines.length; i++) {
     const lowerLine = lines[i].toLowerCase();
 
-    if (ingredientsKeywords.some((keyword) => lowerLine.includes(keyword))) {
+    if (isSectionHeader(lowerLine, ingredientsKeywords)) {
       ingredientsStart = i + 1;
       currentSection = "ingredients";
       continue;
     }
 
-    if (instructionsKeywords.some((keyword) => lowerLine.includes(keyword))) {
+    if (isSectionHeader(lowerLine, instructionsKeywords)) {
       instructionsStart = i + 1;
       currentSection = "instructions";
       continue;
@@ -998,7 +1004,7 @@ const parseStructuredText = (text, recipe) => {
     }
 
     if (currentSection === "ingredients" && ingredientsStart > 0) {
-      const stripped = lines[i].replace(/^[\d\-•\*\.]\s*/, "");
+      const stripped = lines[i].replace(/^(?:\d+[\.\)]\s+|[-•\*]\s*)/, "");
       if (isIngredientGroupLine(stripped)) {
         recipe.ingredients.push("::" + stripped.replace(/[:\-–—]+\s*$/, "").trim());
       } else if (lines[i].match(/^[\d\-•\*]/) || lines[i].length > 5) {
@@ -1006,7 +1012,7 @@ const parseStructuredText = (text, recipe) => {
       }
     } else if (currentSection === "instructions" && instructionsStart > 0) {
       if (lines[i].length > 3) {
-        recipe.instructions.push(lines[i].replace(/^[\d\-•\*\.]\s*/, ""));
+        recipe.instructions.push(lines[i].replace(/^(?:\d+[\.\)]\s+|[-•\*]\s*)/, ""));
       }
     }
   }
