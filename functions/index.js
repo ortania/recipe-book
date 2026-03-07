@@ -237,6 +237,44 @@ exports.fetchUrlBrowser = onRequest(
   },
 );
 
+// ── Google Cloud Vision OCR ──
+exports.ocrImage = onRequest(
+  { cors: true, region: "us-central1", memory: "512MiB" },
+  async (req, res) => {
+    if (req.method !== "POST") {
+      res.status(405).json({ error: "Method not allowed" });
+      return;
+    }
+
+    const { images } = req.body;
+    if (!images || !Array.isArray(images) || images.length === 0) {
+      res.status(400).json({ error: "Missing images array" });
+      return;
+    }
+
+    try {
+      const vision = require("@google-cloud/vision");
+      const client = new vision.ImageAnnotatorClient();
+
+      const results = await Promise.all(
+        images.map(async (base64Data) => {
+          const imageContent = base64Data.replace(/^data:image\/\w+;base64,/, "");
+          const [result] = await client.documentTextDetection({
+            image: { content: imageContent },
+          });
+          const fullText = result.fullTextAnnotation?.text || "";
+          return fullText;
+        }),
+      );
+
+      res.json({ text: results.join("\n\n") });
+    } catch (error) {
+      console.error("OCR error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  },
+);
+
 // ── OpenAI chat completions proxy ──
 exports.openaiChat = onRequest(
   { cors: true, region: "us-central1" },

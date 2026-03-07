@@ -609,14 +609,32 @@ function AddRecipeWizard({
     setIsImporting(true);
     setImportError("");
     try {
-      const readFile = (file) =>
+      const resizeImage = (file, maxDim = 2048) =>
         new Promise((resolve, reject) => {
           const reader = new FileReader();
-          reader.onload = () => resolve(reader.result);
           reader.onerror = reject;
+          reader.onload = () => {
+            const img = new Image();
+            img.onerror = reject;
+            img.onload = () => {
+              const { width, height } = img;
+              if (width <= maxDim && height <= maxDim) {
+                resolve(reader.result);
+                return;
+              }
+              const scale = maxDim / Math.max(width, height);
+              const canvas = document.createElement("canvas");
+              canvas.width = Math.round(width * scale);
+              canvas.height = Math.round(height * scale);
+              const ctx = canvas.getContext("2d");
+              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+              resolve(canvas.toDataURL("image/jpeg", 0.92));
+            };
+            img.src = reader.result;
+          };
           reader.readAsDataURL(file);
         });
-      const base64Images = await Promise.all(files.map(readFile));
+      const base64Images = await Promise.all(files.map((f) => resizeImage(f)));
       const parsed = await extractRecipeFromImage(base64Images);
       if (parsed.error) {
         setImportError(parsed.error);

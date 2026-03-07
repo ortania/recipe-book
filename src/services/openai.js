@@ -2,6 +2,8 @@ const CLOUD_CHAT_URL =
   "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiChat";
 const CLOUD_TTS_URL =
   "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts";
+const CLOUD_OCR_URL =
+  "https://us-central1-recipe-book-82d57.cloudfunctions.net/ocrImage";
 
 const nutritionCache = new Map();
 const NUTRITION_CACHE_MAX = 50;
@@ -53,96 +55,98 @@ export const callOpenAI = async (requestBody, options = {}) => {
 };
 
 export const analyzeImageForNutrition = async (base64Image, options = {}) => {
-  return callOpenAI({
-    model: "gpt-4o",
-    messages: [
-      {
-        role: "system",
-        content:
-          "You are a nutrition expert. When shown an image of food, analyze it and provide detailed nutritional information including estimated calories, protein, carbs, fat, fiber, and notable vitamins or minerals. Be concise and practical. If you cannot identify the food, say so politely. Always respond in Hebrew.",
-      },
-      {
-        role: "user",
-        content: [
-          {
-            type: "text",
-            text: "Please analyze this food image and provide its estimated nutritional values per serving.",
-          },
-          {
-            type: "image_url",
-            image_url: {
-              url: base64Image,
-              detail: "high",
+  return callOpenAI(
+    {
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content:
+            "You are a nutrition expert. When shown an image of food, analyze it and provide detailed nutritional information including estimated calories, protein, carbs, fat, fiber, and notable vitamins or minerals. Be concise and practical. If you cannot identify the food, say so politely. Always respond in Hebrew.",
+        },
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: "Please analyze this food image and provide its estimated nutritional values per serving.",
             },
-          },
-        ],
-      },
-    ],
-    temperature: 0.5,
-    max_tokens: 800,
-  }, options);
+            {
+              type: "image_url",
+              image_url: {
+                url: base64Image,
+                detail: "high",
+              },
+            },
+          ],
+        },
+      ],
+      temperature: 0.5,
+      max_tokens: 800,
+    },
+    options,
+  );
 };
 
 export const extractRecipeFromImage = async (base64Images, language = "he") => {
   const images = Array.isArray(base64Images) ? base64Images : [base64Images];
-  const imageCount = images.length;
 
-  const userContent = [
-    {
-      type: "text",
-      text:
-        imageCount > 1
-          ? `Please extract the recipe from these ${imageCount} images. They may show different parts of the same recipe (e.g. ingredients on one page, instructions on another). Combine all information into a single recipe.`
-          : "Please extract the recipe from this image.",
-    },
-    ...images.map((img) => ({
-      type: "image_url",
-      image_url: { url: img, detail: "high" },
-    })),
-  ];
+  let rawText = "";
 
-  const result = await callOpenAI({
-    model: "gpt-4o",
-    messages: [
-      {
-        role: "system",
-        content: `You are a recipe extraction expert. When shown an image of a recipe (from a book, website screenshot, handwritten note, etc.), extract all recipe information from it.
-You may receive multiple images that together form a single recipe (e.g. different pages). Combine all information into one complete recipe.
-You MUST respond with valid JSON in this exact format:
-{
-  "name": "recipe name",
-  "ingredients": ["::group name", "ingredient 1 with quantity", "ingredient 2", "::another group", "ingredient 3"],
-  "instructions": ["step 1", "step 2"],
-  "prepTime": "15 min" or "",
-  "cookTime": "30 min" or "",
-  "servings": "4" or "",
-  "notes": "" 
-}
-- Extract ALL ingredients with their exact quantities.
-- Always write quantities as digits, not words. For example: "3 ביצים" not "שלוש ביצים", "2 cups" not "two cups". Always put the number BEFORE the ingredient.
-- ONLY use "::" group prefixes for SPECIFIC named sub-sections like "::לבצק", "::למילוי", "::לציפוי", "::For the dough", "::For the filling". Do NOT create groups for generic words like "מרכיבים" (ingredients) or "הוראות" (instructions) - these are NOT groups. If there are no specific named sub-sections, just list all ingredients without any group headers.
-- Extract ALL instructions as separate steps.
-- CRITICAL: ONLY extract instructions that are ACTUALLY WRITTEN in the source. NEVER invent, generate, or add instructions that do not appear in the original text. If there are no instructions, return an empty array for "instructions".
-- CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part.`,
-      },
-      {
-        role: "user",
-        content: userContent,
-      },
-    ],
-    temperature: 0.2,
-    max_tokens: 3000,
-  });
-
+  // Try Google Cloud Vision OCR first (most accurate for Hebrew)
   try {
-    const cleaned = result
-      .replace(/```json\n?/g, "")
-      .replace(/```\n?/g, "")
-      .trim();
-    return JSON.parse(cleaned);
+    const response = await fetch(CLOUD_OCR_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ images }),
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      rawText = data.text || "";
+    }
   } catch {
-    return { error: result };
+    // Vision API unavailable, fall through to GPT-4o fallback
   }
+
+  // Fallback: GPT-4o OCR if Vision API failed or returned no text
+  if (!rawText.trim()) {
+    const imageCount = images.length;
+    const ocrContent = [
+      {
+        type: "text",
+        text:
+          imageCount > 1
+            ? `Transcribe ALL text visible in these ${imageCount} images exactly as written, line by line. They are pages of the same recipe.`
+            : "Transcribe ALL text visible in this image exactly as written, line by line.",
+      },
+      ...images.map((img) => ({
+        type: "image_url",
+        image_url: { url: img, detail: "high" },
+      })),
+    ];
+
+    rawText = await callOpenAI({
+      model: "gpt-4o",
+      messages: [
+        {
+          role: "system",
+          content: "You are an OCR tool. Transcribe ALL text from the image exactly as written, line by line. Keep the original language. Do NOT add, modify, summarize, or interpret anything. If text is cut off, skip it.",
+        },
+        { role: "user", content: ocrContent },
+      ],
+      temperature: 0,
+      seed: 42,
+      max_tokens: 3000,
+    });
+  }
+
+  if (!rawText || !rawText.trim()) {
+    return { error: "No text detected in image" };
+  }
+
+  // Parse the OCR text into structured recipe JSON
+  return extractRecipeFromText(rawText);
 };
 
 /**
@@ -155,7 +159,9 @@ You MUST respond with valid JSON in this exact format:
 export const extractRecipeFromText = async (text) => {
   const truncated = text.slice(0, 15000);
   const hasMultipleSectionMarkers =
-    /לבלילה|לבלילת|למלית|מלית|לקישוט|לציפוי|לעיטור|להגשה|למילוי|לבצק/.test(truncated);
+    /לבלילה|לבלילת|למלית|מלית|לקישוט|לציפוי|לעיטור|להגשה|למילוי|לבצק/.test(
+      truncated,
+    );
 
   const buildUserMessage = (retry = false) =>
     retry
@@ -210,11 +216,10 @@ You MUST respond with valid JSON in this exact format:
     return { error: result };
   }
 
-  const ingCount = Array.isArray(data.ingredients) ? data.ingredients.length : 0;
-  const shouldRetry =
-    hasMultipleSectionMarkers &&
-    ingCount <= 5 &&
-    !data.error;
+  const ingCount = Array.isArray(data.ingredients)
+    ? data.ingredients.length
+    : 0;
+  const shouldRetry = hasMultipleSectionMarkers && ingCount <= 5 && !data.error;
 
   if (shouldRetry) {
     try {
@@ -437,12 +442,13 @@ const lookupSingleIngredient = async (ingredient) => {
 };
 
 export const calculateNutrition = async (ingredients, servings) => {
-  const ingredientArray = (Array.isArray(ingredients)
-    ? ingredients
-    : ingredients
-        .split("\n")
-        .map((s) => s.trim())
-        .filter(Boolean)
+  const ingredientArray = (
+    Array.isArray(ingredients)
+      ? ingredients
+      : ingredients
+          .split("\n")
+          .map((s) => s.trim())
+          .filter(Boolean)
   ).filter((s) => !s.startsWith("::"));
   const numServings = parseInt(servings, 10) || 1;
 
