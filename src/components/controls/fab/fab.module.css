@@ -4,7 +4,8 @@
   inset-inline-end: 2rem;
   bottom: calc(7rem + env(safe-area-inset-bottom, 0));
   height: 5.6rem;
-  border-radius: 2.8rem;
+  width: 5.6rem; /* changed for + to be square */
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -36,7 +37,7 @@
 .collapsed {
   height: 4.4rem;
   padding: 0 1rem;
-  border-radius: 50%;
+  border-radius: 12px;
   gap: 0;
 }
 
@@ -50,7 +51,7 @@
 }
 
 .fabLabel {
-  display: inline-block;
+  display: none;
   max-width: 20rem;
   overflow: hidden;
   opacity: 1;

@@ -7,35 +7,84 @@ function SaveBookIcon({ width = 80, height = 80 }) {
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
     >
-      <defs>
-        <linearGradient id="saveBookGrad" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#FB7185" />
-          <stop offset="100%" stopColor="#EC4899" />
-        </linearGradient>
-        <filter id="saveBookShadow">
-          <feDropShadow dx="0" dy="2" stdDeviation="3" floodOpacity="0.2" />
-        </filter>
-      </defs>
-
-      {/* Book body */}
+      {/* Book cover */}
       <rect
-        x="20"
-        y="15"
-        width="60"
-        height="70"
-        rx="6"
-        fill="url(#saveBookGrad)"
-        filter="url(#saveBookShadow)"
+        x="18"
+        y="12"
+        width="58"
+        height="72"
+        rx="5"
+        stroke="currentColor"
+        strokeWidth="3.5"
+        fill="none"
       />
 
       {/* Book spine */}
-      <rect x="20" y="15" width="10" height="70" rx="3" fill="#E11D6D" opacity="0.4" />
+      <line
+        x1="32"
+        y1="12"
+        x2="32"
+        y2="84"
+        stroke="currentColor"
+        strokeWidth="3.5"
+      />
 
       {/* Page lines */}
-      <line x1="40" y1="35" x2="70" y2="35" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
-      <line x1="40" y1="45" x2="70" y2="45" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
-      <line x1="40" y1="55" x2="65" y2="55" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
-      <line x1="40" y1="65" x2="60" y2="65" stroke="white" strokeWidth="2" strokeLinecap="round" opacity="0.7" />
+      <line
+        x1="42"
+        y1="32"
+        x2="66"
+        y2="32"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      <line
+        x1="42"
+        y1="43"
+        x2="66"
+        y2="43"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      <line
+        x1="42"
+        y1="54"
+        x2="62"
+        y2="54"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+      <line
+        x1="42"
+        y1="65"
+        x2="58"
+        y2="65"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+        opacity="0.5"
+      />
+
+      {/* Bookmark ribbon */}
+      <path
+        d="M60 12 L60 30 L66 25 L72 30 L72 12"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        fill="currentColor"
+        opacity="0.15"
+      />
+      <path
+        d="M60 12 L60 30 L66 25 L72 30 L72 12"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        fill="none"
+      />
     </svg>
   );
 }

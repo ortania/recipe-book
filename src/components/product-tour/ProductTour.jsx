@@ -16,6 +16,7 @@ import { TbChefHat, TbUsers, TbScale } from "react-icons/tb";
 import { IoCopyOutline, IoTimeOutline } from "react-icons/io5";
 import { FiCamera } from "react-icons/fi";
 import { VscDebugRestart } from "react-icons/vsc";
+import { Plus } from "lucide-react";
 import { IoLanguageOutline } from "react-icons/io5";
 import { useLanguage } from "../../context";
 import useSwipe from "../../hooks/useSwipe";
@@ -103,7 +104,7 @@ const ONBOARDING_SCREENS = [
     key: "save",
     icon: <SaveBookIcon />,
     titleKey: "saveTitle",
-    bullets: ["saveBullet1", "saveBullet2", "saveBullet3", "saveBullet4"],
+    subtitleKey: "saveSubtitle",
     tipLabel: "howToStart",
     tipKey: "saveTip",
   },
@@ -111,7 +112,7 @@ const ONBOARDING_SCREENS = [
     key: "search",
     icon: <SearchIcon />,
     titleKey: "searchTitle",
-    bullets: ["searchBullet1", "searchBullet2", "searchBullet3"],
+    subtitleKey: "searchSubtitle",
     tipLabel: "howToUse",
     tipKey: "searchTip",
   },
@@ -209,9 +210,7 @@ function OnboardingScene({ screenKey, t }) {
 
   return (
     <div style={baseStyle}>
-      <div style={{ fontSize: "4rem", lineHeight: 1 }}>
-        {data.icon}
-      </div>
+      <div className={classes.onboardingIcon}>{data.icon}</div>
       <h2 style={titleStyle}>{t("onboarding", data.titleKey)}</h2>
       {data.subtitleKey && (
         <p style={subtitleStyle}>{t("onboarding", data.subtitleKey)}</p>
@@ -251,7 +250,21 @@ function OnboardingScene({ screenKey, t }) {
               textAlign: "center",
             }}
           >
-            {t("onboarding", data.tipKey)}
+            {t("onboarding", data.tipKey)
+              .split("{icon}")
+              .map((part, i, arr) =>
+                i < arr.length - 1 ? (
+                  <span key={i}>
+                    {part}
+                    <Plus
+                      size={22}
+                      style={{ verticalAlign: "middle", display: "inline" }}
+                    />
+                  </span>
+                ) : (
+                  part
+                ),
+              )}
           </span>
         </div>
       )}
@@ -523,13 +536,6 @@ function ProductTour({ onClose }) {
       isOnboarding: true,
       onboardingKey: s.key,
     })),
-    {
-      id: "welcome",
-      title: t("productTour", "whatCanYouDo"),
-      tooltip: "",
-      description: "",
-      hasCursor: false,
-    },
   ];
 
   const current = SCREENS[screen];
@@ -632,7 +638,7 @@ function ProductTour({ onClose }) {
         <div className={classes.stepperBar}>
           <div className={classes.stepperHeader}>
             <span className={classes.stepperCount}>
-              {screen + 1} / {SCREENS.length}
+              {SCREENS.length} / {screen + 1}
             </span>
             <CloseButton
               className={classes.skipBtn}
@@ -693,7 +699,6 @@ function ProductTour({ onClose }) {
               {current.isOnboarding && (
                 <OnboardingScene screenKey={current.onboardingKey} t={t} />
               )}
-              {current.id === "welcome" && <WelcomeFeaturesScene t={t} />}
             </motion.div>
           </AnimatePresence>
 

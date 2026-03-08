@@ -145,6 +145,8 @@ Variables
 
   --bg-error: var(--clr-red-very-light);
   --bg-accent-primary: var(--clr-brown-1);
+  /* --bg-accent-secondary: rgba(0, 102, 204, 0.08); */
+  --bg-accent-secondary: rgba(0, 3, 5, 0.08);
 
   /* border colors */
   --border-color: #e0e0e0;

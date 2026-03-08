@@ -22,7 +22,7 @@
 
 /* Primary circle (+ add) */
 .circlePrimary {
-  border-radius: 50%;
+  border-radius: 12px;
   width: var(--btn-circle-primary);
   height: var(--btn-circle-primary);
   font-size: var(--btn-icon-primary);

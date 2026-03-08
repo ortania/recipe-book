@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { signupUser, signInWithGoogle } from "../../firebase/authService";
 import { useRecipeBook, useLanguage } from "../../context";
 import FormInput from "../login/FormInput";
@@ -26,6 +26,8 @@ function Signup() {
   );
 
   const navigate = useNavigate();
+  const location = useLocation();
+  const showTourFromLogin = location.state?.showTour;
 
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -138,7 +140,7 @@ function Signup() {
     }
   };
 
-  if (!onboardingDone) {
+  if (!onboardingDone || showTourFromLogin) {
     return <Onboarding onFinish={() => navigate("/login")} />;
   }
 

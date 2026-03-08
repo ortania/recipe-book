@@ -16,6 +16,15 @@ function Login() {
 
   const isReturningUser = !!localStorage.getItem("onboardingDone");
 
+  const getSavedEmails = () => {
+    try {
+      const arr = JSON.parse(localStorage.getItem("rememberedEmails") || "[]");
+      if (Array.isArray(arr) && arr.length) return arr;
+    } catch {}
+    const single = localStorage.getItem("rememberedEmail");
+    return single ? [single] : [];
+  };
+
   const savedEmail = localStorage.getItem("rememberedEmail") || "";
 
   const [email, setEmail] = useState(savedEmail);
@@ -130,6 +139,9 @@ function Login() {
     try {
       const user = await loginUser(email, password, rememberMe);
       if (rememberMe) {
+        const emails = getSavedEmails().filter((e) => e !== email);
+        emails.unshift(email);
+        localStorage.setItem("rememberedEmails", JSON.stringify(emails.slice(0, 5)));
         localStorage.setItem("rememberedEmail", email);
       } else {
         localStorage.removeItem("rememberedEmail");
@@ -222,6 +234,13 @@ function Login() {
                 onBlur={() => handleBlur("email")}
                 inputRef={emailInputRef}
                 error={fieldErrors.email}
+                onClear={() => {
+                  setEmail("");
+                  setPassword("");
+                  setError("");
+                  setFieldErrors({});
+                  setTimeout(() => emailInputRef.current?.focus(), 50);
+                }}
               >
                 <Mail size={16} />
               </FormInput>
@@ -300,10 +319,7 @@ function Login() {
             </form>
 
             <span
-              onClick={() => {
-                localStorage.removeItem("onboardingDone");
-                navigate("/signup");
-              }}
+              onClick={() => navigate("/signup", { state: { showTour: true } })}
               className={classes.tourLink}
             >
               {t("onboarding", "viewTour")}
@@ -325,11 +341,11 @@ function Login() {
               {t("onboarding", "letsStart")}
             </button>
 
-            <div className={classes.divider}>
+            {/* <div className={classes.divider}>
               <span>{t("auth", "orLoginWith")}</span>
-            </div>
+            </div> */}
 
-            <button
+            {/* <button
               type="button"
               className={classes.googleBtn}
               onClick={handleGoogleSignIn}
@@ -342,7 +358,7 @@ function Login() {
                 <path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/>
               </svg>
               {t("auth", "continueWithGoogle")}
-            </button>
+            </button> */}
 
             <p className={classes.signupLink}>
               <span

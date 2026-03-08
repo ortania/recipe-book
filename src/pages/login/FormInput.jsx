@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Eye, EyeClosed, TriangleAlert } from "lucide-react";
+import { Eye, EyeClosed, TriangleAlert, X } from "lucide-react";
 import classes from "./FormInput.module.css";
 
 function FormInput({
@@ -17,6 +17,7 @@ function FormInput({
   inputRef,
   children,
   error,
+  onClear,
 }) {
   const hasIcon = !!children;
   const errorClass = error ? classes.inputError : "";
@@ -54,9 +55,10 @@ function FormInput({
   }
 
   if (hasIcon) {
+    const showClear = onClear && value;
     return (
       <div className={classes.fieldWrapper}>
-        <div className={`${classes.inputWrapper} ${classes.hasIcon} ${errorClass}`}>
+        <div className={`${classes.inputWrapper} ${classes.hasIcon} ${showClear ? classes.hasClear : ""} ${errorClass}`}>
           <span className={classes.inputIcon}>{children}</span>
           <input
             ref={inputRef}
@@ -71,6 +73,11 @@ function FormInput({
             onBlur={onBlur}
             autoComplete="off"
           />
+          {showClear && (
+            <button type="button" onClick={onClear} className={classes.clearButton} tabIndex={-1}>
+              <X size={18} />
+            </button>
+          )}
         </div>
         {error && <span className={classes.fieldError}><TriangleAlert size={14} /> {error}</span>}
       </div>

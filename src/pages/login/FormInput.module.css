@@ -116,3 +116,29 @@
 .inputError input {
   border-color: var(--error-color, #e53e3e) !important;
 }
+
+.hasClear input {
+  padding-inline-end: 3rem !important;
+}
+
+.clearButton {
+  position: absolute;
+  inset-inline-end: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.clearButton:hover {
+  color: var(--text-primary);
+  background-color: var(--bg-secondary);
+}

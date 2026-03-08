@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
 import { useLanguage } from "../../context";
 import useSwipe from "../../hooks/useSwipe";
 import { RecipeBookIcon } from "../../components/icons/RecipeBookIcon";
@@ -26,7 +27,7 @@ const SCREENS = [
     key: "save",
     icon: <SaveBookIcon />,
     titleKey: "saveTitle",
-    bullets: ["saveBullet1", "saveBullet2", "saveBullet3", "saveBullet4"],
+    subtitleKey: "saveSubtitle",
     tipLabel: "howToStart",
     tipKey: "saveTip",
   },
@@ -34,7 +35,7 @@ const SCREENS = [
     key: "search",
     icon: <SearchIcon />,
     titleKey: "searchTitle",
-    bullets: ["searchBullet1", "searchBullet2", "searchBullet3"],
+    subtitleKey: "searchSubtitle",
     tipLabel: "howToUse",
     tipKey: "searchTip",
   },
@@ -153,7 +154,21 @@ function Onboarding({ onFinish }) {
                 {t("onboarding", screen.tipLabel)}
               </span>
               <span className={classes.tipText}>
-                {t("onboarding", screen.tipKey)}
+                {t("onboarding", screen.tipKey)
+                  .split("{icon}")
+                  .map((part, i, arr) =>
+                    i < arr.length - 1 ? (
+                      <span key={i}>
+                        {part}
+                        <Plus
+                          size={22}
+                          style={{ verticalAlign: "middle", display: "inline" }}
+                        />
+                      </span>
+                    ) : (
+                      part
+                    ),
+                  )}
               </span>
             </div>
           )}

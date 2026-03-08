@@ -148,6 +148,7 @@ function RecipesView({
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
   const [mobileActionsEl, setMobileActionsEl] = useState(null);
   const [showCategoriesSheet, setShowCategoriesSheet] = useState(false);
+  const [showEmptyAddSheet, setShowEmptyAddSheet] = useState(false);
   const [showSharerSheet, setShowSharerSheet] = useState(false);
   const [showManagement, setShowManagement] = useState(false);
   const filterRef = useRef(null);
@@ -889,12 +890,12 @@ function RecipesView({
       <div
         className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}
       >
-        {showTabs &&
-          mobileTabsEl &&
-          createPortal(mobileTabsContent, mobileTabsEl)}
-        {mobileActionsEl &&
-          mobileHeaderActions &&
-          createPortal(mobileHeaderActions, mobileActionsEl)}
+        {backAction &&
+          mobileActionsEl &&
+          createPortal(
+            <CloseButton onClick={backAction} size={22} type="plain" />,
+            mobileActionsEl,
+          )}
         <div className={classes.viewToggleWrapper}>
           {headerAction ? (
             <span className={classes.desktopOnly}>{headerAction}</span>
@@ -903,9 +904,6 @@ function RecipesView({
               <CloseButton onClick={backAction} />
             </span>
           ) : null}
-          {showTabs && !mobileTabsEl && (
-            <div className={classes.viewToggle}>{viewToggleElement}</div>
-          )}
         </div>
 
         <div style={{ display: showChat ? "block" : "none" }}>
@@ -999,17 +997,35 @@ function RecipesView({
               <p className={classes.emptyText}>
                 {emptyTitle || t("recipesView", "emptyTitle")}
               </p>
-              {showAddAndFavorites && (
-                <AddRecipeDropdown onSelect={(method) => onAddPerson(method)}>
-                  <span className={classes.emptyButton}>
-                    {t("recipesView", "addNewRecipe")}
-                  </span>
-                </AddRecipeDropdown>
-              )}
+              {showAddAndFavorites &&
+                (isMobile ? (
+                  <>
+                    <button
+                      className={classes.emptyButton}
+                      onClick={() => setShowEmptyAddSheet(true)}
+                    >
+                      {t("recipesView", "addNewRecipe")}
+                    </button>
+                    <BottomSheet
+                      open={showEmptyAddSheet}
+                      onClose={() => setShowEmptyAddSheet(false)}
+                      title={t("recipesView", "addNewRecipe")}
+                    >
+                      <div onClick={() => setShowEmptyAddSheet(false)}>
+                        <AddRecipeMenu onSelect={onAddPerson} t={t} />
+                      </div>
+                    </BottomSheet>
+                  </>
+                ) : (
+                  <AddRecipeDropdown onSelect={(method) => onAddPerson(method)}>
+                    <span className={classes.emptyButton}>
+                      {t("recipesView", "addNewRecipe")}
+                    </span>
+                  </AddRecipeDropdown>
+                ))}
             </div>
           )}
         </div>
-
       </div>
     );
   }
