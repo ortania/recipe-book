@@ -30,19 +30,29 @@ const SECTION_HEADER_WORDS =
   /(לבצק|למילוי|לציפוי|לעיטור|לבלילה|למלית|להגשה|לסירופ|לקרם|לקישוט|לקוביות|לתערובת|לשכבה)/i;
 
 // Same section-header words for name stripping (when "שם עוגת גבינה לבלילה" puts לבלילה in the name)
-const TRAILING_SECTION_HEADER = /\s+(לבצק|למילוי|לציפוי|לעיטור|לבלילה|למלית|להגשה|לסירופ|לקרם|לקישוט|לקוביות|לתערובת|לשכבה)\s*$/i;
+const TRAILING_SECTION_HEADER =
+  /\s+(לבצק|למילוי|לציפוי|לעיטור|לבלילה|למלית|להגשה|לסירופ|לקרם|לקישוט|לקוביות|לתערובת|לשכבה)\s*$/i;
 
 /**
  * If the recipe name ends with a section header (e.g. "עוגת גבינה לבלילה"), returns
  * the name without it and the header, so the wizard can put "::לבלילה" at the start of ingredients.
  */
 export function stripTrailingSectionHeaderFromName(nameStr) {
-  if (typeof nameStr !== "string" || !nameStr.trim()) return { name: nameStr || "", header: null };
+  if (typeof nameStr !== "string" || !nameStr.trim())
+    return { name: nameStr || "", header: null };
   const trimmed = nameStr.trim();
   const match = trimmed.match(TRAILING_SECTION_HEADER);
   if (!match) return { name: trimmed, header: null };
   const header = match[1];
-  const nameWithout = trimmed.replace(new RegExp("\\s+" + header.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*$", "i"), "").trim();
+  const nameWithout = trimmed
+    .replace(
+      new RegExp(
+        "\\s+" + header.replace(/[.*+?^${}()|[\]\\]/g, "\\$&") + "\\s*$",
+        "i",
+      ),
+      "",
+    )
+    .trim();
   return { name: nameWithout, header };
 }
 
@@ -89,7 +99,7 @@ const junkPatterns =
   /related\s*articles|advertisement|sponsored|click\s*here|read\s*more|sign\s*up|subscribe|newsletter|copyright|©|http|www\.|ראה בקישור|לחצ[וי] כאן|see link|see recipe/i;
 
 const nonIngredientWords =
-  /^(יבשים|רטובים|לקישוט|להגשה|לציפוי|אופציונלי|optional|for garnish|for serving|for decoration|מים|water)$/i;
+  /^(יבשים|רטובים|לקישוט|להגשה|לציפוי|לבצק|למילוי|לעיטור|לבלילה|למלית|לסירופ|לקרם|לקוביות|לתערובת|לשכבה|אופציונלי|optional|for garnish|for serving|for decoration|מים|water)$/i;
 
 // Common Hebrew measurement words to skip when extracting the key word
 const measurementWords =
@@ -147,11 +157,17 @@ export function extractQty(s) {
 }
 
 // Lines that look like group headers when ingredients are newline-separated (display only)
-const DISPLAY_GROUP_LINE = /^(לבצק|למילוי|לציפוי|לעיטור|לבלילה|למלית|להגשה|לסירופ|לקרם|לקישוט|לקוביות|לתערובת|לשכבה)(\s|:|\s*$)/i;
+const DISPLAY_GROUP_LINE =
+  /^(לבצק|למילוי|לציפוי|לעיטור|לבלילה|למלית|להגשה|לסירופ|לקרם|לקישוט|לקוביות|לתערובת|לשכבה)(\s|:|\s*$)/i;
 
 function looksLikeGroupHeader(line) {
   const t = line.replace(/[:\-–—]\s*$/, "").trim();
-  return t.length > 0 && t.length <= 50 && !/^\d/.test(t) && DISPLAY_GROUP_LINE.test(t);
+  return (
+    t.length > 0 &&
+    t.length <= 50 &&
+    !/^\d/.test(t) &&
+    DISPLAY_GROUP_LINE.test(t)
+  );
 }
 
 /**
@@ -162,15 +178,26 @@ export function parseIngredients(recipe) {
   if (!recipe || !recipe.ingredients) return [];
   if (Array.isArray(recipe.ingredients)) return recipe.ingredients;
   if (typeof recipe.ingredients === "string") {
-    const s = recipe.ingredients.replace(/\r\n/g, "\n").replace(/\r/g, "\n").trim();
+    const s = recipe.ingredients
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+      .trim();
     if (!s) return [];
-    const byNewline = s.split(/\n/).map((l) => l.trim()).filter(Boolean);
+    const byNewline = s
+      .split(/\n/)
+      .map((l) => l.trim())
+      .filter(Boolean);
     if (byNewline.length > 1) {
       return byNewline.map((line) =>
-        looksLikeGroupHeader(line) ? "::" + line.replace(/[:\-–—]+\s*$/, "").trim() : line,
+        looksLikeGroupHeader(line)
+          ? "::" + line.replace(/[:\-–—]+\s*$/, "").trim()
+          : line,
       );
     }
-    return s.split(",").map((part) => part.trim()).filter(Boolean);
+    return s
+      .split(",")
+      .map((part) => part.trim())
+      .filter(Boolean);
   }
   return [];
 }

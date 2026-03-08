@@ -1,26 +1,27 @@
 import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { useNavigate } from "react-router-dom";
 import { FiCheck, FiShoppingCart, FiPrinter, FiTrash2 } from "react-icons/fi";
+import { Globe } from "lucide-react";
 import { useRecipeBook, useLanguage } from "../../context";
-import RecipeBookIcon from "../../components/icons/RecipeBookIcon/RecipeBookIcon";
+import { fetchGlobalRecipes } from "../../firebase/globalRecipeService";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { buildShoppingList } from "../../utils/ingredientUtils";
 import { getCategoryIcon } from "../../utils/categoryIcons";
+import { BackButton } from "../../components/controls/back-button";
 import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./shopping-list.module.css";
 
 function ShoppingList() {
   const { t } = useLanguage();
-  const { recipes, categories } = useRecipeBook();
+  const { recipes, categories, currentUser } = useRecipeBook();
   const { getTranslated } = useTranslatedList(categories, "name");
-  const navigate = useNavigate();
-
   const [selectedRecipes, setSelectedRecipes] = useState([]);
   const [selectedCat, setSelectedCat] = useState(null);
   const [checkedItems, setCheckedItems] = useState({});
   const [showList, setShowList] = useState(false);
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
+  const [globalRecipes, setGlobalRecipes] = useState([]);
+  const [loadingGlobal, setLoadingGlobal] = useState(false);
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 768px)");
@@ -47,10 +48,33 @@ function ShoppingList() {
     return recipes.filter((r) => r.categories && r.categories.includes(catId));
   };
 
+  const allAvailableRecipes = useMemo(() => {
+    const map = new Map(recipes.map((r) => [r.id, r]));
+    globalRecipes.forEach((r) => {
+      if (!map.has(r.id)) map.set(r.id, r);
+    });
+    return Array.from(map.values());
+  }, [recipes, globalRecipes]);
+
   const shoppingList = useMemo(
-    () => buildShoppingList(selectedRecipes, recipes),
-    [selectedRecipes, recipes],
+    () => buildShoppingList(selectedRecipes, allAvailableRecipes),
+    [selectedRecipes, allAvailableRecipes],
   );
+
+  const handleSelectCommunity = async () => {
+    setSelectedCat("community");
+    if (globalRecipes.length === 0) {
+      setLoadingGlobal(true);
+      try {
+        const result = await fetchGlobalRecipes(currentUser?.uid);
+        setGlobalRecipes(result.recipes || []);
+      } catch (err) {
+        console.error("Failed to fetch global recipes:", err);
+      } finally {
+        setLoadingGlobal(false);
+      }
+    }
+  };
 
   const toggleRecipe = (id) => {
     setSelectedRecipes((prev) =>
@@ -61,10 +85,6 @@ function ShoppingList() {
   const toggleChecked = (key) => {
     setCheckedItems((prev) => ({ ...prev, [key]: !prev[key] }));
   };
-
-  const checkedCount = shoppingList.filter(
-    (item) => checkedItems[item.name.toLowerCase()],
-  ).length;
 
   const handlePrint = () => window.print();
 
@@ -84,8 +104,8 @@ function ShoppingList() {
               {t("mealPlanner", "shoppingList")}
             </h1>
             <span className={classes.subtitle}>
-              {selectedRecipes.length} {t("recipesView", "recipesCount")} ·{" "}
-              {shoppingList.length} {t("mealPlanner", "items") || "items"}
+              {selectedRecipes.length} {t("recipesView", "recipesCount")},{" "}
+              {shoppingList.length} {t("mealPlanner", "items")}
             </span>
           </div>
           <div className={classes.headerActions}>
@@ -96,19 +116,13 @@ function ShoppingList() {
               className={classes.headerBtnOutline}
               onClick={() => setShowList(false)}
             >
-              ← {t("mealPlanner", "chooseRecipe")}
+              {t("mealPlanner", "chooseRecipe")}
             </button>
             <button className={classes.headerBtnOutline} onClick={handleClear}>
               <FiTrash2 /> {t("mealPlanner", "clearAll")}
             </button>
           </div>
         </div>
-
-        {checkedCount > 0 && (
-          <div className={classes.progress}>
-            {checkedCount}/{shoppingList.length}
-          </div>
-        )}
 
         <div className={classes.listContainer}>
           {shoppingList.map((item) => {
@@ -150,8 +164,8 @@ function ShoppingList() {
           )}
           <span className={classes.subtitle}>
             {selectedRecipes.length > 0
-              ? `${selectedRecipes.length} ${t("recipesView", "recipesCount")}`
-              : t("mealPlanner", "chooseRecipe")}
+              ? `${selectedRecipes.length} ${t("recipesView", "recipesCount")} ${t("mealPlanner", "selected")}`
+              : ""}
           </span>
         </div>
         {selectedRecipes.length > 0 && (
@@ -167,105 +181,140 @@ function ShoppingList() {
         )}
       </div>
 
-      {recipes.length === 0 ? (
-        <div className={classes.emptyState}>
-          <RecipeBookIcon width={72} height={72} />
-          <p className={classes.emptyText}>{t("recipesView", "emptyTitle")}</p>
-          <button
-            className={classes.emptyButton}
-            onClick={() => navigate("/categories")}
-          >
-            {t("recipesView", "addNewRecipe")}
-          </button>
-        </div>
-      ) : !selectedCat ? (
+      {selectedRecipes.length === 0 && !selectedCat && (
+        <p className={classes.instructions}>
+          {t("mealPlanner", "chooseRecipe")}
+        </p>
+      )}
+
+      {!selectedCat ? (
         <div className={classes.catList}>
           <button
             className={classes.catListItem}
-            onClick={() => setSelectedCat("all")}
+            onClick={handleSelectCommunity}
           >
             <span
               className={classes.catListIcon}
-              style={{ background: "#6366f122", color: "#6366f1" }}
+              style={{ background: "#10b98122", color: "#10b981" }}
             >
-              {(() => {
-                const IC = getCategoryIcon("restaurant");
-                return <IC />;
-              })()}
+              <Globe size={20} />
             </span>
             <span className={classes.catListName}>
-              {t("categories", "allRecipes")}
+              {t("nav", "globalRecipesFull")}
             </span>
-            <span className={classes.catListCount}>{recipes.length}</span>
+            <span className={classes.catListCount}>
+              {globalRecipes.length || ""}
+            </span>
           </button>
-          {categories
-            .filter((c) => c.id !== "all")
-            .map((cat) => {
-              const count = getRecipesForCat(cat.id).length;
-              return (
-                <button
-                  key={cat.id}
-                  className={classes.catListItem}
-                  onClick={() => setSelectedCat(cat.id)}
-                >
-                  <span
-                    className={classes.catListIcon}
-                    style={{ background: `${cat.color}22`, color: cat.color }}
+          {recipes.length > 0 && (
+            <button
+              className={classes.catListItem}
+              onClick={() => setSelectedCat("all")}
+            >
+              <span
+                className={classes.catListIcon}
+                style={{ background: "#6366f122", color: "#6366f1" }}
+              >
+                {(() => {
+                  const IC = getCategoryIcon("restaurant");
+                  return <IC />;
+                })()}
+              </span>
+              <span className={classes.catListName}>
+                {t("mealPlanner", "myRecipes")}
+              </span>
+              <span className={classes.catListCount}>{recipes.length}</span>
+            </button>
+          )}
+          {recipes.length > 0 &&
+            categories
+              .filter((c) => c.id !== "all")
+              .filter((c) => getRecipesForCat(c.id).length > 0)
+              .map((cat) => {
+                const count = getRecipesForCat(cat.id).length;
+                return (
+                  <button
+                    key={cat.id}
+                    className={classes.catListItem}
+                    onClick={() => setSelectedCat(cat.id)}
                   >
-                    {(() => {
-                      const IC = getCategoryIcon(cat.icon);
-                      return <IC />;
-                    })()}
-                  </span>
-                  <span className={classes.catListName}>
-                    {getTranslated(cat)}
-                  </span>
-                  <span className={classes.catListCount}>{count}</span>
-                </button>
-              );
-            })}
+                    <span
+                      className={classes.catListIcon}
+                      style={{ background: `${cat.color}22`, color: cat.color }}
+                    >
+                      {(() => {
+                        const IC = getCategoryIcon(cat.icon);
+                        return <IC />;
+                      })()}
+                    </span>
+                    <span className={classes.catListName}>
+                      {getTranslated(cat)}
+                    </span>
+                    <span className={classes.catListCount}>{count}</span>
+                  </button>
+                );
+              })}
         </div>
       ) : (
         <>
           <div className={classes.subHeader}>
-            <button
-              className={classes.backBtn}
-              onClick={() => setSelectedCat(null)}
-            >
-              ← {t("mealPlanner", "chooseRecipe")}
-            </button>
+            <BackButton onClick={() => setSelectedCat(null)} size={22} />
+            <span className={classes.subTitle}>
+              {selectedCat === "community"
+                ? t("nav", "globalRecipesFull")
+                : selectedCat === "all"
+                  ? t("mealPlanner", "myRecipes")
+                  : (() => {
+                      const cat = categories.find((c) => c.id === selectedCat);
+                      return cat ? getTranslated(cat) : "";
+                    })()}
+            </span>
             <span className={classes.subCount}>
-              {getRecipesForCat(selectedCat).length}{" "}
-              {t("recipesView", "recipesCount")}
+              {selectedCat === "community"
+                ? loadingGlobal
+                  ? ""
+                  : `${globalRecipes.length} ${t("recipesView", "recipesCount")}`
+                : `${getRecipesForCat(selectedCat).length} ${t("recipesView", "recipesCount")}`}
             </span>
           </div>
-          <div className={classes.recipeList}>
-            {getRecipesForCat(selectedCat).map((recipe) => {
-              const isSelected = selectedRecipes.includes(recipe.id);
-              return (
-                <button
-                  key={recipe.id}
-                  className={`${classes.recipeItem} ${isSelected ? classes.recipeItemSelected : ""}`}
-                  onClick={() => toggleRecipe(recipe.id)}
-                >
-                  {recipe.image_src ? (
-                    <img
-                      className={classes.recipeItemImage}
-                      src={recipe.image_src}
-                      alt=""
-                      loading="lazy"
-                    />
-                  ) : (
-                    <span className={classes.recipeItemEmoji}>🍽️</span>
-                  )}
-                  <span className={classes.recipeItemName}>{recipe.name}</span>
-                  {isSelected && (
-                    <FiCheck className={classes.recipeItemCheck} />
-                  )}
-                </button>
-              );
-            })}
-          </div>
+          {selectedCat === "community" && loadingGlobal ? (
+            <div className={classes.emptyState}>
+              <p className={classes.emptyText}>...</p>
+            </div>
+          ) : (
+            <div className={classes.recipeList}>
+              {(selectedCat === "community"
+                ? globalRecipes
+                : getRecipesForCat(selectedCat)
+              ).map((recipe) => {
+                const isSelected = selectedRecipes.includes(recipe.id);
+                return (
+                  <button
+                    key={recipe.id}
+                    className={`${classes.recipeItem} ${isSelected ? classes.recipeItemSelected : ""}`}
+                    onClick={() => toggleRecipe(recipe.id)}
+                  >
+                    {recipe.image_src ? (
+                      <img
+                        className={classes.recipeItemImage}
+                        src={recipe.image_src}
+                        alt=""
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className={classes.recipeItemEmoji}>🍽️</span>
+                    )}
+                    <span className={classes.recipeItemName}>
+                      {recipe.name}
+                    </span>
+                    {isSelected && (
+                      <FiCheck className={classes.recipeItemCheck} />
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          )}
         </>
       )}
     </div>
