@@ -278,7 +278,7 @@ h4 {
   text-transform: capitalize;
 }
 h1 {
-  font-size: 3rem;
+  font-size: var(--very-large-font);
   text-align: center;
 }
 
@@ -338,6 +338,11 @@ html {
   * {
     scrollbar-width: none !important;
     -ms-overflow-style: none !important;
+  }
+
+  h1 {
+    font-size: var(--large-font);
+    text-align: center;
   }
 
   *::-webkit-scrollbar {

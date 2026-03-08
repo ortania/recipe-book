@@ -1,7 +1,9 @@
 import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { useNavigate } from "react-router-dom";
 import { FiCheck, FiShoppingCart, FiPrinter, FiTrash2 } from "react-icons/fi";
 import { useRecipeBook, useLanguage } from "../../context";
+import RecipeBookIcon from "../../components/icons/RecipeBookIcon/RecipeBookIcon";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { buildShoppingList } from "../../utils/ingredientUtils";
 import { getCategoryIcon } from "../../utils/categoryIcons";
@@ -12,6 +14,7 @@ function ShoppingList() {
   const { t } = useLanguage();
   const { recipes, categories } = useRecipeBook();
   const { getTranslated } = useTranslatedList(categories, "name");
+  const navigate = useNavigate();
 
   const [selectedRecipes, setSelectedRecipes] = useState([]);
   const [selectedCat, setSelectedCat] = useState(null);
@@ -164,7 +167,18 @@ function ShoppingList() {
         )}
       </div>
 
-      {!selectedCat ? (
+      {recipes.length === 0 ? (
+        <div className={classes.emptyState}>
+          <RecipeBookIcon width={72} height={72} />
+          <p className={classes.emptyText}>{t("recipesView", "emptyTitle")}</p>
+          <button
+            className={classes.emptyButton}
+            onClick={() => navigate("/categories")}
+          >
+            {t("recipesView", "addNewRecipe")}
+          </button>
+        </div>
+      ) : !selectedCat ? (
         <div className={classes.catList}>
           <button
             className={classes.catListItem}

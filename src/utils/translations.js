@@ -177,11 +177,19 @@ const translations = {
       mixed: "Public profile",
     },
     publicProfileDesc: {
-      he: "כשמופעל, לחיצה על שמך תציג את כל המתכונים שלך",
-      en: "When on, clicking your name shows all your recipes",
-      ru: "Когда включено, нажатие на ваше имя покажет все ваши рецепты",
-      de: "Wenn aktiviert, zeigt ein Klick auf Ihren Namen alle Ihre Rezepte",
-      mixed: "When on, clicking your name shows all your recipes",
+      he: "כשמסומן ומתכון שותף לקהילה עם שם המשתמש — לחיצה על השם תציג את כל המתכונים של אותו משתמש.",
+      en: "When enabled and a recipe is shared to the community with your name — tapping the name shows all your recipes.",
+      ru: "Когда включено и рецепт опубликован с вашим именем — нажатие на имя покажет все ваши рецепты.",
+      de: "Wenn aktiviert und ein Rezept mit deinem Namen geteilt wird — zeigt ein Tipp auf den Namen alle deine Rezepte.",
+      mixed:
+        "When enabled and a recipe is shared to the community with your name — tapping the name shows all your recipes.",
+    },
+    privateProfileLabel: {
+      he: "פרופיל פרטי",
+      en: "Private profile",
+      ru: "Приватный профиль",
+      de: "Privates Profil",
+      mixed: "Private profile",
     },
     privacy: {
       he: "פרטיות",

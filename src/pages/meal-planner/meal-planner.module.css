@@ -1,5 +1,5 @@
 .mobileTitle {
-  font-size: var(--basic-font);
+  font-size: var(--large-font);
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -27,7 +27,7 @@
 }
 
 .title {
-  font-size: var(--large-font);
+  font-size: var(--very-large-font);
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
@@ -597,7 +597,7 @@
   }
 
   .title {
-    font-size: var(--basic-font);
+    font-size: var(--large-font);
   }
 
   .daysGrid {

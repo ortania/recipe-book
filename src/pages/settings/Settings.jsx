@@ -1,7 +1,13 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { FiSun, FiMoon } from "react-icons/fi";
-import { Palette, Accessibility, ShieldCheck, Globe, ChevronDown } from "lucide-react";
+import {
+  Palette,
+  Accessibility,
+  ShieldCheck,
+  Globe,
+  ChevronDown,
+} from "lucide-react";
 import { applyFontScale } from "../../utils/applyFontScale";
 import { getStoredTheme, applyTheme } from "../../utils/theme";
 import { useLanguage, useRecipeBook } from "../../context";
@@ -47,6 +53,11 @@ function Settings() {
   };
 
   useEffect(() => {
+    document.body.classList.add("hide-footer");
+    return () => document.body.classList.remove("hide-footer");
+  }, []);
+
+  useEffect(() => {
     applyFontScale(scale);
     localStorage.setItem("fontScale", scale.toString());
   }, [scale]);
@@ -79,7 +90,9 @@ function Settings() {
       id: "privacy",
       icon: <ShieldCheck size={20} />,
       label: t("settings", "privacy"),
-      value: publicProfile ? t("settings", "publicProfile") : "",
+      value: publicProfile
+        ? t("settings", "publicProfile")
+        : t("settings", "privateProfileLabel"),
     },
   ];
 
@@ -98,7 +111,7 @@ function Settings() {
         {settingItems.map((item) => (
           <div key={item.id}>
             <button
-              className={classes.settingItem}
+              className={`${classes.settingItem} ${openSetting === item.id ? classes.settingItemOpen : ""}`}
               onClick={() =>
                 setOpenSetting(openSetting === item.id ? null : item.id)
               }

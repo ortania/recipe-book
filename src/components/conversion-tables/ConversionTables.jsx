@@ -11,7 +11,6 @@ import {
   Ruler,
   Egg,
   ClipboardList,
-  HelpCircle,
 } from "lucide-react";
 import conversionData from "./conversionData";
 
@@ -72,7 +71,6 @@ function ConversionTables() {
       label: t("conversions", "tabGeneral"),
       icon: ClipboardList,
     },
-    { id: "faq", label: t("conversions", "tabFaq"), icon: HelpCircle },
   ];
 
   // Filter conversions based on search query
@@ -95,12 +93,6 @@ function ConversionTables() {
           (item) =>
             item.from.toLowerCase().includes(query) ||
             item.change.toLowerCase().includes(query),
-        );
-      } else if (key === "faq") {
-        filtered[key] = conversions[key].filter(
-          (item) =>
-            item.question.toLowerCase().includes(query) ||
-            item.answer.toLowerCase().includes(query),
         );
       } else {
         filtered[key] = conversions[key].filter(
@@ -194,15 +186,6 @@ function ConversionTables() {
               <strong>{t("conversions", "panExampleTitle")}</strong>{" "}
               {t("conversions", "panExample")}
             </div>
-          </div>
-        ) : activeTab === "faq" ? (
-          <div className={classes.faqList}>
-            {filteredConversions.faq.map((item, index) => (
-              <div key={index} className={classes.faqItem}>
-                <div className={classes.question}>{item.question}</div>
-                <div className={classes.answer}>{item.answer}</div>
-              </div>
-            ))}
           </div>
         ) : (
           <div className={classes.simpleList}>

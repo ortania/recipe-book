@@ -15,7 +15,7 @@
 }
 
 .mobileTitle {
-  font-size: var(--basic-font);
+  font-size: var(--large-font);
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -43,7 +43,7 @@
 }
 
 .header h1 {
-  font-size: var(--large-font);
+  font-size: var(--very-large-font);
   font-weight: 700;
   color: var(--text-primary);
   margin-bottom: 0.5rem;
@@ -203,6 +203,7 @@
   color: var(--text-primary);
   line-height: 1.6;
   grid-column: 1 / -1;
+  font-size: var(--basic-font);
 }
 
 .faqList {
@@ -244,7 +245,7 @@
   }
 
   .header h1 {
-    font-size: var(--basic-font);
+    font-size: var(--large-font);
   }
 
   .header p {

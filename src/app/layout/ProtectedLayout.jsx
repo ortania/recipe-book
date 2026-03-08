@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Navigate, Outlet } from "react-router-dom";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 import {
   useRecipeBook,
   RadioProvider,
@@ -34,8 +34,12 @@ function GlobalRadioPlayer() {
   );
 }
 
+const HIDE_FOOTER_ROUTES = ["/settings"];
+
 function ProtectedLayout() {
   const { isLoggedIn, logout } = useRecipeBook();
+  const { pathname } = useLocation();
+  const hideFooter = HIDE_FOOTER_ROUTES.includes(pathname);
   useEffect(() => {
     document.body.classList.remove("sidebar-open", "modal-open");
   }, []);
@@ -55,7 +59,7 @@ function ProtectedLayout() {
               <Outlet />
             </main>
 
-            <Footer />
+            {!hideFooter && <Footer />}
           </div>
           <GlobalRadioPlayer />
           <TimerWidget />

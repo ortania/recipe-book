@@ -1,5 +1,5 @@
 .mobileTitle {
-  font-size: var(--basic-font);
+  font-size: var(--large-font);
   font-weight: 700;
   color: var(--text-primary);
 }
@@ -28,7 +28,7 @@
 }
 
 .title {
-  font-size: var(--large-font);
+  font-size: var(--very-large-font);
   font-weight: 700;
   color: var(--text-primary);
   margin: 0;
@@ -163,7 +163,7 @@
 }
 
 .subCount {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: var(--text-muted);
 }
 
@@ -290,6 +290,50 @@
   color: var(--text-primary);
 }
 
+/* Empty state */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+  gap: 1.25rem;
+  padding: 2rem 1.5rem;
+}
+
+.emptyState img {
+  opacity: 0.9;
+}
+
+.emptyText {
+  font-size: var(--large-font);
+  color: var(--text-primary);
+  margin: 0;
+  font-weight: 500;
+}
+
+.emptyButton {
+  display: inline-block;
+  margin-top: 0.75rem;
+  padding: 1em 3em;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  color: #ffffff;
+  background: #222222;
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.emptyButton:hover {
+  background: #3a3a3a;
+  transform: translateY(-1px);
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 700px) {
   .page {
@@ -306,7 +350,7 @@
   }
 
   .title {
-    font-size: var(--basic-font);
+    font-size: var(--large-font);
   }
 
   .headerActions {

@@ -86,14 +86,15 @@ const conversionData = {
     ],
     general: [
       { item: "1 כוס קמח תופח", amount: "1 כוס קמח רגיל + כפית אבקת אפייה" },
-      { item: "1 קילו קמח תופח", amount: "1 קילו קמח רגיל + 2 שקיות אבקת אפייה (10 גרם כל אחת)" },
-      { item: "שקית שמרים טריים (50 גרם)", amount: "קצת פחות מ-2 כפות שמרים יבשים (17 גרם)" },
+      {
+        item: "1 קילו קמח תופח",
+        amount: "1 קילו קמח רגיל + 2 שקיות אבקת אפייה (10 גרם כל אחת)",
+      },
+      {
+        item: "שקית שמרים טריים (50 גרם)",
+        amount: "קצת פחות מ-2 כפות שמרים יבשים (17 גרם)",
+      },
       { item: "100 גרם חמאה", amount: "85 גרם שמן" },
-    ],
-    faq: [
-      { question: "כמה כוסות הן חצי קילו קמח (500 גרם)?", answer: "3 כוסות וחצי + כף קמח" },
-      { question: "כמה כוסות הן קילו אורז?", answer: "5 כוסות" },
-      { question: "כמה כוסות הן 200 גרם קמח?", answer: "כוס וחצי קמח מינוס כף" },
     ],
   },
   en: {
@@ -182,15 +183,19 @@ const conversionData = {
       { item: "Egg white size XL", amount: "40-45g" },
     ],
     general: [
-      { item: "1 cup self-rising flour", amount: "1 cup regular flour + 1 tsp baking powder" },
-      { item: "1 kg self-rising flour", amount: "1 kg regular flour + 2 packets baking powder (10g each)" },
-      { item: "Fresh yeast packet (50g)", amount: "Just under 2 tbsp dry yeast (17g)" },
+      {
+        item: "1 cup self-rising flour",
+        amount: "1 cup regular flour + 1 tsp baking powder",
+      },
+      {
+        item: "1 kg self-rising flour",
+        amount: "1 kg regular flour + 2 packets baking powder (10g each)",
+      },
+      {
+        item: "Fresh yeast packet (50g)",
+        amount: "Just under 2 tbsp dry yeast (17g)",
+      },
       { item: "100g butter", amount: "85g oil" },
-    ],
-    faq: [
-      { question: "How many cups is half a kilo of flour (500g)?", answer: "3.5 cups + 1 tbsp flour" },
-      { question: "How many cups is a kilo of rice?", answer: "5 cups" },
-      { question: "How many cups is 200g of flour?", answer: "1.5 cups minus 1 tbsp" },
     ],
   },
   ru: {
@@ -279,15 +284,19 @@ const conversionData = {
       { item: "Белок яйца XL", amount: "40-45 г" },
     ],
     general: [
-      { item: "1 стакан самоподн. муки", amount: "1 стакан обычной муки + 1 ч. л. разрыхлителя" },
-      { item: "1 кг самоподн. муки", amount: "1 кг обычной муки + 2 пакетика разрыхлителя (по 10 г)" },
-      { item: "Пачка свежих дрожжей (50 г)", amount: "Чуть меньше 2 ст. л. сухих дрожжей (17 г)" },
+      {
+        item: "1 стакан самоподн. муки",
+        amount: "1 стакан обычной муки + 1 ч. л. разрыхлителя",
+      },
+      {
+        item: "1 кг самоподн. муки",
+        amount: "1 кг обычной муки + 2 пакетика разрыхлителя (по 10 г)",
+      },
+      {
+        item: "Пачка свежих дрожжей (50 г)",
+        amount: "Чуть меньше 2 ст. л. сухих дрожжей (17 г)",
+      },
       { item: "100 г масла", amount: "85 г растительного масла" },
-    ],
-    faq: [
-      { question: "Сколько стаканов в 500 г муки?", answer: "3,5 стакана + 1 ст. л. муки" },
-      { question: "Сколько стаканов в 1 кг риса?", answer: "5 стаканов" },
-      { question: "Сколько стаканов в 200 г муки?", answer: "1,5 стакана минус 1 ст. л." },
     ],
   },
   de: {
@@ -376,15 +385,19 @@ const conversionData = {
       { item: "Eiweiß Größe XL", amount: "40-45g" },
     ],
     general: [
-      { item: "1 Tasse selbstaufgehendes Mehl", amount: "1 Tasse normales Mehl + 1 TL Backpulver" },
-      { item: "1 kg selbstaufgehendes Mehl", amount: "1 kg normales Mehl + 2 Päckchen Backpulver (je 10g)" },
-      { item: "Frischhefe-Packung (50g)", amount: "Knapp 2 EL Trockenhefe (17g)" },
+      {
+        item: "1 Tasse selbstaufgehendes Mehl",
+        amount: "1 Tasse normales Mehl + 1 TL Backpulver",
+      },
+      {
+        item: "1 kg selbstaufgehendes Mehl",
+        amount: "1 kg normales Mehl + 2 Päckchen Backpulver (je 10g)",
+      },
+      {
+        item: "Frischhefe-Packung (50g)",
+        amount: "Knapp 2 EL Trockenhefe (17g)",
+      },
       { item: "100g Butter", amount: "85g Öl" },
-    ],
-    faq: [
-      { question: "Wie viele Tassen sind 500g Mehl?", answer: "3,5 Tassen + 1 EL Mehl" },
-      { question: "Wie viele Tassen sind 1 kg Reis?", answer: "5 Tassen" },
-      { question: "Wie viele Tassen sind 200g Mehl?", answer: "1,5 Tassen minus 1 EL" },
     ],
   },
 };
