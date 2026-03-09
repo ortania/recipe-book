@@ -2891,6 +2891,20 @@ const translations = {
       de: "Zu meinen Rezepten kopieren",
       mixed: "העתק למתכונים שלי",
     },
+    savedRecipes: {
+      he: "מתכונים שמורים",
+      en: "Saved Recipes",
+      ru: "Сохранённые рецепты",
+      de: "Gespeicherte Rezepte",
+      mixed: "Saved Recipes",
+    },
+    noSavedRecipes: {
+      he: "אין מתכונים שמורים",
+      en: "No saved recipes",
+      ru: "Нет сохранённых рецептов",
+      de: "Keine gespeicherten Rezepte",
+      mixed: "No saved recipes",
+    },
     copied: {
       he: "הועתק!",
       en: "Copied!",

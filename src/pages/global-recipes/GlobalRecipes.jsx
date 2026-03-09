@@ -24,6 +24,13 @@ function GlobalRecipes() {
   const { currentUser, addRecipe, setRecipes, categories } = useRecipeBook();
 
   const [allRecipes, setAllRecipes] = useState([]);
+  const [savedRecipeIds, setSavedRecipeIds] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("savedCommunityRecipes")) || [];
+    } catch {
+      return [];
+    }
+  });
   const [showAddPerson, setShowAddPerson] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
   const [loading, setLoading] = useState(false);
@@ -136,6 +143,16 @@ function GlobalRecipes() {
     [currentUser],
   );
 
+  const handleSaveRecipe = useCallback((recipeId) => {
+    setSavedRecipeIds((prev) => {
+      const next = prev.includes(recipeId)
+        ? prev.filter((id) => id !== recipeId)
+        : [...prev, recipeId];
+      localStorage.setItem("savedCommunityRecipes", JSON.stringify(next));
+      return next;
+    });
+  }, []);
+
   const handleCopyRecipe = useCallback(
     async (recipeId) => {
       if (!currentUser) return;
@@ -181,6 +198,8 @@ function GlobalRecipes() {
         emptyTitle={t("recipesView", "emptyGlobalTitle")}
         hasMoreRecipes={false}
         onCopyRecipe={undefined}
+        onSaveRecipe={handleSaveRecipe}
+        savedRecipes={savedRecipeIds}
         onRate={handleRate}
         userRatings={userRatings}
         defaultSortField="rating"

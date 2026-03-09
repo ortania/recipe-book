@@ -27,6 +27,7 @@ import {
   X,
   Users,
   UserCheck,
+  Bookmark,
 } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
@@ -75,6 +76,8 @@ function RecipesView({
   hasMoreRecipes: hasMoreRecipesProp,
   onLoadMore,
   onCopyRecipe,
+  onSaveRecipe,
+  savedRecipes = [],
   onRate,
   userRatings = {},
   helpTitle: helpTitleProp,
@@ -138,6 +141,7 @@ function RecipesView({
   const [activeView, setActiveView] = useState("recipes");
   const [showChat, setShowChat] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
   const [showSearch, setShowSearch] = useState(() => {
     try {
       if (sessionStorage.getItem("searchOverlayState")) return true;
@@ -216,11 +220,14 @@ function RecipesView({
     }
   }, [sortField, sortDirection, sortStorageKey]);
 
-  // Filtered persons based on favorites toggle
+  // Filtered persons based on favorites/saved toggle
   const displayPersons = useMemo(() => {
-    if (!showFavoritesOnly) return localPersons;
-    return localPersons.filter((p) => p.isFavorite);
-  }, [localPersons, showFavoritesOnly]);
+    let result = localPersons;
+    if (showFavoritesOnly) result = result.filter((p) => p.isFavorite);
+    if (showSavedOnly)
+      result = result.filter((p) => savedRecipes.includes(p.id));
+    return result;
+  }, [localPersons, showFavoritesOnly, showSavedOnly, savedRecipes]);
 
   const rvKey = recentlyViewedKey || "recentlyViewedRecipes";
 
@@ -1159,6 +1166,24 @@ function RecipesView({
                   )}
                 </button>
               )}
+              {onSaveRecipe && (
+                <button
+                  onClick={() => setShowSavedOnly((prev) => !prev)}
+                  title={t("globalRecipes", "savedRecipes")}
+                  className={`${classes.favoritesBtn} ${showSavedOnly ? classes.favoritesActive : ""}`}
+                >
+                  {showSavedOnly ? (
+                    <Bookmark
+                      size={isMobile ? 24 : 30}
+                      strokeWidth={1.5}
+                      fill="var(--accent-color-1)"
+                      stroke="var(--accent-color-1)"
+                    />
+                  ) : (
+                    <Bookmark size={isMobile ? 24 : 30} strokeWidth={1.5} />
+                  )}
+                </button>
+              )}
               <div className={classes.searchBoxWrapper}>
                 <SearchBox
                   searchTerm=""
@@ -1286,9 +1311,11 @@ function RecipesView({
 
           {filteredAndSortedPersons.length === 0 ? (
             <div className={classes.noResults}>
-              {showFavoritesOnly
-                ? t("favorites", "noFavorites")
-                : t("recipesView", "noResults")}
+              {showSavedOnly
+                ? t("globalRecipes", "noSavedRecipes")
+                : showFavoritesOnly
+                  ? t("favorites", "noFavorites")
+                  : t("recipesView", "noResults")}
             </div>
           ) : showCategories && selectedGroup === "all" ? (
             <div>
@@ -1554,6 +1581,30 @@ function RecipesView({
                       </button>
                     </div>
                   )}
+                  {onSaveRecipe && (
+                    <button
+                      className={classes.compactActionBtn}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSaveRecipe(person.id);
+                      }}
+                      title={t("globalRecipes", "savedRecipes")}
+                    >
+                      <Bookmark
+                        size={16}
+                        fill={
+                          savedRecipes.includes(person.id)
+                            ? "var(--accent-color-1)"
+                            : "none"
+                        }
+                        stroke={
+                          savedRecipes.includes(person.id)
+                            ? "var(--accent-color-1)"
+                            : "currentColor"
+                        }
+                      />
+                    </button>
+                  )}
                 </div>
               ))}
             </div>
@@ -1570,6 +1621,8 @@ function RecipesView({
                     showAddAndFavorites ? handleToggleFavorite : undefined
                   }
                   onCopyRecipe={onCopyRecipe}
+                  onSaveRecipe={onSaveRecipe}
+                  isSaved={savedRecipes.includes(person.id)}
                   onRate={onRate}
                   userRating={userRatings[person.id] || 0}
                   onCardClick={

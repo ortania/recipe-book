@@ -9,6 +9,7 @@ import {
   Trash2,
   Copy,
   UserCheck,
+  Bookmark,
 } from "lucide-react";
 import { Button } from "../controls/button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
@@ -26,6 +27,8 @@ function RecipeInfo({
   onDelete,
   onToggleFavorite,
   onCopyRecipe,
+  onSaveRecipe,
+  isSaved = false,
   userRating = 0,
   onRate,
   onCardClick,
@@ -135,23 +138,44 @@ function RecipeInfo({
               e.target.src = DEFAULT_IMAGE;
             }}
           />
-          {!onCopyRecipe && (
+          {onSaveRecipe ? (
             <button
-              className={`${classes.favoriteButton} ${isFavorite ? classes.active : ""}`}
+              className={`${classes.favoriteButton} ${isSaved ? classes.active : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
-                handleFavoriteClick();
+                onSaveRecipe(person.id);
               }}
-              aria-label={
-                isFavorite ? "Remove from favorites" : "Add to favorites"
-              }
+              aria-label={isSaved ? "Unsave" : "Save"}
             >
-              {isFavorite ? (
-                <Heart size={18} fill="red" color="red" />
+              {isSaved ? (
+                <Bookmark
+                  size={18}
+                  fill="var(--accent-color-1)"
+                  stroke="var(--accent-color-1)"
+                />
               ) : (
-                <Heart size={18} />
+                <Bookmark size={18} />
               )}
             </button>
+          ) : (
+            !onCopyRecipe && (
+              <button
+                className={`${classes.favoriteButton} ${isFavorite ? classes.active : ""}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleFavoriteClick();
+                }}
+                aria-label={
+                  isFavorite ? "Remove from favorites" : "Add to favorites"
+                }
+              >
+                {isFavorite ? (
+                  <Heart size={18} fill="red" color="red" />
+                ) : (
+                  <Heart size={18} />
+                )}
+              </button>
+            )
           )}
 
           {onCopyRecipe ? (
@@ -171,25 +195,27 @@ function RecipeInfo({
               </span>
             </button>
           ) : (
-            <div className={classes.actionButtons}>
-              <button
-                onClick={handleEdit}
-                className={classes.actionButton}
-                title="Edit recipe"
-              >
-                <FilePenLine size={16} />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeleteClick();
-                }}
-                className={`${classes.actionButton} ${classes.danger}`}
-                title="Delete recipe"
-              >
-                <Trash2 size={16} color="red" />
-              </button>
-            </div>
+            !onSaveRecipe && (
+              <div className={classes.actionButtons}>
+                <button
+                  onClick={handleEdit}
+                  className={classes.actionButton}
+                  title="Edit recipe"
+                >
+                  <FilePenLine size={16} />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeleteClick();
+                  }}
+                  className={`${classes.actionButton} ${classes.danger}`}
+                  title="Delete recipe"
+                >
+                  <Trash2 size={16} color="red" />
+                </button>
+              </div>
+            )
           )}
         </div>
 

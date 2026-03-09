@@ -735,7 +735,7 @@
   color: var(--text-primary);
   margin: 0;
   padding-left: 1rem;
-  padding-right: 1rem;
+  /* padding-right: 1rem; */
   display: flex;
   align-items: center;
   gap: 0.7rem;
@@ -829,6 +829,7 @@
   }
 
   .sectionTitle {
+    padding-right: 1rem;
     font-size: var(--large-font);
   }
 
@@ -980,6 +981,7 @@
   gap: 0.35rem;
   cursor: pointer;
   transition: transform 0.15s;
+  padding-right: 1rem;
 }
 
 .recentlyViewedCard:hover {
