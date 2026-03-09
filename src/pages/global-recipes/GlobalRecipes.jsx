@@ -180,7 +180,7 @@ function GlobalRecipes() {
         recipesTabLabel={t("nav", "globalRecipesFull")}
         emptyTitle={t("recipesView", "emptyGlobalTitle")}
         hasMoreRecipes={false}
-        onCopyRecipe={handleCopyRecipe}
+        onCopyRecipe={undefined}
         onRate={handleRate}
         userRatings={userRatings}
         defaultSortField="rating"
@@ -211,7 +211,13 @@ function GlobalRecipes() {
       {/* Infinite scroll sentinel */}
       <div ref={sentinelRef} style={{ height: 1 }} />
       {loading && ready && (
-        <div style={{ display: "flex", justifyContent: "center", padding: "1.5rem 0" }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            padding: "1.5rem 0",
+          }}
+        >
           <div className={classes.spinner} />
         </div>
       )}

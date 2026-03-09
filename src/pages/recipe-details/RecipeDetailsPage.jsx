@@ -9,6 +9,7 @@ import { BackButton } from "../../components/controls/back-button";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
 import { getRecipeById } from "../../firebase/recipeService";
+import { copyRecipeToUser as copyRecipeToUserGlobal } from "../../firebase/globalRecipeService";
 import { getUserRating, setUserRating } from "../../firebase/ratingService";
 import useTranslatedRecipe from "../../hooks/useTranslatedRecipe";
 import useTranslatedList from "../../hooks/useTranslatedList";
@@ -307,6 +308,18 @@ function RecipeDetailsPage() {
           isOwner
             ? (recipe, targetUserId) =>
                 copyRecipeToUser(recipe, targetUserId, language)
+            : undefined
+        }
+        onCopyToMyRecipes={
+          !isOwner && currentUser
+            ? async (recipeId) => {
+                const copied = await copyRecipeToUserGlobal(
+                  recipeId,
+                  currentUser.uid,
+                  language,
+                );
+                setRecipes((prev) => [...prev, copied]);
+              }
             : undefined
         }
         currentUserId={currentUser?.uid}

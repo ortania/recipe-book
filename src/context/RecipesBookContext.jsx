@@ -260,7 +260,7 @@ export const RecipeBookProvider = ({ children }) => {
     try {
       if (!currentUser) throw new Error("No user logged in");
       const enriched = { ...newRecipe };
-      if (enriched.showMyName && enriched.shareToGlobal) {
+      if (enriched.shareToGlobal) {
         enriched.sharerName =
           currentUser.displayName || currentUser.email?.split("@")[0] || "";
         enriched.sharerUserId = currentUser.uid;
@@ -281,7 +281,7 @@ export const RecipeBookProvider = ({ children }) => {
   const _editRecipeBase = handleEditRecipe(setRecipes);
   const editRecipe = async (editedRecipe) => {
     const enriched = { ...editedRecipe };
-    if (enriched.showMyName && enriched.shareToGlobal && currentUser) {
+    if (enriched.shareToGlobal && currentUser) {
       enriched.sharerName =
         currentUser.displayName || currentUser.email?.split("@")[0] || "";
       enriched.sharerUserId = currentUser.uid;
@@ -289,16 +289,6 @@ export const RecipeBookProvider = ({ children }) => {
       enriched.sharerName = "";
       enriched.sharerUserId = "";
     }
-    console.log(
-      "🔍 editRecipe - showMyName:",
-      enriched.showMyName,
-      "shareToGlobal:",
-      enriched.shareToGlobal,
-      "sharerName:",
-      enriched.sharerName,
-      "sharerUserId:",
-      enriched.sharerUserId,
-    );
     return _editRecipeBase(enriched);
   };
   const deleteRecipe = handleDeleteRecipe(setRecipes);

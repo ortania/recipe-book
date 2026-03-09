@@ -1496,7 +1496,7 @@ function RecipesView({
                     </span>
                   )}
                   <span className={classes.compactName}>{person.name}</span>
-                  {onCopyRecipe && person.sharerName && (
+                  {person.sharerName && (
                     <span
                       className={classes.compactSharer}
                       onClick={(e) => {

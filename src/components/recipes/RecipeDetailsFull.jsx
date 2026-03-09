@@ -55,6 +55,7 @@ function RecipeDetailsFull({
   getCategoryName,
   onEnterCookingMode,
   onCopyRecipe,
+  onCopyToMyRecipes,
   currentUserId,
   onToggleFavorite,
   onRate,
@@ -543,20 +544,38 @@ function RecipeDetailsFull({
                     </span>
                   </button>
                 )}
-                <button
-                  className={classes.moreMenuItem}
-                  onClick={() => {
-                    setShowMoreMenu(false);
-                    handleCopyClick();
-                  }}
-                >
-                  <span className={classes.moreMenuLabel}>
-                    {t("recipes", "copyToAnotherUser")}
-                  </span>
-                  <span className={classes.moreMenuIcon}>
-                    <Forward size={18} />
-                  </span>
-                </button>
+                {onCopyRecipe && (
+                  <button
+                    className={classes.moreMenuItem}
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      handleCopyClick();
+                    }}
+                  >
+                    <span className={classes.moreMenuLabel}>
+                      {t("recipes", "copyToAnotherUser")}
+                    </span>
+                    <span className={classes.moreMenuIcon}>
+                      <Forward size={18} />
+                    </span>
+                  </button>
+                )}
+                {onCopyToMyRecipes && (
+                  <button
+                    className={classes.moreMenuItem}
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      onCopyToMyRecipes(recipe.id);
+                    }}
+                  >
+                    <span className={classes.moreMenuLabel}>
+                      {t("recipes", "copyToMyRecipes")}
+                    </span>
+                    <span className={classes.moreMenuIcon}>
+                      <Forward size={18} />
+                    </span>
+                  </button>
+                )}
                 <ExportImageButton recipe={recipe} asMenuItem />
                 <button
                   className={classes.moreMenuItem}

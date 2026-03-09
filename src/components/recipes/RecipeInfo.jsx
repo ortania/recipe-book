@@ -195,7 +195,7 @@ function RecipeInfo({
 
         <div className={classes.recipeInfo}>
           <h3 className={classes.recipeName}>{translatedName}</h3>
-          {onCopyRecipe && person.sharerName && (
+          {person.sharerName && (
             <div
               className={classes.sharerName}
               onClick={(e) => {

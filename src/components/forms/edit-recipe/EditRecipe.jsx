@@ -25,9 +25,7 @@ import useTranslatedList from "../../../hooks/useTranslatedList";
 import buttonClasses from "../../controls/gen-button.module.css";
 import classes from "./edit-recipe.module.css";
 import { CloseButton } from "../../controls";
-import {
-  calculateNutrition,
-} from "../../../services/openai";
+import { calculateNutrition } from "../../../services/openai";
 import {
   isGroupHeader,
   getGroupName,
@@ -685,22 +683,6 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             <Globe size={16} />
             <span>{t("recipes", "shareToGlobal")}</span>
           </label>
-          {editedPerson.shareToGlobal && (
-            <label
-              className={classes.checkboxLabel}
-              style={{ paddingInlineStart: "1.5rem" }}
-            >
-              <input
-                type="checkbox"
-                name="showMyName"
-                className={buttonClasses.checkBox}
-                checked={editedPerson.showMyName}
-                onChange={handleChange}
-              />
-              <UserCircle size={16} />
-              <span>{t("recipes", "showMyName")}</span>
-            </label>
-          )}
         </div>
       )}
     </>
@@ -892,7 +874,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         <>
           <div
             className={`${classes.imageGrid} ${editImageDragOver ? classes.dropActive : ""}`}
-            onDragOver={(e) => { e.preventDefault(); setEditImageDragOver(true); }}
+            onDragOver={(e) => {
+              e.preventDefault();
+              setEditImageDragOver(true);
+            }}
             onDragLeave={() => setEditImageDragOver(false)}
             onDrop={handleEditImageDrop}
           >
@@ -925,7 +910,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         <div
           className={`${classes.imageUploadArea} ${editImageDragOver ? classes.dropActive : ""}`}
           onClick={() => fileInputRef.current?.click()}
-          onDragOver={(e) => { e.preventDefault(); setEditImageDragOver(true); }}
+          onDragOver={(e) => {
+            e.preventDefault();
+            setEditImageDragOver(true);
+          }}
           onDragLeave={() => setEditImageDragOver(false)}
           onDrop={handleEditImageDrop}
         >

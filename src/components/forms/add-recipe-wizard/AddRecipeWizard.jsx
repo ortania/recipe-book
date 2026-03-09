@@ -1734,24 +1734,6 @@ function AddRecipeWizard({
           {t("recipes", "shareToGlobal")}
         </span>
       </label>
-
-      {recipe.shareToGlobal && (
-        <label
-          className={classes.favoriteToggle}
-          style={{ paddingInlineStart: "1.5rem" }}
-        >
-          <input
-            type="checkbox"
-            className={classes.favoriteCheckbox + " " + buttonClasses.checkBox}
-            checked={recipe.showMyName}
-            onChange={() => updateRecipe("showMyName", !recipe.showMyName)}
-          />
-          <UserCircle size={16} />
-          <span className={classes.favoriteLabel}>
-            {t("recipes", "showMyName")}
-          </span>
-        </label>
-      )}
     </div>
   );
 

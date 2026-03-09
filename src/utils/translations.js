@@ -686,7 +686,11 @@ const translations = {
       mixed: "Source URL",
     },
     shareToGlobal: {
-      he: "שתף במתכוני קהילה",
+      he: "שתף במתכוני קהילה — שמך יוצג לצד המתכון",
+      en: "Share in community — your name will appear next to the recipe",
+      ru: "Поделиться в сообществе — ваше имя будет отображаться рядом с рецептом",
+      de: "In der Community teilen — Ihr Name wird neben dem Rezept angezeigt",
+      mixed: "Share in community — your name will appear next to the recipe",
     },
     showMyName: {
       he: "הצג את שמי כמשתף",
@@ -1092,6 +1096,13 @@ const translations = {
       ru: "Копировать другому пользователю",
       de: "An anderen Benutzer kopieren",
       mixed: "Copy to Another User",
+    },
+    copyToMyRecipes: {
+      he: "העתק למתכונים שלי",
+      en: "Copy to My Recipes",
+      ru: "Копировать в мои рецепты",
+      de: "Zu meinen Rezepten kopieren",
+      mixed: "Copy to My Recipes",
     },
     share: {
       he: "שיתוף",
