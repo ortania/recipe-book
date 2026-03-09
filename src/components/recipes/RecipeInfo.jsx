@@ -235,7 +235,10 @@ function RecipeInfo({
                   style={{ marginInlineEnd: "0.2rem", verticalAlign: "middle" }}
                 />
               )}
-              {t("recipes", "sharedBy")} {person.sharerName}
+              {person.copiedFrom
+                ? t("recipes", "copiedFrom")
+                : t("recipes", "sharedBy")}{" "}
+              {person.sharerName}
             </div>
           )}
           <div className={classes.recipeMetadata}>
@@ -311,30 +314,36 @@ function RecipeInfo({
               )}
             </div>
           ) : (
-            (person.avgRating > 0 || person.rating > 0) && (
-              <div className={classes.starsRow} style={{ margin: "0.3rem 0" }}>
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <span
-                    key={star}
-                    className={classes.star}
-                    style={{
-                      color:
-                        star <= Math.round(person.avgRating || person.rating)
-                          ? "#ffc107"
-                          : "#e0e0e0",
-                    }}
-                  >
-                    ★
-                  </span>
-                ))}
-                {person.avgRating > 0 && (
-                  <span className={classes.ratingMeta}>
-                    ({Number(person.avgRating).toFixed(1)} ·{" "}
-                    {person.ratingCount})
-                  </span>
-                )}
-              </div>
-            )
+            (() => {
+              const effectiveRating = person.copiedFrom
+                ? person.rating
+                : (person.avgRating || person.rating);
+              const showAvg = !person.copiedFrom && person.avgRating > 0;
+              return (effectiveRating > 0 || person.rating > 0) ? (
+                <div className={classes.starsRow} style={{ margin: "0.3rem 0" }}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <span
+                      key={star}
+                      className={classes.star}
+                      style={{
+                        color:
+                          star <= Math.round(effectiveRating)
+                            ? "#ffc107"
+                            : "#e0e0e0",
+                      }}
+                    >
+                      ★
+                    </span>
+                  ))}
+                  {showAvg && (
+                    <span className={classes.ratingMeta}>
+                      ({Number(person.avgRating).toFixed(1)} ·{" "}
+                      {person.ratingCount})
+                    </span>
+                  )}
+                </div>
+              ) : null;
+            })()
           )}
         </div>
 

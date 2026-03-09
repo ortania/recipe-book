@@ -110,8 +110,11 @@ export const copyRecipeToUser = async (recipeId, targetUserId, targetLang) => {
     if (!snap.exists()) throw new Error("Recipe not found");
 
     const srcData = snap.data();
-    const { userId, createdAt, updatedAt, order, categories, ...recipeData } =
-      srcData;
+    const {
+      userId, createdAt, updatedAt, order, categories,
+      avgRating, ratingCount,
+      ...recipeData
+    } = srcData;
 
     let translatedData = recipeData;
     if (targetLang && targetLang !== "mixed") {

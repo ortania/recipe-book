@@ -476,24 +476,6 @@ exports.searchCommunityRecipes = onRequest(
   },
 );
 
-// ── Update avgRating on original recipe when a copy's rating changes ──
-exports.updateAvgRating = onDocumentWritten(
-  { document: "recipes/{recipeId}", region: "us-central1" },
-  async (event) => {
-    const before = event.data.before?.data();
-    const after = event.data.after?.data();
-
-    const copiedFrom = after?.copiedFrom || before?.copiedFrom;
-    if (!copiedFrom) return;
-
-    const oldRating = before?.rating || 0;
-    const newRating = after?.rating || 0;
-    if (oldRating === newRating && event.data.after.exists) return;
-
-    await aggregateRatings(copiedFrom);
-  },
-);
-
 // ── Update avgRating when a user rates a recipe directly via subcollection ──
 exports.updateAvgRatingDirect = onDocumentWritten(
   { document: "recipes/{recipeId}/ratings/{userId}", region: "us-central1" },
@@ -507,7 +489,6 @@ async function aggregateRatings(recipeId) {
   const db = getFirestore();
   const ratingsByUser = new Map();
 
-  // Source 1: direct ratings subcollection
   const directSnap = await db
     .collection("recipes")
     .doc(recipeId)
@@ -516,19 +497,6 @@ async function aggregateRatings(recipeId) {
   directSnap.forEach((doc) => {
     const r = doc.data().rating;
     if (r && r > 0) ratingsByUser.set(doc.id, r);
-  });
-
-  // Source 2: ratings from copies (backward compat)
-  const copiesSnap = await db
-    .collection("recipes")
-    .where("copiedFrom", "==", recipeId)
-    .get();
-  copiesSnap.forEach((doc) => {
-    const data = doc.data();
-    const r = data.rating;
-    if (r && r > 0 && data.userId && !ratingsByUser.has(data.userId)) {
-      ratingsByUser.set(data.userId, r);
-    }
   });
 
   let sum = 0;

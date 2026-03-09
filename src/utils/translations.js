@@ -706,6 +706,13 @@ const translations = {
       de: "Geteilt von",
       mixed: "Shared by",
     },
+    copiedFrom: {
+      he: "מאת",
+      en: "Originally by",
+      ru: "Автор",
+      de: "Ursprünglich von",
+      mixed: "Originally by",
+    },
     notes: {
       he: "הערות",
       en: "Notes",
