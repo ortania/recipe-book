@@ -585,11 +585,21 @@
   font-size: var(--basic-font);
 }
 
+.bottomSpacer {
+  display: none;
+}
+
 /* ===== Responsive ===== */
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .page {
     padding: 0.75rem;
     padding-top: 1rem;
+  }
+
+  .bottomSpacer {
+    display: block;
+    height: 10rem;
+    flex-shrink: 0;
   }
 
   .header {

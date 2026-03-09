@@ -391,6 +391,91 @@ exports.translate = onRequest(
   },
 );
 
+// ── Community recipes: browse, search, filter (paginated) ──
+exports.searchCommunityRecipes = onRequest(
+  { cors: true, region: "us-central1" },
+  async (req, res) => {
+    if (req.method !== "POST") {
+      res.status(405).json({ error: "Method not allowed" });
+      return;
+    }
+
+    const {
+      searchTerm = "",
+      categoryId = "",
+      sortBy = "avgRating",
+      sortDirection = "desc",
+      cursor = null,
+      pageSize = 30,
+      excludeUserId = null,
+      sharerUserId = null,
+    } = req.body;
+
+    try {
+      const db = getFirestore();
+      let q = db.collection("recipes").where("shareToGlobal", "==", true);
+
+      if (sharerUserId) {
+        q = q.where("userId", "==", sharerUserId);
+      }
+
+      if (categoryId && categoryId !== "all") {
+        q = q.where("categories", "array-contains", categoryId);
+      }
+
+      const snapshot = await q.get();
+
+      let recipes = [];
+      snapshot.forEach((doc) => {
+        const data = doc.data();
+        if (excludeUserId && data.userId === excludeUserId) return;
+        recipes.push({ id: doc.id, ...data });
+      });
+
+      if (searchTerm.trim()) {
+        const terms = searchTerm.trim().toLowerCase().split(/\s+/).filter(Boolean);
+        recipes = recipes.filter((r) =>
+          terms.every((word) => {
+            const name = (r.name || "").toLowerCase();
+            const ingredients = (r.ingredients || []).join(" ").toLowerCase();
+            const instructions = (r.instructions || []).join(" ").toLowerCase();
+            return name.includes(word) || ingredients.includes(word) || instructions.includes(word);
+          }),
+        );
+      }
+
+      const dir = sortDirection === "asc" ? 1 : -1;
+      recipes.sort((a, b) => {
+        if (sortBy === "avgRating" || sortBy === "rating") {
+          return dir * ((a.avgRating || 0) - (b.avgRating || 0));
+        }
+        if (sortBy === "name") {
+          return dir * (a.name || "").localeCompare(b.name || "");
+        }
+        if (sortBy === "createdAt" || sortBy === "updatedAt") {
+          return dir * ((a[sortBy] || "").localeCompare(b[sortBy] || ""));
+        }
+        return 0;
+      });
+
+      const startIndex = cursor ? parseInt(cursor, 10) : 0;
+      const page = recipes.slice(startIndex, startIndex + pageSize);
+      const nextCursor = startIndex + pageSize < recipes.length
+        ? String(startIndex + pageSize)
+        : null;
+
+      res.json({
+        recipes: page,
+        cursor: nextCursor,
+        total: recipes.length,
+      });
+    } catch (error) {
+      console.error("searchCommunityRecipes error:", error);
+      res.status(500).json({ error: error.message });
+    }
+  },
+);
+
 // ── Update avgRating on original recipe when a copy's rating changes ──
 exports.updateAvgRating = onDocumentWritten(
   { document: "recipes/{recipeId}", region: "us-central1" },

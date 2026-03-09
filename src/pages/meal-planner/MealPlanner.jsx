@@ -226,6 +226,8 @@ function MealPlanner() {
         />
       )}
 
+      <div className={classes.bottomSpacer} />
+
       {/* ===== Shopping List Modal ===== */}
       {showShopping && (
         <div

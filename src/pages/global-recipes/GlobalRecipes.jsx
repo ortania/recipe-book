@@ -5,7 +5,7 @@ import { IoMdStarOutline } from "react-icons/io";
 import { BsGrid3X3Gap } from "react-icons/bs";
 import { useRecipeBook, useLanguage } from "../../context";
 import {
-  fetchGlobalRecipes,
+  searchCommunityRecipes,
   copyRecipeToUser,
 } from "../../firebase/globalRecipeService";
 import {
@@ -17,6 +17,8 @@ import { RecipesView, UpButton, AddRecipeWizard } from "../../components";
 import { scrollToTop } from "../utils";
 import classes from "./global-recipes.module.css";
 
+const PAGE_SIZE = 30;
+
 function GlobalRecipes() {
   const { t, language } = useLanguage();
   const { currentUser, addRecipe, setRecipes, categories } = useRecipeBook();
@@ -25,12 +27,13 @@ function GlobalRecipes() {
   const [showAddPerson, setShowAddPerson] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
   const [loading, setLoading] = useState(false);
-  const [lastDoc, setLastDoc] = useState(null);
   const [hasMore, setHasMore] = useState(false);
   const [ready, setReady] = useState(false);
   const [userRatings, setUserRatings] = useState({});
   const [selectedSharer, setSelectedSharer] = useState("all");
-  const lastDocRef = useRef(null);
+  const cursorRef = useRef(null);
+  const loadingRef = useRef(false);
+  const sentinelRef = useRef(null);
 
   const sharerOptions = useMemo(() => {
     const map = new Map();
@@ -49,13 +52,17 @@ function GlobalRecipes() {
 
   const loadRecipes = useCallback(
     async (reset = false) => {
-      if (!currentUser) return;
+      if (!currentUser || loadingRef.current) return;
+      loadingRef.current = true;
       setLoading(true);
       try {
-        const result = await fetchGlobalRecipes(
-          currentUser.uid,
-          reset ? null : lastDocRef.current,
-        );
+        const result = await searchCommunityRecipes({
+          excludeUserId: currentUser.uid,
+          sortBy: "avgRating",
+          sortDirection: "desc",
+          cursor: reset ? null : cursorRef.current,
+          pageSize: PAGE_SIZE,
+        });
         setAllRecipes((prev) => {
           const next = reset ? result.recipes : [...prev, ...result.recipes];
           const seen = new Set();
@@ -65,12 +72,12 @@ function GlobalRecipes() {
             return true;
           });
         });
-        lastDocRef.current = result.lastVisible;
-        setLastDoc(result.lastVisible);
-        setHasMore(result.hasMore);
+        cursorRef.current = result.cursor;
+        setHasMore(!!result.cursor);
       } catch (err) {
         console.error("Failed to load global recipes:", err);
       } finally {
+        loadingRef.current = false;
         setLoading(false);
         setReady(true);
       }
@@ -81,9 +88,28 @@ function GlobalRecipes() {
   useEffect(() => {
     if (currentUser) {
       setReady(false);
+      cursorRef.current = null;
       loadRecipes(true);
     }
   }, [currentUser]);
+
+  // Infinite scroll via IntersectionObserver
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore && !loadingRef.current) {
+          loadRecipes(false);
+        }
+      },
+      { rootMargin: "300px" },
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [hasMore, loadRecipes]);
 
   useEffect(() => {
     if (!currentUser || allRecipes.length === 0) return;
@@ -153,8 +179,7 @@ function GlobalRecipes() {
         loading={!ready}
         recipesTabLabel={t("nav", "globalRecipesFull")}
         emptyTitle={t("recipesView", "emptyGlobalTitle")}
-        hasMoreRecipes={hasMore}
-        onLoadMore={() => loadRecipes(false)}
+        hasMoreRecipes={false}
         onCopyRecipe={handleCopyRecipe}
         onRate={handleRate}
         userRatings={userRatings}
@@ -182,6 +207,14 @@ function GlobalRecipes() {
           </>,
         ]}
       />
+
+      {/* Infinite scroll sentinel */}
+      <div ref={sentinelRef} style={{ height: 1 }} />
+      {loading && ready && (
+        <div style={{ display: "flex", justifyContent: "center", padding: "1.5rem 0" }}>
+          <div className={classes.spinner} />
+        </div>
+      )}
 
       <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>
         <PiArrowFatLineUp />

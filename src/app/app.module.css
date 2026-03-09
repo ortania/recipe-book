@@ -57,6 +57,10 @@
     scrollbar-width: none;
   }
 
+  .main > * {
+    margin-bottom: 5rem;
+  }
+
   .main::-webkit-scrollbar {
     display: none;
   }

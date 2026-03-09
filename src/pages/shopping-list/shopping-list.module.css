@@ -8,6 +8,7 @@
   max-width: 800px;
   margin: 0 auto;
   padding: 1.5rem;
+  padding-bottom: 6rem;
   font-size: var(--basic-font);
 }
 
@@ -92,6 +93,23 @@
   padding: 0 1rem;
 }
 
+/* ===== List Header (showList view) ===== */
+.listHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding: 0.6rem 0;
+  margin-bottom: 0.75rem;
+}
+
+.listHeaderActions {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  margin-inline-start: auto;
+}
+
 /* ===== Category List ===== */
 .catList {
   background: var(--bg-card);
@@ -146,6 +164,22 @@
   flex-shrink: 0;
 }
 
+/* ===== Selection Bar ===== */
+.selectionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.6rem 0;
+  margin-bottom: 0.5rem;
+}
+
+.selectionCount {
+  font-size: var(--basic-font);
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
 /* ===== Sub Header ===== */
 .subHeader {
   display: flex;
@@ -153,8 +187,7 @@
   justify-content: space-between;
   padding: 0.5rem 0;
   margin-bottom: 0.5rem;
-  position: sticky;
-  top: 0;
+  position: relative;
   background: var(--bg-primary);
   z-index: 10;
 }
@@ -174,14 +207,24 @@
 }
 
 .subTitle {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
   font-size: var(--basic-font);
   font-weight: 600;
   color: var(--text-primary);
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .subCount {
   font-size: var(--small-font);
   color: var(--text-muted);
+}
+
+/* ===== Folder Search ===== */
+.folderSearchBox {
+  margin-bottom: 0.75rem;
 }
 
 /* ===== Recipe List ===== */
@@ -190,7 +233,6 @@
   border: 1px solid var(--border-light);
   border-radius: 12px;
   overflow: hidden;
-  padding-bottom: 5rem;
 }
 
 .recipeItem {
@@ -353,10 +395,20 @@
 }
 
 /* ===== Responsive ===== */
-@media (max-width: 700px) {
+.bottomSpacer {
+  display: none;
+}
+
+@media (max-width: 768px) {
   .page {
     padding: 0.75rem;
-    padding-top: 1rem;
+    padding-top: 0.5rem;
+  }
+
+  .bottomSpacer {
+    display: block;
+    height: 10rem;
+    flex-shrink: 0;
   }
 
   .header {
@@ -367,12 +419,15 @@
     margin-right: -0.75rem;
   }
 
+  .headerEmpty {
+    display: none;
+  }
+
   .title {
     font-size: var(--large-font);
   }
 
   .headerActions {
-    width: 100%;
     justify-content: center;
   }
 }

@@ -35,10 +35,10 @@
 
 /* Collapsed state (scroll down → icon only) */
 .collapsed {
-  height: 4.4rem;
+  /* height: 4.4rem;
   padding: 0 1rem;
   border-radius: 12px;
-  gap: 0;
+  gap: 0; */
 }
 
 .fabIcon {

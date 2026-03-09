@@ -856,6 +856,12 @@ function RecipesView({
         onSearchChange={() => setShowSearch(true)}
         onFocus={() => setShowSearch(true)}
         placeholder={searchPlaceholder || t("common", "search")}
+        examples={[
+          t("recipesView", "searchExample1"),
+          t("recipesView", "searchExample2"),
+          t("recipesView", "searchExample3"),
+          t("recipesView", "searchExample4"),
+        ]}
       />
       <SortButton
         sortField={sortField}
@@ -1068,6 +1074,12 @@ function RecipesView({
                   onSearchChange={() => setShowSearch(true)}
                   onFocus={() => setShowSearch(true)}
                   placeholder={searchPlaceholder || t("common", "search")}
+                  examples={[
+                    t("recipesView", "searchExample1"),
+                    t("recipesView", "searchExample2"),
+                    t("recipesView", "searchExample3"),
+                    t("recipesView", "searchExample4"),
+                  ]}
                   size="large"
                 />
               </div>
@@ -1153,6 +1165,12 @@ function RecipesView({
                   onSearchChange={() => setShowSearch(true)}
                   onFocus={() => setShowSearch(true)}
                   placeholder={searchPlaceholder || t("common", "search")}
+                  examples={[
+                    t("recipesView", "searchExample1"),
+                    t("recipesView", "searchExample2"),
+                    t("recipesView", "searchExample3"),
+                    t("recipesView", "searchExample4"),
+                  ]}
                   size="large"
                 />
               </div>

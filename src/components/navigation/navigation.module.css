@@ -792,10 +792,18 @@
   }
 
   .mobileTabsSlot {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
     display: flex;
-    flex: 1;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    max-width: 60%;
+  }
+
+  .mobileTabsSlot > * {
+    pointer-events: auto;
   }
 
   .mobileLogoIcon {

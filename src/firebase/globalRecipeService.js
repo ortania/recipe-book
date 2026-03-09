@@ -12,6 +12,8 @@ import { db } from "./config";
 import { translateRecipeContent } from "../utils/translateContent";
 
 const RECIPES_COLLECTION = "recipes";
+const SEARCH_COMMUNITY_URL =
+  "https://us-central1-recipe-book-82d57.cloudfunctions.net/searchCommunityRecipes";
 
 export const fetchGlobalRecipesCount = async () => {
   try {
@@ -25,68 +27,75 @@ export const fetchGlobalRecipesCount = async () => {
   }
 };
 
-export const fetchGlobalRecipes = async (currentUserId) => {
+export const searchCommunityRecipes = async ({
+  searchTerm = "",
+  categoryId = "",
+  sortBy = "avgRating",
+  sortDirection = "desc",
+  cursor = null,
+  pageSize = 30,
+  excludeUserId = null,
+  sharerUserId = null,
+} = {}) => {
   try {
-    const ref = collection(db, RECIPES_COLLECTION);
-    const snap = await getDocs(query(ref, where("shareToGlobal", "==", true)));
-
-    const allRecipes = [];
-    snap.forEach((d) => {
-      const data = d.data();
-      if (currentUserId && data.userId === currentUserId) return;
-      allRecipes.push({ id: d.id, ...data });
+    const response = await fetch(SEARCH_COMMUNITY_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        searchTerm,
+        categoryId,
+        sortBy,
+        sortDirection,
+        cursor,
+        pageSize,
+        excludeUserId,
+        sharerUserId,
+      }),
     });
 
-    allRecipes.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
+    if (!response.ok) {
+      throw new Error(`Server error: ${response.status}`);
+    }
 
-    console.log(
-      "🔍 fetchGlobalRecipes total:",
-      snap.size,
-      "| shown:",
-      allRecipes.length,
-    );
-    return { recipes: allRecipes, lastVisible: null, hasMore: false };
+    const data = await response.json();
+    return {
+      recipes: data.recipes || [],
+      cursor: data.cursor || null,
+      total: data.total || 0,
+    };
   } catch (error) {
-    console.error("Error fetching global recipes:", error);
-    return { recipes: [], lastVisible: null, hasMore: false };
+    console.error("Error searching community recipes:", error);
+    return { recipes: [], cursor: null, total: 0 };
   }
+};
+
+// Legacy wrapper for backward compatibility
+export const fetchGlobalRecipes = async (currentUserId) => {
+  return searchCommunityRecipes({
+    excludeUserId: currentUserId,
+    pageSize: 9999,
+  });
 };
 
 export const fetchSharerRecipes = async (sharerUserId, isPublicProfile) => {
   try {
     const ref = collection(db, RECIPES_COLLECTION);
 
-    console.log("🔍 fetchSharerRecipes query:", {
-      sharerUserId,
-      isPublicProfile,
-    });
-
     const snap = await getDocs(query(ref, where("userId", "==", sharerUserId)));
-    console.log("🔍 fetchSharerRecipes raw docs from Firestore:", snap.size);
 
     let recipes = [];
     snap.forEach((d) => {
       const data = d.data();
-      console.log(
-        "🔍 sharerDoc:",
-        data.name,
-        "| shareToGlobal:",
-        data.shareToGlobal,
-        "| userId:",
-        data.userId,
-      );
       recipes.push({ id: d.id, ...data });
     });
 
     if (!isPublicProfile) {
       recipes = recipes.filter((r) => r.shareToGlobal === true);
-      console.log("🔍 after shareToGlobal filter:", recipes.length);
     }
 
     recipes.sort((a, b) =>
       (b.updatedAt || "").localeCompare(a.updatedAt || ""),
     );
-    console.log("🔍 fetchSharerRecipes final:", recipes.length, "recipes");
     return recipes;
   } catch (error) {
     console.error("Error fetching sharer recipes:", error);
