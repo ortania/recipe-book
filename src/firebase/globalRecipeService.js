@@ -6,18 +6,29 @@ import {
   query,
   where,
   getDoc,
+  getCountFromServer,
 } from "firebase/firestore";
 import { db } from "./config";
 import { translateRecipeContent } from "../utils/translateContent";
 
 const RECIPES_COLLECTION = "recipes";
 
+export const fetchGlobalRecipesCount = async () => {
+  try {
+    const ref = collection(db, RECIPES_COLLECTION);
+    const q = query(ref, where("shareToGlobal", "==", true));
+    const snap = await getCountFromServer(q);
+    return snap.data().count;
+  } catch (error) {
+    console.error("Error fetching global recipes count:", error);
+    return 0;
+  }
+};
+
 export const fetchGlobalRecipes = async (currentUserId) => {
   try {
     const ref = collection(db, RECIPES_COLLECTION);
-    const snap = await getDocs(
-      query(ref, where("shareToGlobal", "==", true)),
-    );
+    const snap = await getDocs(query(ref, where("shareToGlobal", "==", true)));
 
     const allRecipes = [];
     snap.forEach((d) => {
@@ -28,7 +39,12 @@ export const fetchGlobalRecipes = async (currentUserId) => {
 
     allRecipes.sort((a, b) => (b.avgRating || 0) - (a.avgRating || 0));
 
-    console.log("🔍 fetchGlobalRecipes total:", snap.size, "| shown:", allRecipes.length);
+    console.log(
+      "🔍 fetchGlobalRecipes total:",
+      snap.size,
+      "| shown:",
+      allRecipes.length,
+    );
     return { recipes: allRecipes, lastVisible: null, hasMore: false };
   } catch (error) {
     console.error("Error fetching global recipes:", error);
@@ -40,7 +56,10 @@ export const fetchSharerRecipes = async (sharerUserId, isPublicProfile) => {
   try {
     const ref = collection(db, RECIPES_COLLECTION);
 
-    console.log("🔍 fetchSharerRecipes query:", { sharerUserId, isPublicProfile });
+    console.log("🔍 fetchSharerRecipes query:", {
+      sharerUserId,
+      isPublicProfile,
+    });
 
     const snap = await getDocs(query(ref, where("userId", "==", sharerUserId)));
     console.log("🔍 fetchSharerRecipes raw docs from Firestore:", snap.size);
@@ -48,7 +67,14 @@ export const fetchSharerRecipes = async (sharerUserId, isPublicProfile) => {
     let recipes = [];
     snap.forEach((d) => {
       const data = d.data();
-      console.log("🔍 sharerDoc:", data.name, "| shareToGlobal:", data.shareToGlobal, "| userId:", data.userId);
+      console.log(
+        "🔍 sharerDoc:",
+        data.name,
+        "| shareToGlobal:",
+        data.shareToGlobal,
+        "| userId:",
+        data.userId,
+      );
       recipes.push({ id: d.id, ...data });
     });
 
@@ -57,7 +83,9 @@ export const fetchSharerRecipes = async (sharerUserId, isPublicProfile) => {
       console.log("🔍 after shareToGlobal filter:", recipes.length);
     }
 
-    recipes.sort((a, b) => (b.updatedAt || "").localeCompare(a.updatedAt || ""));
+    recipes.sort((a, b) =>
+      (b.updatedAt || "").localeCompare(a.updatedAt || ""),
+    );
     console.log("🔍 fetchSharerRecipes final:", recipes.length, "recipes");
     return recipes;
   } catch (error) {

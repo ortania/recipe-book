@@ -3,7 +3,10 @@ import { createPortal } from "react-dom";
 import { FiCheck, FiShoppingCart, FiPrinter, FiTrash2 } from "react-icons/fi";
 import { Globe } from "lucide-react";
 import { useRecipeBook, useLanguage } from "../../context";
-import { fetchGlobalRecipes } from "../../firebase/globalRecipeService";
+import {
+  fetchGlobalRecipes,
+  fetchGlobalRecipesCount,
+} from "../../firebase/globalRecipeService";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { buildShoppingList } from "../../utils/ingredientUtils";
 import { getCategoryIcon } from "../../utils/categoryIcons";
@@ -22,6 +25,7 @@ function ShoppingList() {
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
   const [globalRecipes, setGlobalRecipes] = useState([]);
   const [loadingGlobal, setLoadingGlobal] = useState(false);
+  const [globalCount, setGlobalCount] = useState(null);
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 768px)");
@@ -33,6 +37,12 @@ function ShoppingList() {
     update();
     mql.addEventListener("change", update);
     return () => mql.removeEventListener("change", update);
+  }, []);
+
+  useEffect(() => {
+    fetchGlobalRecipesCount()
+      .then((count) => setGlobalCount(count))
+      .catch(() => setGlobalCount(0));
   }, []);
 
   const mobileTitle = (
@@ -203,7 +213,7 @@ function ShoppingList() {
               {t("nav", "globalRecipesFull")}
             </span>
             <span className={classes.catListCount}>
-              {globalRecipes.length || ""}
+              {globalCount != null ? globalCount : ""}
             </span>
           </button>
           {recipes.length > 0 && (
