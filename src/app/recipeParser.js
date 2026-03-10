@@ -57,11 +57,17 @@ const fetchWithProxy = async (url) => {
         "cleanText length:",
         cleanLen,
       );
-      if (data.contents && data.contents.length > 200 && !isBotBlocked(data.contents)) {
+      if (
+        data.contents &&
+        data.contents.length > 200 &&
+        !isBotBlocked(data.contents)
+      ) {
         if (hasRecipeJsonLd(data.jsonLd) || cleanLen > 2000) {
           return data;
         }
-        console.log("[fetchProxy] CF content seems thin, will try browser CF...");
+        console.log(
+          "[fetchProxy] CF content seems thin, will try browser CF...",
+        );
         regularResult = data;
       }
     }
@@ -83,7 +89,11 @@ const fetchWithProxy = async (url) => {
         "cleanText length:",
         (data.cleanText || "").length,
       );
-      if (data.contents && data.contents.length > 200 && !isBotBlocked(data.contents)) {
+      if (
+        data.contents &&
+        data.contents.length > 200 &&
+        !isBotBlocked(data.contents)
+      ) {
         return data;
       }
     }
@@ -265,11 +275,22 @@ export const parseRecipeFromUrl = async (url) => {
     };
 
     // --- Try microdata extracted by browser CF ---
-    if (serverMicrodata && serverMicrodata.ingredients && serverMicrodata.ingredients.length > 0) {
-      console.log("[recipeParser] Using microdata:", serverMicrodata.ingredients.length, "ingredients");
+    if (
+      serverMicrodata &&
+      serverMicrodata.ingredients &&
+      serverMicrodata.ingredients.length > 0
+    ) {
+      console.log(
+        "[recipeParser] Using microdata:",
+        serverMicrodata.ingredients.length,
+        "ingredients",
+      );
       recipe.name = serverMicrodata.name || "";
       recipe.ingredients = serverMicrodata.ingredients.join("\n");
-      if (serverMicrodata.instructions && serverMicrodata.instructions.length > 0) {
+      if (
+        serverMicrodata.instructions &&
+        serverMicrodata.instructions.length > 0
+      ) {
         recipe.instructions = serverMicrodata.instructions.join("\n");
       }
       if (recipe.name && recipe.ingredients) return recipe;
@@ -395,9 +416,8 @@ export const parseRecipeFromUrl = async (url) => {
               "ingredients, trying OpenAI to find more...",
             );
             try {
-              const { extractRecipeFromText: aiExtract } = await import(
-                "../services/openai"
-              );
+              const { extractRecipeFromText: aiExtract } =
+                await import("../services/openai");
               const aiResult = await aiExtract(textForAI);
               if (
                 aiResult &&
@@ -492,7 +512,10 @@ export const parseRecipeFromUrl = async (url) => {
 
         if (aiResult && !aiResult.error) {
           if (hadJsonLdRecipe) {
-            if (Array.isArray(aiResult.ingredients) && aiResult.ingredients.length > 0)
+            if (
+              Array.isArray(aiResult.ingredients) &&
+              aiResult.ingredients.length > 0
+            )
               recipe.ingredients = aiResult.ingredients.join("\n");
           } else {
             recipe.name = aiResult.name || "";
@@ -930,6 +953,8 @@ const parseStructuredText = (text, recipe) => {
     "המרכיבים",
     "חומרים",
     "רכיבים",
+    "מצרכים",
+    "המצרכים",
   ];
   const instructionsKeywords = [
     "instructions",
@@ -1006,13 +1031,17 @@ const parseStructuredText = (text, recipe) => {
     if (currentSection === "ingredients" && ingredientsStart > 0) {
       const stripped = lines[i].replace(/^(?:\d+[\.\)]\s+|[-•\*]\s*)/, "");
       if (isIngredientGroupLine(stripped)) {
-        recipe.ingredients.push("::" + stripped.replace(/[:\-–—]+\s*$/, "").trim());
+        recipe.ingredients.push(
+          "::" + stripped.replace(/[:\-–—]+\s*$/, "").trim(),
+        );
       } else if (lines[i].match(/^[\d\-•\*]/) || lines[i].length > 5) {
         recipe.ingredients.push(stripped);
       }
     } else if (currentSection === "instructions" && instructionsStart > 0) {
       if (lines[i].length > 3) {
-        recipe.instructions.push(lines[i].replace(/^(?:\d+[\.\)]\s+|[-•\*]\s*)/, ""));
+        recipe.instructions.push(
+          lines[i].replace(/^(?:\d+[\.\)]\s+|[-•\*]\s*)/, ""),
+        );
       }
     }
   }

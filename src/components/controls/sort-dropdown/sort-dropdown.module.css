@@ -36,16 +36,13 @@
   flex: 1;
 }
 
-.arrow {
-  display: inline-flex;
-  align-items: center;
-  color: var(--text-muted, #888);
+.hint {
+  font-size: var(--small-font);
+  color: var(--text-muted, #999);
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
-.option.active .arrow {
+.option.active .hint {
   color: var(--active-color-primary);
-}
-.option.active .arrow svg{
-  stroke-width: 3;
 }

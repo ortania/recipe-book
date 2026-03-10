@@ -26,6 +26,8 @@ export function formatDifficulty(difficulty) {
   return difficultyMap[difficulty] || difficulty;
 }
 
+const heCollator = new Intl.Collator("he", { sensitivity: "base" });
+
 export function search(persons, searchTerm, sortField, sortDirection) {
   return persons
     .filter((person) => {
@@ -63,7 +65,7 @@ export function search(persons, searchTerm, sortField, sortDirection) {
     .sort((a, b) => {
       let comparison = 0;
       if (sortField === "name") {
-        comparison = (a.name || "").localeCompare(b.name || "");
+        comparison = heCollator.compare(a.name || "", b.name || "");
       } else if (sortField === "prepTime") {
         const aPrepTime = parseInt(a.prepTime) || 0;
         const bPrepTime = parseInt(b.prepTime) || 0;
@@ -80,25 +82,43 @@ export function search(persons, searchTerm, sortField, sortDirection) {
         const bDifficulty = difficultyOrder[b.difficulty] || 0;
         comparison = aDifficulty - bDifficulty;
       } else if (sortField === "rating") {
-        const aRating = parseFloat(a.rating) || 0;
-        const bRating = parseFloat(b.rating) || 0;
+        const aRating = parseFloat(a.avgRating || a.rating) || 0;
+        const bRating = parseFloat(b.avgRating || b.rating) || 0;
         comparison = aRating - bRating;
       } else if (sortField === "newest") {
-        const aTime = a.createdAt?.seconds || a.createdAt || 0;
-        const bTime = b.createdAt?.seconds || b.createdAt || 0;
+        const toMs = (v) => {
+          if (!v) return 0;
+          if (typeof v === "number") return v;
+          if (v.seconds) return v.seconds * 1000;
+          const ms = new Date(v).getTime();
+          return isNaN(ms) ? 0 : ms;
+        };
+        const aTime = toMs(a.createdAt) || toMs(a.order) || 0;
+        const bTime = toMs(b.createdAt) || toMs(b.order) || 0;
         comparison = aTime - bTime;
       } else if (sortField === "favorites") {
         const aFav = a.isFavorite ? 1 : 0;
         const bFav = b.isFavorite ? 1 : 0;
         comparison = aFav - bFav;
+      } else if (sortField === "saved") {
+        try {
+          const ids = JSON.parse(
+            localStorage.getItem("savedCommunityRecipes") || "[]",
+          );
+          const aSaved = ids.includes(a.id) ? 1 : 0;
+          const bSaved = ids.includes(b.id) ? 1 : 0;
+          comparison = aSaved - bSaved;
+        } catch {
+          comparison = 0;
+        }
       } else if (sortField === "recentlyViewed") {
         try {
-          const ids = JSON.parse(localStorage.getItem("recentlyViewedRecipes") || "[]");
-          const aIdx = ids.indexOf(a.id);
-          const bIdx = ids.indexOf(b.id);
-          const aPos = aIdx === -1 ? 9999 : aIdx;
-          const bPos = bIdx === -1 ? 9999 : bIdx;
-          comparison = aPos - bPos;
+          const ids = JSON.parse(
+            localStorage.getItem("recentlyViewedRecipes") || "[]",
+          );
+          const aPos = ids.indexOf(a.id);
+          const bPos = ids.indexOf(b.id);
+          comparison = (aPos === -1 ? 9999 : aPos) - (bPos === -1 ? 9999 : bPos);
         } catch {
           comparison = 0;
         }

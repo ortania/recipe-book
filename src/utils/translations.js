@@ -700,11 +700,11 @@ const translations = {
       mixed: "Show my name as sharer",
     },
     sharedBy: {
-      he: 'שותף ע"י',
-      en: "Shared by",
-      ru: "Поделился",
-      de: "Geteilt von",
-      mixed: "Shared by",
+      he: "מאת",
+      en: "By",
+      ru: "Автор",
+      de: "Von",
+      mixed: "By",
     },
     copiedFrom: {
       he: "מאת",
@@ -824,6 +824,13 @@ const translations = {
       ru: "Изображение (необязательно)",
       de: "Bild (Optional)",
       mixed: "Image (Optional)",
+    },
+    noImage: {
+      he: "לא נוספה תמונה",
+      en: "No image added",
+      ru: "Изображение не добавлено",
+      de: "Kein Bild hinzugefügt",
+      mixed: "No image added",
     },
     uploadFromComputer: {
       he: "או העלה מהמחשב:",
@@ -1647,6 +1654,13 @@ const translations = {
       ru: "Избранное",
       de: "Favoriten",
       mixed: "Favorites",
+    },
+    sortBySaved: {
+      he: "תויגו",
+      en: "Saved",
+      ru: "Сохранённые",
+      de: "Gespeicherte",
+      mixed: "Saved",
     },
     sortByNewest: {
       he: "חדש ביותר",
@@ -3224,12 +3238,12 @@ const translations = {
       mixed: "עדכן",
     },
     autoUpdateNote: {
-      he: "📝 בעדכון אוטומטי מתעדכנים רק מרכיבים והוראות הכנה. שדות אחרים (כותרת, מספר מנות וכו') יש לעדכן ידנית.",
-      en: "📝 Auto-update only changes ingredients and instructions. Other fields (title, servings, etc.) must be updated manually.",
-      ru: "📝 Автообновление изменяет только ингредиенты и инструкции. Остальные поля обновите вручную.",
-      de: "📝 Auto-Update ändert nur Zutaten und Anleitung. Andere Felder manuell aktualisieren.",
+      he: "בעדכון אוטומטי מתעדכנים רק מרכיבים והוראות הכנה. שדות אחרים (כותרת, מספר מנות וכו') יש לעדכן ידנית.",
+      en: "Auto-update only changes ingredients and instructions. Other fields (title, servings, etc.) must be updated manually.",
+      ru: "Автообновление изменяет только ингредиенты и инструкции. Остальные поля обновите вручную.",
+      de: "Auto-Update ändert nur Zutaten und Anleitung. Andere Felder manuell aktualisieren.",
       mixed:
-        "📝 בעדכון אוטומטי מתעדכנים רק מרכיבים והוראות הכנה. שדות אחרים (כותרת, מספר מנות וכו') יש לעדכן ידנית.",
+        "בעדכון אוטומטי מתעדכנים רק מרכיבים והוראות הכנה. שדות אחרים (כותרת, מספר מנות וכו') יש לעדכן ידנית.",
     },
   },
 
@@ -3428,20 +3442,20 @@ const translations = {
         'אמרו מילת מפתח לפני כל פריט:\n"שם" — שם המתכון\n"מרכיב" / "חומר" — לפני כל מרכיב\n"לבלילה", "למלית", "לציפוי" וכו\' — לפני קבוצת מרכיבים\n"הוראה" / "שלב" — לפני כל שלב הכנה\n"מנות" — מספר מנות\n"זמן הכנה" — זמן ההכנה\n"קושי" — רמת קושי\n"קטגוריה" — שיוך לקטגוריה',
     },
     recordingExample: {
-      he: '💡 דוגמה: "שם עוגת שוקולד מרכיב 2 כוסות קמח מרכיב כוס סוכר מרכיב 3 ביצים הוראה לערבב את החומרים היבשים הוראה להוסיף ביצים ולערבב הוראה לאפות ב-180 מעלות 30 דקות מנות 8 זמן הכנה 15 דקות"',
-      en: '💡 Example: "name Chocolate Cake ingredient 2 cups flour ingredient 1 cup sugar ingredient 3 eggs step mix dry ingredients step add eggs and mix step bake at 180° for 30 min servings 8 prep time 15 min"',
-      ru: '💡 Пример: "name Шоколадный торт ingredient 2 стакана муки ingredient стакан сахара ingredient 3 яйца step смешать step добавить яйца step выпекать при 180° servings 8 prep time 15"',
-      de: '💡 Beispiel: "name Schokoladenkuchen ingredient 2 Tassen Mehl ingredient Tasse Zucker ingredient 3 Eier step mischen step Eier hinzufügen step bei 180° backen servings 8 prep time 15"',
+      he: 'דוגמה: "שם עוגת שוקולד מרכיב 2 כוסות קמח מרכיב כוס סוכר מרכיב 3 ביצים הוראה לערבב את החומרים היבשים הוראה להוסיף ביצים ולערבב הוראה לאפות ב-180 מעלות 30 דקות מנות 8 זמן הכנה 15 דקות"',
+      en: 'Example: "name Chocolate Cake ingredient 2 cups flour ingredient 1 cup sugar ingredient 3 eggs step mix dry ingredients step add eggs and mix step bake at 180° for 30 min servings 8 prep time 15 min"',
+      ru: 'Пример: "name Шоколадный торт ingredient 2 стакана муки ingredient стакан сахара ingredient 3 яйца step смешать step добавить яйца step выпекать при 180° servings 8 prep time 15"',
+      de: 'Beispiel: "name Schokoladenkuchen ingredient 2 Tassen Mehl ingredient Tasse Zucker ingredient 3 Eier step mischen step Eier hinzufügen step bei 180° backen servings 8 prep time 15"',
       mixed:
-        '💡 דוגמה: "שם עוגת שוקולד מרכיב 2 כוסות קמח מרכיב כוס סוכר מרכיב 3 ביצים הוראה לערבב את החומרים היבשים הוראה להוסיף ביצים ולערבב הוראה לאפות ב-180 מעלות 30 דקות מנות 8 זמן הכנה 15 דקות"',
+        'דוגמה: "שם עוגת שוקולד מרכיב 2 כוסות קמח מרכיב כוס סוכר מרכיב 3 ביצים הוראה לערבב את החומרים היבשים הוראה להוסיף ביצים ולערבב הוראה לאפות ב-180 מעלות 30 דקות מנות 8 זמן הכנה 15 דקות"',
     },
     freeSpeechNote: {
-      he: '💬 אפשר גם לדבר חופשי בלי מילות מפתח — לאחר עצירת ההקלטה יופיע כפתור "✨ ניתוח AI" לניתוח אוטומטי',
-      en: '💬 You can also speak freely without keywords — after stopping, an "✨ AI Parse" button will appear for automatic analysis',
-      ru: '💬 Можно говорить свободно — после остановки появится кнопка "✨ AI анализ" для автоматического разбора',
-      de: '💬 Sie können auch frei sprechen — nach dem Stoppen erscheint ein "✨ KI-Analyse" Button für automatische Analyse',
+      he: 'אפשר גם לדבר חופשי בלי מילות מפתח — לאחר עצירת ההקלטה יופיע כפתור "ניתוח AI" לניתוח אוטומטי',
+      en: 'You can also speak freely without keywords — after stopping, an "AI Parse" button will appear for automatic analysis',
+      ru: 'Можно говорить свободно — после остановки появится кнопка "AI анализ" для автоматического разбора',
+      de: 'Sie können auch frei sprechen — nach dem Stoppen erscheint ein "KI-Analyse" Button für automatische Analyse',
       mixed:
-        '💬 אפשר גם לדבר חופשי בלי מילות מפתח — לאחר עצירת ההקלטה יופיע כפתור "✨ ניתוח AI" לניתוח אוטומטי',
+        'אפשר גם לדבר חופשי בלי מילות מפתח — לאחר עצירת ההקלטה יופיע כפתור "ניתוח AI" לניתוח אוטומטי',
     },
     reRecord: {
       he: "הקלט מחדש",
@@ -3458,11 +3472,11 @@ const translations = {
       mixed: "התחל מהתחלה",
     },
     aiParse: {
-      he: "✨ ניתוח AI (דיבור חופשי)",
-      en: "✨ AI Parse (free speech)",
-      ru: "✨ AI анализ (свободная речь)",
-      de: "✨ KI-Analyse (freie Sprache)",
-      mixed: "✨ ניתוח AI (דיבור חופשי)",
+      he: "ניתוח AI (דיבור חופשי)",
+      en: "AI Parse (free speech)",
+      ru: "AI анализ (свободная речь)",
+      de: "KI-Analyse (freie Sprache)",
+      mixed: "ניתוח AI (דיבור חופשי)",
     },
     noSpeechSupport: {
       he: "הדפדפן שלך לא תומך בזיהוי דיבור",

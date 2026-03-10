@@ -988,7 +988,26 @@
   transform: translateY(-2px);
 }
 
+.recentlyViewedImageWrap {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.recentlyViewedNoImage {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  border: 2px dashed var(--text-muted, #ccc);
+  background: var(--bg-card, #fff);
+}
+
 .recentlyViewedImage {
+  position: relative;
+  z-index: 1;
   width: 72px;
   height: 72px;
   border-radius: 50%;

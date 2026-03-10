@@ -17,8 +17,6 @@ import { formatDifficulty, formatTime } from "./utils";
 import { useLanguage } from "../../context";
 import useTranslatedText from "../../hooks/useTranslatedText";
 
-const DEFAULT_IMAGE =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='320'%3E%3Crect width='400' height='320' fill='%23e0e0e0'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-size='24' fill='%23666'%3ENo Image%3C/text%3E%3C/svg%3E";
 
 function RecipeInfo({
   person,
@@ -44,16 +42,10 @@ function RecipeInfo({
   const [copySuccess, setCopySuccess] = useState(false);
   const [hoverStar, setHoverStar] = useState(0);
 
-  const getImageSrc = () => {
-    if (
-      !person.image_src ||
-      typeof person.image_src !== "string" ||
-      person.image_src.trim() === ""
-    ) {
-      return DEFAULT_IMAGE;
-    }
-    return person.image_src;
-  };
+  const hasImage =
+    person.image_src &&
+    typeof person.image_src === "string" &&
+    person.image_src.trim() !== "";
 
   // Update local state when person prop changes
   useEffect(() => {
@@ -129,15 +121,20 @@ function RecipeInfo({
         }
       >
         <div className={classes.imageContainer}>
-          <img
-            src={getImageSrc()}
-            alt={person.name}
-            className={classes.recipeImage}
-            loading="lazy"
-            onError={(e) => {
-              e.target.src = DEFAULT_IMAGE;
-            }}
-          />
+          <div className={classes.noImagePlaceholder}>
+            {t("recipes", "noImage")}
+          </div>
+          {hasImage && (
+            <img
+              src={person.image_src}
+              alt={person.name}
+              className={classes.recipeImage}
+              loading="lazy"
+              onError={(e) => {
+                e.target.style.display = "none";
+              }}
+            />
+          )}
           {onSaveRecipe ? (
             <button
               className={`${classes.favoriteButton} ${isSaved ? classes.active : ""}`}
@@ -283,28 +280,12 @@ function RecipeInfo({
                   ))}
                 </div>
               </div>
-              {person.avgRating > 0 && (
+              {!person.copiedFrom && person.avgRating > 0 && (
                 <div className={classes.ratingAvgBlock}>
                   <div className={classes.ratingRow}>
                     <span className={classes.ratingLabel}>
                       {t("globalRecipes", "avgRating")}:
                     </span>
-                    {/* <div className={classes.starsRow}>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <span
-                          key={star}
-                          className={classes.star}
-                          style={{
-                            color:
-                              star <= Math.round(person.avgRating)
-                                ? "#ffc107"
-                                : "#e0e0e0",
-                          }}
-                        >
-                          ★
-                        </span>
-                      ))}
-                    </div> */}
                   </div>
                   <span className={classes.ratingMeta}>
                     {Number(person.avgRating).toFixed(1)} ( {person.ratingCount}

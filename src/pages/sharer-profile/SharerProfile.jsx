@@ -174,9 +174,7 @@ function SharerProfile() {
           showCategories={false}
           loading={!sharerData}
           emptyTitle={t("sharerProfile", "noRecipes")}
-          onCopyRecipe={
-            currentUser?.uid !== sharerUserId ? handleCopyRecipe : undefined
-          }
+          onCopyRecipe={undefined}
           onRate={handleRate}
           userRatings={userRatings}
           defaultSortField="rating"

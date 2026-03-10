@@ -3,6 +3,8 @@ import { createPortal } from "react-dom";
 import { FiCheck, FiShoppingCart, FiPrinter, FiTrash2 } from "react-icons/fi";
 import { Globe } from "lucide-react";
 import SearchBox from "../../components/controls/search/SearchBox";
+import { SortButton } from "../../components/controls/sort-button";
+import { search } from "../../components/recipes/utils";
 import { useRecipeBook, useLanguage } from "../../context";
 import {
   searchCommunityRecipes,
@@ -29,6 +31,21 @@ function ShoppingList() {
   const [loadingGlobal, setLoadingGlobal] = useState(false);
   const [globalCount, setGlobalCount] = useState(null);
   const [folderSearch, setFolderSearch] = useState("");
+  const [sortField, setSortField] = useState("name");
+  const [sortDirection, setSortDirection] = useState("asc");
+
+  const shoppingSortOptions = [
+    { field: "name", defaultDir: "asc" },
+    { field: "newest", defaultDir: "desc" },
+    { field: "prepTime", defaultDir: "asc" },
+    { field: "difficulty", defaultDir: "asc" },
+    { field: "rating", defaultDir: "desc" },
+  ];
+
+  const handleSortChange = (field, direction) => {
+    setSortField(field);
+    setSortDirection(direction);
+  };
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 768px)");
@@ -173,7 +190,8 @@ function ShoppingList() {
       {selectedRecipes.length > 0 ? (
         <div className={classes.selectionBar}>
           <span className={classes.selectionCount}>
-            {selectedRecipes.length} {t("recipesView", "recipesCount")} {t("mealPlanner", "selected")}
+            {selectedRecipes.length} {t("recipesView", "recipesCount")}{" "}
+            {t("mealPlanner", "selected")}
           </span>
           <button
             className={classes.headerBtn}
@@ -184,7 +202,9 @@ function ShoppingList() {
           </button>
         </div>
       ) : (
-        <div className={`${classes.header} ${!headerHasContent ? classes.headerEmpty : ""}`}>
+        <div
+          className={`${classes.header} ${!headerHasContent ? classes.headerEmpty : ""}`}
+        >
           <div>
             {!mobileTabsEl && (
               <h1 className={classes.title}>
@@ -223,7 +243,10 @@ function ShoppingList() {
           {recipes.length > 0 && (
             <button
               className={classes.catListItem}
-              onClick={() => { setSelectedCat("all"); setFolderSearch(""); }}
+              onClick={() => {
+                setSelectedCat("all");
+                setFolderSearch("");
+              }}
             >
               <span
                 className={classes.catListIcon}
@@ -250,7 +273,10 @@ function ShoppingList() {
                   <button
                     key={cat.id}
                     className={classes.catListItem}
-                    onClick={() => { setSelectedCat(cat.id); setFolderSearch(""); }}
+                    onClick={() => {
+                      setSelectedCat(cat.id);
+                      setFolderSearch("");
+                    }}
                   >
                     <span
                       className={classes.catListIcon}
@@ -272,7 +298,13 @@ function ShoppingList() {
       ) : (
         <>
           <div className={classes.subHeader}>
-            <BackButton onClick={() => { setSelectedCat(null); setFolderSearch(""); }} size={22} />
+            <BackButton
+              onClick={() => {
+                setSelectedCat(null);
+                setFolderSearch("");
+              }}
+              size={22}
+            />
             <span className={classes.subTitle}>
               {selectedCat === "community"
                 ? t("nav", "globalRecipesFull")
@@ -292,22 +324,34 @@ function ShoppingList() {
             </span>
           </div>
 
-          <SearchBox
-            searchTerm={folderSearch}
-            onSearchChange={setFolderSearch}
-            placeholder={t("globalRecipes", "search")}
-            examples={[
-              t("recipesView", "searchExample1"),
-              t("recipesView", "searchExample2"),
-              t("recipesView", "searchExample3"),
-            ]}
-            className={classes.folderSearchBox}
-          />
+          <div className={classes.folderSearchRow}>
+            <SearchBox
+              searchTerm={folderSearch}
+              onSearchChange={setFolderSearch}
+              placeholder={t("globalRecipes", "search")}
+              examples={[
+                t("recipesView", "searchExample1"),
+                t("recipesView", "searchExample2"),
+                t("recipesView", "searchExample3"),
+              ]}
+              className={classes.folderSearchBox}
+            />
+            <SortButton
+              sortField={sortField}
+              sortDirection={sortDirection}
+              onSortChange={handleSortChange}
+              options={shoppingSortOptions}
+            />
+          </div>
 
           {selectedCat === "community" && loadingGlobal ? (
             <div className={classes.recipeList}>
               {Array.from({ length: 8 }).map((_, i) => (
-                <div key={i} className={classes.recipeItem} style={{ pointerEvents: "none" }}>
+                <div
+                  key={i}
+                  className={classes.recipeItem}
+                  style={{ pointerEvents: "none" }}
+                >
                   <Skeleton circle width={40} height={40} />
                   <Skeleton width="60%" height={18} />
                 </div>
@@ -315,15 +359,14 @@ function ShoppingList() {
             </div>
           ) : (
             <div className={classes.recipeList}>
-              {(selectedCat === "community"
-                ? globalRecipes
-                : getRecipesForCat(selectedCat)
-              ).filter((recipe) => {
-                if (!folderSearch.trim()) return true;
-                const words = folderSearch.trim().toLowerCase().split(/\s+/);
-                const name = (recipe.name || "").toLowerCase();
-                return words.every((w) => name.includes(w));
-              }).map((recipe) => {
+              {search(
+                selectedCat === "community"
+                  ? globalRecipes
+                  : getRecipesForCat(selectedCat),
+                folderSearch,
+                sortField,
+                sortDirection,
+              ).map((recipe) => {
                 const isSelected = selectedRecipes.includes(recipe.id);
                 return (
                   <button

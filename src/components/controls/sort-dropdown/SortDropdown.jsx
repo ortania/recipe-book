@@ -1,4 +1,3 @@
-import { ArrowUp, ArrowDown } from "lucide-react";
 import { useLanguage } from "../../../context";
 import classes from "./sort-dropdown.module.css";
 
@@ -27,7 +26,18 @@ function SortDropdown({
     difficulty: t("recipesView", "sortByDifficulty"),
     rating: t("recipesView", "sortByRating"),
     favorites: t("recipesView", "sortByFavorites"),
+    saved: t("recipesView", "sortBySaved"),
     recentlyViewed: t("recipesView", "sortByRecentlyViewed"),
+  };
+
+  const hintMap = {
+    name: { asc: "א ← ת", desc: "ת ← א" },
+    newest: { asc: "ישן ← חדש", desc: "חדש ← ישן" },
+    prepTime: { asc: "קצר ← ארוך", desc: "ארוך ← קצר" },
+    difficulty: { asc: "קל ← קשה", desc: "קשה ← קל" },
+    rating: { asc: "נמוך ← גבוה", desc: "גבוה ← נמוך" },
+    favorites: { asc: "רגיל ← מועדף", desc: "מועדף ← רגיל" },
+    saved: { asc: "רגיל ← שמור", desc: "שמור ← רגיל" },
   };
 
   const handleSelect = (field) => {
@@ -50,16 +60,10 @@ function SortDropdown({
             className={`${classes.option} ${isActive ? classes.active : ""}`}
             onClick={() => handleSelect(field)}
           >
-            <span className={classes.arrow}>
-              {lockedDir ? (
-                <ArrowDown size={16} />
-              ) : dir === "asc" ? (
-                <ArrowUp size={16} />
-              ) : (
-                <ArrowDown size={16} />
-              )}
-            </span>
             <span className={classes.label}>{labelMap[field] || field}</span>
+            {hintMap[field] && (
+              <span className={classes.hint}>{hintMap[field][dir]}</span>
+            )}
           </button>
         );
       })}

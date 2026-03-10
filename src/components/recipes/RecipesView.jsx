@@ -444,35 +444,7 @@ function RecipesView({
       });
     }
 
-    // Search and sort
-    let result = search(filtered, debouncedSearch, sortField, sortDirection);
-
-    // Sort by favorites
-    if (sortField === "favorites") {
-      result = [...result].sort((a, b) => {
-        const aFav = a.isFavorite ? 1 : 0;
-        const bFav = b.isFavorite ? 1 : 0;
-        return sortDirection === "asc" ? bFav - aFav : aFav - bFav;
-      });
-    }
-
-    // Sort by recently viewed
-    if (sortField === "recentlyViewed") {
-      try {
-        const stored = JSON.parse(
-          localStorage.getItem("recentlyViewedRecipes") || "[]",
-        );
-        result = [...result].sort((a, b) => {
-          const aIdx = stored.indexOf(a.id);
-          const bIdx = stored.indexOf(b.id);
-          const aVal = aIdx === -1 ? 9999 : aIdx;
-          const bVal = bIdx === -1 ? 9999 : bIdx;
-          return sortDirection === "asc" ? aVal - bVal : bVal - aVal;
-        });
-      } catch {}
-    }
-
-    return result;
+    return search(filtered, debouncedSearch, sortField, sortDirection);
   }, [
     displayPersons,
     debouncedSearch,
@@ -484,6 +456,7 @@ function RecipesView({
     selectedIngredientCount,
     selectedStepCount,
     filterIngredients,
+    savedRecipes,
   ]);
 
   const recentlyViewed = useMemo(() => {
@@ -775,15 +748,31 @@ function RecipesView({
     </div>
   );
 
-  const recipeSortOptions = [
-    { field: "name", defaultDir: "asc" },
-    { field: "newest", defaultDir: "desc", lockedDir: "desc" },
-    { field: "prepTime", defaultDir: "asc" },
-    { field: "difficulty", defaultDir: "asc" },
-    { field: "rating", defaultDir: "desc" },
-    { field: "favorites", defaultDir: "desc" },
-    { field: "recentlyViewed", defaultDir: "desc", lockedDir: "desc" },
-  ];
+  const recipeSortOptions = onSaveRecipe
+    ? [
+        { field: "name", defaultDir: "asc" },
+        { field: "newest", defaultDir: "desc" },
+        { field: "prepTime", defaultDir: "asc" },
+        { field: "difficulty", defaultDir: "asc" },
+        { field: "rating", defaultDir: "desc" },
+        { field: "saved", defaultDir: "desc" },
+      ]
+    : [
+        { field: "name", defaultDir: "asc" },
+        { field: "newest", defaultDir: "desc" },
+        { field: "prepTime", defaultDir: "asc" },
+        { field: "difficulty", defaultDir: "asc" },
+        { field: "rating", defaultDir: "desc" },
+        { field: "favorites", defaultDir: "desc" },
+      ];
+
+  useEffect(() => {
+    const validFields = recipeSortOptions.map((o) => o.field);
+    if (!validFields.includes(sortField)) {
+      setSortField(defaultSortField);
+      setSortDirection(defaultSortDirection);
+    }
+  }, []);
 
   const handleRecipeSortChange = (field, direction) => {
     setSortField(field);
@@ -1260,14 +1249,22 @@ function RecipesView({
                         : navigate(`/recipe/${person.id}`)
                     }
                   >
-                    {person.image_src && (
-                      <img
-                        src={person.image_src}
-                        alt={person.name}
-                        className={classes.recentlyViewedImage}
-                        loading="lazy"
-                      />
-                    )}
+                    <div className={classes.recentlyViewedImageWrap}>
+                      <div className={classes.recentlyViewedNoImage} />
+                      {person.image_src &&
+                        typeof person.image_src === "string" &&
+                        person.image_src.trim() !== "" && (
+                          <img
+                            src={person.image_src}
+                            alt={person.name}
+                            className={classes.recentlyViewedImage}
+                            loading="lazy"
+                            onError={(e) => {
+                              e.target.style.display = "none";
+                            }}
+                          />
+                        )}
+                    </div>
                     <span className={classes.recentlyViewedName}>
                       {person.name}
                     </span>
@@ -1309,7 +1306,71 @@ function RecipesView({
             />
           )}
 
-          {filteredAndSortedPersons.length === 0 ? (
+          {loading ? (
+            isSimpleView ? (
+              <div>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div
+                    key={i}
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "1rem",
+                      padding: "0.75rem 1rem",
+                      marginBottom: "0.5rem",
+                      background: "var(--bg-card)",
+                      borderRadius: 4,
+                      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+                    }}
+                  >
+                    <Skeleton width={32} height={32} borderRadius={6} />
+                    <div style={{ flex: 1 }}>
+                      <Skeleton width="60%" height="0.9rem" borderRadius={6} />
+                    </div>
+                    <Skeleton width={50} height="0.7rem" borderRadius={6} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={classes.recipeGrid}>
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i}>
+                    <Skeleton
+                      height={0}
+                      style={{ paddingBottom: "100%" }}
+                      borderRadius={25}
+                    />
+                    <div style={{ padding: "0.75rem" }}>
+                      <Skeleton
+                        width="75%"
+                        height="1.2rem"
+                        borderRadius={6}
+                        style={{ marginBottom: "0.3rem" }}
+                      />
+                      <div
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.5rem",
+                        }}
+                      >
+                        <Skeleton
+                          width="30%"
+                          height="0.9rem"
+                          borderRadius={6}
+                        />
+                        <Skeleton
+                          width="25%"
+                          height="0.9rem"
+                          borderRadius={6}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )
+          ) : filteredAndSortedPersons.length === 0 ? (
             <div className={classes.noResults}>
               {showSavedOnly
                 ? t("globalRecipes", "noSavedRecipes")

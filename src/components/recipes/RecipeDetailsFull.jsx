@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useRef, useEffect } from "react";
+import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./recipe-details-full.module.css";
@@ -60,11 +60,19 @@ function RecipeDetailsFull({
   onToggleFavorite,
   onRate,
   userRating = 0,
+  onActiveTabChange,
 }) {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
   // State management
-  const [activeTab, setActiveTab] = useState("ingredients");
+  const [activeTab, setActiveTabRaw] = useState("ingredients");
+  const setActiveTab = useCallback(
+    (tab) => {
+      setActiveTabRaw(tab);
+      onActiveTabChange?.(tab);
+    },
+    [onActiveTabChange],
+  );
   const [hoverStar, setHoverStar] = useState(0);
   const touchRef = useRef({ startX: 0, startY: 0 });
 
@@ -100,6 +108,7 @@ function RecipeDetailsFull({
   const [chatMessages, setChatMessages] = useState([]);
   const [chatAppliedFields, setChatAppliedFields] = useState({});
   const [showMoreMenu, setShowMoreMenu] = useState(false);
+  const [copyToMySuccess, setCopyToMySuccess] = useState(false);
   const [showImageLightbox, setShowImageLightbox] = useState(false);
   const [activeImageIndex, setActiveImageIndex] = useState(0);
   const allImages = useMemo(() => {
@@ -278,9 +287,9 @@ function RecipeDetailsFull({
           <Menu size={22} />
         </button>
       </div>
-      {allImages.length > 0 && (
+      {allImages.length > 0 ? (
         <div
-          className={classes.imageContainer}
+          className={`${classes.imageContainer} ${classes.imageContainerWithFallback}`}
           onTouchStart={(e) => {
             if (allImages.length <= 1) return;
             imageTouchRef.current.startX = e.touches[0].clientX;
@@ -313,12 +322,18 @@ function RecipeDetailsFull({
             }
           }}
         >
+          <div className={classes.noImagePlaceholder}>
+            {t("recipes", "noImage")}
+          </div>
           <img
             src={allImages[activeImageIndex]}
             alt={recipe.name}
             className={classes.recipeImage}
             loading="lazy"
             onClick={() => setShowImageLightbox(true)}
+            onError={(e) => {
+              e.target.style.display = "none";
+            }}
           />
           {allImages.length > 1 && (
             <>
@@ -359,6 +374,10 @@ function RecipeDetailsFull({
               </span>
             </>
           )}
+        </div>
+      ) : (
+        <div className={classes.noImagePlaceholder}>
+          {t("recipes", "noImage")}
         </div>
       )}
 
@@ -563,9 +582,15 @@ function RecipeDetailsFull({
                 {onCopyToMyRecipes && (
                   <button
                     className={classes.moreMenuItem}
-                    onClick={() => {
+                    onClick={async () => {
                       setShowMoreMenu(false);
-                      onCopyToMyRecipes(recipe.id);
+                      try {
+                        await onCopyToMyRecipes(recipe.id);
+                        setCopyToMySuccess(true);
+                        setTimeout(() => setCopyToMySuccess(false), 3000);
+                      } catch (err) {
+                        console.error("Copy failed:", err);
+                      }
                     }}
                   >
                     <span className={classes.moreMenuLabel}>
@@ -607,6 +632,11 @@ function RecipeDetailsFull({
                     </span>
                   </button>
                 )}
+              </div>
+            )}
+            {copyToMySuccess && (
+              <div className={classes.copyToast}>
+                ✓ {t("globalRecipes", "copied")}
               </div>
             )}
           </div>

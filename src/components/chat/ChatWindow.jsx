@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { Trash2, Lightbulb } from "lucide-react";
+import { Trash2, Lightbulb, Info } from "lucide-react";
 import {
   sendChatMessage,
   analyzeImageForNutrition,
@@ -326,7 +326,7 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
           .map((item, i) => `${i + 1}. ${item}`)
           .join("\n");
 
-        const details = `${fieldsList}\n\n${ingLabel}:\n${ingList}\n\n${insLabel}:\n${insList}\n\n${t("recipeChat", "autoUpdateNote")}`;
+        const details = `${fieldsList}\n\n${ingLabel}:\n${ingList}\n\n${insLabel}:\n${insList}`;
 
         setAppliedFields((prev) => ({
           ...prev,
@@ -350,7 +350,9 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
 
   /* ── render ── */
   return (
-    <div className={`${classes.chatContainer} ${isRecipeMode ? classes.embedded : ""}`}>
+    <div
+      className={`${classes.chatContainer} ${isRecipeMode ? classes.embedded : ""}`}
+    >
       {!isRecipeMode && (showGreeting === undefined ? true : showGreeting) && (
         <div className={classes.chatHeader}>
           <div className={classes.greeting}>
@@ -386,7 +388,13 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
                 t("recipeChat", "emptyMessage")
               ) : (
                 <>
-                  <Lightbulb size={18} style={{ verticalAlign: "middle", marginInlineEnd: "0.3rem" }} />
+                  <Lightbulb
+                    size={18}
+                    style={{
+                      verticalAlign: "middle",
+                      marginInlineEnd: "0.3rem",
+                    }}
+                  />
                   {t("chat", "ideaTitle")}
                 </>
               )}
@@ -394,7 +402,13 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
             <p className={classes.ideasSubtitle}>
               {isRecipeMode ? (
                 <>
-                  <Lightbulb size={18} style={{ verticalAlign: "middle", marginInlineEnd: "0.3rem" }} />
+                  <Lightbulb
+                    size={18}
+                    style={{
+                      verticalAlign: "middle",
+                      marginInlineEnd: "0.3rem",
+                    }}
+                  />
                   {t("recipeChat", "updateHint")}
                 </>
               ) : (
@@ -455,20 +469,26 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
                   {appliedFields[index] ? (
                     <div className={classes.updateSummary}>
                       {appliedFields[index]}
+                      <div className={classes.autoUpdateNote}>
+                        <Info size={14} />
+                        {t("recipeChat", "autoUpdateNote")}
+                      </div>
                     </div>
                   ) : (
                     <div className={classes.applyActions}>
-                      <button
-                        className={classes.applyBtn}
-                        onClick={() =>
-                          handleApplyUpdate(message.content, index)
-                        }
-                        disabled={applyingIdx !== null}
-                      >
-                        {applyingIdx === index
-                          ? t("recipeChat", "updating")
-                          : t("recipeChat", "applyToRecipe")}
-                      </button>
+                      {customUpdateIdx !== index && (
+                        <button
+                          className={classes.applyBtn}
+                          onClick={() =>
+                            handleApplyUpdate(message.content, index)
+                          }
+                          disabled={applyingIdx !== null}
+                        >
+                          {applyingIdx === index
+                            ? t("recipeChat", "updating")
+                            : t("recipeChat", "applyToRecipe")}
+                        </button>
+                      )}
                       {customUpdateIdx === index ? (
                         <div className={classes.customUpdateWrap}>
                           <input
@@ -558,7 +578,13 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
         <div ref={messagesEndRef} />
       </div>
 
-      <div className={isRecipeMode ? classes.embeddedInputWrapper : classes.fixedInputWrapper}>
+      <div
+        className={
+          isRecipeMode
+            ? classes.embeddedInputWrapper
+            : classes.fixedInputWrapper
+        }
+      >
         <ChatInput
           value={input}
           onChange={setInput}

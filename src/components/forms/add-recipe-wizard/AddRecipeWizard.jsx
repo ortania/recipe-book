@@ -39,6 +39,8 @@ import {
   Info,
   Loader2,
   Plus,
+  Sparkles,
+  MessageCircle,
 } from "lucide-react";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
@@ -1592,7 +1594,9 @@ function AddRecipeWizard({
               className={classes.previewImage}
             />
           ) : (
-            <div style={{ height: "2.5rem" }} />
+            <div className={classes.previewNoImage}>
+              {t("recipes", "noImage")}
+            </div>
           )}
           <div className={classes.previewBody}>
             <h3 className={classes.previewName}>{recipe.name || "—"}</h3>
@@ -2171,10 +2175,16 @@ function AddRecipeWizard({
       </div>
 
       <div className={`${classes.tipBox} ${classes.tipBoxGreen}`}>
+        <span className={classes.tipIcon}>
+          <Lightbulb size={16} />
+        </span>
         <span>{t("addWizard", "recordingExample")}</span>
       </div>
 
       <div className={`${classes.tipBox} ${classes.tipBoxBlue}`}>
+        <span className={classes.tipIcon}>
+          <MessageCircle size={16} />
+        </span>
         <span>{t("addWizard", "freeSpeechNote")}</span>
       </div>
 
@@ -2204,9 +2214,14 @@ function AddRecipeWizard({
             onClick={doImportWithAI}
             disabled={isImporting}
           >
-            {isImporting
-              ? t("addWizard", "importing")
-              : t("addWizard", "aiParse")}
+            {isImporting ? (
+              t("addWizard", "importing")
+            ) : (
+              <>
+                <Sparkles size={16} />
+                {t("addWizard", "aiParse")}
+              </>
+            )}
           </button>
           <button
             type="button"

@@ -218,13 +218,21 @@
 }
 
 .subCount {
-  font-size: var(--small-font);
+  font-size: var(--basic-font);
   color: var(--text-muted);
 }
 
 /* ===== Folder Search ===== */
-.folderSearchBox {
+.folderSearchRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   margin-bottom: 0.75rem;
+}
+
+.folderSearchBox {
+  flex: 1;
+  min-width: 0;
 }
 
 /* ===== Recipe List ===== */
@@ -241,11 +249,12 @@
   gap: 0.7rem;
   padding: 0.55rem 0.7rem;
   border: none;
+
   background: none;
   width: 100%;
   text-align: start;
   cursor: pointer;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
   transition: background 0.15s;
   font-size: var(--basic-font);
 }
@@ -260,6 +269,7 @@
 
 .recipeItemSelected {
   background: var(--bg-tertiary);
+  border-radius: 12px;
 }
 
 .recipeItemImage {
@@ -290,8 +300,8 @@
 }
 
 .recipeItemCheck {
-  color: #10b981;
-  font-size: 1.1rem;
+  color: var(--active-color-primary);
+  font-size: 2rem;
   flex-shrink: 0;
 }
 

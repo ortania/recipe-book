@@ -118,6 +118,7 @@ function RecipeDetailsPage() {
 
   const [cookingMode, setCookingMode] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState(null);
+  const [detailActiveTab, setDetailActiveTab] = useState("ingredients");
 
   // Refs for cooking mode
   const handleNextStepRef = React.useRef();
@@ -326,6 +327,7 @@ function RecipeDetailsPage() {
         onToggleFavorite={isOwner ? handleToggleFavorite : undefined}
         onRate={isGlobalRecipe ? handleGlobalRate : undefined}
         userRating={isGlobalRecipe ? globalUserRating : undefined}
+        onActiveTabChange={setDetailActiveTab}
       />
 
       {editingRecipe && (
@@ -337,11 +339,13 @@ function RecipeDetailsPage() {
         />
       )}
 
-      <Fab
-        icon={<ChefHat size="1em" />}
-        label={t("recipes", "cookingMode")}
-        onClick={handleCookingModeToggle}
-      />
+      {detailActiveTab !== "chat" && (
+        <Fab
+          icon={<ChefHat size="1em" />}
+          label={t("recipes", "cookingMode")}
+          onClick={handleCookingModeToggle}
+        />
+      )}
     </div>
   );
 }

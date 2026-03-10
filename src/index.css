@@ -163,8 +163,12 @@ Variables
   --bubble-user-text: #333333;
   --bubble-assistant-text: var(--clr-brown-1);
 
+  /* tip */
+  --tip-color: #6b4f2a;
+  --tip-bg: #f6efe7;
+  --tip-border: #c8a97e;
+  
   /* shadow */
-
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
 

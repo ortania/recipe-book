@@ -96,6 +96,7 @@ function Recipes() {
         groups={categories}
         onEditPerson={editRecipe}
         onDeletePerson={deleteRecipe}
+        sortStorageKey="myRecipesSortPreference"
       />
 
       <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>

@@ -198,9 +198,9 @@
 .note {
   margin-top: 1.5rem;
   padding: 1rem;
-  background: var(--bg-primary);
-  border-inline-start: 2px solid var(--border-accent-primary);
-  color: var(--text-primary);
+  background: var(--tip-bg);
+  border-inline-start: 2px solid var(--tip-border);
+  color: var(--tip-color);
   line-height: 1.6;
   grid-column: 1 / -1;
   font-size: var(--basic-font);

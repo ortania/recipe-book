@@ -362,10 +362,10 @@
 
 .customChooseBtn {
   padding: 0.3em 0.8em;
-  border: 1px solid #9810fa;
+  border: 1px solid var(--border-accent-primary);
   border-radius: 6px;
   background: #faf5ff;
-  color: #9810fa;
+  color: var(--text-primary);
   font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
@@ -373,7 +373,7 @@
 }
 
 .customChooseBtn:hover:not(:disabled) {
-  background: #9810fa;
+  background: var(--bg-accent-primary);
   color: white;
 }
 
@@ -402,14 +402,14 @@
 }
 
 .customUpdateInput:focus {
-  border-color: #9810fa;
+  border-color: var(--bg-accent-primary);
 }
 
 .customUpdateBtn {
   padding: 0.6em;
-  border: 1px solid #9810fa;
+  border: 1px solid var(--border-accent-primary);
   border-radius: 6px;
-  background: #9810fa;
+  background: var(--bg-accent-primary);
   color: white;
   font-size: var(--basic-font);
   font-weight: 600;
@@ -450,6 +450,23 @@
   overflow-y: auto;
 }
 
+.autoUpdateNote {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.5rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #bbf7d0;
+  font-size: var(--basic-font);
+  color: var(--text-muted);
+  line-height: 1.4;
+}
+
+.autoUpdateNote svg {
+  flex-shrink: 0;
+  margin-top: 0.15rem;
+}
+
 /* Fixed input wrapper (main chat page, desktop only) */
 .fixedInputWrapper {
   position: fixed;
@@ -478,8 +495,8 @@
 .embeddedInputWrapper {
   position: fixed;
   bottom: 0;
-  left: 0;
-  right: 0;
+  inset-inline-start: 220px;
+  inset-inline-end: 0;
   z-index: 100;
   background: var(--bg-primary);
   padding: 0.5rem 1rem 1rem;
@@ -529,6 +546,11 @@
     width: auto;
     max-width: none;
     padding: 0;
+  }
+
+  .embeddedInputWrapper {
+    inset-inline-start: 0;
+    inset-inline-end: 0;
   }
 
   .messagesArea {
