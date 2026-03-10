@@ -218,23 +218,48 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   const handleImageUpload = async (e) => {
-    const files = Array.from(e.target.files || []);
+    const inputEl = e.target;
+    const files = Array.from(inputEl.files || []);
     if (files.length === 0) return;
+
     setUploadingImage(true);
+    setSavedMessage("⏳ " + files.length + " file(s)...");
+
+    const resetInput = () => {
+      try { inputEl.value = ""; } catch {}
+      if (fileInputRef.current) fileInputRef.current.value = "";
+    };
+
+    const safetyTimer = setTimeout(() => {
+      setUploadingImage(false);
+      setSavedMessage("⚠️ Timeout");
+      resetInput();
+      setTimeout(() => setSavedMessage(""), 4000);
+    }, 60000);
+
     try {
       const userId = currentUser?.uid;
-      const urls = await Promise.all(
-        files.map((file) => uploadRecipeImage(userId, person.id, file)),
-      );
+      if (!userId) throw new Error("Not logged in");
+      const urls = [];
+      for (let i = 0; i < files.length; i++) {
+        setSavedMessage("⏳ " + (i + 1) + "/" + files.length + "...");
+        const url = await uploadRecipeImage(userId, `${person.id}_${Date.now()}_${i}`, files[i]);
+        urls.push(url);
+      }
       setEditedPerson((prev) => {
         const allImages = [...(prev.images || []), ...urls];
         return { ...prev, images: allImages, image_src: allImages[0] || "" };
       });
+      setSavedMessage("✅ " + urls.length + " uploaded");
+      setTimeout(() => setSavedMessage(""), 3000);
     } catch (err) {
       console.error("Image upload failed:", err);
+      setSavedMessage("⚠️ " + (err.message || "Failed"));
+      setTimeout(() => setSavedMessage(""), 5000);
     } finally {
+      clearTimeout(safetyTimer);
       setUploadingImage(false);
-      e.target.value = "";
+      resetInput();
     }
   };
 
@@ -859,17 +884,20 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     </>
   );
 
+  const fileOverlayStyle = {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    width: "100%",
+    height: "100%",
+    opacity: 0,
+    cursor: "pointer",
+    zIndex: 2,
+  };
+
   const renderImageTab = () => (
     <>
       <h3 className={classes.sectionTitle}>{t("addWizard", "recipeImage")}</h3>
-      <input
-        type="file"
-        accept="image/*"
-        multiple
-        ref={fileInputRef}
-        onChange={handleImageUpload}
-        style={{ display: "none" }}
-      />
       {editedPerson.images?.length > 0 ? (
         <>
           <div
@@ -898,18 +926,21 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               </div>
             ))}
           </div>
-          <button
-            type="button"
-            className={classes.addImageBtn}
-            onClick={() => fileInputRef.current?.click()}
-          >
+          <div className={classes.addImageBtn} style={{ position: "relative", overflow: "hidden" }}>
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={handleImageUpload}
+              style={fileOverlayStyle}
+            />
             <Plus size={16} /> {t("addWizard", "addMoreImages")}
-          </button>
+          </div>
         </>
       ) : (
         <div
           className={`${classes.imageUploadArea} ${editImageDragOver ? classes.dropActive : ""}`}
-          onClick={() => fileInputRef.current?.click()}
+          style={{ position: "relative", overflow: "hidden" }}
           onDragOver={(e) => {
             e.preventDefault();
             setEditImageDragOver(true);
@@ -917,6 +948,13 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           onDragLeave={() => setEditImageDragOver(false)}
           onDrop={handleEditImageDrop}
         >
+          <input
+            type="file"
+            accept="image/*"
+            ref={fileInputRef}
+            onChange={handleImageUpload}
+            style={fileOverlayStyle}
+          />
           <Camera className={classes.imageUploadIcon} />
           <span className={classes.imageUploadText}>
             {uploadingImage

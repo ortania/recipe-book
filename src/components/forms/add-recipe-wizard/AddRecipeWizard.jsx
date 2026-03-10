@@ -606,10 +606,25 @@ function AddRecipeWizard({
   };
 
   const handleImportFromPhoto = async (e) => {
-    const files = Array.from(e.target.files || []);
+    const inputEl = e.target;
+    const files = Array.from(inputEl.files || []);
     if (files.length === 0) return;
+
+    const resetPhotoInputs = () => {
+      try { inputEl.value = ""; } catch {}
+      if (photoInputRef.current) photoInputRef.current.value = "";
+      if (photoFileInputRef.current) photoFileInputRef.current.value = "";
+    };
+
     setIsImporting(true);
     setImportError("");
+
+    const safetyTimer = setTimeout(() => {
+      setIsImporting(false);
+      setImportError("Timeout - try again");
+      resetPhotoInputs();
+    }, 90000);
+
     try {
       const resizeImage = (file, maxDim = 2048) =>
         new Promise((resolve, reject) => {
@@ -619,18 +634,22 @@ function AddRecipeWizard({
             const img = new Image();
             img.onerror = reject;
             img.onload = () => {
-              const { width, height } = img;
-              if (width <= maxDim && height <= maxDim) {
-                resolve(reader.result);
-                return;
+              try {
+                const { width, height } = img;
+                if (width <= maxDim && height <= maxDim) {
+                  resolve(reader.result);
+                  return;
+                }
+                const scale = maxDim / Math.max(width, height);
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.round(width * scale);
+                canvas.height = Math.round(height * scale);
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL("image/jpeg", 0.92));
+              } catch (err) {
+                reject(err);
               }
-              const scale = maxDim / Math.max(width, height);
-              const canvas = document.createElement("canvas");
-              canvas.width = Math.round(width * scale);
-              canvas.height = Math.round(height * scale);
-              const ctx = canvas.getContext("2d");
-              ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-              resolve(canvas.toDataURL("image/jpeg", 0.92));
             };
             img.src = reader.result;
           };
@@ -664,9 +683,9 @@ function AddRecipeWizard({
     } catch (err) {
       setImportError(t("addWizard", "photoFailed"));
     } finally {
+      clearTimeout(safetyTimer);
       setIsImporting(false);
-      if (photoInputRef.current) photoInputRef.current.value = "";
-      if (photoFileInputRef.current) photoFileInputRef.current.value = "";
+      resetPhotoInputs();
     }
   };
 
@@ -674,14 +693,33 @@ function AddRecipeWizard({
 
   // ========== Image upload ==========
   const handleImageUpload = async (e) => {
-    const files = Array.from(e.target.files || []);
+    const inputEl = e.target;
+    const files = Array.from(inputEl.files || []);
     if (files.length === 0) return;
+
     setUploadingImage(true);
+    setImportError("");
+
+    const resetInput = () => {
+      try { inputEl.value = ""; } catch {}
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      if (cameraInputRef.current) cameraInputRef.current.value = "";
+    };
+
+    const safetyTimer = setTimeout(() => {
+      setUploadingImage(false);
+      setImportError("Timeout - try again");
+      resetInput();
+    }, 60000);
+
     try {
       const userId = currentUser?.uid;
-      const urls = await Promise.all(
-        files.map((file) => uploadRecipeImage(userId, null, file)),
-      );
+      if (!userId) throw new Error("Not logged in");
+      const urls = [];
+      for (let i = 0; i < files.length; i++) {
+        const url = await uploadRecipeImage(userId, `new_${Date.now()}_${i}`, files[i]);
+        urls.push(url);
+      }
       setRecipe((prev) => {
         const allImages = [...(prev.images || []), ...urls];
         return {
@@ -692,9 +730,11 @@ function AddRecipeWizard({
       });
     } catch (err) {
       console.error("Image upload failed:", err);
+      setImportError(err.message || "Upload failed");
     } finally {
+      clearTimeout(safetyTimer);
       setUploadingImage(false);
-      e.target.value = "";
+      resetInput();
     }
   };
 
@@ -1397,22 +1437,6 @@ function AddRecipeWizard({
         <label className={classes.formGroupLabel}>
           {t("addWizard", "recipeImage")}
         </label>
-        <input
-          type="file"
-          accept="image/*"
-          multiple
-          ref={fileInputRef}
-          onChange={handleImageUpload}
-          style={{ display: "none" }}
-        />
-        <input
-          type="file"
-          accept="image/*"
-          capture="environment"
-          ref={cameraInputRef}
-          onChange={handleImageUpload}
-          style={{ display: "none" }}
-        />
         {recipe.images?.length > 0 ? (
           <>
             <div
@@ -1443,21 +1467,28 @@ function AddRecipeWizard({
             </div>
             <div className={classes.addMoreImages}>
               {isMobileDevice && (
-                <button
-                  type="button"
-                  className={classes.addItemBtn}
-                  onClick={() => cameraInputRef.current?.click()}
-                >
+                <div className={classes.addItemBtn} style={{ position: "relative", overflow: "hidden" }}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    ref={cameraInputRef}
+                    onChange={handleImageUpload}
+                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+                  />
                   <Camera size={16} /> {t("addWizard", "takePhoto")}
-                </button>
+                </div>
               )}
-              <button
-                type="button"
-                className={classes.addItemBtn}
-                onClick={() => fileInputRef.current?.click()}
-              >
+              <div className={classes.addItemBtn} style={{ position: "relative", overflow: "hidden" }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+                />
                 <Plus size={16} /> {t("addWizard", "addMoreImages")}
-              </button>
+              </div>
             </div>
           </>
         ) : (
@@ -1471,23 +1502,30 @@ function AddRecipeWizard({
             onDrop={handleImageDrop}
           >
             {isMobileDevice && (
-              <button
-                type="button"
-                className={classes.imageOptionBtn}
-                onClick={() => cameraInputRef.current?.click()}
-              >
+              <div className={classes.imageOptionBtn} style={{ position: "relative", overflow: "hidden" }}>
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  ref={cameraInputRef}
+                  onChange={handleImageUpload}
+                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+                />
                 <Camera className={classes.imageOptionIcon} />
                 <span>{t("addWizard", "takePhoto")}</span>
-              </button>
+              </div>
             )}
-            <button
-              type="button"
-              className={classes.imageOptionBtn}
-              onClick={() => fileInputRef.current?.click()}
-            >
+            <div className={classes.imageOptionBtn} style={{ position: "relative", overflow: "hidden" }}>
+              <input
+                type="file"
+                accept="image/*"
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+              />
               <Upload className={classes.imageOptionIcon} />
               <span>{t("addWizard", "fromFile")}</span>
-            </button>
+            </div>
           </div>
         )}
       </div>
@@ -2270,23 +2308,6 @@ function AddRecipeWizard({
         {t("addWizard", "fromPhotoSubtitle")}
       </p>
 
-      <input
-        ref={photoInputRef}
-        type="file"
-        accept="image/*"
-        capture="environment"
-        style={{ display: "none" }}
-        onChange={handleImportFromPhoto}
-      />
-      <input
-        ref={photoFileInputRef}
-        type="file"
-        accept="image/*"
-        multiple
-        style={{ display: "none" }}
-        onChange={handleImportFromPhoto}
-      />
-
       {isImporting ? (
         <div className={classes.photoUploadArea}>
           <Camera className={classes.photoUploadIcon} />
@@ -2308,23 +2329,30 @@ function AddRecipeWizard({
           onDrop={handlePhotoDrop}
         >
           {isMobileDevice && (
-            <button
-              type="button"
-              className={classes.imageOptionBtn}
-              onClick={() => photoInputRef.current?.click()}
-            >
+            <div className={classes.imageOptionBtn} style={{ position: "relative", overflow: "hidden" }}>
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                ref={photoInputRef}
+                onChange={handleImportFromPhoto}
+                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+              />
               <Camera className={classes.imageOptionIcon} />
               <span>{t("addWizard", "takePhoto")}</span>
-            </button>
+            </div>
           )}
-          <button
-            type="button"
-            className={classes.imageOptionBtn}
-            onClick={() => photoFileInputRef.current?.click()}
-          >
+          <div className={classes.imageOptionBtn} style={{ position: "relative", overflow: "hidden" }}>
+            <input
+              type="file"
+              accept="image/*"
+              ref={photoFileInputRef}
+              onChange={handleImportFromPhoto}
+              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+            />
             <Upload className={classes.imageOptionIcon} />
             <span>{t("addWizard", "fromFile")}</span>
-          </button>
+          </div>
         </div>
       )}
 

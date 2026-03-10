@@ -1456,6 +1456,20 @@
   border: 2px dashed var(--text-muted, #ccc);
 }
 
+.noImageStandalone {
+  width: 100%;
+  min-height: 140px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-card, #fff);
+  color: var(--text-muted, #999);
+  font-size: var(--basic-font);
+  font-style: italic;
+  border: 2px dashed var(--text-muted, #ccc);
+  border-radius: 12px;
+}
+
 .imageContainerWithFallback {
   position: relative;
   min-height: 140px;

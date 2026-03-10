@@ -2,42 +2,45 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { storage } from "./config";
 
 const MAX_DIMENSION = 1200;
-const MAX_SIZE = 800 * 1024;
 const INITIAL_QUALITY = 0.7;
-const MIN_QUALITY = 0.1;
+const MIN_QUALITY = 0.3;
+const COMPRESS_TIMEOUT_MS = 12000;
 
 function compressImage(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.onloadend = () => {
+    reader.onload = () => {
       const img = new Image();
       img.onload = () => {
-        const canvas = document.createElement("canvas");
-        let { width, height } = img;
+        try {
+          const canvas = document.createElement("canvas");
+          let { width, height } = img;
 
-        if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
-          if (width > height) {
-            height = (height / width) * MAX_DIMENSION;
-            width = MAX_DIMENSION;
-          } else {
-            width = (width / height) * MAX_DIMENSION;
-            height = MAX_DIMENSION;
+          if (width > MAX_DIMENSION || height > MAX_DIMENSION) {
+            const scale = MAX_DIMENSION / Math.max(width, height);
+            width = Math.round(width * scale);
+            height = Math.round(height * scale);
           }
-        }
 
-        canvas.width = width;
-        canvas.height = height;
-        canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+          canvas.width = width;
+          canvas.height = height;
+          canvas.getContext("2d").drawImage(img, 0, 0, width, height);
 
-        let quality = INITIAL_QUALITY;
-        let dataUrl = canvas.toDataURL("image/jpeg", quality);
-        while (dataUrl.length > MAX_SIZE && quality > MIN_QUALITY) {
-          quality -= 0.1;
-          dataUrl = canvas.toDataURL("image/jpeg", quality);
+          let quality = INITIAL_QUALITY;
+          let dataUrl = canvas.toDataURL("image/jpeg", quality);
+          while (dataUrl.length > 600_000 && quality > MIN_QUALITY) {
+            quality -= 0.1;
+            dataUrl = canvas.toDataURL("image/jpeg", quality);
+          }
+
+          canvas.width = 0;
+          canvas.height = 0;
+          resolve(dataUrl);
+        } catch (err) {
+          reject(err);
         }
-        resolve(dataUrl);
       };
-      img.onerror = () => reject(new Error("Failed to load image"));
+      img.onerror = () => reject(new Error("Failed to decode image"));
       img.src = reader.result;
     };
     reader.onerror = () => reject(new Error("Failed to read file"));
@@ -54,13 +57,37 @@ function dataUrlToBlob(dataUrl) {
   return new Blob([arr], { type: mime });
 }
 
+function withTimeout(promise, ms) {
+  let timer;
+  return Promise.race([
+    promise,
+    new Promise((_, reject) => {
+      timer = setTimeout(() => reject(new Error("timeout")), ms);
+    }),
+  ]).finally(() => clearTimeout(timer));
+}
+
 export async function uploadRecipeImage(userId, recipeId, file) {
-  const compressed = file instanceof File ? await compressImage(file) : file;
-  const blob = dataUrlToBlob(compressed);
   const path = `recipes/${userId}/${recipeId || Date.now()}.jpg`;
   const storageRef = ref(storage, path);
-  await uploadBytes(storageRef, blob, { contentType: "image/jpeg" });
-  return getDownloadURL(storageRef);
+
+  let blob;
+  if (file instanceof File) {
+    try {
+      const compressed = await withTimeout(compressImage(file), COMPRESS_TIMEOUT_MS);
+      blob = dataUrlToBlob(compressed);
+    } catch {
+      blob = file;
+    }
+  } else {
+    blob = dataUrlToBlob(file);
+  }
+
+  await withTimeout(
+    uploadBytes(storageRef, blob, { contentType: blob.type || "image/jpeg" }),
+    20000,
+  );
+  return withTimeout(getDownloadURL(storageRef), 10000);
 }
 
 export { compressImage };

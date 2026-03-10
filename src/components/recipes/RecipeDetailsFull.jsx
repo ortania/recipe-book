@@ -376,7 +376,7 @@ function RecipeDetailsFull({
           )}
         </div>
       ) : (
-        <div className={classes.noImagePlaceholder}>
+        <div className={classes.noImageStandalone}>
           {t("recipes", "noImage")}
         </div>
       )}

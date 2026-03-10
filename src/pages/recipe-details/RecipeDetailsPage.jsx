@@ -79,13 +79,16 @@ function RecipeDetailsPage() {
     };
   }, [id, contextRecipe]);
 
-  // Clear local override when context catches up
+  // Clear local override when context catches up with all changes
   useEffect(() => {
     if (
       localRecipe &&
       contextRecipe &&
       JSON.stringify(contextRecipe.nutrition) ===
-        JSON.stringify(localRecipe.nutrition)
+        JSON.stringify(localRecipe.nutrition) &&
+      contextRecipe.image_src === localRecipe.image_src &&
+      JSON.stringify(contextRecipe.images || []) ===
+        JSON.stringify(localRecipe.images || [])
     ) {
       setLocalRecipe(null);
     }
