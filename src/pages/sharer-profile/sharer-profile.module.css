@@ -25,6 +25,7 @@
   min-width: 66px;
   border-radius: 15px;
   background: var(--bg-accent-primary);
+  /* background: var(--bubble-avatar); */
   color: #fff;
   display: flex;
   align-items: center;

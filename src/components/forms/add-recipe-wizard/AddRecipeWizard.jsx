@@ -611,7 +611,9 @@ function AddRecipeWizard({
     if (files.length === 0) return;
 
     const resetPhotoInputs = () => {
-      try { inputEl.value = ""; } catch {}
+      try {
+        inputEl.value = "";
+      } catch {}
       if (photoInputRef.current) photoInputRef.current.value = "";
       if (photoFileInputRef.current) photoFileInputRef.current.value = "";
     };
@@ -701,7 +703,9 @@ function AddRecipeWizard({
     setImportError("");
 
     const resetInput = () => {
-      try { inputEl.value = ""; } catch {}
+      try {
+        inputEl.value = "";
+      } catch {}
       if (fileInputRef.current) fileInputRef.current.value = "";
       if (cameraInputRef.current) cameraInputRef.current.value = "";
     };
@@ -717,7 +721,11 @@ function AddRecipeWizard({
       if (!userId) throw new Error("Not logged in");
       const urls = [];
       for (let i = 0; i < files.length; i++) {
-        const url = await uploadRecipeImage(userId, `new_${Date.now()}_${i}`, files[i]);
+        const url = await uploadRecipeImage(
+          userId,
+          `new_${Date.now()}_${i}`,
+          files[i],
+        );
         urls.push(url);
       }
       setRecipe((prev) => {
@@ -1467,25 +1475,49 @@ function AddRecipeWizard({
             </div>
             <div className={classes.addMoreImages}>
               {isMobileDevice && (
-                <div className={classes.addItemBtn} style={{ position: "relative", overflow: "hidden" }}>
+                <div
+                  className={classes.addItemBtn}
+                  style={{ position: "relative", overflow: "hidden" }}
+                >
                   <input
                     type="file"
                     accept="image/*"
                     capture="environment"
                     ref={cameraInputRef}
                     onChange={handleImageUpload}
-                    style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      opacity: 0,
+                      cursor: "pointer",
+                      zIndex: 2,
+                    }}
                   />
                   <Camera size={16} /> {t("addWizard", "takePhoto")}
                 </div>
               )}
-              <div className={classes.addItemBtn} style={{ position: "relative", overflow: "hidden" }}>
+              <div
+                className={classes.addItemBtn}
+                style={{ position: "relative", overflow: "hidden" }}
+              >
                 <input
                   type="file"
                   accept="image/*"
                   ref={fileInputRef}
                   onChange={handleImageUpload}
-                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    opacity: 0,
+                    cursor: "pointer",
+                    zIndex: 2,
+                  }}
                 />
                 <Plus size={16} /> {t("addWizard", "addMoreImages")}
               </div>
@@ -1502,30 +1534,57 @@ function AddRecipeWizard({
             onDrop={handleImageDrop}
           >
             {isMobileDevice && (
-              <div className={classes.imageOptionBtn} style={{ position: "relative", overflow: "hidden" }}>
+              <div
+                className={classes.imageOptionBtn}
+                style={{ position: "relative", overflow: "hidden" }}
+              >
                 <input
                   type="file"
                   accept="image/*"
                   capture="environment"
                   ref={cameraInputRef}
                   onChange={handleImageUpload}
-                  style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    opacity: 0,
+                    cursor: "pointer",
+                    zIndex: 2,
+                  }}
                 />
                 <Camera className={classes.imageOptionIcon} />
                 <span>{t("addWizard", "takePhoto")}</span>
               </div>
             )}
-            <div className={classes.imageOptionBtn} style={{ position: "relative", overflow: "hidden" }}>
+            <div
+              className={classes.imageOptionBtn}
+              style={{ position: "relative", overflow: "hidden" }}
+            >
               <input
                 type="file"
                 accept="image/*"
                 ref={fileInputRef}
                 onChange={handleImageUpload}
-                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  opacity: 0,
+                  cursor: "pointer",
+                  zIndex: 2,
+                }}
               />
               <Upload className={classes.imageOptionIcon} />
               <span>{t("addWizard", "fromFile")}</span>
             </div>
+            <p className={classes.imageHint}>
+              {t("addWizard", "multipleImagesHint")}
+            </p>
           </div>
         )}
       </div>
@@ -2329,26 +2388,50 @@ function AddRecipeWizard({
           onDrop={handlePhotoDrop}
         >
           {isMobileDevice && (
-            <div className={classes.imageOptionBtn} style={{ position: "relative", overflow: "hidden" }}>
+            <div
+              className={classes.imageOptionBtn}
+              style={{ position: "relative", overflow: "hidden" }}
+            >
               <input
                 type="file"
                 accept="image/*"
                 capture="environment"
                 ref={photoInputRef}
                 onChange={handleImportFromPhoto}
-                style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  opacity: 0,
+                  cursor: "pointer",
+                  zIndex: 2,
+                }}
               />
               <Camera className={classes.imageOptionIcon} />
               <span>{t("addWizard", "takePhoto")}</span>
             </div>
           )}
-          <div className={classes.imageOptionBtn} style={{ position: "relative", overflow: "hidden" }}>
+          <div
+            className={classes.imageOptionBtn}
+            style={{ position: "relative", overflow: "hidden" }}
+          >
             <input
               type="file"
               accept="image/*"
               ref={photoFileInputRef}
               onChange={handleImportFromPhoto}
-              style={{ position: "absolute", top: 0, left: 0, width: "100%", height: "100%", opacity: 0, cursor: "pointer", zIndex: 2 }}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                opacity: 0,
+                cursor: "pointer",
+                zIndex: 2,
+              }}
             />
             <Upload className={classes.imageOptionIcon} />
             <span>{t("addWizard", "fromFile")}</span>

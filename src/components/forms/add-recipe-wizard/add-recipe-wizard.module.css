@@ -1078,6 +1078,7 @@
 
 .imageUploadButtons {
   display: flex;
+  flex-wrap: wrap;
   gap: 1rem;
   justify-content: center;
 }
@@ -1111,6 +1112,14 @@
 
 .imageOptionBtn:hover .imageOptionIcon {
   color: var(--active-color-primary);
+}
+
+.imageHint {
+  width: 100%;
+  text-align: center;
+  font-size: var(--basic-font);
+  color: var(--text-muted);
+  margin: 0.3rem 0 0;
 }
 
 .dropActive {

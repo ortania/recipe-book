@@ -162,6 +162,7 @@ Variables
   --bubble-assistant: #ffffff;
   --bubble-user-text: #333333;
   --bubble-assistant-text: var(--clr-brown-1);
+  --bubble-avatar: #4b5563;
 
   /* tip */
   --tip-color: #6b4f2a;

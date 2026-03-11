@@ -1,4 +1,10 @@
-import React, { useState, useMemo, useRef, useEffect, useCallback } from "react";
+import React, {
+  useState,
+  useMemo,
+  useRef,
+  useEffect,
+  useCallback,
+} from "react";
 import { useNavigate } from "react-router-dom";
 import buttonClasses from "../../components/controls/gen-button.module.css";
 import classes from "./recipe-details-full.module.css";
@@ -34,6 +40,7 @@ import {
   Files,
   Info,
   Menu,
+  Sun,
 } from "lucide-react";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
@@ -122,10 +129,54 @@ function RecipeDetailsFull({
   const actionBarSentinelRef = useRef(null);
   const actionBarRef = useRef(null);
   const [actionBarFixed, setActionBarFixed] = useState(false);
+  const [wakeLockActive, setWakeLockActive] = useState(false);
+  const [wakeLockToast, setWakeLockToast] = useState("");
+  const wakeLockRef = useRef(null);
+  const wakeLockToastTimer = useRef(null);
 
   const handleCopyClick = () => {
     setShowCopyDialog(true);
   };
+
+  const showWakeLockToast = useCallback((msg) => {
+    clearTimeout(wakeLockToastTimer.current);
+    setWakeLockToast(msg);
+    wakeLockToastTimer.current = setTimeout(() => setWakeLockToast(""), 2500);
+  }, []);
+
+  const toggleWakeLock = useCallback(async () => {
+    if (wakeLockActive) {
+      if (wakeLockRef.current) {
+        await wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      }
+      setWakeLockActive(false);
+      showWakeLockToast(t("recipes", "screenAutoOff"));
+    } else {
+      try {
+        if ("wakeLock" in navigator) {
+          wakeLockRef.current = await navigator.wakeLock.request("screen");
+          wakeLockRef.current.addEventListener("release", () => {
+            wakeLockRef.current = null;
+            setWakeLockActive(false);
+          });
+          setWakeLockActive(true);
+          showWakeLockToast(t("recipes", "screenStaysOn"));
+        }
+      } catch (err) {
+        console.error("Wake lock error:", err);
+      }
+    }
+  }, [wakeLockActive, showWakeLockToast, t]);
+
+  useEffect(() => {
+    return () => {
+      if (wakeLockRef.current) {
+        wakeLockRef.current.release();
+        wakeLockRef.current = null;
+      }
+    };
+  }, []);
 
   useEffect(() => {
     setServings(recipe.servings || 4);
@@ -664,12 +715,26 @@ function RecipeDetailsFull({
           </button>
         </div>
 
-        {onEnterCookingMode && (
-          <button className={classes.cookingBtn} onClick={onEnterCookingMode}>
-            <ChefHat size={18} />
-            <span>{t("recipes", "cookingMode")}</span>
-          </button>
-        )}
+        <div className={classes.actionBarEnd}>
+          <div style={{ position: "relative" }}>
+            <button
+              className={`${classes.wakeLockBtn} ${wakeLockActive ? classes.wakeLockBtnActive : ""}`}
+              onClick={toggleWakeLock}
+              title={t("recipes", "keepScreenOn")}
+            >
+              <Sun size={22} />
+            </button>
+            {wakeLockToast && (
+              <div className={classes.wakeLockToast}>{wakeLockToast}</div>
+            )}
+          </div>
+          {onEnterCookingMode && (
+            <button className={classes.cookingBtn} onClick={onEnterCookingMode}>
+              <ChefHat size={18} />
+              <span>{t("recipes", "cookingMode")}</span>
+            </button>
+          )}
+        </div>
       </div>
 
       <div className={classes.recipeContent}>
