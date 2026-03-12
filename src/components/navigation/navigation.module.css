@@ -3,6 +3,7 @@
   inset-inline-start: 0;
   top: 0;
   height: 100vh;
+  height: 100dvh;
   width: 230px;
   background: var(--bg-sidebar);
   display: flex;

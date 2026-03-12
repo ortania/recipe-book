@@ -71,6 +71,7 @@ function SearchOverlay({
   getTranslatedGroup,
   selectedCategoryObjects = [],
   isAllSelected = true,
+  hideRating = false,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -166,7 +167,14 @@ function SearchOverlay({
         navigate(`/recipe/${personId}`);
       }
     },
-    [searchTerm, sortField, sortDirection, searchViewedIds, navigate, onRecipeNavigate],
+    [
+      searchTerm,
+      sortField,
+      sortDirection,
+      searchViewedIds,
+      navigate,
+      onRecipeNavigate,
+    ],
   );
 
   useEffect(() => {
@@ -584,7 +592,7 @@ function SearchOverlay({
             ))}
           </div>
         )}
-      </div>   
+      </div>
       {hasActiveFilters && isMobile && (
         <>
           <div className={parentClasses.filterDivider} />
@@ -608,9 +616,17 @@ function SearchOverlay({
       className={`${parentClasses.searchHeader} ${onToggleView ? classes.searchHeaderEdges : ""} ${isMobile ? classes.mobileSearchHeader : ""}`}
     >
       <span className={parentClasses.desktopOnly}>
-        <BackButton onClick={onClose} size={28} className={parentClasses.desktopHeaderBtn} />
+        <BackButton
+          onClick={onClose}
+          size={28}
+          className={parentClasses.desktopHeaderBtn}
+        />
       </span>
-      <div className={onToggleView ? classes.searchCenter : classes.searchCenterDefault}>
+      <div
+        className={
+          onToggleView ? classes.searchCenter : classes.searchCenterDefault
+        }
+      >
         <div
           className={`${parentClasses.searchBoxWrapper} ${classes.searchBoxRelative}`}
           ref={suggestionsRef}
@@ -648,7 +664,9 @@ function SearchOverlay({
               <span className={parentClasses.hideOnMobile}>
                 {t("recipesView", "filter")}
               </span>
-              <span className={`${parentClasses.hideOnMobile} ${showFilterMenu ? parentClasses.chevronOpen : ""}`}>
+              <span
+                className={`${parentClasses.hideOnMobile} ${showFilterMenu ? parentClasses.chevronOpen : ""}`}
+              >
                 <ChevronDown size={16} />
               </span>
             </button>
@@ -788,6 +806,7 @@ function SearchOverlay({
                     userRating={userRatings[person.id] || 0}
                     onRate={onRate}
                     onCardClick={handleRecipeClick}
+                    hideRating={hideRating}
                   />
                 ))}
               </div>

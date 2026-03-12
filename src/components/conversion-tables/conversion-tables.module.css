@@ -3,6 +3,7 @@
   margin: 0 auto;
   padding: 2rem;
   max-height: calc(100vh - 3rem);
+  max-height: calc(100dvh - 3rem);
   overflow-y: auto;
 }
 

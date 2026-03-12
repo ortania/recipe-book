@@ -381,6 +381,7 @@
 
   .categoriesContent.open {
     max-height: calc(100vh - 6rem);
+    max-height: calc(100dvh - 6rem);
     height: auto;
     overflow-y: auto;
     overflow-x: hidden;

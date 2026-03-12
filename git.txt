@@ -30,6 +30,16 @@ https://console.firebase.google.com/u/0/project/recipe-book-82d57/firestore/data
 OpenAI
 --------------------------------
 
+key:
 https://platform.openai.com/api-keys
 
+
+credits:
 https://platform.openai.com/settings/organization/billing/overview
+
+
+Capacitor
+-----------
+
+Prompt To Cursor:
+"Wrap the app with Capacitor for iOS and Android. Handle: Wake Lock, Google Sign-In, voice/speech features, and share. Keep image upload as-is (or upgrade to native camera). Make sure safe areas and status bar work correctly."

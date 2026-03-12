@@ -139,6 +139,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     servings: person.servings || "",
     difficulty: person.difficulty || "Unknown",
     sourceUrl: person.sourceUrl || "",
+    videoUrl: person.videoUrl || "",
     categories: person.categories || [],
     isFavorite: person.isFavorite || false,
     notes: person.notes || "",
@@ -186,6 +187,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       servings: person.servings || "",
       difficulty: person.difficulty || "Unknown",
       sourceUrl: person.sourceUrl || "",
+      videoUrl: person.videoUrl || "",
       categories: person.categories || [],
       isFavorite: person.isFavorite || false,
       notes: person.notes || "",
@@ -226,7 +228,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     setSavedMessage("⏳ " + files.length + " file(s)...");
 
     const resetInput = () => {
-      try { inputEl.value = ""; } catch {}
+      try {
+        inputEl.value = "";
+      } catch {}
       if (fileInputRef.current) fileInputRef.current.value = "";
     };
 
@@ -243,7 +247,11 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       const urls = [];
       for (let i = 0; i < files.length; i++) {
         setSavedMessage("⏳ " + (i + 1) + "/" + files.length + "...");
-        const url = await uploadRecipeImage(userId, `${person.id}_${Date.now()}_${i}`, files[i]);
+        const url = await uploadRecipeImage(
+          userId,
+          `${person.id}_${Date.now()}_${i}`,
+          files[i],
+        );
         urls.push(url);
       }
       setEditedPerson((prev) => {
@@ -455,6 +463,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       servings: parseInt(editedPerson.servings) || 1,
       difficulty: editedPerson.difficulty,
       sourceUrl: editedPerson.sourceUrl,
+      videoUrl: editedPerson.videoUrl,
       categories: editedPerson.categories,
       isFavorite: editedPerson.isFavorite,
       notes: editedPerson.notes,
@@ -881,6 +890,22 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           + {t("addWizard", "addStep")}
         </button>
       </div>
+
+      <div className={classes.formGroup}>
+        <label className={classes.formLabel}>{t("recipes", "videoUrl")}</label>
+        <input
+          type="url"
+          className={classes.formInput}
+          placeholder="https://youtube.com/..."
+          value={editedPerson.videoUrl}
+          onChange={(e) =>
+            setEditedPerson((prev) => ({
+              ...prev,
+              videoUrl: e.target.value,
+            }))
+          }
+        />
+      </div>
     </>
   );
 
@@ -926,7 +951,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               </div>
             ))}
           </div>
-          <div className={classes.addImageBtn} style={{ position: "relative", overflow: "hidden" }}>
+          <div
+            className={classes.addImageBtn}
+            style={{ position: "relative", overflow: "hidden" }}
+          >
             <input
               type="file"
               accept="image/*"

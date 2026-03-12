@@ -28,6 +28,7 @@
   white-space: nowrap;
   overflow: hidden;
   touch-action: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
 .fab:active {

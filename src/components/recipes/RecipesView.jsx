@@ -98,6 +98,8 @@ function RecipesView({
   searchPlaceholder,
   hasContentAbove = false,
   backLabel,
+  linkState,
+  hideRating = false,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -250,7 +252,10 @@ function RecipesView({
         ].slice(0, 20);
         localStorage.setItem(rvKey, JSON.stringify(updated));
       } catch {}
-      navigate(`/recipe/${recipeId}`);
+      navigate(
+        `/recipe/${recipeId}`,
+        linkState ? { state: linkState } : undefined,
+      );
     },
     [rvKey, navigate],
   );
@@ -1214,6 +1219,7 @@ function RecipesView({
           onRate={onRate}
           userRatings={userRatings}
           onToggleFavorite={handleToggleFavorite}
+          hideRating={hideRating}
           isSimpleView={isSimpleView}
           onToggleView={!showTabs ? toggleView : undefined}
           onClose={closeSearch}
@@ -1246,7 +1252,10 @@ function RecipesView({
                     onClick={() =>
                       recentlyViewedKey
                         ? trackRecentlyViewed(person.id)
-                        : navigate(`/recipe/${person.id}`)
+                        : navigate(
+                            `/recipe/${person.id}`,
+                            linkState ? { state: linkState } : undefined,
+                          )
                     }
                   >
                     <div className={classes.recentlyViewedImageWrap}>
@@ -1412,21 +1421,26 @@ function RecipesView({
                             <div
                               key={person.id}
                               className={classes.compactItem}
-                              onClick={() => navigate(`/recipe/${person.id}`)}
+                              onClick={() =>
+                                navigate(
+                                  `/recipe/${person.id}`,
+                                  linkState ? { state: linkState } : undefined,
+                                )
+                              }
                             >
-                              {person.image || person.image_src ? (
-                                <img
-                                  src={person.image || person.image_src}
-                                  alt=""
-                                  className={classes.compactThumb}
-                                />
-                              ) : (
-                                <span
-                                  className={classes.compactThumbPlaceholder}
-                                >
-                                  <UtensilsCrossed size={16} />
-                                </span>
-                              )}
+                              <span className={classes.compactThumbWrap}>
+                                <UtensilsCrossed size={16} />
+                                {(person.image || person.image_src) && (
+                                  <img
+                                    src={person.image || person.image_src}
+                                    alt=""
+                                    className={classes.compactThumb}
+                                    onError={(e) => {
+                                      e.target.style.display = "none";
+                                    }}
+                                  />
+                                )}
+                              </span>
                               <span className={classes.compactName}>
                                 {person.name}
                               </span>
@@ -1467,6 +1481,7 @@ function RecipesView({
                               onEdit={handleEditClick}
                               onDelete={onDeletePerson}
                               onToggleFavorite={handleToggleFavorite}
+                              hideRating={hideRating}
                             />
                           ))}
                         </div>
@@ -1499,19 +1514,26 @@ function RecipesView({
                           <div
                             key={person.id}
                             className={classes.compactItem}
-                            onClick={() => navigate(`/recipe/${person.id}`)}
+                            onClick={() =>
+                              navigate(
+                                `/recipe/${person.id}`,
+                                linkState ? { state: linkState } : undefined,
+                              )
+                            }
                           >
-                            {person.image || person.image_src ? (
-                              <img
-                                src={person.image || person.image_src}
-                                alt=""
-                                className={classes.compactThumb}
-                              />
-                            ) : (
-                              <span className={classes.compactThumbPlaceholder}>
-                                <UtensilsCrossed size={16} />
-                              </span>
-                            )}
+                            <span className={classes.compactThumbWrap}>
+                              <UtensilsCrossed size={16} />
+                              {(person.image || person.image_src) && (
+                                <img
+                                  src={person.image || person.image_src}
+                                  alt=""
+                                  className={classes.compactThumb}
+                                  onError={(e) => {
+                                    e.target.style.display = "none";
+                                  }}
+                                />
+                              )}
+                            </span>
                             <span className={classes.compactName}>
                               {person.name}
                             </span>
@@ -1552,6 +1574,7 @@ function RecipesView({
                             onEdit={handleEditClick}
                             onDelete={onDeletePerson}
                             onToggleFavorite={handleToggleFavorite}
+                            hideRating={hideRating}
                           />
                         ))}
                       </div>
@@ -1569,20 +1592,25 @@ function RecipesView({
                   onClick={() =>
                     recentlyViewedKey
                       ? trackRecentlyViewed(person.id)
-                      : navigate(`/recipe/${person.id}`)
+                      : navigate(
+                          `/recipe/${person.id}`,
+                          linkState ? { state: linkState } : undefined,
+                        )
                   }
                 >
-                  {person.image || person.image_src ? (
-                    <img
-                      src={person.image || person.image_src}
-                      alt=""
-                      className={classes.compactThumb}
-                    />
-                  ) : (
-                    <span className={classes.compactThumbPlaceholder}>
-                      <UtensilsCrossed size={16} />
-                    </span>
-                  )}
+                  <span className={classes.compactThumbWrap}>
+                    <UtensilsCrossed size={16} />
+                    {(person.image || person.image_src) && (
+                      <img
+                        src={person.image || person.image_src}
+                        alt=""
+                        className={classes.compactThumb}
+                        onError={(e) => {
+                          e.target.style.display = "none";
+                        }}
+                      />
+                    )}
+                  </span>
                   <span className={classes.compactName}>{person.name}</span>
                   {person.sharerName && (
                     <span
@@ -1690,6 +1718,8 @@ function RecipesView({
                     recentlyViewedKey ? trackRecentlyViewed : undefined
                   }
                   followingList={followingList}
+                  linkState={linkState}
+                  hideRating={hideRating}
                 />
               ))}
             </div>

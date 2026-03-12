@@ -970,6 +970,7 @@
     bottom: 0;
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     max-width: 100%;
     margin: 0;
     padding-top: 6rem;

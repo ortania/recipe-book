@@ -685,6 +685,20 @@ const translations = {
       de: "Quell-URL",
       mixed: "Source URL",
     },
+    videoUrl: {
+      he: "קישור לסרטון הכנה",
+      en: "Video Link",
+      ru: "Ссылка на видео",
+      de: "Video-Link",
+      mixed: "קישור לסרטון הכנה",
+    },
+    watchVideo: {
+      he: "צפו בסרטון ההכנה",
+      en: "Watch preparation video",
+      ru: "Смотреть видео приготовления",
+      de: "Zubereitungsvideo ansehen",
+      mixed: "צפו בסרטון ההכנה",
+    },
     shareToGlobal: {
       he: "שתף במתכוני קהילה — שמך יוצג לצד המתכון",
       en: "Share in community — your name will appear next to the recipe",
@@ -4106,6 +4120,13 @@ const translations = {
       ru: "Ссылка на источник",
       de: "Quell-URL",
       mixed: "קישור למקור",
+    },
+    videoUrl: {
+      he: "קישור לסרטון הכנה",
+      en: "Preparation Video Link",
+      ru: "Ссылка на видео приготовления",
+      de: "Link zum Zubereitungsvideo",
+      mixed: "קישור לסרטון הכנה",
     },
     sugars: {
       he: "סוכר",

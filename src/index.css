@@ -147,6 +147,7 @@ Variables
   --bg-accent-primary: var(--clr-brown-1);
   /* --bg-accent-secondary: rgba(0, 102, 204, 0.08); */
   --bg-accent-secondary: rgba(0, 3, 5, 0.08);
+  --bg-accent-tertiary: #4b5563;
 
   /* border colors */
   --border-color: #e0e0e0;
@@ -168,6 +169,10 @@ Variables
   --tip-color: #6b4f2a;
   --tip-bg: #f6efe7;
   --tip-border: #c8a97e;
+
+
+  /* link */
+  --link-color: #914c03;
   
   /* shadow */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -254,6 +259,7 @@ Global Styles
 
 body {
   min-height: 100vh;
+  min-height: 100dvh;
   font-family: var(--font-heading);
   font-stretch: condensed;
 
@@ -262,9 +268,33 @@ body {
   line-height: 1.5;
   font-size: 1.2rem;
   overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
   transition:
     background-color 0.3s ease,
     color 0.3s ease;
+}
+
+a,
+button,
+[role="button"],
+label,
+select,
+summary,
+[tabindex] {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+img {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+input,
+textarea,
+select {
+  font-size: max(1rem, inherit);
 }
 ul {
   list-style-type: none;

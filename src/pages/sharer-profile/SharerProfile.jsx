@@ -7,10 +7,6 @@ import {
   copyRecipeToUser,
 } from "../../firebase/globalRecipeService";
 import { getUserData, toggleFollowUser } from "../../firebase/authService";
-import {
-  getUserRatingsBatch,
-  setUserRating,
-} from "../../firebase/ratingService";
 import { RecipesView } from "../../components";
 import Skeleton from "react-loading-skeleton";
 import classes from "./sharer-profile.module.css";
@@ -25,7 +21,6 @@ function SharerProfile() {
   const [recipes, setSharerRecipes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
-  const [userRatings, setUserRatings] = useState({});
 
   useEffect(() => {
     const load = async () => {
@@ -55,16 +50,6 @@ function SharerProfile() {
     }
   }, [currentUser?.following, sharerUserId]);
 
-  useEffect(() => {
-    if (!currentUser || recipes.length === 0) return;
-    const ids = recipes.map((r) => r.id);
-    getUserRatingsBatch(ids, currentUser.uid).then((ratingsMap) => {
-      const obj = {};
-      ratingsMap.forEach((val, key) => (obj[key] = val));
-      setUserRatings((prev) => ({ ...prev, ...obj }));
-    });
-  }, [currentUser, recipes]);
-
   const handleFollow = async () => {
     if (!currentUser) return;
     try {
@@ -75,19 +60,6 @@ function SharerProfile() {
       console.error("Follow toggle failed:", err);
     }
   };
-
-  const handleRate = useCallback(
-    async (recipeId, rating) => {
-      if (!currentUser) return;
-      setUserRatings((prev) => ({ ...prev, [recipeId]: rating }));
-      try {
-        await setUserRating(recipeId, currentUser.uid, rating);
-      } catch (err) {
-        console.error("Failed to save rating:", err);
-      }
-    },
-    [currentUser],
-  );
 
   const handleCopyRecipe = useCallback(
     async (recipeId) => {
@@ -175,8 +147,8 @@ function SharerProfile() {
           loading={!sharerData}
           emptyTitle={t("sharerProfile", "noRecipes")}
           onCopyRecipe={undefined}
-          onRate={handleRate}
-          userRatings={userRatings}
+          linkState={{ fromSharerProfile: true }}
+          hideRating={true}
           defaultSortField="rating"
           defaultSortDirection="desc"
           sortStorageKey="sharerRecipesSortPreference"

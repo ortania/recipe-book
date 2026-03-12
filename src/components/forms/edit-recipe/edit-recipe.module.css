@@ -567,13 +567,14 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.6rem 1rem;
-  border: 2px solid #9810fa;
+  /* border: 2px solid #9810fa; */
+  border: 2px solid var(--bg-accent-tertiary);
   border-radius: 12px;
-  background: linear-gradient(
+  /* background: linear-gradient(
     135deg,
     rgba(152, 16, 250, 0.05),
     rgba(152, 16, 250, 0.02)
-  );
+  ); */
   position: relative;
 }
 
@@ -588,14 +589,16 @@
   border: none;
   font-size: var(--basic-font);
   font-weight: 700;
-  color: #9810fa;
+  /* color: #9810fa; */
+  color: var(--bg-accent-tertiary);
   outline: none;
   background: transparent;
   font-family: inherit;
 }
 
 .groupInput::placeholder {
-  color: rgba(152, 16, 250, 0.4);
+  /* color: rgba(152, 16, 250, 0.4); */
+  color: var(--bg-accent-tertiary);
   font-weight: 400;
   font-style: italic;
 }
@@ -612,6 +615,7 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.8rem;
+  /* border: 2px dashed var(--border-accent-primary); */
   border: 2px dashed var(--border-color);
   border-radius: 12px;
   background: none;
@@ -633,10 +637,14 @@
   justify-content: center;
   gap: 0.5rem;
   padding: 0.8rem;
-  border: 2px dashed rgba(152, 16, 250, 0.3);
+  /* border: 2px dashed rgba(152, 16, 250, 0.3); */
+  /* border: 2px dashed var(--border-accent-primary); */
+  border: 2px dashed var(--border-color);
   border-radius: 12px;
   background: none;
-  color: rgba(152, 16, 250, 0.6);
+  /* color: rgba(152, 16, 250, 0.6);
+   */
+  color: var(--text-muted);
   font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.2s;
@@ -644,8 +652,10 @@
 }
 
 .addGroupBtn:hover {
-  border-color: #9810fa;
-  color: #9810fa;
+  /* border-color: #9810fa;
+  color: #9810fa; */
+  border-color: var(--active-color-primary);
+  color: var(--active-color-primary);
 }
 
 .dragHandle {
@@ -987,7 +997,9 @@
   .editContainer {
     flex-direction: column;
     height: 100vh;
+    height: 100dvh;
     max-height: 100vh;
+    max-height: 100dvh;
     overflow: hidden;
   }
 

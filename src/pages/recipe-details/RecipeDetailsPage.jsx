@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { ChefHat } from "lucide-react";
 import RecipeDetailsFull from "../../components/recipes/RecipeDetailsFull";
 import RecipeDetailsCookingMode from "../../components/recipes/RecipeDetailsCookingMode";
@@ -18,6 +18,8 @@ import classes from "./recipe-details-page.module.css";
 function RecipeDetailsPage() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const fromSharerProfile = location.state?.fromSharerProfile;
   const { language, t } = useLanguage();
   const {
     recipes,
@@ -328,9 +330,14 @@ function RecipeDetailsPage() {
         }
         currentUserId={currentUser?.uid}
         onToggleFavorite={isOwner ? handleToggleFavorite : undefined}
-        onRate={isGlobalRecipe ? handleGlobalRate : undefined}
-        userRating={isGlobalRecipe ? globalUserRating : undefined}
+        onRate={
+          isGlobalRecipe && !fromSharerProfile ? handleGlobalRate : undefined
+        }
+        userRating={
+          isGlobalRecipe && !fromSharerProfile ? globalUserRating : undefined
+        }
         onActiveTabChange={setDetailActiveTab}
+        hideRating={!!fromSharerProfile}
       />
 
       {editingRecipe && (

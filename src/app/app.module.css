@@ -1,5 +1,6 @@
 .app {
   min-height: 100vh;
+  min-height: 100dvh;
   display: flex;
   flex-direction: column;
   background: var(--bg-primary);
@@ -11,6 +12,7 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .noSidebar {
@@ -68,6 +70,7 @@
 
 .loading {
   min-height: 100vh;
+  min-height: 100dvh;
   background-color: var(--bg-primary);
   max-width: 1200px;
   margin: 0 auto;

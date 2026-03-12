@@ -41,6 +41,7 @@ import {
   Info,
   Menu,
   Sun,
+  Video,
 } from "lucide-react";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
@@ -68,6 +69,7 @@ function RecipeDetailsFull({
   onRate,
   userRating = 0,
   onActiveTabChange,
+  hideRating = false,
 }) {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
@@ -738,12 +740,74 @@ function RecipeDetailsFull({
       </div>
 
       <div className={classes.recipeContent}>
-        {onRate ? (
-          <div className={classes.ratingSection}>
-            <div className={classes.ratingRow}>
-              <span className={classes.ratingLabel}>
-                {t("globalRecipes", "myRating")}:
-              </span>
+        {/* Rating section – hideRating=true hides all stars (e.g. from sharer profile).
+            To re-enable, pass hideRating={false} or remove the prop. */}
+        {!hideRating && (
+          <>
+            {onRate ? (
+              <div className={classes.ratingSection}>
+                <div className={classes.ratingRow}>
+                  <span className={classes.ratingLabel}>
+                    {t("globalRecipes", "myRating")}:
+                  </span>
+                  <div className={classes.rating}>
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <span
+                        key={star}
+                        className={classes.ratingStar}
+                        role="button"
+                        tabIndex={0}
+                        style={{
+                          color:
+                            star <= (hoverStar || userRating)
+                              ? "#ffc107"
+                              : "#e0e0e0",
+                        }}
+                        onMouseEnter={() => setHoverStar(star)}
+                        onMouseLeave={() => setHoverStar(0)}
+                        onClick={() =>
+                          onRate(recipe.id, star === userRating ? 0 : star)
+                        }
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" || e.key === " ")
+                            onRate(recipe.id, star === userRating ? 0 : star);
+                        }}
+                      >
+                        ★
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                {recipe.avgRating > 0 && (
+                  <div className={classes.ratingRow}>
+                    <span className={classes.ratingLabel}>
+                      {t("globalRecipes", "avgRating")}:
+                    </span>
+                    <div className={classes.rating}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                          key={star}
+                          className={classes.ratingStar}
+                          style={{
+                            color:
+                              star <= Math.round(recipe.avgRating)
+                                ? "#ffc107"
+                                : "#e0e0e0",
+                            cursor: "default",
+                          }}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    <span className={classes.ratingMeta}>
+                      ({Number(recipe.avgRating).toFixed(1)} ·{" "}
+                      {recipe.ratingCount})
+                    </span>
+                  </div>
+                )}
+              </div>
+            ) : (
               <div className={classes.rating}>
                 {[1, 2, 3, 4, 5].map((star) => (
                   <span
@@ -753,86 +817,31 @@ function RecipeDetailsFull({
                     tabIndex={0}
                     style={{
                       color:
-                        star <= (hoverStar || userRating)
+                        star <= (hoverStar || recipe.rating || 0)
                           ? "#ffc107"
                           : "#e0e0e0",
                     }}
                     onMouseEnter={() => setHoverStar(star)}
                     onMouseLeave={() => setHoverStar(0)}
-                    onClick={() =>
-                      onRate(recipe.id, star === userRating ? 0 : star)
-                    }
+                    onClick={() => {
+                      if (!onSaveRecipe) return;
+                      const newRating = star === recipe.rating ? 0 : star;
+                      onSaveRecipe({ ...recipe, rating: newRating });
+                    }}
                     onKeyDown={(e) => {
-                      if (e.key === "Enter" || e.key === " ")
-                        onRate(recipe.id, star === userRating ? 0 : star);
+                      if (e.key === "Enter" || e.key === " ") {
+                        if (!onSaveRecipe) return;
+                        const newRating = star === recipe.rating ? 0 : star;
+                        onSaveRecipe({ ...recipe, rating: newRating });
+                      }
                     }}
                   >
                     ★
                   </span>
                 ))}
               </div>
-            </div>
-            {recipe.avgRating > 0 && (
-              <div className={classes.ratingRow}>
-                <span className={classes.ratingLabel}>
-                  {t("globalRecipes", "avgRating")}:
-                </span>
-                <div className={classes.rating}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      className={classes.ratingStar}
-                      style={{
-                        color:
-                          star <= Math.round(recipe.avgRating)
-                            ? "#ffc107"
-                            : "#e0e0e0",
-                        cursor: "default",
-                      }}
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
-                <span className={classes.ratingMeta}>
-                  ({Number(recipe.avgRating).toFixed(1)} · {recipe.ratingCount})
-                </span>
-              </div>
             )}
-          </div>
-        ) : (
-          <div className={classes.rating}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <span
-                key={star}
-                className={classes.ratingStar}
-                role="button"
-                tabIndex={0}
-                style={{
-                  color:
-                    star <= (hoverStar || recipe.rating || 0)
-                      ? "#ffc107"
-                      : "#e0e0e0",
-                }}
-                onMouseEnter={() => setHoverStar(star)}
-                onMouseLeave={() => setHoverStar(0)}
-                onClick={() => {
-                  if (!onSaveRecipe) return;
-                  const newRating = star === recipe.rating ? 0 : star;
-                  onSaveRecipe({ ...recipe, rating: newRating });
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter" || e.key === " ") {
-                    if (!onSaveRecipe) return;
-                    const newRating = star === recipe.rating ? 0 : star;
-                    onSaveRecipe({ ...recipe, rating: newRating });
-                  }
-                }}
-              >
-                ★
-              </span>
-            ))}
-          </div>
+          </>
         )}
 
         {((recipe.difficulty && recipe.difficulty !== "Unknown") ||
@@ -1133,33 +1142,48 @@ function RecipeDetailsFull({
           )}
 
           {activeTab === "instructions" && (
-            <ol className={classes.instructionsList}>
-              {instructionsArray.length > 0 ? (
-                instructionsArray.map((instruction, index) => (
-                  <li key={index} className={classes.instructionItem}>
-                    <label className={classes.checkboxLabel}>
-                      <input
-                        type="checkbox"
-                        checked={checkedInstructions[index] || false}
-                        onChange={() => toggleInstruction(index)}
-                        className={
-                          classes.checkbox + " " + buttonClasses.checkBox
-                        }
-                      />
-                      <span
-                        className={
-                          checkedInstructions[index] ? classes.checkedText : ""
-                        }
-                      >
-                        {instruction}
-                      </span>
-                    </label>
-                  </li>
-                ))
-              ) : (
-                <p>{t("recipes", "noInstructionsListed")}</p>
+            <>
+              <ol className={classes.instructionsList}>
+                {instructionsArray.length > 0 ? (
+                  instructionsArray.map((instruction, index) => (
+                    <li key={index} className={classes.instructionItem}>
+                      <label className={classes.checkboxLabel}>
+                        <input
+                          type="checkbox"
+                          checked={checkedInstructions[index] || false}
+                          onChange={() => toggleInstruction(index)}
+                          className={
+                            classes.checkbox + " " + buttonClasses.checkBox
+                          }
+                        />
+                        <span
+                          className={
+                            checkedInstructions[index]
+                              ? classes.checkedText
+                              : ""
+                          }
+                        >
+                          {instruction}
+                        </span>
+                      </label>
+                    </li>
+                  ))
+                ) : (
+                  <p>{t("recipes", "noInstructionsListed")}</p>
+                )}
+              </ol>
+              {recipe.videoUrl && (
+                <a
+                  href={recipe.videoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={classes.videoLink}
+                >
+                  <Video size={18} />
+                  {t("recipes", "watchVideo")}
+                </a>
               )}
-            </ol>
+            </>
           )}
 
           {activeTab === "tips" && recipe.notes && (

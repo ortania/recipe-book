@@ -4,26 +4,28 @@ import { IoCopyOutline, IoSearchOutline } from "react-icons/io5";
 import { IoMdStarOutline } from "react-icons/io";
 import { BsGrid3X3Gap } from "react-icons/bs";
 import { useRecipeBook, useLanguage } from "../../context";
-import {
-  searchCommunityRecipes,
-  copyRecipeToUser,
-} from "../../firebase/globalRecipeService";
+import { copyRecipeToUser } from "../../firebase/globalRecipeService";
 import {
   getUserRatingsBatch,
   setUserRating,
 } from "../../firebase/ratingService";
-import Skeleton from "react-loading-skeleton";
+import { useGlobalRecipes } from "../../hooks/useGlobalRecipes";
 import { RecipesView, UpButton, AddRecipeWizard } from "../../components";
 import { scrollToTop } from "../utils";
 import classes from "./global-recipes.module.css";
-
-const PAGE_SIZE = 30;
 
 function GlobalRecipes() {
   const { t, language } = useLanguage();
   const { currentUser, addRecipe, setRecipes, categories } = useRecipeBook();
 
-  const [allRecipes, setAllRecipes] = useState([]);
+  const {
+    allRecipes,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+    isLoading,
+  } = useGlobalRecipes(currentUser?.uid);
+
   const [savedRecipeIds, setSavedRecipeIds] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem("savedCommunityRecipes")) || [];
@@ -33,13 +35,8 @@ function GlobalRecipes() {
   });
   const [showAddPerson, setShowAddPerson] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
-  const [loading, setLoading] = useState(false);
-  const [hasMore, setHasMore] = useState(false);
-  const [ready, setReady] = useState(false);
   const [userRatings, setUserRatings] = useState({});
   const [selectedSharer, setSelectedSharer] = useState("all");
-  const cursorRef = useRef(null);
-  const loadingRef = useRef(false);
   const sentinelRef = useRef(null);
 
   const sharerOptions = useMemo(() => {
@@ -57,58 +54,14 @@ function GlobalRecipes() {
     return allRecipes.filter((r) => r.sharerUserId === selectedSharer);
   }, [allRecipes, selectedSharer]);
 
-  const loadRecipes = useCallback(
-    async (reset = false) => {
-      if (!currentUser || loadingRef.current) return;
-      loadingRef.current = true;
-      setLoading(true);
-      try {
-        const result = await searchCommunityRecipes({
-          excludeUserId: currentUser.uid,
-          sortBy: "avgRating",
-          sortDirection: "desc",
-          cursor: reset ? null : cursorRef.current,
-          pageSize: PAGE_SIZE,
-        });
-        setAllRecipes((prev) => {
-          const next = reset ? result.recipes : [...prev, ...result.recipes];
-          const seen = new Set();
-          return next.filter((r) => {
-            if (seen.has(r.id)) return false;
-            seen.add(r.id);
-            return true;
-          });
-        });
-        cursorRef.current = result.cursor;
-        setHasMore(!!result.cursor);
-      } catch (err) {
-        console.error("Failed to load global recipes:", err);
-      } finally {
-        loadingRef.current = false;
-        setLoading(false);
-        setReady(true);
-      }
-    },
-    [currentUser],
-  );
-
-  useEffect(() => {
-    if (currentUser) {
-      setReady(false);
-      cursorRef.current = null;
-      loadRecipes(true);
-    }
-  }, [currentUser]);
-
-  // Infinite scroll via IntersectionObserver
   useEffect(() => {
     const sentinel = sentinelRef.current;
     if (!sentinel) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !loadingRef.current) {
-          loadRecipes(false);
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
+          fetchNextPage();
         }
       },
       { rootMargin: "300px" },
@@ -116,7 +69,7 @@ function GlobalRecipes() {
 
     observer.observe(sentinel);
     return () => observer.disconnect();
-  }, [hasMore, loadRecipes]);
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   useEffect(() => {
     if (!currentUser || allRecipes.length === 0) return;
@@ -193,7 +146,7 @@ function GlobalRecipes() {
         groups={[]}
         showAddAndFavorites={false}
         showCategories={false}
-        loading={!ready}
+        loading={isLoading}
         recipesTabLabel={t("nav", "globalRecipesFull")}
         emptyTitle={t("recipesView", "emptyGlobalTitle")}
         hasMoreRecipes={false}
@@ -229,7 +182,7 @@ function GlobalRecipes() {
 
       {/* Infinite scroll sentinel */}
       <div ref={sentinelRef} style={{ height: 1 }} />
-      {loading && ready && (
+      {isFetchingNextPage && (
         <div
           style={{
             display: "flex",

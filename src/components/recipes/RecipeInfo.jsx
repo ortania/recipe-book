@@ -10,13 +10,13 @@ import {
   Copy,
   UserCheck,
   Bookmark,
+  UtensilsCrossed,
 } from "lucide-react";
 import { Button } from "../controls/button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { formatDifficulty, formatTime } from "./utils";
 import { useLanguage } from "../../context";
 import useTranslatedText from "../../hooks/useTranslatedText";
-
 
 function RecipeInfo({
   person,
@@ -31,6 +31,8 @@ function RecipeInfo({
   onRate,
   onCardClick,
   followingList = [],
+  linkState,
+  hideRating = false,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -117,12 +119,15 @@ function RecipeInfo({
         onClick={() =>
           onCardClick
             ? onCardClick(person.id)
-            : navigate(`/recipe/${person.id}`)
+            : navigate(
+                `/recipe/${person.id}`,
+                linkState ? { state: linkState } : undefined,
+              )
         }
       >
         <div className={classes.imageContainer}>
           <div className={classes.noImagePlaceholder}>
-            {t("recipes", "noImage")}
+            <UtensilsCrossed size={40} />
           </div>
           {hasImage && (
             <img
@@ -251,80 +256,89 @@ function RecipeInfo({
               </span>
             )}
           </div>
-          {onRate ? (
-            <div className={classes.ratingSection}>
-              <div className={classes.ratingRow}>
-                <span className={classes.ratingLabel}>
-                  {t("globalRecipes", "myRating")}:
-                </span>
-                <div className={classes.starsRow}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      className={classes.starClickable}
-                      style={{
-                        color:
-                          star <= (hoverStar || userRating)
-                            ? "#ffc107"
-                            : "#e0e0e0",
-                      }}
-                      onMouseEnter={() => setHoverStar(star)}
-                      onMouseLeave={() => setHoverStar(0)}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onRate(person.id, star);
-                      }}
-                    >
-                      ★
-                    </span>
-                  ))}
-                </div>
-              </div>
-              {!person.copiedFrom && person.avgRating > 0 && (
-                <div className={classes.ratingAvgBlock}>
+          {/* Rating section – set hideRating=true to hide stars (e.g. sharer profile).
+              To re-enable, pass hideRating={false} or remove the prop. */}
+          {!hideRating && (
+            <>
+              {onRate ? (
+                <div className={classes.ratingSection}>
                   <div className={classes.ratingRow}>
                     <span className={classes.ratingLabel}>
-                      {t("globalRecipes", "avgRating")}:
+                      {t("globalRecipes", "myRating")}:
                     </span>
+                    <div className={classes.starsRow}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                          key={star}
+                          className={classes.starClickable}
+                          style={{
+                            color:
+                              star <= (hoverStar || userRating)
+                                ? "#ffc107"
+                                : "#e0e0e0",
+                          }}
+                          onMouseEnter={() => setHoverStar(star)}
+                          onMouseLeave={() => setHoverStar(0)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            onRate(person.id, star);
+                          }}
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
                   </div>
-                  <span className={classes.ratingMeta}>
-                    {Number(person.avgRating).toFixed(1)} ( {person.ratingCount}
-                    )
-                  </span>
-                </div>
-              )}
-            </div>
-          ) : (
-            (() => {
-              const effectiveRating = person.copiedFrom
-                ? person.rating
-                : (person.avgRating || person.rating);
-              const showAvg = !person.copiedFrom && person.avgRating > 0;
-              return (effectiveRating > 0 || person.rating > 0) ? (
-                <div className={classes.starsRow} style={{ margin: "0.3rem 0" }}>
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      className={classes.star}
-                      style={{
-                        color:
-                          star <= Math.round(effectiveRating)
-                            ? "#ffc107"
-                            : "#e0e0e0",
-                      }}
-                    >
-                      ★
-                    </span>
-                  ))}
-                  {showAvg && (
-                    <span className={classes.ratingMeta}>
-                      ({Number(person.avgRating).toFixed(1)} ·{" "}
-                      {person.ratingCount})
-                    </span>
+                  {!person.copiedFrom && person.avgRating > 0 && (
+                    <div className={classes.ratingAvgBlock}>
+                      <div className={classes.ratingRow}>
+                        <span className={classes.ratingLabel}>
+                          {t("globalRecipes", "avgRating")}:
+                        </span>
+                      </div>
+                      <span className={classes.ratingMeta}>
+                        {Number(person.avgRating).toFixed(1)} ({" "}
+                        {person.ratingCount})
+                      </span>
+                    </div>
                   )}
                 </div>
-              ) : null;
-            })()
+              ) : (
+                (() => {
+                  const effectiveRating = person.copiedFrom
+                    ? person.rating
+                    : person.avgRating || person.rating;
+                  const showAvg = !person.copiedFrom && person.avgRating > 0;
+                  return effectiveRating > 0 || person.rating > 0 ? (
+                    <div
+                      className={classes.starsRow}
+                      style={{ margin: "0.3rem 0" }}
+                    >
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                          key={star}
+                          className={classes.star}
+                          style={{
+                            color:
+                              star <= Math.round(effectiveRating)
+                                ? "#ffc107"
+                                : "#e0e0e0",
+                          }}
+                        >
+                          ★
+                        </span>
+                      ))}
+                      {showAvg && (
+                        <span className={classes.ratingMeta}>
+                          ({Number(person.avgRating).toFixed(1)} ·{" "}
+                          {person.ratingCount})
+                        </span>
+                      )}
+                    </div>
+                  ) : null;
+                })()
+              )}
+            </>
           )}
         </div>
 

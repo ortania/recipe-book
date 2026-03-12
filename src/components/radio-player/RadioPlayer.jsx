@@ -106,11 +106,6 @@ function RadioPlayer({ open, onClose, minimized, onMinimize, onExpand }, ref) {
     };
   }, []);
 
-  // Reset position when panel is closed/opened
-  useEffect(() => {
-    if (open) setPos({ x: 0, y: 0 });
-  }, [open]);
-
   const removeFallbackHandler = useCallback(() => {
     if (fallbackHandlerRef.current) {
       try {
@@ -122,6 +117,20 @@ function RadioPlayer({ open, onClose, minimized, onMinimize, onExpand }, ref) {
       fallbackHandlerRef.current = null;
     }
   }, []);
+
+  // Reset position when panel is closed/opened; stop audio on close
+  useEffect(() => {
+    if (open) {
+      setPos({ x: 0, y: 0 });
+    } else {
+      wantPlayingRef.current = false;
+      removeFallbackHandler();
+      const audio = getGlobalAudio();
+      audio.pause();
+      audio.src = "";
+      setIsPlaying(false);
+    }
+  }, [open, removeFallbackHandler]);
 
   useEffect(() => {
     const audio = getGlobalAudio();

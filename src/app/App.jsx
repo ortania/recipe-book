@@ -6,6 +6,7 @@ import {
   Navigate,
   useLocation,
 } from "react-router-dom";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import Skeleton, { SkeletonTheme } from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 import classes from "./app.module.css";
@@ -20,6 +21,17 @@ import {
 } from "../context";
 import { Onboarding } from "../pages/onboarding";
 import { ErrorBoundary } from "../components/error-boundary";
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 5 * 60 * 1000,
+      gcTime: 10 * 60 * 1000,
+      refetchOnWindowFocus: false,
+      retry: 1,
+    },
+  },
+});
 
 const RecipeDetailsPage = React.lazy(
   () => import("../pages/recipe-details/RecipeDetailsPage"),
@@ -412,18 +424,20 @@ function Lazy({ children, fallback }) {
 
 function App() {
   return (
-    <LanguageProvider>
-      <SkeletonTheme
-        baseColor="var(--border-color)"
-        highlightColor="var(--bg-hover)"
-      >
-        <RecipeBookProvider>
-          <Router>
-            <AppContent />
-          </Router>
-        </RecipeBookProvider>
-      </SkeletonTheme>
-    </LanguageProvider>
+    <QueryClientProvider client={queryClient}>
+      <LanguageProvider>
+        <SkeletonTheme
+          baseColor="var(--border-color)"
+          highlightColor="var(--bg-hover)"
+        >
+          <RecipeBookProvider>
+            <Router>
+              <AppContent />
+            </Router>
+          </RecipeBookProvider>
+        </SkeletonTheme>
+      </LanguageProvider>
+    </QueryClientProvider>
   );
 }
 

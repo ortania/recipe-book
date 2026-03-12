@@ -68,6 +68,7 @@ const INITIAL_RECIPE = {
   servings: "",
   difficulty: "Unknown",
   sourceUrl: "",
+  videoUrl: "",
   image_src: "",
   images: [],
   categories: [],
@@ -951,6 +952,7 @@ function AddRecipeWizard({
       servings: recipe.servings ? parseInt(recipe.servings) : null,
       difficulty: recipe.difficulty,
       sourceUrl: recipe.sourceUrl,
+      videoUrl: recipe.videoUrl,
       image_src: images[0] || recipe.image_src,
       images,
       categories: recipe.categories,
@@ -1430,6 +1432,19 @@ function AddRecipeWizard({
         >
           + {t("addWizard", "addStep")}
         </button>
+      </div>
+
+      <div className={classes.formGroup}>
+        <label className={classes.formGroupLabel}>
+          {t("addWizard", "videoUrl")}
+        </label>
+        <input
+          type="url"
+          className={classes.formInput}
+          placeholder="https://youtube.com/..."
+          value={recipe.videoUrl}
+          onChange={(e) => updateRecipe("videoUrl", e.target.value)}
+        />
       </div>
     </div>
   );
