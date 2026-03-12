@@ -161,9 +161,29 @@ function CookingVoiceChat({
         window.AudioContext || window.webkitAudioContext
       )();
     }
-    if (audioCtxRef.current.state === "suspended") {
-      audioCtxRef.current.resume().catch(() => {});
+    const ctx = audioCtxRef.current;
+    if (ctx.state === "suspended") {
+      ctx.resume().catch(() => {});
     }
+    try {
+      const buf = ctx.createBuffer(1, 1, 22050);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(ctx.destination);
+      src.start(0);
+    } catch {}
+  }
+
+  function speakNativeFallback(text) {
+    try {
+      if (!window.speechSynthesis) return;
+      const u = new SpeechSynthesisUtterance(text);
+      u.lang = speechLang;
+      u.rate = 1;
+      u.volume = 1;
+      window.speechSynthesis.cancel();
+      window.speechSynthesis.speak(u);
+    } catch {}
   }
 
   // ---- Helper: speak text aloud using OpenAI TTS via Cloud Function ----
@@ -171,12 +191,11 @@ function CookingVoiceChat({
     if (!text) return;
     isSpeakingRef.current = true;
     setIsSpeaking(true);
-    // Cancel any browser SpeechSynthesis (e.g. timer announcements) to avoid overlap
     try {
       window.speechSynthesis?.cancel();
     } catch {}
-    // Duck radio while speaking
     $.current.radioRef?.current?.duckVolume();
+    let spoken = false;
     try {
       const response = await fetch(
         "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts",
@@ -192,6 +211,9 @@ function CookingVoiceChat({
         },
       );
       if (!response.ok || !isActiveRef.current) {
+        if (!isActiveRef.current) { isSpeakingRef.current = false; setIsSpeaking(false); return; }
+        speakNativeFallback(text);
+        spoken = true;
         isSpeakingRef.current = false;
         setIsSpeaking(false);
         return;
@@ -206,6 +228,9 @@ function CookingVoiceChat({
       const ctx = audioCtxRef.current;
       if (ctx) {
         try {
+          if (ctx.state === "suspended") {
+            await ctx.resume().catch(() => {});
+          }
           const audioBuffer = await ctx.decodeAudioData(arrayBuffer.slice(0));
           await new Promise((resolve) => {
             const source = ctx.createBufferSource();
@@ -218,62 +243,36 @@ function CookingVoiceChat({
             };
             source.start(0);
           });
-        } catch (decodeErr) {
-          console.error(
-            "🔊 AudioContext decode failed, falling back:",
-            decodeErr,
-          );
-          // Fallback to Audio element with blob URL
+          spoken = true;
+        } catch {
+          try {
+            const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
+            const blobUrl = URL.createObjectURL(blob);
+            await new Promise((resolve) => {
+              const audio = new Audio(blobUrl);
+              audioRef.current = audio;
+              audio.onended = () => { audioRef.current = null; URL.revokeObjectURL(blobUrl); resolve(); };
+              audio.onerror = () => { audioRef.current = null; URL.revokeObjectURL(blobUrl); resolve(); };
+              audio.play().then(() => { spoken = true; }).catch(() => { audioRef.current = null; URL.revokeObjectURL(blobUrl); resolve(); });
+            });
+          } catch {}
+        }
+      } else {
+        try {
           const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
           const blobUrl = URL.createObjectURL(blob);
           await new Promise((resolve) => {
             const audio = new Audio(blobUrl);
             audioRef.current = audio;
-            audio.onended = () => {
-              audioRef.current = null;
-              URL.revokeObjectURL(blobUrl);
-              resolve();
-            };
-            audio.onerror = () => {
-              audioRef.current = null;
-              URL.revokeObjectURL(blobUrl);
-              resolve();
-            };
-            audio.play().catch(() => {
-              audioRef.current = null;
-              URL.revokeObjectURL(blobUrl);
-              resolve();
-            });
+            audio.onended = () => { audioRef.current = null; URL.revokeObjectURL(blobUrl); resolve(); };
+            audio.onerror = () => { audioRef.current = null; URL.revokeObjectURL(blobUrl); resolve(); };
+            audio.play().then(() => { spoken = true; }).catch(() => { audioRef.current = null; URL.revokeObjectURL(blobUrl); resolve(); });
           });
-        }
-      } else {
-        // No AudioContext, use Audio element
-        const blob = new Blob([arrayBuffer], { type: "audio/mpeg" });
-        const blobUrl = URL.createObjectURL(blob);
-        await new Promise((resolve) => {
-          const audio = new Audio(blobUrl);
-          audioRef.current = audio;
-          audio.onended = () => {
-            audioRef.current = null;
-            URL.revokeObjectURL(blobUrl);
-            resolve();
-          };
-          audio.onerror = () => {
-            audioRef.current = null;
-            URL.revokeObjectURL(blobUrl);
-            resolve();
-          };
-          audio.play().catch((err) => {
-            console.error("🔊 Audio play failed:", err);
-            audioRef.current = null;
-            URL.revokeObjectURL(blobUrl);
-            resolve();
-          });
-        });
+        } catch {}
       }
-    } catch (e) {
-      console.error("OpenAI TTS error:", e);
-    }
+    } catch {}
+
+    if (!spoken) speakNativeFallback(text);
     // Restore radio volume after speaking
     $.current.radioRef?.current?.restoreVolume();
     ttsEndTimeRef.current = Date.now();
@@ -503,8 +502,10 @@ function CookingVoiceChat({
       return;
     }
 
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+      (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
     const recognition = new SR();
-    recognition.continuous = true;
+    recognition.continuous = !isIOS;
     recognition.interimResults = true;
     recognition.lang = $.current.speechLang;
     recognition.maxAlternatives = 1;

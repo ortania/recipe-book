@@ -26,6 +26,7 @@ function getGlobalAudio() {
   if (!_globalAudio) {
     _globalAudio = new Audio();
     _globalAudio.preload = "none";
+    _globalAudio.setAttribute("playsinline", "");
   }
   return _globalAudio;
 }
@@ -209,20 +210,34 @@ function RadioPlayer({ open, onClose, minimized, onMinimize, onExpand }, ref) {
         if (target.fallbackUrl) {
           audio.src = target.fallbackUrl;
           audio.load();
-          audio.play().catch(() => {
-            setError(true);
-            setLoading(false);
-          });
+          const retryOnCanplay = () => {
+            if (wantPlayingRef.current) {
+              audio.play().catch(() => {
+                setError(true);
+                setLoading(false);
+              });
+            }
+          };
+          audio.addEventListener("canplay", retryOnCanplay, { once: true });
+          audio.play().catch(() => {});
         } else {
           setError(true);
           setLoading(false);
         }
       };
 
-      audio.play().catch(tryFallback);
+      const retryOnCanplay = () => {
+        if (wantPlayingRef.current) {
+          audio.play().catch(tryFallback);
+        }
+      };
+      audio.addEventListener("canplay", retryOnCanplay, { once: true });
+
+      audio.play().catch(() => {});
 
       const errorHandler = () => {
         fallbackHandlerRef.current = null;
+        audio.removeEventListener("canplay", retryOnCanplay);
         tryFallback();
       };
       fallbackHandlerRef.current = errorHandler;

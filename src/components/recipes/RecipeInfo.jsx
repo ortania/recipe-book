@@ -151,12 +151,12 @@ function RecipeInfo({
             >
               {isSaved ? (
                 <Bookmark
-                  size={18}
+                  size={16}
                   fill="var(--accent-color-1)"
                   stroke="var(--accent-color-1)"
                 />
               ) : (
-                <Bookmark size={18} />
+                <Bookmark size={16} color="#333" strokeWidth={2} />
               )}
             </button>
           ) : (
@@ -172,9 +172,9 @@ function RecipeInfo({
                 }
               >
                 {isFavorite ? (
-                  <Heart size={18} fill="red" color="red" />
+                  <Heart size={16} fill="red" color="red" />
                 ) : (
-                  <Heart size={18} />
+                  <Heart size={16} color="#333" strokeWidth={2} />
                 )}
               </button>
             )

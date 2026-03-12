@@ -364,6 +364,7 @@
   display: flex;
   justify-content: flex-end;
   border-radius: 16px 16px 0 0;
+  padding-bottom: env(safe-area-inset-bottom);
 }
 
 .doneBtn {

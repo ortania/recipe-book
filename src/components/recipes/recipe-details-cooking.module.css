@@ -548,7 +548,6 @@
 }
 
 .content {
-  
 }
 
 @keyframes micArrowBounce {
@@ -564,7 +563,7 @@
 /* Help Dropdown - purple themed bottom card */
 .helpDropdown {
   position: fixed;
-  bottom: 1.5rem;
+  bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
   background: var(--bg-card);
@@ -711,7 +710,8 @@
 
 .activeTimersList {
   display: grid;
-  grid-template-columns: auto 1fr auto auto;
+  /* grid-template-columns: auto 1fr auto auto; */
+  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
   row-gap: 6px;
   flex: 1;
   min-width: 0;
@@ -1000,6 +1000,7 @@
 
   .recipeContent {
     padding: 1rem;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
   }
 
   .ingredientItem,

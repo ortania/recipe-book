@@ -24,13 +24,13 @@
     min-height: 0;
     height: 100vh;
     height: 100dvh;
-    overflow: hidden;
+    overflow: clip;
   }
 
   .contentWrapper {
     margin-inline-start: 0;
     height: 100%;
-    overflow: hidden;
+    overflow: clip;
   }
 }
 
@@ -40,7 +40,7 @@
   justify-content: center;
   background-color: var(--bg-primary);
   padding: 1.5rem;
-  padding-bottom: 5rem;
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
 }
 
 .main > * {
@@ -51,11 +51,10 @@
 @media (max-width: 768px) {
   .main {
     padding: 0;
-    padding-top: 3.5rem;
-    padding-bottom: 5rem;
+    padding-top: calc(3.5rem + env(safe-area-inset-top, 0px));
+    padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
     overflow-y: auto;
     min-height: 0;
-    -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
   }
 
@@ -104,7 +103,7 @@
 @media (max-width: 768px) {
   .loading {
     padding: 0;
-    padding-top: 3.5rem;
+    padding-top: calc(3.5rem + env(safe-area-inset-top, 0px));
     padding-bottom: 4rem;
   }
 

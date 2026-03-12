@@ -29,16 +29,16 @@ function FormInput({
         <div className={`${classes.passwordInput} ${hasIcon ? classes.hasIcon : ""} ${errorClass}`}>
           {hasIcon && <span className={classes.inputIcon}>{children}</span>}
           <input
-            type={showPassword ? "text" : "password"}
+            type="text"
+            style={!showPassword ? { WebkitTextSecurity: "disc" } : undefined}
             placeholder={requiredPlaceholder}
             value={value}
             onChange={onChange}
             disabled={isLoading}
             required
-            readOnly
             onFocus={onFocus}
             onBlur={onBlur}
-            autoComplete="off"
+            autoComplete="current-password"
           />
           <button
             type="button"
@@ -68,10 +68,9 @@ function FormInput({
             onChange={onChange}
             disabled={isLoading}
             required
-            readOnly
             onFocus={onFocus}
             onBlur={onBlur}
-            autoComplete="off"
+            autoComplete={type === "email" ? "email" : "off"}
           />
           {showClear && (
             <button type="button" onClick={onClear} className={classes.clearButton} tabIndex={-1}>
@@ -95,10 +94,9 @@ function FormInput({
           onChange={onChange}
           disabled={isLoading}
           required
-          readOnly
           onFocus={onFocus}
           onBlur={onBlur}
-          autoComplete="off"
+          autoComplete={type === "email" ? "email" : "off"}
         />
       </div>
       {error && <span className={classes.fieldError}><TriangleAlert size={14} /> {error}</span>}

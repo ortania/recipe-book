@@ -13,6 +13,7 @@
     var(--bg-tertiary) 100%
   );
   padding: 2rem;
+  padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
   position: fixed;
   top: 0;
   left: 0;

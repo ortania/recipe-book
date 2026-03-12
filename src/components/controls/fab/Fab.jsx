@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from "react";
+import { createPortal } from "react-dom";
 import { Plus } from "lucide-react";
 import { BottomSheet } from "../bottom-sheet";
 import classes from "./fab.module.css";
@@ -155,7 +156,7 @@ function Fab({
     }
   };
 
-  return (
+  return createPortal(
     <>
       <button
         ref={fabRef}
@@ -182,7 +183,8 @@ function Fab({
           <div onClick={() => setSheetOpen(false)}>{children}</div>
         </BottomSheet>
       )}
-    </>
+    </>,
+    document.body,
   );
 }
 

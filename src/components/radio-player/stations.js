@@ -24,7 +24,7 @@ const STATIONS = [
       mixed: "Classical",
     },
     aliases: ["קלאסית", "קלאסי", "classical", "classic", "classic fm"],
-    url: "http://playerservices.streamtheworld.com/api/livestream-redirect/WCPE_FM.mp3",
+    url: "https://playerservices.streamtheworld.com/api/livestream-redirect/WCPE_FM.mp3",
     fallbackUrl: "https://wwfm.streamguys1.com/live-mp3",
     icon: "🎻",
   },

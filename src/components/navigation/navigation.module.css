@@ -779,8 +779,8 @@
     z-index: 10002;
     background: var(--bg-primary);
     padding: 0.6rem 1rem;
+    padding-top: calc(0.6rem + env(safe-area-inset-top, 0px));
     gap: 0.5rem;
-    /* border-bottom: 1px solid var(--border-color); */
   }
 
   :global(body.sidebar-open) .mobileTopBar {
@@ -882,7 +882,7 @@
   }
 
   .navBottom {
-    padding-bottom: 4rem;
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom, 0px));
     margin-top: auto;
   }
 

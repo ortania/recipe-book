@@ -61,16 +61,15 @@ export const TimerProvider = ({ children }) => {
       { id, label, remaining: totalSeconds, endTime, running: true },
     ]);
 
+    try { unlockAudio(); } catch {}
+
     if (!silent) {
       try {
         const isHebrew = label && /[\u0590-\u05FF]/.test(label);
         const text = isHebrew
           ? `טיימר הופעל ל-${minutes} דקות${label ? `, ${label}` : ""}`
           : `Timer started for ${minutes} minutes${label ? `, ${label}` : ""}`;
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = isHebrew ? "he-IL" : "en-US";
-        utterance.rate = 0.9;
-        window.speechSynthesis.speak(utterance);
+        speakViaCloud(text);
       } catch {}
     }
 
@@ -116,9 +115,47 @@ export const TimerProvider = ({ children }) => {
   );
 };
 
-function playAlarmBeep() {
+let sharedAudioCtx = null;
+let _ttsAudio = null;
+
+function getAudioContext() {
+  if (!sharedAudioCtx || sharedAudioCtx.state === "closed") {
+    sharedAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  }
+  if (sharedAudioCtx.state === "suspended") {
+    sharedAudioCtx.resume().catch(() => {});
+  }
+  return sharedAudioCtx;
+}
+
+function unlockAudio() {
+  const ctx = getAudioContext();
   try {
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const buf = ctx.createBuffer(1, 1, 22050);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start(0);
+  } catch {}
+
+  if (!_ttsAudio) {
+    _ttsAudio = new Audio();
+    _ttsAudio.setAttribute("playsinline", "");
+  }
+  try {
+    _ttsAudio.src =
+      "data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=";
+    const p = _ttsAudio.play();
+    if (p) p.then(() => { _ttsAudio.pause(); _ttsAudio.currentTime = 0; _ttsAudio.src = ""; }).catch(() => {});
+  } catch {}
+}
+
+async function playAlarmBeep() {
+  try {
+    const ctx = getAudioContext();
+    if (ctx.state === "suspended") {
+      await ctx.resume();
+    }
     const playTone = (startTime, freq, duration) => {
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
@@ -135,11 +172,26 @@ function playAlarmBeep() {
     for (let i = 0; i < 5; i++) {
       playTone(now + i * 0.35, 880, 0.2);
     }
-    setTimeout(() => ctx.close(), 3000);
+  } catch {
+    speakNative("beep beep beep");
+  }
+}
+
+function speakNative(text) {
+  try {
+    if (!window.speechSynthesis) return;
+    const u = new SpeechSynthesisUtterance(text);
+    const isHebrew = /[\u0590-\u05FF]/.test(text);
+    u.lang = isHebrew ? "he-IL" : "en-US";
+    u.rate = 1;
+    u.volume = 1;
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(u);
   } catch {}
 }
 
 async function speakViaCloud(text) {
+  let spoken = false;
   try {
     const res = await fetch(
       "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts",
@@ -154,15 +206,40 @@ async function speakViaCloud(text) {
         }),
       },
     );
-    if (!res.ok) return;
+    if (!res.ok) { speakNative(text); return; }
     const buf = await res.arrayBuffer();
-    const blob = new Blob([buf], { type: "audio/mpeg" });
-    const url = URL.createObjectURL(blob);
-    const audio = new Audio(url);
-    audio.onended = () => URL.revokeObjectURL(url);
-    audio.onerror = () => URL.revokeObjectURL(url);
-    await audio.play();
+
+    const ctx = getAudioContext();
+    if (ctx.state === "suspended") {
+      await ctx.resume().catch(() => {});
+    }
+    try {
+      const audioBuffer = await ctx.decodeAudioData(buf.slice(0));
+      await new Promise((resolve) => {
+        const source = ctx.createBufferSource();
+        source.buffer = audioBuffer;
+        source.connect(ctx.destination);
+        source.onended = resolve;
+        source.start(0);
+      });
+      spoken = true;
+      return;
+    } catch {}
+
+    try {
+      const blob = new Blob([buf], { type: "audio/mpeg" });
+      const url = URL.createObjectURL(blob);
+      const audio = _ttsAudio || new Audio();
+      audio.setAttribute("playsinline", "");
+      audio.src = url;
+      audio.onended = () => URL.revokeObjectURL(url);
+      audio.onerror = () => URL.revokeObjectURL(url);
+      await audio.play();
+      spoken = true;
+    } catch {}
   } catch {}
+
+  if (!spoken) speakNative(text);
 }
 
 function announceFinished(label) {
@@ -174,7 +251,6 @@ function announceFinished(label) {
     }
   } catch {}
 
-  // Speak after beeps finish (~2s for 5 beeps)
   setTimeout(() => {
     const isHebrew = label && /[\u0590-\u05FF]/.test(label);
     const text = label

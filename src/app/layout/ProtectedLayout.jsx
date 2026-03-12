@@ -44,6 +44,12 @@ function ProtectedLayout() {
     document.body.classList.remove("sidebar-open", "modal-open");
   }, []);
 
+  useEffect(() => {
+    if (!HIDE_FOOTER_ROUTES.includes(pathname)) {
+      document.body.classList.remove("hide-footer");
+    }
+  }, [pathname]);
+
   if (!isLoggedIn) {
     return <Navigate to="/login" />;
   }
