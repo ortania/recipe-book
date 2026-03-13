@@ -15,7 +15,7 @@ import {
 import { Button } from "../controls/button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { formatDifficulty, formatTime } from "./utils";
-import { useLanguage } from "../../context";
+import { useLanguage, useRecipeBook } from "../../context";
 import useTranslatedText from "../../hooks/useTranslatedText";
 
 function RecipeInfo({
@@ -35,6 +35,7 @@ function RecipeInfo({
   hideRating = false,
 }) {
   const { t } = useLanguage();
+  const { currentUser } = useRecipeBook();
   const navigate = useNavigate();
   const translatedName = useTranslatedText(person.name);
   const [isFavorite, setIsFavorite] = useState(person.isFavorite || false);
@@ -229,7 +230,7 @@ function RecipeInfo({
 
         <div className={classes.recipeInfo}>
           <h3 className={classes.recipeName}>{translatedName}</h3>
-          {person.sharerName && (
+          {person.sharerName && person.sharerUserId !== currentUser?.uid && (
             <div
               className={classes.sharerName}
               onClick={(e) => {
