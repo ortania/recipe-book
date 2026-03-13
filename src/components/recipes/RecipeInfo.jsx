@@ -160,7 +160,8 @@ function RecipeInfo({
               )}
             </button>
           ) : (
-            !onCopyRecipe && (
+            !onCopyRecipe &&
+            onToggleFavorite && (
               <button
                 className={`${classes.favoriteButton} ${isFavorite ? classes.active : ""}`}
                 onClick={(e) => {
@@ -197,25 +198,30 @@ function RecipeInfo({
               </span>
             </button>
           ) : (
-            !onSaveRecipe && (
+            !onSaveRecipe &&
+            (onEdit || onDelete) && (
               <div className={classes.actionButtons}>
-                <button
-                  onClick={handleEdit}
-                  className={classes.actionButton}
-                  title="Edit recipe"
-                >
-                  <FilePenLine size={16} />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDeleteClick();
-                  }}
-                  className={`${classes.actionButton} ${classes.danger}`}
-                  title="Delete recipe"
-                >
-                  <Trash2 size={16} color="red" />
-                </button>
+                {onEdit && (
+                  <button
+                    onClick={handleEdit}
+                    className={classes.actionButton}
+                    title="Edit recipe"
+                  >
+                    <FilePenLine size={16} />
+                  </button>
+                )}
+                {onDelete && (
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeleteClick();
+                    }}
+                    className={`${classes.actionButton} ${classes.danger}`}
+                    title="Delete recipe"
+                  >
+                    <Trash2 size={16} color="red" />
+                  </button>
+                )}
               </div>
             )
           )}

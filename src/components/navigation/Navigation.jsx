@@ -227,6 +227,7 @@ function Navigation({ onLogout, links }) {
   const selectedCount = isAllSelected ? 0 : selectedCategories.length;
   const isRecipeDetailsPage = location.pathname.startsWith("/recipe/");
   const isGlobalRecipesPage = location.pathname === "/global-recipes";
+  const isSharerProfilePage = location.pathname.startsWith("/sharer/");
   const isSettingsPage = location.pathname === "/settings";
 
   return (
@@ -284,22 +285,28 @@ function Navigation({ onLogout, links }) {
 
           {!isGlobalRecipesPage && (
             <>
-              <button
-                className={classes.navLink}
-                onClick={() => {
-                  managementFromSheetRef.current = false;
-                  setShowManagement(true);
-                  closeSidebar();
-                }}
-              >
-                <Settings2 size={18} className={classes.icon} />
-                {t("categories", "manage")}
-              </button>
+              {!isSharerProfilePage && (
+                <button
+                  className={classes.navLink}
+                  onClick={() => {
+                    managementFromSheetRef.current = false;
+                    setShowManagement(true);
+                    closeSidebar();
+                  }}
+                >
+                  <Settings2 size={18} className={classes.icon} />
+                  {t("categories", "manage")}
+                </button>
+              )}
 
               <button
                 className={classes.navLink}
                 onClick={() => {
-                  setShowCategoriesSheet(true);
+                  if (isSharerProfilePage) {
+                    window.dispatchEvent(new Event("open-categories-sheet"));
+                  } else {
+                    setShowCategoriesSheet(true);
+                  }
                   closeSidebar();
                 }}
               >

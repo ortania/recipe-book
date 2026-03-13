@@ -100,6 +100,7 @@ function RecipesView({
   backLabel,
   linkState,
   hideRating = false,
+  readOnlyCategories = false,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -162,18 +163,49 @@ function RecipesView({
   const {
     hasMoreRecipes: hasMoreRecipesCtx,
     loadMoreRecipes: loadMoreRecipesCtx,
-    selectedCategories,
-    toggleCategory,
-    clearCategorySelection,
+    selectedCategories: ctxSelectedCategories,
+    toggleCategory: ctxToggleCategory,
+    clearCategorySelection: ctxClearCategorySelection,
     setIsSearchActive,
-    categories,
-    recipes,
+    categories: ctxCategories,
+    recipes: ctxRecipes,
     addCategory,
     editCategory,
     deleteCategory,
     reorderCategories,
     sortCategoriesAlphabetically,
   } = useRecipeBook();
+
+  // Local category selection state for readOnlyCategories mode (e.g. sharer profile)
+  const [localSelectedCategories, setLocalSelectedCategories] = useState([
+    "all",
+  ]);
+  const localToggleCategory = useCallback((categoryId) => {
+    setLocalSelectedCategories((prev) => {
+      if (categoryId === "all") return ["all"];
+      const withoutAll = prev.filter((id) => id !== "all");
+      if (withoutAll.includes(categoryId)) {
+        const next = withoutAll.filter((id) => id !== categoryId);
+        return next.length === 0 ? ["all"] : next;
+      }
+      return [...withoutAll, categoryId];
+    });
+  }, []);
+  const localClearCategorySelection = useCallback(() => {
+    setLocalSelectedCategories(["all"]);
+  }, []);
+
+  const selectedCategories = readOnlyCategories
+    ? localSelectedCategories
+    : ctxSelectedCategories;
+  const toggleCategory = readOnlyCategories
+    ? localToggleCategory
+    : ctxToggleCategory;
+  const clearCategorySelection = readOnlyCategories
+    ? localClearCategorySelection
+    : ctxClearCategorySelection;
+  const categories = readOnlyCategories ? groups : ctxCategories;
+  const recipes = readOnlyCategories ? persons : ctxRecipes;
 
   const hasMoreRecipes = hasMoreRecipesProp ?? hasMoreRecipesCtx;
   const loadMoreRecipes = onLoadMore || loadMoreRecipesCtx;
@@ -207,6 +239,14 @@ function RecipesView({
     mql.addEventListener("change", update);
     return () => mql.removeEventListener("change", update);
   }, []);
+
+  // Listen for sidebar "open-categories-sheet" event (used on sharer profile)
+  useEffect(() => {
+    if (!readOnlyCategories) return;
+    const handler = () => setShowCategoriesSheet(true);
+    window.addEventListener("open-categories-sheet", handler);
+    return () => window.removeEventListener("open-categories-sheet", handler);
+  }, [readOnlyCategories]);
 
   useEffect(() => {
     const timer = setTimeout(() => setDebouncedSearch(searchTerm), 250);
@@ -449,6 +489,15 @@ function RecipesView({
       });
     }
 
+    // Filter by selected categories (for flat list views like sharer profile)
+    if (!selectedCategories.includes("all") && selectedCategories.length > 0) {
+      filtered = filtered.filter(
+        (person) =>
+          person.categories &&
+          person.categories.some((c) => selectedCategories.includes(c)),
+      );
+    }
+
     return search(filtered, debouncedSearch, sortField, sortDirection);
   }, [
     displayPersons,
@@ -462,6 +511,7 @@ function RecipesView({
     selectedStepCount,
     filterIngredients,
     savedRecipes,
+    selectedCategories,
   ]);
 
   const recentlyViewed = useMemo(() => {
@@ -870,6 +920,15 @@ function RecipesView({
         onSortChange={handleRecipeSortChange}
         options={recipeSortOptions}
       />
+      {showCategories && (
+        <button
+          className={classes.mobileHeaderBtn}
+          onClick={() => setShowCategoriesSheet(true)}
+          title={t("nav", "categories")}
+        >
+          <Tags size={20} />
+        </button>
+      )}
       <button
         className={classes.mobileHeaderBtn}
         onClick={toggleView}
@@ -1755,6 +1814,18 @@ function RecipesView({
               setShowCategoriesSheet(false);
               setShowManagement(true);
             }}
+            hideManage={readOnlyCategories}
+            categoriesOverride={readOnlyCategories ? categories : undefined}
+            recipesOverride={readOnlyCategories ? recipes : undefined}
+            selectedCategoriesOverride={
+              readOnlyCategories ? selectedCategories : undefined
+            }
+            toggleCategoryOverride={
+              readOnlyCategories ? toggleCategory : undefined
+            }
+            clearCategorySelectionOverride={
+              readOnlyCategories ? clearCategorySelection : undefined
+            }
           />
         </BottomSheet>
       ) : (
@@ -1780,13 +1851,25 @@ function RecipesView({
                   setShowCategoriesSheet(false);
                   setShowManagement(true);
                 }}
+                hideManage={readOnlyCategories}
+                categoriesOverride={readOnlyCategories ? categories : undefined}
+                recipesOverride={readOnlyCategories ? recipes : undefined}
+                selectedCategoriesOverride={
+                  readOnlyCategories ? selectedCategories : undefined
+                }
+                toggleCategoryOverride={
+                  readOnlyCategories ? toggleCategory : undefined
+                }
+                clearCategorySelectionOverride={
+                  readOnlyCategories ? clearCategorySelection : undefined
+                }
               />
             </div>
           </>
         )
       )}
 
-      {showManagement && (
+      {showManagement && !readOnlyCategories && (
         <CategoriesManagement
           categories={categories}
           onClose={() => {

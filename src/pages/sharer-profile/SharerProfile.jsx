@@ -7,6 +7,7 @@ import {
   copyRecipeToUser,
 } from "../../firebase/globalRecipeService";
 import { getUserData, toggleFollowUser } from "../../firebase/authService";
+import { fetchCategories } from "../../firebase/categoryService";
 import { RecipesView } from "../../components";
 import Skeleton from "react-loading-skeleton";
 import classes from "./sharer-profile.module.css";
@@ -19,6 +20,7 @@ function SharerProfile() {
 
   const [sharerData, setSharerData] = useState(null);
   const [recipes, setSharerRecipes] = useState([]);
+  const [sharerCategories, setSharerCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
 
@@ -30,10 +32,22 @@ function SharerProfile() {
         setSharerData(sharer);
 
         if (sharer?.publicProfile) {
-          const sharerRecipes = await fetchSharerRecipes(sharerUserId, true);
+          const [sharerRecipes, cats] = await Promise.all([
+            fetchSharerRecipes(sharerUserId, true),
+            fetchCategories(sharerUserId),
+          ]);
           setSharerRecipes(sharerRecipes);
+
+          // Build category list: keep only categories that have recipes
+          const usedCatIds = new Set();
+          sharerRecipes.forEach((r) => {
+            if (r.categories) r.categories.forEach((c) => usedCatIds.add(c));
+          });
+          const filtered = cats.filter((c) => usedCatIds.has(c.id));
+          setSharerCategories([{ id: "all", name: "all" }, ...filtered]);
         } else {
           setSharerRecipes([]);
+          setSharerCategories([]);
         }
       } catch (err) {
         console.error("Error loading sharer profile:", err);
@@ -141,9 +155,10 @@ function SharerProfile() {
       {isPublic && (
         <RecipesView
           persons={recipesWithoutSharer}
-          groups={[]}
+          groups={sharerCategories}
           showAddAndFavorites={false}
-          showCategories={false}
+          showCategories
+          readOnlyCategories
           loading={!sharerData}
           emptyTitle={t("sharerProfile", "noRecipes")}
           onCopyRecipe={undefined}

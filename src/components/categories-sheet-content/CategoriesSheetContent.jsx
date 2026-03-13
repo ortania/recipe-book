@@ -7,14 +7,24 @@ import { Trash2 } from "lucide-react";
 import { SearchBox } from "../controls/search";
 import classes from "./categories-sheet-content.module.css";
 
-function CategoriesSheetContent({ onManage, className }) {
-  const {
-    categories,
-    recipes,
-    selectedCategories,
-    toggleCategory,
-    clearCategorySelection,
-  } = useRecipeBook();
+function CategoriesSheetContent({
+  onManage,
+  className,
+  categoriesOverride,
+  recipesOverride,
+  selectedCategoriesOverride,
+  toggleCategoryOverride,
+  clearCategorySelectionOverride,
+  hideManage = false,
+}) {
+  const ctx = useRecipeBook();
+  const categories = categoriesOverride || ctx.categories;
+  const recipes = recipesOverride || ctx.recipes;
+  const selectedCategories =
+    selectedCategoriesOverride || ctx.selectedCategories;
+  const toggleCategory = toggleCategoryOverride || ctx.toggleCategory;
+  const clearCategorySelection =
+    clearCategorySelectionOverride || ctx.clearCategorySelection;
   const { t } = useLanguage();
   const { getTranslated } = useTranslatedList(categories, "name");
   const [categorySearch, setCategorySearch] = useState("");
@@ -117,10 +127,12 @@ function CategoriesSheetContent({ onManage, className }) {
           })}
       </div>
 
-      <button className={classes.manageBtn} onClick={onManage}>
-        <Settings2 size={16} />
-        {t("categories", "manage")}
-      </button>
+      {!hideManage && (
+        <button className={classes.manageBtn} onClick={onManage}>
+          <Settings2 size={16} />
+          {t("categories", "manage")}
+        </button>
+      )}
     </div>
   );
 }
