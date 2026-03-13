@@ -1185,7 +1185,7 @@
   font-weight: var(--font-weight-quaternary);
   color: var(--text-primary);
   font-size: var(--basic-font);
-  border-bottom: 2px solid var(--bg-accent-tertiary);
+  border-bottom: 1px solid var(--bg-accent-tertiary);
   margin-top: 0.3rem;
 }
 
