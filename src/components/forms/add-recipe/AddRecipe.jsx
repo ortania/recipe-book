@@ -702,7 +702,7 @@ function AddRecipe({
             </span>
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,.jfif"
               onChange={handleImageUpload}
               style={{ fontSize: "0.9rem" }}
               disabled={uploadingImage}

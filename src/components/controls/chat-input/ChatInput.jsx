@@ -125,7 +125,7 @@ function ChatInput({
       {showImageButton && (
         <input
           type="file"
-          accept="image/*"
+          accept="image/*,.jfif"
           ref={fileInputRef}
           onChange={handleImageChange}
           style={{ display: "none" }}

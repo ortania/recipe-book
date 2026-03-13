@@ -283,8 +283,8 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const handleEditImageDrop = (e) => {
     e.preventDefault();
     setEditImageDragOver(false);
-    const files = Array.from(e.dataTransfer.files).filter((f) =>
-      f.type.startsWith("image/"),
+    const files = Array.from(e.dataTransfer.files).filter(
+      (f) => f.type.startsWith("image/") || /\.jfif$/i.test(f.name),
     );
     if (files.length === 0) return;
     handleImageUpload({ target: { files }, preventDefault: () => {} });
@@ -957,7 +957,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           >
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,.jfif"
               ref={fileInputRef}
               onChange={handleImageUpload}
               style={fileOverlayStyle}
@@ -978,7 +978,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         >
           <input
             type="file"
-            accept="image/*"
+            accept="image/*,.jfif"
             ref={fileInputRef}
             onChange={handleImageUpload}
             style={fileOverlayStyle}

@@ -133,7 +133,7 @@ function ChatWindow({
   /* ── image handling (only for general chat) ── */
   const handleImageFile = (file) => {
     if (!file) return;
-    if (!file.type.startsWith("image/")) {
+    if (!file.type.startsWith("image/") && !/\.jfif$/i.test(file.name)) {
       setError(t("chat", "selectImageFile"));
       return;
     }

@@ -761,8 +761,8 @@ function AddRecipeWizard({
   const handleImageDrop = (e) => {
     e.preventDefault();
     setImageDragOver(false);
-    const files = Array.from(e.dataTransfer.files).filter((f) =>
-      f.type.startsWith("image/"),
+    const files = Array.from(e.dataTransfer.files).filter(
+      (f) => f.type.startsWith("image/") || /\.jfif$/i.test(f.name),
     );
     if (files.length === 0) return;
     handleImageUpload({ target: { files }, preventDefault: () => {} });
@@ -771,8 +771,8 @@ function AddRecipeWizard({
   const handlePhotoDrop = (e) => {
     e.preventDefault();
     setPhotoDragOver(false);
-    const files = Array.from(e.dataTransfer.files).filter((f) =>
-      f.type.startsWith("image/"),
+    const files = Array.from(e.dataTransfer.files).filter(
+      (f) => f.type.startsWith("image/") || /\.jfif$/i.test(f.name),
     );
     if (files.length === 0) return;
     handleImportFromPhoto({ target: { files }, preventDefault: () => {} });
@@ -1496,7 +1496,7 @@ function AddRecipeWizard({
                 >
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,.jfif"
                     capture="environment"
                     ref={cameraInputRef}
                     onChange={handleImageUpload}
@@ -1520,7 +1520,7 @@ function AddRecipeWizard({
               >
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/*,.jfif"
                   ref={fileInputRef}
                   onChange={handleImageUpload}
                   style={{
@@ -1555,7 +1555,7 @@ function AddRecipeWizard({
               >
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/*,.jfif"
                   capture="environment"
                   ref={cameraInputRef}
                   onChange={handleImageUpload}
@@ -1580,7 +1580,7 @@ function AddRecipeWizard({
             >
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,.jfif"
                 ref={fileInputRef}
                 onChange={handleImageUpload}
                 style={{
@@ -2409,7 +2409,7 @@ function AddRecipeWizard({
             >
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,.jfif"
                 capture="environment"
                 ref={photoInputRef}
                 onChange={handleImportFromPhoto}
@@ -2434,7 +2434,7 @@ function AddRecipeWizard({
           >
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,.jfif"
               ref={photoFileInputRef}
               onChange={handleImportFromPhoto}
               style={{
