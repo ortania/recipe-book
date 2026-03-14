@@ -153,7 +153,6 @@ function GlobalRecipes() {
         onCopyRecipe={undefined}
         onSaveRecipe={handleSaveRecipe}
         savedRecipes={savedRecipeIds}
-        onRate={handleRate}
         userRatings={userRatings}
         defaultSortField="rating"
         defaultSortDirection="desc"

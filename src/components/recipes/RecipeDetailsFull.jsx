@@ -135,6 +135,7 @@ function RecipeDetailsFull({
   const [wakeLockToast, setWakeLockToast] = useState("");
   const wakeLockRef = useRef(null);
   const wakeLockToastTimer = useRef(null);
+  const wakeLockWrapperRef = useRef(null);
 
   const handleCopyClick = () => {
     setShowCopyDialog(true);
@@ -179,6 +180,21 @@ function RecipeDetailsFull({
       }
     };
   }, []);
+
+  useEffect(() => {
+    if (!wakeLockToast) return;
+    const handler = (e) => {
+      if (
+        wakeLockWrapperRef.current &&
+        !wakeLockWrapperRef.current.contains(e.target)
+      ) {
+        clearTimeout(wakeLockToastTimer.current);
+        setWakeLockToast("");
+      }
+    };
+    document.addEventListener("pointerdown", handler);
+    return () => document.removeEventListener("pointerdown", handler);
+  }, [wakeLockToast]);
 
   useEffect(() => {
     setServings(recipe.servings || 4);
@@ -715,10 +731,8 @@ function RecipeDetailsFull({
           >
             <Share2 size={20} />
           </button>
-        </div>
 
-        <div className={classes.actionBarEnd}>
-          <div style={{ position: "relative" }}>
+          <div ref={wakeLockWrapperRef} style={{ position: "relative" }}>
             <button
               className={`${classes.wakeLockBtn} ${wakeLockActive ? classes.wakeLockBtnActive : ""}`}
               onClick={toggleWakeLock}
@@ -730,6 +744,9 @@ function RecipeDetailsFull({
               <div className={classes.wakeLockToast}>{wakeLockToast}</div>
             )}
           </div>
+        </div>
+
+        <div className={classes.actionBarEnd}>
           {onEnterCookingMode && (
             <button className={classes.cookingBtn} onClick={onEnterCookingMode}>
               <ChefHat size={18} />

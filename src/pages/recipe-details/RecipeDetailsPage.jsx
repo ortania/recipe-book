@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
-import { ChefHat } from "lucide-react";
 import RecipeDetailsFull from "../../components/recipes/RecipeDetailsFull";
 import RecipeDetailsCookingMode from "../../components/recipes/RecipeDetailsCookingMode";
 import { EditRecipe } from "../../components/forms/edit-recipe";
-import { Fab } from "../../components/controls/fab";
 import { BackButton } from "../../components/controls/back-button";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
@@ -337,7 +335,7 @@ function RecipeDetailsPage() {
           isGlobalRecipe && !fromSharerProfile ? globalUserRating : undefined
         }
         onActiveTabChange={setDetailActiveTab}
-        hideRating={!!fromSharerProfile}
+        hideRating={isOwner || !!fromSharerProfile}
       />
 
       {editingRecipe && (
@@ -346,14 +344,6 @@ function RecipeDetailsPage() {
           onSave={handleSaveEdit}
           onCancel={() => setEditingRecipe(null)}
           groups={categories}
-        />
-      )}
-
-      {detailActiveTab !== "chat" && (
-        <Fab
-          icon={<ChefHat size="1em" />}
-          label={t("recipes", "cookingMode")}
-          onClick={handleCookingModeToggle}
         />
       )}
     </div>

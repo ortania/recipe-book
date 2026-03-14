@@ -157,10 +157,11 @@
 .categoryTag {
   padding: 0.4rem 0.8rem;
   background: var(--bg-tertiary);
-  border-radius: 6px;
+  border-radius: 12px;
   font-size: var(--basic-font);
   color: var(--text-secondary);
   font-weight: 500;
+  border: 1px solid var(--border-color);
 }
 
 .sourceUrl {

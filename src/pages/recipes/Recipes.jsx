@@ -97,6 +97,7 @@ function Recipes() {
         onEditPerson={editRecipe}
         onDeletePerson={deleteRecipe}
         sortStorageKey="myRecipesSortPreference"
+        hideRating
       />
 
       <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>

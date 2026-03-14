@@ -882,7 +882,8 @@
 .categoryTag {
   padding: 0.4rem 0.8rem;
   background: var(--bg-tertiary);
-  border-radius: 6px;
+  border-radius: 12px;
+  border: 1px solid var(--border-color);
   font-size: var(--basic-font);
   color: var(--text-secondary);
   font-weight: 500;
@@ -1450,7 +1451,7 @@
   }
 
   .cookingBtn {
-    display: none;
+    display: flex;
   }
 
   .wakeLockBtn {
@@ -1540,7 +1541,7 @@
 .wakeLockToast {
   position: absolute;
   top: calc(100% + 0.4rem);
-  inset-inline-end: 0;
+  inset-inline-start: 0;
   background: var(--bg-card);
   color: var(--text-muted);
   padding: 0.5rem 0.9rem;
@@ -1551,7 +1552,6 @@
   z-index: 1100;
   white-space: nowrap;
   animation: copyToastIn 0.25s ease;
-  pointer-events: none;
 }
 
 .copyToast {

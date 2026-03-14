@@ -311,7 +311,9 @@ img {
 input,
 textarea,
 select {
-  font-size: max(1rem, inherit);
+  /* font-size: max(1rem, inherit); */
+  /* for safari will not make zoom */
+  font-size: 16px;
 }
 ul {
   list-style-type: none;

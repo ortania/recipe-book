@@ -21,7 +21,7 @@
   grid-template-columns: repeat(5, minmax(0, 1fr));
 
   /* from Chat GPT */
-  padding-block-end: calc(.5rem + env(safe-area-inset-bottom));
+  padding-block-end: calc(0.5rem + env(safe-area-inset-bottom));
   /* ----------------------- */
 }
 
@@ -59,7 +59,7 @@
 
 .footerLabel {
   font-size: var(--small-font);
-  font-weight: var(--font-weight-quinary);
+  font-weight: var(--font-weight-primary);
   white-space: nowrap;
 }
 
@@ -72,28 +72,42 @@
     display: block;
 
     background: var(--bg-tertiary);
-    border-top: 1px solid var(--border-color);
+    /* border-top: 1px solid var(--border-color); */
+    /* border-top: 1px solid var(--bg-primary); */
     position: fixed;
-    bottom: 0;
+    /* bottom: 0;
     left: 0;
-    right: 0;
+    right: 0; */
+    inset-inline: 0;
+    inset-block-end: 0;
 
     z-index: 999;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow:
+      0 -2rem 2rem rgba(0, 0, 0, 0.05),
+      0 -7rem 9rem rgba(0, 0, 0, 0.08);
+    /* box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08); */
   }
 
+  /*
   .footer::before {
     content: "";
     position: absolute;
-    bottom: 100%;
-    left: 0;
-    right: 0;
-    height: 50px;
-    background: linear-gradient(
+
+    
+
+     background: linear-gradient(
       to bottom,
       transparent 0%,
       var(--bg-primary) 100%
+    ); 
+
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgb(0 0 0 / 0.07) 100%
     );
+
     pointer-events: none;
   }
+    */
 }
