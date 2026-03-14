@@ -1,4 +1,4 @@
-import React, { Suspense, useRef } from "react";
+import React, { Suspense, useRef, useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -340,60 +340,49 @@ function RecipeDetailSkeleton() {
 
 function LoginSkeleton() {
   return (
-    <div
-      style={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        minHeight: "100vh",
-        width: "100vw",
-        padding: "2rem",
-        background: "var(--bg-primary)",
-      }}
-    >
-      <div
-        style={{
-          width: "100%",
-          maxWidth: 440,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: "2rem",
-        }}
-      >
-        <Skeleton width={180} height={50} borderRadius={12} />
-        <div
-          style={{
-            width: "100%",
-            padding: "3rem",
-            background: "var(--bg-card)",
-            borderRadius: 20,
-            display: "flex",
-            flexDirection: "column",
-            gap: "1.5rem",
-          }}
-        >
-          <Skeleton
-            width="40%"
-            height="2rem"
-            borderRadius={8}
-            style={{ alignSelf: "center" }}
+    <div className={classes.loginSkeleton}>
+      <div className={classes.loginSkeletonInner}>
+        <div className={classes.loginSkeletonLogo}>
+          <svg
+            width="160"
+            height="160"
+            viewBox="0 0 97 97"
+            fill="none"
+            xmlns="http://www.w3.org/2000/svg"
+            className={classes.loginSkeletonIcon}
+            aria-hidden="true"
+          >
+            <path
+              opacity="0.4"
+              d="M48.5 21.4195V86.2075C47.8129 86.2075 47.0854 86.0862 46.5196 85.7629L46.3579 85.682C38.5979 81.4383 25.0583 76.9925 16.2879 75.8204L15.1158 75.6587C11.2358 75.1737 8.08331 71.5362 8.08331 67.6562V18.8329C8.08331 14.0233 12.0037 10.3858 16.8133 10.79C25.3008 11.477 38.1533 15.7612 45.3475 20.2475L46.3579 20.8537C46.9641 21.2175 47.7321 21.4195 48.5 21.4195Z"
+              fill="currentColor"
+            />
+            <path
+              d="M88.9167 18.8727V67.6556C88.9167 71.5356 85.7642 75.1731 81.8842 75.6581L80.5504 75.8198C71.7396 76.9919 58.1596 81.4781 50.3996 85.7623C49.8742 86.0856 49.2275 86.2069 48.5 86.2069V21.419C49.2679 21.419 50.0358 21.2169 50.6421 20.8531L51.3292 20.4086C58.5233 15.8819 71.4163 11.5573 79.9038 10.8298H80.1463C84.9558 10.4256 88.9167 14.0227 88.9167 18.8727Z"
+              fill="currentColor"
+            />
+            <path
+              d="M31.3229 37.3457H22.2292C20.5721 37.3457 19.1979 35.9715 19.1979 34.3145C19.1979 32.6574 20.5721 31.2832 22.2292 31.2832H31.3229C32.98 31.2832 34.3542 32.6574 34.3542 34.3145C34.3542 35.9715 32.98 37.3457 31.3229 37.3457Z"
+              fill="currentColor"
+            />
+            <path
+              d="M34.3542 49.4707H22.2292C20.5721 49.4707 19.1979 48.0965 19.1979 46.4395C19.1979 44.7824 20.5721 43.4082 22.2292 43.4082H34.3542C36.0113 43.4082 37.3854 44.7824 37.3854 46.4395C37.3854 48.0965 36.0113 49.4707 34.3542 49.4707Z"
+              fill="currentColor"
+            />
+          </svg>
+        </div>
+        <div className={classes.loginSkeletonText}>
+          <Skeleton width={180} height={40} borderRadius={10} />
+        </div>
+        <div className={classes.loginSkeletonDots}>
+          <span className={classes.loginSkeletonDot} />
+          <span
+            className={classes.loginSkeletonDot}
+            style={{ animationDelay: "0.2s" }}
           />
-          <Skeleton height="3.2rem" borderRadius={12} />
-          <Skeleton height="3.2rem" borderRadius={12} />
-          <Skeleton width="35%" height="1rem" borderRadius={6} />
-          <Skeleton height="3rem" borderRadius={12} />
-          <Skeleton
-            width="50%"
-            height="0.9rem"
-            borderRadius={6}
-            style={{ alignSelf: "center" }}
-          />
-          <Skeleton
-            width="60%"
-            height="0.9rem"
-            borderRadius={6}
-            style={{ alignSelf: "center" }}
+          <span
+            className={classes.loginSkeletonDot}
+            style={{ animationDelay: "0.4s" }}
           />
         </div>
       </div>
@@ -441,13 +430,28 @@ function App() {
   );
 }
 
+// TODO: REMOVE after verifying LoginSkeleton design
+const PREVIEW_LOGIN_SKELETON = false;
+
 function AppContent() {
   const { isLoggedIn, isLoading } = useRecipeBook();
   const location = useLocation();
   const initialLoadDone = useRef(false);
+  const [previewDone, setPreviewDone] = useState(!PREVIEW_LOGIN_SKELETON);
+
+  useEffect(() => {
+    if (PREVIEW_LOGIN_SKELETON) {
+      const timer = setTimeout(() => setPreviewDone(true), 5000);
+      return () => clearTimeout(timer);
+    }
+  }, []);
 
   if (!isLoading) {
     initialLoadDone.current = true;
+  }
+
+  if (PREVIEW_LOGIN_SKELETON && !previewDone) {
+    return <LoginSkeleton />;
   }
 
   const showInitialLoading = isLoading && !initialLoadDone.current;
