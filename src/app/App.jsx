@@ -306,34 +306,51 @@ function ShoppingListSkeleton() {
 
 function RecipeDetailSkeleton() {
   return (
+    <div className={classes.detailSkeletonWrap}>
     <div className={classes.detailSkeleton}>
       <div className={classes.detailStickyHeader}>
         <Skeleton circle width="2rem" height="2rem" />
-        <Skeleton width="45%" height="1rem" />
+        <Skeleton width="40%" height="1.1rem" borderRadius={6} />
       </div>
-      <Skeleton height={280} borderRadius={0} style={{ maxHeight: 350 }} />
+      <Skeleton height={350} borderRadius={0} />
       <div className={classes.detailActionBar}>
         <Skeleton circle width="2rem" height="2rem" />
         <Skeleton circle width="2rem" height="2rem" />
         <Skeleton circle width="2rem" height="2rem" />
+        <Skeleton circle width="2rem" height="2rem" />
+        <div style={{ flex: 1 }} />
+        <Skeleton width={120} height="2.2rem" borderRadius={20} />
       </div>
       <div className={classes.detailBody}>
-        <div
-          style={{ display: "flex", gap: "0.75rem", marginBottom: "0.5rem" }}
-        >
+        {/* Rating */}
+        <div style={{ display: "flex", gap: "0.3rem", marginBottom: "0.5rem" }}>
+          {[0, 1, 2, 3, 4].map((i) => (
+            <Skeleton key={i} circle width="1.4rem" height="1.4rem" />
+          ))}
+        </div>
+        {/* Info chips */}
+        <div style={{ display: "flex", gap: "0.75rem", marginBottom: "0.75rem" }}>
           <Skeleton width={90} height="1.8rem" borderRadius={20} />
           <Skeleton width={90} height="1.8rem" borderRadius={20} />
           <Skeleton width={90} height="1.8rem" borderRadius={20} />
         </div>
-        <Skeleton width="35%" height="1rem" style={{ marginTop: "0.5rem" }} />
-        {[0, 1, 2, 3, 4].map((i) => (
-          <Skeleton key={i} width={`${85 - i * 8}%`} height="0.7rem" />
-        ))}
-        <Skeleton width="30%" height="1rem" style={{ marginTop: "1.5rem" }} />
-        {[0, 1, 2].map((i) => (
-          <Skeleton key={i} width={`${95 - i * 10}%`} height="0.7rem" />
+        {/* Category tags */}
+        <div style={{ display: "flex", gap: "0.5rem", marginBottom: "1rem" }}>
+          <Skeleton width={70} height="1.6rem" borderRadius={14} />
+          <Skeleton width={55} height="1.6rem" borderRadius={14} />
+        </div>
+        {/* Tabs */}
+        <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem", borderBottom: "1px solid var(--border-color)", paddingBottom: "0.75rem" }}>
+          <Skeleton width={80} height="1rem" borderRadius={6} />
+          <Skeleton width={80} height="1rem" borderRadius={6} />
+          <Skeleton width={60} height="1rem" borderRadius={6} />
+        </div>
+        {/* Content lines */}
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <Skeleton key={i} width={`${90 - i * 5}%`} height="0.8rem" borderRadius={4} />
         ))}
       </div>
+    </div>
     </div>
   );
 }

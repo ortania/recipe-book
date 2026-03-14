@@ -3,19 +3,21 @@
 .recipeCardCooking {
   display: flex;
   flex-direction: column;
-  justify-content: center;
   align-items: center;
-  min-height: 100%;
-  max-height: 100%;
-  overflow-y: auto;
-  padding-top: 1rem;
-  width: 100%;
-  max-width: 1200px;
-  margin-left: auto;
-  margin-right: auto;
-  position: relative;
-  /* background: #f8f9fa; */
-  background: var(--bg-card);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  max-width: 100%;
+  margin: 0;
+  padding-top: 0;
+  z-index: 10005;
+  background: var(--bg-primary);
+  overflow: hidden;
 }
 
 .volumeNotification {
@@ -62,12 +64,11 @@
   align-items: center;
   gap: 4rem;
   padding: 0.75rem 1.5rem;
-  margin-bottom: 0.5rem;
-  z-index: 2000;
+  z-index: 10006;
   box-sizing: border-box;
-  position: sticky;
-  top: 0;
   background: var(--bg-card);
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .voiceToggleButton {
@@ -135,29 +136,57 @@
   position: relative;
 }
 
-.recipeContent {
+.subHeader {
+  width: 100%;
+  max-width: 1200px;
+  flex-shrink: 0;
+  /* background: var(--bg-card); */
+  background: var(--bg-primary);
+  z-index: 10;
+  padding: 3rem 1.5rem 0;
+  box-sizing: border-box;
+}
+
+.middleContent {
+  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
-  padding: 1.5rem;
-  max-width: 1200px;
   width: 100%;
-  overflow: visible;
+  max-width: 1200px;
+  padding: 1rem 1.5rem;
   box-sizing: border-box;
-  margin: 0 auto;
-  gap: 1rem;
+  overflow-y: auto;
+  cursor: pointer;
+}
+
+.progressInfo {
+  width: 100%;
+  padding: 4rem 0 0.5rem;
+  flex-shrink: 0;
+}
+
+.bottomControls {
+  width: 100%;
+  max-width: 1200px;
+  padding: 0.75rem 1.5rem;
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
+  flex-shrink: 0;
+  /* background: var(--bg-card); */
+  background: var(--bg-primary);
+  border-top: 1px solid var(--border-color);
 }
 
 .servingSelector {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1.5rem 2rem;
-  background: var(--bg-card);
+  padding: 0.75rem 0;
+  /* background: var(--bg-card); */
+  background: var(--bg-primary);
   border-radius: 0;
   margin-bottom: 0;
-  max-width: 1200px;
   width: 100%;
   box-shadow: none;
 }
@@ -208,11 +237,10 @@
 .tabs {
   display: flex;
   gap: 0;
-  /* border-bottom: 3px solid #e0e0e0; */
   margin-bottom: 0;
-  max-width: 1200px;
   width: 100%;
-  background: var(--bg-card);
+  /* background: var(--bg-card); */
+  background: var(--bg-primary);
 }
 
 .tab {
@@ -252,17 +280,9 @@
   font-weight: 700;
 }
 
-.tabContent {
-  cursor: pointer;
-  max-width: 1200px;
-  width: 100%;
-  margin: 0 auto;
-  box-sizing: border-box;
-}
-
 .progressSection {
   text-align: left;
-  padding: 1.5rem 0;
+  padding: 0;
 }
 
 .progressHeader {
@@ -283,7 +303,8 @@
 .progressBadge {
   font-size: var(--basic-font);
   /* font-weight: 700; */
-  color: #10b981;
+  /* color: #10b981; */
+  color: var(--active-color-primary);
   background: transparent;
   padding: 0;
   border-radius: 0;
@@ -327,7 +348,7 @@
   gap: 1rem;
   justify-content: space-between;
   align-items: stretch;
-  margin-bottom: 1.5rem;
+  margin-bottom: 0.5rem;
 }
 
 .navButton,
@@ -472,9 +493,8 @@
   padding: 0.2em;
   flex-shrink: 0;
   border-radius: 50%;
-  transition:
-    color 0.2s,
-    background 0.2s;
+  transition: var(--transition);
+    
 }
 
 .radioBtn:active {
@@ -658,11 +678,15 @@
   .headerLeft {
     gap: 0.2rem;
   }
+
+  .subHeader {
+    padding-top: 1rem;
+  }
 }
 
 .timerSection {
-  margin-top: 1.5rem;
-  padding: 1.2rem 1.5rem;
+  margin-top: 0.5rem;
+  padding: 0.75rem 1rem;
   /* background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%); */
   border-radius: 16px;
   box-shadow: 0 2px 8px rgba(3, 105, 161, 0.08);
@@ -858,6 +882,7 @@
 .completionSection {
   text-align: center;
   padding: 3rem 1rem;
+  margin: auto 0;
   animation: fadeIn 0.5s ease-in;
 }
 
@@ -894,7 +919,7 @@
 .instructionsList {
   list-style: none;
   padding: 0;
-  margin: 0;
+  margin: auto 0;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -964,62 +989,21 @@
 }
 
 @media (max-width: 768px) {
-  .recipeCardCooking {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    max-width: 100%;
-    margin: 0;
-    padding-top: 6rem;
-    z-index: 10005;
-    background: var(--clr-grey-10);
-    overflow-y: auto;
-  }
-
-  .headerButtonsCooking {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    background: var(--clr-grey-10);
-    z-index: 10006;
-    padding: 1rem;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  .headerLeft {
+    gap: 0.2rem;
   }
 
   .voiceBar {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    background: var(--clr-grey-10);
     padding: 0.5rem 1rem;
   }
 
-  .recipeContent {
-    padding: 1rem;
-    padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+  .middleContent {
+    padding: 0.75rem 1rem;
   }
 
-  .ingredientItem,
-  .instructionItem {
-    font-size: 1.5rem;
-    padding: 1.5rem;
-    min-height: 80px;
-  }
-
-  .ingredientText,
-  .instructionText {
-    font-size: 2.5rem;
-    line-height: 1.2;
-  }
-
-  .voiceRecognitionIndicator span {
-    font-size: var(--very-large-font);
+  .bottomControls {
+    padding: 0.5rem 1rem;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
   }
 
   .timerContent {
