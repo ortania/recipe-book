@@ -1314,7 +1314,7 @@
 }
 
 .nutritionContent {
-  padding: 1rem 1.25rem;
+  padding: 0 1.25rem 1rem;
   background: var(--bg-card);
   direction: rtl;
   text-align: right;
@@ -1324,8 +1324,11 @@
   font-size: var(--basic-font);
   font-weight: 700;
   color: #1a7a3a;
-  margin: 0 0 0.75rem 0;
+  padding: 0.75rem 0;
   line-height: 1.5;
+  border-bottom: 1px solid var(--border-color);
+  margin: 0;
+  margin-block-end: 1em;
 }
 
 .nutritionList {
@@ -1344,6 +1347,10 @@
   display: flex;
   align-items: center;
   gap: 1rem;
+}
+
+.nutritionList li ~ li {
+  border-top: 1px solid var(--border-color);
 }
 
 .nutritionEmoji {
@@ -1365,11 +1372,12 @@
   align-items: center;
   font-size: var(--basic-font, 0.9rem);
   color: var(--text-tertiary);
-  margin: 0 0 0.75rem;
+  padding: 0.75rem 0;
   line-height: 1.5;
   display: flex;
   align-items: flex-start;
   gap: 0.4rem;
+  border-top: 1px solid var(--border-color);
 }
 
 .disclaimerIcon {

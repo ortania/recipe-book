@@ -351,28 +351,32 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
   };
 
   /* ── render ── */
+  const isEmpty = messages.length === 0 && !isRecipeMode;
+
   return (
     <div
-      className={`${classes.chatContainer} ${isRecipeMode ? classes.embedded : ""}`}
+      className={`${classes.chatContainer} ${isRecipeMode ? classes.embedded : ""} ${isEmpty ? classes.emptyCenter : ""}`}
     >
-      {!isRecipeMode && (showGreeting === undefined ? true : showGreeting) && (
-        <div className={classes.chatHeader}>
-          <div className={classes.greeting}>
-            <Greeting />
+      {!isEmpty &&
+        !isRecipeMode &&
+        (showGreeting === undefined ? true : showGreeting) && (
+          <div className={classes.chatHeader}>
+            <div className={classes.greeting}>
+              <Greeting />
+            </div>
+            {showGreeting === undefined && (
+              <ChatHelpButton
+                title={t("chat", "helpTitle")}
+                items={[
+                  t("chat", "helpFeature1"),
+                  t("chat", "helpFeature2"),
+                  t("chat", "helpFeature3"),
+                  t("chat", "helpFeature4"),
+                ]}
+              />
+            )}
           </div>
-          {showGreeting === undefined && (
-            <ChatHelpButton
-              title={t("chat", "helpTitle")}
-              items={[
-                t("chat", "helpFeature1"),
-                t("chat", "helpFeature2"),
-                t("chat", "helpFeature3"),
-                t("chat", "helpFeature4"),
-              ]}
-            />
-          )}
-        </div>
-      )}
+        )}
 
       {messages.length > 0 && (
         <div className={classes.chatToolbar}>
@@ -582,9 +586,11 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
 
       <div
         className={
-          isRecipeMode
-            ? classes.embeddedInputWrapper
-            : classes.fixedInputWrapper
+          isEmpty
+            ? classes.centeredInputWrapper
+            : isRecipeMode
+              ? classes.embeddedInputWrapper
+              : classes.fixedInputWrapper
         }
       >
         <ChatInput
@@ -602,6 +608,9 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
           showImageButton={showImageButton}
           onImageSelect={handleImageFile}
         />
+        <p className={classes.aiDisclaimer}>
+          תשובות AI הן להכוונה בלבד ויתכנו טעויות.
+        </p>
       </div>
     </div>
   );

@@ -42,6 +42,17 @@ import {
   Menu,
   Sun,
   Video,
+  Flame,
+  Drumstick,
+  Droplet,
+  Wheat,
+  Candy,
+  Leaf,
+  Droplets,
+  Pill,
+  Sparkles,
+  Bone,
+  Atom,
 } from "lucide-react";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
@@ -969,14 +980,13 @@ function RecipeDetailsFull({
                     {recipe.nutrition.note ? `, ${recipe.nutrition.note}` : ""}
                     ):
                   </p>
-                  <p className={classes.nutritionDisclaimer}>
-                    <Info size={14} className={classes.disclaimerIcon} />
-                    {t("recipeDetails", "nutritionDisclaimer")}
-                  </p>
+
                   <ul className={classes.nutritionList}>
                     {recipe.nutrition.calories && (
                       <li>
-                        <span className={classes.nutritionEmoji}>🔥</span>{" "}
+                        <span className={classes.nutritionEmoji}>
+                          <Flame size={16} />
+                        </span>{" "}
                         {t("recipes", "calories")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.calories)} kcal
@@ -985,7 +995,9 @@ function RecipeDetailsFull({
                     )}
                     {recipe.nutrition.protein && (
                       <li>
-                        <span className={classes.nutritionEmoji}>🍗</span>{" "}
+                        <span className={classes.nutritionEmoji}>
+                          <Drumstick size={16} />
+                        </span>{" "}
                         {t("recipes", "protein")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.protein)} g
@@ -994,7 +1006,9 @@ function RecipeDetailsFull({
                     )}
                     {recipe.nutrition.fat && (
                       <li>
-                        <span className={classes.nutritionEmoji}>🥑</span>{" "}
+                        <span className={classes.nutritionEmoji}>
+                          <Droplet size={16} />
+                        </span>{" "}
                         {t("recipes", "fat")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.fat)} g
@@ -1003,7 +1017,9 @@ function RecipeDetailsFull({
                     )}
                     {recipe.nutrition.carbs && (
                       <li>
-                        <span className={classes.nutritionEmoji}>🍞</span>{" "}
+                        <span className={classes.nutritionEmoji}>
+                          <Wheat size={16} />
+                        </span>{" "}
                         {t("recipes", "carbs")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.carbs)} g
@@ -1012,7 +1028,9 @@ function RecipeDetailsFull({
                     )}
                     {recipe.nutrition.sugars && (
                       <li>
-                        <span className={classes.nutritionEmoji}>🍬</span>{" "}
+                        <span className={classes.nutritionEmoji}>
+                          <Candy size={16} />
+                        </span>{" "}
                         {t("recipes", "sugars")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.sugars)} g
@@ -1023,7 +1041,9 @@ function RecipeDetailsFull({
                     )}
                     {recipe.nutrition.fiber && (
                       <li>
-                        <span className={classes.nutritionEmoji}>🥬</span>{" "}
+                        <span className={classes.nutritionEmoji}>
+                          <Leaf size={16} />
+                        </span>{" "}
                         {t("recipes", "fiber")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.fiber)} g
@@ -1032,7 +1052,9 @@ function RecipeDetailsFull({
                     )}
                     {recipe.nutrition.saturatedFat && (
                       <li>
-                        <span className={classes.nutritionEmoji}>🧈</span>{" "}
+                        <span className={classes.nutritionEmoji}>
+                          <Droplets size={16} />
+                        </span>{" "}
                         {t("recipes", "saturatedFat")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.saturatedFat)} g
@@ -1041,7 +1063,9 @@ function RecipeDetailsFull({
                     )}
                     {recipe.nutrition.cholesterol && (
                       <li>
-                        <span className={classes.nutritionEmoji}>💊</span>{" "}
+                        <span className={classes.nutritionEmoji}>
+                          <Pill size={16} />
+                        </span>{" "}
                         {t("recipes", "cholesterol")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.cholesterol)} mg
@@ -1050,7 +1074,9 @@ function RecipeDetailsFull({
                     )}
                     {recipe.nutrition.sodium && (
                       <li>
-                        <span className={classes.nutritionEmoji}>🧂</span>{" "}
+                        <span className={classes.nutritionEmoji}>
+                          <Sparkles size={16} />
+                        </span>{" "}
                         {t("recipes", "sodium")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.sodium)} mg
@@ -1059,7 +1085,9 @@ function RecipeDetailsFull({
                     )}
                     {recipe.nutrition.calcium && (
                       <li>
-                        <span className={classes.nutritionEmoji}>🦴</span>{" "}
+                        <span className={classes.nutritionEmoji}>
+                          <Bone size={16} />
+                        </span>{" "}
                         {t("recipes", "calcium")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.calcium)} mg
@@ -1068,7 +1096,9 @@ function RecipeDetailsFull({
                     )}
                     {recipe.nutrition.iron && (
                       <li>
-                        <span className={classes.nutritionEmoji}>⚙️</span>{" "}
+                        <span className={classes.nutritionEmoji}>
+                          <Atom size={16} />
+                        </span>{" "}
                         {t("recipes", "iron")}:{" "}
                         <span className={classes.nutritionValue}>
                           {scaleNutrition(recipe.nutrition.iron)} mg
@@ -1076,6 +1106,10 @@ function RecipeDetailsFull({
                       </li>
                     )}
                   </ul>
+                  <p className={classes.nutritionDisclaimer}>
+                    <Info size={14} className={classes.disclaimerIcon} />
+                    {t("recipeDetails", "nutritionDisclaimer")}
+                  </p>
                 </div>
               )}
             </div>

@@ -476,7 +476,9 @@
   z-index: 100;
   background: var(--bg-primary);
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
 }
 
 .fixedInputWrapper > * {
@@ -484,6 +486,32 @@
   max-width: 700px;
   padding: 0 1rem;
   box-sizing: border-box;
+}
+
+/* Centered empty state (no messages, general chat) */
+.emptyCenter {
+  justify-content: center;
+}
+
+.emptyCenter .messagesArea {
+  flex: none;
+  overflow: visible;
+  padding: 0;
+}
+
+.centeredInputWrapper {
+  width: 100%;
+  max-width: 700px;
+  padding: 0;
+  margin: 0 auto;
+}
+
+.aiDisclaimer {
+  text-align: center;
+  font-size: var(--small-font);
+  color: var(--text-muted);
+  margin: 0.5rem 0 0;
+  direction: rtl;
 }
 
 /* When embedded inside recipe detail tabs */
@@ -547,6 +575,15 @@
     width: auto;
     max-width: none;
     padding: 0;
+  }
+
+  .emptyCenter {
+    justify-content: center;
+  }
+
+  .centeredInputWrapper {
+    padding: 0;
+    max-width: none;
   }
 
   .embeddedInputWrapper {
