@@ -6,6 +6,17 @@ const INITIAL_QUALITY = 0.7;
 const MIN_QUALITY = 0.3;
 const COMPRESS_TIMEOUT_MS = 12000;
 
+function normalizeImageDataUrl(dataUrl) {
+  if (!dataUrl) return dataUrl;
+  if (
+    /^data:(application\/octet-stream|image\/jfif|image\/pjpeg)/i.test(dataUrl) ||
+    /^data:;base64,/i.test(dataUrl)
+  ) {
+    return dataUrl.replace(/^data:[^;]*/, "data:image/jpeg");
+  }
+  return dataUrl;
+}
+
 function compressImage(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -41,7 +52,7 @@ function compressImage(file) {
         }
       };
       img.onerror = () => reject(new Error("Failed to decode image"));
-      img.src = reader.result;
+      img.src = normalizeImageDataUrl(reader.result);
     };
     reader.onerror = () => reject(new Error("Failed to read file"));
     reader.readAsDataURL(file);
@@ -90,4 +101,4 @@ export async function uploadRecipeImage(userId, recipeId, file) {
   return withTimeout(getDownloadURL(storageRef), 10000);
 }
 
-export { compressImage };
+export { compressImage, normalizeImageDataUrl };

@@ -9,6 +9,7 @@ import {
   parseRecipeFromUrl,
   parseRecipeFromText,
 } from "../../../app/recipeParser";
+import { normalizeImageDataUrl } from "../../../firebase/imageService";
 
 function AddRecipe({
   onAddPerson,
@@ -196,7 +197,7 @@ function AddRecipe({
           setUploadingImage(false);
           alert("Error processing image");
         };
-        img.src = reader.result;
+        img.src = normalizeImageDataUrl(reader.result);
       };
       reader.onerror = () => {
         setUploadingImage(false);

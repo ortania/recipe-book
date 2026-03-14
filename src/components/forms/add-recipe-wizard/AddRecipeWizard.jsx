@@ -1,7 +1,10 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { Modal } from "../../modal";
 import { useLanguage, useRecipeBook } from "../../../context";
-import { uploadRecipeImage } from "../../../firebase/imageService";
+import {
+  uploadRecipeImage,
+  normalizeImageDataUrl,
+} from "../../../firebase/imageService";
 import {
   parseRecipeFromUrl,
   parseRecipeFromText,
@@ -634,13 +637,14 @@ function AddRecipeWizard({
           const reader = new FileReader();
           reader.onerror = reject;
           reader.onload = () => {
+            const normalized = normalizeImageDataUrl(reader.result);
             const img = new Image();
             img.onerror = reject;
             img.onload = () => {
               try {
                 const { width, height } = img;
                 if (width <= maxDim && height <= maxDim) {
-                  resolve(reader.result);
+                  resolve(normalized);
                   return;
                 }
                 const scale = maxDim / Math.max(width, height);
@@ -654,7 +658,7 @@ function AddRecipeWizard({
                 reject(err);
               }
             };
-            img.src = reader.result;
+            img.src = normalized;
           };
           reader.readAsDataURL(file);
         });

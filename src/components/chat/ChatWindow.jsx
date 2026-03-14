@@ -5,6 +5,7 @@ import {
   analyzeImageForNutrition,
   calculateNutrition,
 } from "../../services/openai";
+import { normalizeImageDataUrl } from "../../firebase/imageService";
 import { useLanguage, useRecipeBook } from "../../context";
 import { Greeting } from "../greeting";
 import { ChatHelpButton } from "../controls/chat-help-button";
@@ -142,7 +143,8 @@ function ChatWindow({
       return;
     }
     const reader = new FileReader();
-    reader.onload = () => handleImageAnalysis(reader.result);
+    reader.onload = () =>
+      handleImageAnalysis(normalizeImageDataUrl(reader.result));
     reader.readAsDataURL(file);
   };
 
