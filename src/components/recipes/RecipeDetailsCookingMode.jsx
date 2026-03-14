@@ -19,6 +19,7 @@ import {
   Clock,
   Volume2,
   Smartphone,
+  Play,
   X,
   UtensilsCrossed,
 } from "lucide-react";
@@ -633,15 +634,13 @@ function RecipeDetailsCookingMode({
                             </span>
 
                             <AddButton
-                              sign="-"
+                              sign="+"
                               type="circle"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 const currentValue =
                                   parseInt(customTimerInput) || 0;
-                                if (currentValue > 0) {
-                                  setCustomTimerInput(String(currentValue - 1));
-                                }
+                                setCustomTimerInput(String(currentValue + 1));
                               }}
                             />
 
@@ -661,13 +660,15 @@ function RecipeDetailsCookingMode({
                             </div>
 
                             <AddButton
-                              sign="+"
+                              sign="-"
                               type="circle"
                               onClick={(e) => {
                                 e.stopPropagation();
                                 const currentValue =
                                   parseInt(customTimerInput) || 0;
-                                setCustomTimerInput(String(currentValue + 1));
+                                if (currentValue > 0) {
+                                  setCustomTimerInput(String(currentValue - 1));
+                                }
                               }}
                             />
                           </div>
@@ -699,7 +700,7 @@ function RecipeDetailsCookingMode({
                                   : 0.5,
                             }}
                           >
-                            ▶ {t("recipes", "addTimer")}
+                            <Play size={18} /> {t("recipes", "addTimer")}
                           </button>
                         </div>
                       </div>

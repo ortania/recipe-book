@@ -225,7 +225,7 @@
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
-  font-size: var(--basic-font);
+  font-size: var(--large-font);
   font-weight: 600;
   color: var(--text-muted);
   cursor: pointer;
@@ -247,8 +247,9 @@
 }
 
 .activeTab {
-  color: #10b981;
-  border-bottom-color: #10b981;
+  color: var(--text-primary);
+  border-bottom-color: currentColor;
+  font-weight: 700;
 }
 
 .tabContent {
@@ -697,8 +698,8 @@
 }
 .timerControlsFrame button {
   border: 1px solid var(--border-color);
-  width: 30px;
-  height: 30px;
+  width: 32px;
+  height: 32px;
 }
 
 .timerLabel {
@@ -799,8 +800,9 @@
 .timerInput {
   border: none;
   background: transparent;
-  font-size: var(--large-font);
-  font-weight: 700;
+  font-size: var(--very-large-font);
+  font-family: var(--font-family) !important;
+  /* font-weight: 700; */
   color: var(--text-primary);
   text-align: center;
   width: 3ch;

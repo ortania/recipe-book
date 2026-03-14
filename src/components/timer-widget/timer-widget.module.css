@@ -65,6 +65,7 @@
   gap: 8px;
   flex: 1;
   min-width: 0;
+  overflow: hidden;
 }
 
 .headerLabel {
@@ -95,6 +96,22 @@
   font-weight: 600;
 }
 
+.headerStopBtn {
+  background: rgba(255, 255, 255, 0.25);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.headerStopBtn:active {
+  background: rgba(255, 255, 255, 0.4);
+}
+
 .expandBtn {
   background: none;
   border: none;
@@ -103,6 +120,7 @@
   padding: 2px;
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .list {
@@ -155,6 +173,7 @@
   display: flex;
   align-items: center;
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .stopBtn {
@@ -205,5 +224,13 @@
     bottom: calc(70px + env(safe-area-inset-bottom, 0px));
     min-width: 220px;
     max-width: calc(100vw - 32px);
+  }
+
+  .itemLabel {
+    max-width: 80px;
+  }
+
+  .headerLabel {
+    max-width: 70px;
   }
 }

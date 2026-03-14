@@ -170,10 +170,9 @@ Variables
   --tip-bg: #f6efe7;
   --tip-border: #c8a97e;
 
-
   /* link */
   --link-color: #914c03;
-  
+
   /* shadow */
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
@@ -420,6 +419,10 @@ html {
 
   body.chat-open main {
     overflow: hidden !important;
+  }
+
+  body.chat-open footer {
+    box-shadow: none !important;
   }
 
   body.hide-footer footer {

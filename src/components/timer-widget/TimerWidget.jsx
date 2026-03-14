@@ -1,5 +1,12 @@
 import { useState, useRef, useCallback } from "react";
-import { Timer, X, ChevronUp, ChevronDown, Square, GripHorizontal } from "lucide-react";
+import {
+  Timer,
+  X,
+  ChevronUp,
+  ChevronDown,
+  Square,
+  GripHorizontal,
+} from "lucide-react";
 import { useTimers } from "../../context/TimerContext";
 import { useLanguage } from "../../context";
 import classes from "./timer-widget.module.css";
@@ -16,7 +23,13 @@ export default function TimerWidget() {
   const [expanded, setExpanded] = useState(false);
 
   const widgetRef = useRef(null);
-  const dragState = useRef({ dragging: false, startX: 0, startY: 0, origX: 0, origY: 0 });
+  const dragState = useRef({
+    dragging: false,
+    startX: 0,
+    startY: 0,
+    origX: 0,
+    origY: 0,
+  });
   const [pos, setPos] = useState(null);
 
   const onPointerDown = useCallback((e) => {
@@ -57,7 +70,12 @@ export default function TimerWidget() {
   const topTimer = running[0] || finished[0] || stopped[0];
 
   const posStyle = pos
-    ? { left: `${pos.x}px`, top: `${pos.y}px`, bottom: "auto", transform: "none" }
+    ? {
+        left: `${pos.x}px`,
+        top: `${pos.y}px`,
+        bottom: "auto",
+        transform: "none",
+      }
     : {};
 
   return (
@@ -91,6 +109,18 @@ export default function TimerWidget() {
             <span className={classes.badge}>+{timers.length - 1}</span>
           )}
         </div>
+        {topTimer.running && (
+          <button
+            className={classes.headerStopBtn}
+            onClick={(e) => {
+              e.stopPropagation();
+              stopTimer(topTimer.id);
+            }}
+            title={t("recipes", "stopTimer")}
+          >
+            <Square size={12} fill="currentColor" />
+          </button>
+        )}
         <button className={classes.expandBtn}>
           {expanded ? <ChevronDown size={16} /> : <ChevronUp size={16} />}
         </button>
