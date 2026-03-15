@@ -96,6 +96,8 @@ function RecipeDetailsPage() {
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    const main = document.querySelector("main");
+    if (main) main.scrollTo(0, 0);
   }, [id]);
 
   // Track recently viewed recipes
@@ -122,6 +124,11 @@ function RecipeDetailsPage() {
   const [cookingMode, setCookingMode] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState(null);
   const [detailActiveTab, setDetailActiveTab] = useState("ingredients");
+  const [servings, setServings] = useState(recipe?.servings || 4);
+
+  useEffect(() => {
+    setServings(recipe?.servings || 4);
+  }, [recipe?.id]);
 
   // Refs for cooking mode
   const handleNextStepRef = React.useRef();
@@ -263,6 +270,8 @@ function RecipeDetailsPage() {
     return (
       <RecipeDetailsCookingMode
         recipe={translatedRecipe}
+        servings={servings}
+        setServings={setServings}
         onClose={handleCookingModeToggle}
         onExitCookingMode={handleCookingModeToggle}
         isListening={isListening}
@@ -308,6 +317,8 @@ function RecipeDetailsPage() {
         onSaveRecipe={isOwner ? editRecipe : undefined}
         getCategoryName={getCategoryName}
         onEnterCookingMode={handleCookingModeToggle}
+        servings={servings}
+        setServings={setServings}
         onCopyRecipe={
           isOwner
             ? (recipe, targetUserId) =>

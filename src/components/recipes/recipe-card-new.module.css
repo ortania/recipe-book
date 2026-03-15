@@ -203,7 +203,6 @@
 }
 
 .copyButton:hover {
-
   background: var(--text-primary);
   color: white;
   transform: translateX(-50%) scale(var(--scale));
@@ -290,6 +289,23 @@
   to {
     opacity: 0;
   }
+}
+
+.errorNotification {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
+  color: white;
+  padding: 1em 1.5em;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+  font-size: var(--basic-font);
+  font-weight: 500;
+  z-index: 10000;
+  animation:
+    slideInRight 0.3s ease,
+    fadeOut 0.3s ease 3.7s;
 }
 
 /* ── Rating section ── */

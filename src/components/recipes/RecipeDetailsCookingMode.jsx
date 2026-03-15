@@ -22,6 +22,9 @@ import {
   Play,
   X,
   UtensilsCrossed,
+  PartyPopper,
+  ChefHat,
+  Check,
 } from "lucide-react";
 import { CookingVoiceChat } from "../cooking-voice-chat";
 import {
@@ -39,6 +42,8 @@ import classes from "./recipe-details-cooking.module.css";
 
 function RecipeDetailsCookingMode({
   recipe,
+  servings,
+  setServings,
   onClose,
   onExitCookingMode,
   isListening,
@@ -55,13 +60,12 @@ function RecipeDetailsCookingMode({
     hasRunning: isTimerRunning,
   } = useTimers();
   const [activeTab, setActiveTab] = useState("instructions");
-  const [servings, setServings] = useState(recipe.servings || 4);
   const [currentStep, setCurrentStep] = useState(0);
   const [showCompletion, setShowCompletion] = useState(false);
   const [customTimerInput, setCustomTimerInput] = useState("");
   const [fontSizeLevel, setFontSizeLevel] = useState(1);
   const [showHelp, setShowHelp] = useState(false);
-  const { radioRef } = useRadio();
+  const { radioRef, closeRadio } = useRadio();
   const touchRef = useRef({ startX: 0, startY: 0 });
   // Remember step position per tab so switching back restores position
   const savedStepRef = useRef({ ingredients: 0, instructions: 0 });
@@ -357,7 +361,16 @@ function RecipeDetailsCookingMode({
             />
           )}
         </div>
-        <h3 className={classes.headerTitle}>{t("recipes", "cookingMode")}</h3>
+        <h3 className={classes.headerTitle}>
+          {t("recipes", "cookingMode")}
+          {servings && (
+            <span className={classes.headerServings}>
+              (
+              <Users size={18} />
+              <span className={classes.headerServingsCount}>{servings}</span>)
+            </span>
+          )}
+        </h3>
         <div className={classes.headerRight}>
           <button
             className={classes.fontSizeBtn}
@@ -396,32 +409,8 @@ function RecipeDetailsCookingMode({
         </div>
       </div>
 
-      {/* Sticky sub-header: servings + tabs */}
+      {/* Sticky sub-header: tabs */}
       <div className={classes.subHeader}>
-        {recipe.servings && (
-          <div className={classes.servingSelector}>
-            <div className={classes.servingControls}>
-              <AddButton
-                type="circle"
-                sign="+"
-                className={classes.servingButtonCooking}
-                onClick={() => setServings(servings + 1)}
-              />
-              <span>{servings}</span>
-              <AddButton
-                type="circle"
-                sign="-"
-                className={classes.servingButtonCooking}
-                onClick={() => setServings(Math.max(1, servings - 1))}
-              />
-            </div>
-            <span className={classes.servingLabelCooking}>
-              <Users className={classes.servingIcon} size={16} />
-              {t("recipes", "servings")}
-            </span>
-          </div>
-        )}
-
         <div className={classes.tabs}>
           <button
             className={`${classes.tab} ${activeTab === "ingredients" ? classes.activeTab : ""}`}
@@ -550,7 +539,13 @@ function RecipeDetailsCookingMode({
 
         {showCompletion && (
           <div className={classes.completionSection}>
-            <div className={classes.completionIcon}>🎉</div>
+            <div className={classes.completionIcon}>
+              {activeTab === "ingredients" ? (
+                <PartyPopper size={48} />
+              ) : (
+                <ChefHat size={48} />
+              )}
+            </div>
             <div className={classes.completionTitle}>
               {activeTab === "ingredients"
                 ? t("recipes", "ingredients") + " ✓"
@@ -558,13 +553,14 @@ function RecipeDetailsCookingMode({
             </div>
             <div className={classes.completionMessage}>
               {activeTab === "ingredients"
-                ? "Great job! Ready to start cooking? Switch to Instructions."
-                : "Enjoy your delicious meal! 👨‍🍳"}
+                ? t("recipes", "ingredientsDoneMsg")
+                : t("recipes", "cookingDoneMsg")}
             </div>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 if (activeTab === "ingredients") {
+                  savedStepRef.current.instructions = 0;
                   switchTab("instructions");
                 } else {
                   closeRadio();
@@ -573,9 +569,15 @@ function RecipeDetailsCookingMode({
               }}
               className={classes.completionButton}
             >
-              {activeTab === "ingredients"
-                ? "▶️ " + t("recipes", "startCooking")
-                : "✓ " + t("recipes", "finish")}
+              {activeTab === "ingredients" ? (
+                <>
+                  <Play size={18} /> {t("recipes", "startCooking")}
+                </>
+              ) : (
+                <>
+                  <Check size={18} /> {t("recipes", "finish")}
+                </>
+              )}
             </button>
           </div>
         )}
@@ -626,36 +628,6 @@ function RecipeDetailsCookingMode({
           {activeTab === "instructions" && (
             <div className={classes.timerSection}>
               <div className={classes.timerContent}>
-                {timers.length > 0 && (
-                  <div className={classes.activeTimersList}>
-                    {timers.map((tm) => (
-                      <div
-                        key={tm.id}
-                        className={`${classes.activeTimerRow} ${tm.remaining <= 0 && !tm.running ? classes.timerDone : ""}`}
-                      >
-                        <Clock size={14} className={classes.timerClockIcon} />
-                        <span className={classes.activeTimerLabel}>
-                          {tm.label}
-                        </span>
-                        <span className={classes.activeTimerTime}>
-                          {tm.remaining <= 0 && !tm.running
-                            ? t("recipes", "timerDone")
-                            : `${String(Math.floor(tm.remaining / 60)).padStart(2, "0")}:${String(tm.remaining % 60).padStart(2, "0")}`}
-                        </span>
-                        <button
-                          className={classes.timerRemoveBtn}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeTimer(tm.id);
-                          }}
-                        >
-                          <X size={14} />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-
                 <div className={classes.timerInputGroup}>
                   <div className={classes.timerControlsFrame}>
                     <span className={classes.timerLabel}>
@@ -724,6 +696,35 @@ function RecipeDetailsCookingMode({
                     <Play size={18} /> {t("recipes", "addTimer")}
                   </button>
                 </div>
+                {timers.length > 0 && (
+                  <div className={classes.activeTimersList}>
+                    {timers.map((tm) => (
+                      <div
+                        key={tm.id}
+                        className={`${classes.activeTimerRow} ${tm.remaining <= 0 && !tm.running ? classes.timerDone : ""}`}
+                      >
+                        <Clock size={14} className={classes.timerClockIcon} />
+                        <span className={classes.activeTimerLabel}>
+                          {tm.label}
+                        </span>
+                        <span className={classes.activeTimerTime}>
+                          {tm.remaining <= 0 && !tm.running
+                            ? t("recipes", "timerDone")
+                            : `${String(Math.floor(tm.remaining / 60)).padStart(2, "0")}:${String(tm.remaining % 60).padStart(2, "0")}`}
+                        </span>
+                        <button
+                          className={classes.timerRemoveBtn}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeTimer(tm.id);
+                          }}
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           )}

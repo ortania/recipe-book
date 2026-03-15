@@ -81,6 +81,8 @@ function RecipeDetailsFull({
   userRating = 0,
   onActiveTabChange,
   hideRating = false,
+  servings,
+  setServings,
 }) {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
@@ -118,7 +120,6 @@ function RecipeDetailsFull({
       setActiveTab(tabOrder[currentIndex - 1]);
     }
   };
-  const [servings, setServings] = useState(recipe.servings || 4);
   const [checkedIngredients, setCheckedIngredients] = useState({});
   const [checkedInstructions, setCheckedInstructions] = useState({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -206,10 +207,6 @@ function RecipeDetailsFull({
     document.addEventListener("pointerdown", handler);
     return () => document.removeEventListener("pointerdown", handler);
   }, [wakeLockToast]);
-
-  useEffect(() => {
-    setServings(recipe.servings || 4);
-  }, [recipe.servings]);
 
   useEffect(() => {
     const handleClickOutside = (e) => {

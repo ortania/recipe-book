@@ -104,6 +104,7 @@ function Categories() {
         selectedGroup={isAllSelected ? "all" : selectedCategories}
         showGreeting={showGreetingOnce}
         sortStorageKey="categoriesSortPreference"
+        hideRating
       />
 
       {showChat && (

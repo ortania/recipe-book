@@ -1,6 +1,7 @@
 /* Recipe Details - Cooking Mode */
 
 .recipeCardCooking {
+  --max-width: 900px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -19,6 +20,31 @@
   background: var(--bg-primary);
   overflow: hidden;
 }
+
+.recipeCardCooking .headerButtonsCooking {
+  max-width: var(--max-width);
+  border: none;
+  border-bottom: 1px solid var(--border-color);
+  background: transparent;
+  box-shadow: none;
+  position: relative;
+  /* border-bottom: 0.0625rem solid rgba(0,0,0,0.8); */
+}
+
+.recipeCardCooking .headerButtonsCooking::after {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  block-size: 0.375rem;
+  background: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.08),
+    transparent
+  );
+  pointer-events: none;
+}
+
 
 .volumeNotification {
   position: fixed;
@@ -153,7 +179,7 @@
   flex-direction: column;
   align-items: center;
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--max-width);
   padding: 1rem 1.5rem;
   box-sizing: border-box;
   overflow-y: auto;
@@ -162,20 +188,21 @@
 
 .progressInfo {
   width: 100%;
+  max-width: var(--max-width);
   padding: 4rem 0 0.5rem;
   flex-shrink: 0;
 }
 
 .bottomControls {
   width: 100%;
-  max-width: 1200px;
+  max-width: var(--max-width);
   padding: 0.75rem 1.5rem;
   padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
   flex-shrink: 0;
   /* background: var(--bg-card); */
   background: var(--bg-primary);
-  border-top: 1px solid var(--border-color);
+  /* border-top: 1px solid var(--border-color); */
 }
 
 .servingSelector {
@@ -237,8 +264,10 @@
 .tabs {
   display: flex;
   gap: 0;
+  margin: auto;
   margin-bottom: 0;
   width: 100%;
+  max-width: var(--max-width);
   /* background: var(--bg-card); */
   background: var(--bg-primary);
 }
@@ -252,7 +281,8 @@
   padding: 1rem 1.5rem;
   background: none;
   border: none;
-  border-bottom: 2px solid transparent;
+  border-bottom: 1px solid transparent;
+
   font-size: var(--large-font);
   font-weight: 600;
   color: var(--text-muted);
@@ -348,7 +378,9 @@
   gap: 1rem;
   justify-content: space-between;
   align-items: stretch;
+  margin: auto;
   margin-bottom: 0.5rem;
+  max-width: var(--max-width);
 }
 
 .navButton,
@@ -409,6 +441,31 @@
   color: var(--text-primary);
   margin: 0;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+}
+
+.headerServings {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: var(--large-font);
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.headerServingsCount {
+  font-weight: 600;
+  min-width: 1.2em;
+  text-align: center;
+  color: var(--text-primary);
+}
+
+.servingBtnSmall {
+  width: 22px;
+  height: 22px;
+  font-size: 0.85rem;
 }
 
 .headerRight {
@@ -447,9 +504,9 @@
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-bottom: 10px solid #9810fa;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 14px solid var(--active-color-primary);
   animation: helpArrowBounce 1s ease-in-out infinite;
   z-index: 10;
 }
@@ -494,7 +551,6 @@
   flex-shrink: 0;
   border-radius: 50%;
   transition: var(--transition);
-    
 }
 
 .radioBtn:active {
@@ -561,9 +617,9 @@
   transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 8px solid transparent;
-  border-right: 8px solid transparent;
-  border-bottom: 10px solid #9810fa;
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-bottom: 14px solid var(--active-color-primary);
   animation: micArrowBounce 1s ease-in-out infinite;
   z-index: 10;
 }
@@ -689,9 +745,16 @@
   padding: 0.75rem 1rem;
   /* background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%); */
   border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(3, 105, 161, 0.08);
-  border: 1px solid var(--border-color);
+  /* box-shadow: 0 2px 8px rgba(3, 105, 161, 0.08); */
+  /* border: 1px solid var(--border-color); */
+  border: none;
+  box-shadow: none;
   position: relative;
+  max-width: var(--max-width);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .timerContent {
@@ -892,27 +955,32 @@
 }
 
 .completionTitle {
-  font-size: 2rem;
+  font-size: var(--huge-font);
   font-weight: bold;
-  color: #4caf50;
+  color: var(--active-color-primary);
   margin-bottom: 1rem;
 }
 
 .completionMessage {
-  font-size: 1.2rem;
+  font-size: var(--basic-font);
   color: var(--text-secondary);
   margin-bottom: 2rem;
 }
 
 .completionButton {
   padding: 1rem 2rem;
-  font-size: 1.1rem;
-  background-color: #4caf50;
+  font-size: var(--basic-font);
+  background-color: var(--active-color-primary);
+  background-color: var(--btn-bg-primary);
   color: white;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  font-weight: bold;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin: auto;
 }
 
 .ingredientsList,
@@ -954,9 +1022,10 @@
   display: block;
   font-size: var(--huge-font);
   font-weight: 700;
-  color: #9810fa;
+  color: var(--text-primary);
   /* margin-bottom: 0.3rem; */
   text-align: center;
+  text-decoration: underline;
 }
 
 .ingredientText,
@@ -1004,6 +1073,8 @@
   .bottomControls {
     padding: 0.5rem 1rem;
     padding-bottom: calc(0.5rem + env(safe-area-inset-bottom, 0px));
+    max-width: var(--max-width);
+    margin: auto;
   }
 
   .timerContent {

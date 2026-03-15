@@ -41,6 +41,7 @@ function RecipeInfo({
   const [isFavorite, setIsFavorite] = useState(person.isFavorite || false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
+  const [deleteError, setDeleteError] = useState(false);
   const [isCopying, setIsCopying] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
   const [hoverStar, setHoverStar] = useState(0);
@@ -84,6 +85,8 @@ function RecipeInfo({
       }, 3000);
     } catch (error) {
       console.error("Delete failed:", error);
+      setDeleteError(true);
+      setTimeout(() => setDeleteError(false), 4000);
     }
   };
 
@@ -253,6 +256,7 @@ function RecipeInfo({
           <div className={classes.recipeMetadata}>
             {person.prepTime && (
               <p className={classes.recipeTime}>
+                {t("recipes", "prepTime")}:{" "}
                 {formatTime(person.prepTime, t("recipes", "minutes"))}
               </p>
             )}
@@ -368,6 +372,11 @@ function RecipeInfo({
         {copySuccess && (
           <div className={classes.successNotification}>
             {t("globalRecipes", "copied")}
+          </div>
+        )}
+        {deleteError && (
+          <div className={classes.errorNotification}>
+            {t("confirm", "deleteFailed") || "Delete failed"}
           </div>
         )}
       </div>

@@ -651,18 +651,18 @@ const translations = {
       mixed: "הוראות",
     },
     prepTime: {
-      he: "זמן הכנה",
+      he: "הכנה",
       en: "Prep Time",
       ru: "Время подготовки",
       de: "Vorbereitungszeit",
-      mixed: "זמן הכנה",
+      mixed: "הכנה",
     },
     cookTime: {
-      he: "זמן בישול",
+      he: "בישול",
       en: "Cook Time",
       ru: "Время готовки",
       de: "Kochzeit",
-      mixed: "זמן בישול",
+      mixed: "בישול",
     },
     servings: {
       he: "מנות",
@@ -904,6 +904,20 @@ const translations = {
       ru: "Начать готовить",
       de: "Kochen starten",
       mixed: "Start Cooking",
+    },
+    ingredientsDoneMsg: {
+      he: "כל הכבוד! מוכנים להתחיל לבשל? עברו להוראות.",
+      en: "Great job! Ready to start cooking? Switch to Instructions.",
+      ru: "Отлично! Готовы начать готовить? Перейдите к инструкциям.",
+      de: "Super! Bereit zum Kochen? Wechseln Sie zu den Anweisungen.",
+      mixed: "כל הכבוד! מוכנים להתחיל לבשל? עברו להוראות.",
+    },
+    cookingDoneMsg: {
+      he: "בתיאבון!",
+      en: "Enjoy your delicious meal!",
+      ru: "Приятного аппетита!",
+      de: "Guten Appetit!",
+      mixed: "בתיאבון!",
     },
     exitCookingMode: {
       he: "יציאה ממצב בישול",
@@ -2084,6 +2098,13 @@ const translations = {
       ru: "✓ Рецепт успешно удалён",
       de: "✓ Rezept erfolgreich gelöscht",
       mixed: "✓ Recipe deleted successfully",
+    },
+    deleteFailed: {
+      he: "✗ מחיקת המתכון נכשלה",
+      en: "✗ Failed to delete recipe",
+      ru: "✗ Не удалось удалить рецепт",
+      de: "✗ Rezept konnte nicht gelöscht werden",
+      mixed: "✗ Failed to delete recipe",
     },
   },
 

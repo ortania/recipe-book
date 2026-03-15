@@ -562,10 +562,7 @@ function RecipesView({
     setFilterIngredients((prev) => prev.filter((i) => i !== ing));
   };
 
-  const handleSaveEdit = (updatedPerson) => {
-    // Pass the updated person directly to the parent component
-    onEditPerson(updatedPerson);
-
+  const handleSaveEdit = async (updatedPerson) => {
     // Also update the local state to reflect changes immediately
     setLocalPersons((prev) =>
       prev.map((person) =>
@@ -575,6 +572,12 @@ function RecipesView({
 
     // Update editingPerson with saved data so further edits start from saved state
     setEditingPerson(updatedPerson);
+
+    try {
+      await onEditPerson(updatedPerson);
+    } catch (error) {
+      console.error("Save failed:", error);
+    }
   };
 
   const handleToggleFavorite = useCallback(

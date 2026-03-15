@@ -285,7 +285,7 @@ export const RecipeBookProvider = ({ children }) => {
       enriched.sharerName =
         currentUser.displayName || currentUser.email?.split("@")[0] || "";
       enriched.sharerUserId = currentUser.uid;
-    } else {
+    } else if (!enriched.copiedFrom) {
       enriched.sharerName = "";
       enriched.sharerUserId = "";
     }

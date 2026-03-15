@@ -311,8 +311,8 @@ input,
 textarea,
 select {
   /* font-size: max(1rem, inherit); */
-  /* for safari will not make zoom */
-  font-size: 16px;
+  /* for safari  so it will not make zoom out*/
+  font-size: 16px !important;
 }
 ul {
   list-style-type: none;
