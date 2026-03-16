@@ -68,7 +68,8 @@ const TABS = [
 
 function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const { t } = useLanguage();
-  const { currentUser, addCategory } = useRecipeBook();
+  const { currentUser, addCategory, deleteCategory } = useRecipeBook();
+  const createdCategoriesRef = useRef([]);
   const { getTranslated: getTranslatedGroup } = useTranslatedList(
     groups,
     "name",
@@ -477,20 +478,23 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       updatedPerson.nutrition,
     );
     await onSave(updatedPerson);
+    createdCategoriesRef.current = [];
     setSaving(false);
-    if (nutritionCalculated) {
-      setSavedMessage(
-        `✅ ${t("recipes", "saved")} (🔥 ${nutrition.calories || "?"} kcal)`,
-      );
-    } else {
-      setSavedMessage("✅ " + t("recipes", "saved"));
-    }
-    setTimeout(() => setSavedMessage(""), 4000);
+    setSavedMessage("✅ " + t("recipes", "saved"));
+    setTimeout(() => onCancel(), 2000);
   };
 
   // ========== Add Category Inline ==========
   const [newCategoryName, setNewCategoryName] = useState("");
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+
+  const handleCancel = useCallback(() => {
+    for (const catId of createdCategoriesRef.current) {
+      deleteCategory(catId).catch(() => {});
+    }
+    createdCategoriesRef.current = [];
+    onCancel();
+  }, [onCancel, deleteCategory]);
   const handleAddNewCategory = async () => {
     const name = newCategoryName.trim();
     if (!name) return;
@@ -507,17 +511,22 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       "#1ABC9C",
     ];
     const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    const newCat = await addCategory({
-      id: Date.now().toString(),
-      name,
-      description: `${name}`,
-      color,
-    });
-    if (newCat) {
-      setEditedPerson((prev) => ({
-        ...prev,
-        categories: [...prev.categories, newCat.id],
-      }));
+    try {
+      const newCat = await addCategory({
+        id: Date.now().toString(),
+        name,
+        description: `${name}`,
+        color,
+      });
+      if (newCat) {
+        createdCategoriesRef.current.push(newCat.id);
+        setEditedPerson((prev) => ({
+          ...prev,
+          categories: [...prev.categories, newCat.id],
+        }));
+      }
+    } catch (err) {
+      console.error("Failed to add category:", err);
     }
     setNewCategoryName("");
     setShowNewCategoryInput(false);
@@ -1121,7 +1130,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   return (
-    <Modal onClose={onCancel} className={classes.noPadModal}>
+    <Modal onClose={handleCancel} className={classes.noPadModal}>
       <div className={classes.editContainer}>
         <div
           style={{
@@ -1136,7 +1145,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               <CloseButton
                 // type="button"
                 className={classes.editCloseBtn}
-                onClick={onCancel}
+                onClick={handleCancel}
                 size={25}
               />
               <div className={classes.editTitleGroup}>

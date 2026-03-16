@@ -1643,8 +1643,27 @@
   margin-top: 1.5rem;
 }
 
+.savedMessage {
+  font-size: var(--very-large-font);
+  color: var(--active-color-primary);
+  font-weight: 600;
+  animation: fadeInMsg 0.3s ease;
+}
+
+@keyframes fadeInMsg {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .navButtonsRow {
   display: flex;
+  align-items: center;
   gap: 1rem;
 }
 

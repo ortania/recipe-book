@@ -99,9 +99,9 @@ function useTranslatedList(items, key = "name") {
       return translations.categories?.general?.[language] || originalName;
     }
 
-    // Known default categories — use static translations
+    // Known default categories — use static translations (unless user customized the name)
     const translationKey = CATEGORY_KEY_MAP[id];
-    if (translationKey) {
+    if (translationKey && !item.customName) {
       const entry = translations.categories?.[translationKey];
       if (entry && entry[language]) {
         return entry[language];

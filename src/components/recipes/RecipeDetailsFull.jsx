@@ -296,7 +296,7 @@ function RecipeDetailsFull({
     if (servings === originalServings) return ingredient;
 
     const ratio = servings / originalServings;
-    const numberRegex = /(\d+\.?\d*|\d*\.\d+|\d+\/\d+)/g;
+    const numberRegex = /(\d+\/\d+|\d+\.?\d*|\d*\.\d+)/g;
 
     return ingredient.replace(numberRegex, (match) => {
       if (match.includes("/")) {

@@ -71,7 +71,7 @@ function RecipeDetailsCookingMode({
   const savedStepRef = useRef({ ingredients: 0, instructions: 0 });
   const switchTab = (newTab) => {
     if (newTab === activeTab) return;
-    savedStepRef.current[activeTab] = currentStep;
+    savedStepRef.current[activeTab] = showCompletion ? 0 : currentStep;
     setActiveTab(newTab);
     setCurrentStep(savedStepRef.current[newTab] || 0);
     setShowCompletion(false);
@@ -134,7 +134,7 @@ function RecipeDetailsCookingMode({
     if (servings === originalServings) return ingredient;
 
     const ratio = servings / originalServings;
-    const numberRegex = /(\d+\.?\d*|\d*\.\d+|\d+\/\d+)/g;
+    const numberRegex = /(\d+\/\d+|\d+\.?\d*|\d*\.\d+)/g;
 
     return ingredient.replace(numberRegex, (match) => {
       if (match.includes("/")) {

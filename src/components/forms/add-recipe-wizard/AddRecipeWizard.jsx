@@ -112,7 +112,8 @@ function AddRecipeWizard({
   initialScreen = "method",
 }) {
   const { language, t } = useLanguage();
-  const { currentUser, addCategory } = useRecipeBook();
+  const { currentUser, addCategory, deleteCategory } = useRecipeBook();
+  const createdCategoriesRef = useRef([]);
   const { getTranslated: getTranslatedGroup } = useTranslatedList(
     groups,
     "name",
@@ -153,10 +154,15 @@ function AddRecipeWizard({
   const instructionsListRef = useRef(null);
 
   const handleClose = useCallback(() => {
+    // Delete any categories created during this session
+    for (const catId of createdCategoriesRef.current) {
+      deleteCategory(catId).catch(() => {});
+    }
+    createdCategoriesRef.current = [];
     onCancel(
       screen === "recording" || cameFromRecording ? "recording" : undefined,
     );
-  }, [onCancel, screen, cameFromRecording]);
+  }, [onCancel, screen, cameFromRecording, deleteCategory]);
 
   const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
     setRecipe((prev) => {
@@ -895,14 +901,22 @@ function AddRecipeWizard({
       "#1ABC9C",
     ];
     const color = COLORS[Math.floor(Math.random() * COLORS.length)];
-    const newCat = await addCategory({
-      id: Date.now().toString(),
-      name,
-      description: `${name}`,
-      color,
-    });
-    if (newCat) {
-      updateRecipe("categories", [...recipe.categories, newCat.id]);
+    try {
+      const newCat = await addCategory({
+        id: Date.now().toString(),
+        name,
+        description: `${name}`,
+        color,
+      });
+      if (newCat) {
+        createdCategoriesRef.current.push(newCat.id);
+        setRecipe((prev) => ({
+          ...prev,
+          categories: [...prev.categories, newCat.id],
+        }));
+      }
+    } catch (err) {
+      console.error("Failed to add category:", err);
     }
     setNewCategoryName("");
     setShowNewCategoryInput(false);
@@ -910,6 +924,7 @@ function AddRecipeWizard({
 
   // ========== Submit ==========
   const [saving, setSaving] = useState(false);
+  const [savedMessage, setSavedMessage] = useState("");
   const handleSubmit = async () => {
     if (saving) return;
     setSaving(true);
@@ -973,11 +988,13 @@ function AddRecipeWizard({
     );
     try {
       await onAddPerson(newRecipe);
+      createdCategoriesRef.current = [];
     } catch (err) {
       console.error("🍎 NUTRITION - Failed to save recipe:", err);
     }
     setSaving(false);
-    onCancel();
+    setSavedMessage("✅ " + t("recipes", "saved"));
+    setTimeout(() => onCancel(), 5000);
   };
 
   // ========== Stepper ==========
@@ -2524,11 +2541,14 @@ function AddRecipeWizard({
               {t("addWizard", "previous")}
             </button>
           )}
+          {savedMessage && (
+            <span className={classes.savedMessage}>{savedMessage}</span>
+          )}
           <button
             type="button"
             className={classes.nextBtn}
             onClick={handleNext}
-            disabled={!canProceed() || saving}
+            disabled={!canProceed() || saving || savedMessage}
           >
             {saving ? (
               <>

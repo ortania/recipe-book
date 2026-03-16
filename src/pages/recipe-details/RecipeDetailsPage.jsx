@@ -128,7 +128,7 @@ function RecipeDetailsPage() {
 
   useEffect(() => {
     setServings(recipe?.servings || 4);
-  }, [recipe?.id]);
+  }, [recipe?.id, recipe?.servings]);
 
   // Refs for cooking mode
   const handleNextStepRef = React.useRef();
@@ -221,7 +221,6 @@ function RecipeDetailsPage() {
   const handleSaveEdit = async (updatedPerson) => {
     // Set local override immediately so view updates right away
     setLocalRecipe({ ...updatedPerson });
-    setEditingRecipe(null);
     try {
       await editRecipe(updatedPerson);
     } catch (err) {

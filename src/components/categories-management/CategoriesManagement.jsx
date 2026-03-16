@@ -155,11 +155,13 @@ function CategoriesManagement({
     if (!formName.trim() || !editingId) return;
     const cat = editableCategories.find((c) => c.id === editingId);
     if (!cat) return;
+    const nameChanged = formName.trim() !== getTranslated(cat);
     onEditCategory({
       ...cat,
       name: formName.trim(),
       color: formColor,
       icon: formIcon,
+      ...(nameChanged && { customName: true }),
     });
     setEditingId(null);
     resetForm();
