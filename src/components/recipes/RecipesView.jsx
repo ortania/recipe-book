@@ -55,6 +55,7 @@ import { SortButton } from "../controls/sort-button";
 import { SearchBox } from "../controls/search";
 import { SearchOverlay } from "./search-overlay";
 import { CategoriesManagement } from "../categories-management";
+import { Modal } from "../modal";
 import { getCategoryIcon } from "../../utils/categoryIcons";
 import { CategoriesSheetContent } from "../categories-sheet-content";
 
@@ -1806,50 +1807,14 @@ function RecipesView({
         </Fab>
       )}
 
-      {isMobile ? (
-        <BottomSheet
-          open={showCategoriesSheet}
-          onClose={() => setShowCategoriesSheet(false)}
-          title={t("nav", "categories")}
-        >
-          <CategoriesSheetContent
-            onManage={() => {
-              setShowCategoriesSheet(false);
-              setShowManagement(true);
-            }}
-            hideManage={readOnlyCategories}
-            categoriesOverride={readOnlyCategories ? categories : undefined}
-            recipesOverride={readOnlyCategories ? recipes : undefined}
-            selectedCategoriesOverride={
-              readOnlyCategories ? selectedCategories : undefined
-            }
-            toggleCategoryOverride={
-              readOnlyCategories ? toggleCategory : undefined
-            }
-            clearCategorySelectionOverride={
-              readOnlyCategories ? clearCategorySelection : undefined
-            }
-          />
-        </BottomSheet>
-      ) : (
-        showCategoriesSheet && (
-          <>
-            <div
-              className={classes.categoriesPopupOverlay}
-              onClick={() => setShowCategoriesSheet(false)}
-            />
-            <div className={classes.categoriesPopup}>
-              <div className={classes.categoriesPopupHeader}>
-                <span className={classes.categoriesPopupTitle}>
-                  {t("nav", "categories")}
-                </span>
-                <CloseButton
-                  className={classes.categoriesPopupClose}
-                  onClick={() => setShowCategoriesSheet(false)}
-                  size={25}
-                />
-              </div>
+      {isMobile
+        ? showCategoriesSheet && (
+            <Modal
+              onClose={() => setShowCategoriesSheet(false)}
+              maxWidth="480px"
+            >
               <CategoriesSheetContent
+                onClose={() => setShowCategoriesSheet(false)}
                 onManage={() => {
                   setShowCategoriesSheet(false);
                   setShowManagement(true);
@@ -1867,10 +1832,48 @@ function RecipesView({
                   readOnlyCategories ? clearCategorySelection : undefined
                 }
               />
-            </div>
-          </>
-        )
-      )}
+            </Modal>
+          )
+        : showCategoriesSheet && (
+            <>
+              <div
+                className={classes.categoriesPopupOverlay}
+                onClick={() => setShowCategoriesSheet(false)}
+              />
+              <div className={classes.categoriesPopup}>
+                <div className={classes.categoriesPopupHeader}>
+                  <span className={classes.categoriesPopupTitle}>
+                    {t("nav", "categories")}
+                  </span>
+                  <CloseButton
+                    className={classes.categoriesPopupClose}
+                    onClick={() => setShowCategoriesSheet(false)}
+                    size={25}
+                  />
+                </div>
+                <CategoriesSheetContent
+                  onManage={() => {
+                    setShowCategoriesSheet(false);
+                    setShowManagement(true);
+                  }}
+                  hideManage={readOnlyCategories}
+                  categoriesOverride={
+                    readOnlyCategories ? categories : undefined
+                  }
+                  recipesOverride={readOnlyCategories ? recipes : undefined}
+                  selectedCategoriesOverride={
+                    readOnlyCategories ? selectedCategories : undefined
+                  }
+                  toggleCategoryOverride={
+                    readOnlyCategories ? toggleCategory : undefined
+                  }
+                  clearCategorySelectionOverride={
+                    readOnlyCategories ? clearCategorySelection : undefined
+                  }
+                />
+              </div>
+            </>
+          )}
 
       {showManagement && !readOnlyCategories && (
         <CategoriesManagement

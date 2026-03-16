@@ -1439,6 +1439,13 @@ const translations = {
       de: "Symbol wählen",
       mixed: "Choose an Icon",
     },
+    addImage: {
+      he: "הוסף תמונה",
+      en: "Add Image",
+      ru: "Добавить фото",
+      de: "Bild hinzufügen",
+      mixed: "Add Image",
+    },
     done: {
       he: "סיום",
       en: "Done",

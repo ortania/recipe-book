@@ -22,7 +22,7 @@
   background: var(--bg-primary);
   border-radius: 16px 16px 0 0;
 
-  max-block-size: 80dvh;
+  max-block-size: 88dvh;
   display: flex;
   flex-direction: column;
   /* padding-bottom: env(safe-area-inset-bottom, 0); */
@@ -104,8 +104,11 @@
 /* ── Scrollable content ──────────────────────────────── */
 .content {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
   padding: 0 1.25rem 1.2rem;
+  display: flex;
+  flex-direction: column;
 }

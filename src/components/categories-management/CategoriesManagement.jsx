@@ -4,12 +4,14 @@ import { GoTrash } from "react-icons/go";
 import { PiPlusLight } from "react-icons/pi";
 import { FiMenu } from "react-icons/fi";
 import { LuArrowUpDown } from "react-icons/lu";
+import { Camera, X as LuX } from "lucide-react";
 import { Modal } from "../modal";
 import { CloseButton } from "../controls/close-button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
-import { useLanguage } from "../../context";
+import { useLanguage, useRecipeBook } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { useTouchDragDrop } from "../../hooks/useTouchDragDrop";
+import { uploadRecipeImage } from "../../firebase/imageService";
 import {
   CATEGORY_ICONS,
   DEFAULT_ICON_ID,
@@ -55,6 +57,7 @@ function CategoriesManagement({
   getGroupContacts,
 }) {
   const { t } = useLanguage();
+  const { currentUser } = useRecipeBook();
   const { getTranslated } = useTranslatedList(categories, "name");
 
   const [categoryToDelete, setCategoryToDelete] = useState(null);
@@ -67,7 +70,10 @@ function CategoriesManagement({
   const [formName, setFormName] = useState("");
   const [formColor, setFormColor] = useState(COLORS[0]);
   const [formIcon, setFormIcon] = useState(DEFAULT_ICON_ID);
+  const [formImage, setFormImage] = useState("");
   const [showIconPicker, setShowIconPicker] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const imageInputRef = useRef(null);
 
   // Drag and drop
   const handleReorder = useCallback(
@@ -110,7 +116,27 @@ function CategoriesManagement({
     setFormName("");
     setFormColor(COLORS[0]);
     setFormIcon(DEFAULT_ICON_ID);
+    setFormImage("");
     setShowIconPicker(false);
+    setUploadingImage(false);
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentUser) return;
+    setUploadingImage(true);
+    try {
+      const url = await uploadRecipeImage(
+        currentUser.uid,
+        `cat_${editingId || Date.now()}`,
+        file,
+      );
+      setFormImage(url);
+    } catch (err) {
+      console.error("Category image upload failed:", err);
+    }
+    setUploadingImage(false);
+    if (imageInputRef.current) imageInputRef.current.value = "";
   };
 
   const handleAddClick = () => {
@@ -125,6 +151,7 @@ function CategoriesManagement({
     setFormName(getTranslated(category));
     setFormColor(category.color);
     setFormIcon(category.icon || DEFAULT_ICON_ID);
+    setFormImage(category.image || "");
     setShowIconPicker(false);
   };
 
@@ -143,6 +170,7 @@ function CategoriesManagement({
         description: "",
         color: formColor,
         icon: formIcon,
+        image: formImage || "",
       });
       resetForm();
       setShowAddForm(false);
@@ -161,6 +189,7 @@ function CategoriesManagement({
       name: formName.trim(),
       color: formColor,
       icon: formIcon,
+      image: formImage || "",
       ...(nameChanged && { customName: true }),
     });
     setEditingId(null);
@@ -252,6 +281,40 @@ function CategoriesManagement({
             onClick={() => setFormColor(color)}
           />
         ))}
+      </div>
+
+      <div className={classes.imagePickerRow}>
+        <input
+          ref={imageInputRef}
+          type="file"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleImageUpload}
+        />
+        {formImage ? (
+          <div className={classes.imagePreviewWrap}>
+            <img src={formImage} alt="" className={classes.imagePreview} />
+            <button
+              type="button"
+              className={classes.imageRemoveBtn}
+              onClick={() => setFormImage("")}
+            >
+              <LuX size={12} />
+            </button>
+          </div>
+        ) : (
+          <button
+            type="button"
+            className={classes.imageUploadBtn}
+            onClick={() => imageInputRef.current?.click()}
+            disabled={uploadingImage}
+          >
+            <Camera size={16} />
+            {uploadingImage
+              ? t("common", "loading") || "..."
+              : t("categories", "addImage") || "הוסף תמונה"}
+          </button>
+        )}
       </div>
 
       <div className={classes.inlineFormActions}>

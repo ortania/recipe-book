@@ -406,49 +406,49 @@ function Navigation({ onLogout, links }) {
         />
       )}
 
-      {isMobile ? (
-        <BottomSheet
-          open={showCategoriesSheet}
-          onClose={() => setShowCategoriesSheet(false)}
-          title={t("nav", "categories")}
-        >
-          <CategoriesSheetContent
-            onManage={() => {
-              setShowCategoriesSheet(false);
-              managementFromSheetRef.current = true;
-              setShowManagement(true);
-            }}
-          />
-        </BottomSheet>
-      ) : (
-        showCategoriesSheet && (
-          <>
-            <div
-              className={classes.catPopupOverlay}
-              onClick={() => setShowCategoriesSheet(false)}
-            />
-            <div className={classes.catPopup}>
-              <div className={classes.catPopupHeader}>
-                <span className={classes.catPopupTitle}>
-                  {t("nav", "categories")}
-                </span>
-                <CloseButton
-                  className={classes.catPopupClose}
-                  onClick={() => setShowCategoriesSheet(false)}
-                  size={25}
-                />
-              </div>
+      {isMobile
+        ? showCategoriesSheet && (
+            <Modal
+              onClose={() => setShowCategoriesSheet(false)}
+              maxWidth="480px"
+            >
               <CategoriesSheetContent
+                onClose={() => setShowCategoriesSheet(false)}
                 onManage={() => {
                   setShowCategoriesSheet(false);
                   managementFromSheetRef.current = true;
                   setShowManagement(true);
                 }}
               />
-            </div>
-          </>
-        )
-      )}
+            </Modal>
+          )
+        : showCategoriesSheet && (
+            <>
+              <div
+                className={classes.catPopupOverlay}
+                onClick={() => setShowCategoriesSheet(false)}
+              />
+              <div className={classes.catPopup}>
+                <div className={classes.catPopupHeader}>
+                  <span className={classes.catPopupTitle}>
+                    {t("nav", "categories")}
+                  </span>
+                  <CloseButton
+                    className={classes.catPopupClose}
+                    onClick={() => setShowCategoriesSheet(false)}
+                    size={25}
+                  />
+                </div>
+                <CategoriesSheetContent
+                  onManage={() => {
+                    setShowCategoriesSheet(false);
+                    managementFromSheetRef.current = true;
+                    setShowManagement(true);
+                  }}
+                />
+              </div>
+            </>
+          )}
 
       <AnimatePresence>
         {showTour && (

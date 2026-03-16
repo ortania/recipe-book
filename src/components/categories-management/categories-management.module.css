@@ -306,6 +306,64 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
 
+/* Image picker */
+.imagePickerRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.imageUploadBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4em 0.8em;
+  border: 1px dashed var(--border-color);
+  border-radius: 8px;
+  background: none;
+  color: var(--text-secondary);
+  font-size: var(--small-font);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.imageUploadBtn:hover {
+  border-color: var(--active-color-primary);
+  color: var(--active-color-primary);
+}
+
+.imagePreviewWrap {
+  position: relative;
+  width: 60px;
+  height: 40px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.imagePreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.imageRemoveBtn {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+  color: #fff;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  padding: 0;
+}
+
 /* Form actions */
 .inlineFormActions {
   display: flex;
