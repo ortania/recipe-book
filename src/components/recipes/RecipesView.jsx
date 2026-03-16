@@ -168,6 +168,7 @@ function RecipesView({
     toggleCategory: ctxToggleCategory,
     clearCategorySelection: ctxClearCategorySelection,
     setIsSearchActive,
+    currentUser,
     categories: ctxCategories,
     recipes: ctxRecipes,
     addCategory,
@@ -1675,26 +1676,27 @@ function RecipesView({
                     )}
                   </span>
                   <span className={classes.compactName}>{person.name}</span>
-                  {person.sharerName && (
-                    <span
-                      className={classes.compactSharer}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        navigate(`/sharer/${person.sharerUserId}`);
-                      }}
-                    >
-                      {followingList.includes(person.sharerUserId) && (
-                        <UserCheck
-                          size={14}
-                          style={{
-                            marginInlineEnd: "0.2rem",
-                            verticalAlign: "middle",
-                          }}
-                        />
-                      )}
-                      {person.sharerName}
-                    </span>
-                  )}
+                  {person.sharerName &&
+                    person.sharerUserId !== currentUser?.uid && (
+                      <span
+                        className={classes.compactSharer}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          navigate(`/sharer/${person.sharerUserId}`);
+                        }}
+                      >
+                        {followingList.includes(person.sharerUserId) && (
+                          <UserCheck
+                            size={14}
+                            style={{
+                              marginInlineEnd: "0.2rem",
+                              verticalAlign: "middle",
+                            }}
+                          />
+                        )}
+                        {person.sharerName}
+                      </span>
+                    )}
                   {showAddAndFavorites && (
                     <div className={classes.compactActions}>
                       <button

@@ -361,16 +361,7 @@ function RecipeDetailsCookingMode({
             />
           )}
         </div>
-        <h3 className={classes.headerTitle}>
-          {t("recipes", "cookingMode")}
-          {servings && (
-            <span className={classes.headerServings}>
-              (
-              <Users size={18} />
-              <span className={classes.headerServingsCount}>{servings}</span>)
-            </span>
-          )}
-        </h3>
+        <h3 className={classes.headerTitle}>{t("recipes", "cookingMode")}</h3>
         <div className={classes.headerRight}>
           <button
             className={classes.fontSizeBtn}
@@ -418,6 +409,12 @@ function RecipeDetailsCookingMode({
           >
             <List className={classes.tabIcon} size={18} />
             {t("recipes", "ingredients")}
+            {servings && (
+              <span className={classes.headerServings}>
+                (<Users size={14} />
+                <span className={classes.headerServingsCount}>{servings}</span>)
+              </span>
+            )}
             {activeTab === "ingredients" &&
               voiceEnabled &&
               currentStep >= cookingIngredients.length - 1 && (
