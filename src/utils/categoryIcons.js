@@ -29,6 +29,10 @@ import {
   GiCookie,
   GiNoodles,
   GiSushis,
+  GiBread,
+  GiChickenLeg,
+  GiCow,
+  GiMeatCleaver,
 } from "react-icons/gi";
 import {
   LuSalad,
@@ -64,6 +68,10 @@ export const CATEGORY_ICONS = [
   { id: "egg", icon: MdOutlineEggAlt },
   { id: "grill", icon: TbGrill },
   { id: "meat", icon: GiMeat },
+  { id: "bread", icon: GiBread },
+  { id: "chicken", icon: GiChickenLeg },
+  { id: "beef", icon: GiCow },
+  { id: "meatCleaver", icon: GiMeatCleaver },
   { id: "cookingPot", icon: GiCookingPot },
   { id: "blender", icon: MdOutlineBlender },
   { id: "bowlFood", icon: PiBowlFood },
