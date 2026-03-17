@@ -144,6 +144,7 @@ function GlobalRecipes() {
         followingList={currentUser?.following || []}
         persons={filteredRecipes}
         groups={[]}
+        readOnlyCategories={true}
         showAddAndFavorites={false}
         showCategories={false}
         loading={isLoading}

@@ -115,6 +115,7 @@ export const RecipeBookProvider = ({ children }) => {
         setIsLoggedIn(false);
         setRecipes([]);
         setCategories([]);
+        setSelectedCategories(["all"]);
         setRecipesLoaded(false);
         setCategoriesLoaded(false);
         setIsLoading(false);
@@ -447,6 +448,7 @@ export const RecipeBookProvider = ({ children }) => {
       setIsLoggedIn(false);
       setRecipes([]);
       setCategories([]);
+      setSelectedCategories(["all"]);
       setRecipesLoaded(false);
       setCategoriesLoaded(false);
       setLastRecipeDoc(null);
