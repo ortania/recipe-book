@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { CircleCheck, CircleX } from "lucide-react";
 import {
   migrateLocalStorageCategoriesToFirebase,
   checkLocalStorageCategories,
@@ -28,10 +29,18 @@ function MigrationHelper() {
     const result = await migrateLocalStorageCategoriesToFirebase();
 
     if (result.success) {
-      setStatus(`✅ ${result.message}`);
+      setStatus(
+        <>
+          <CircleCheck size={18} /> {result.message}
+        </>,
+      );
       setLocalCategories(null);
     } else {
-      setStatus(`❌ Error: ${result.message}`);
+      setStatus(
+        <>
+          <CircleX size={18} /> Error: {result.message}
+        </>,
+      );
     }
   };
 
@@ -40,12 +49,20 @@ function MigrationHelper() {
     const result = await removeDuplicateCategories();
 
     if (result.success) {
-      setStatus(`✅ ${result.message}`);
+      setStatus(
+        <>
+          <CircleCheck size={18} /> {result.message}
+        </>,
+      );
       setTimeout(() => {
         window.location.reload();
       }, 1500);
     } else {
-      setStatus(`❌ Error: ${result.message}`);
+      setStatus(
+        <>
+          <CircleX size={18} /> Error: {result.message}
+        </>,
+      );
     }
   };
 
@@ -53,12 +70,20 @@ function MigrationHelper() {
     setStatus("Initializing categories in Firebase...");
     try {
       await initializeCategories(initialCategories);
-      setStatus(`✅ Categories initialized successfully!`);
+      setStatus(
+        <>
+          <CircleCheck size={18} /> Categories initialized successfully!
+        </>,
+      );
       setTimeout(() => {
         window.location.reload();
       }, 1500);
     } catch (error) {
-      setStatus(`❌ Error: ${error.message}`);
+      setStatus(
+        <>
+          <CircleX size={18} /> Error: {error.message}
+        </>,
+      );
     }
   };
 
@@ -74,12 +99,20 @@ function MigrationHelper() {
     const result = await deleteAllCategories();
 
     if (result.success) {
-      setStatus(`✅ ${result.message}`);
+      setStatus(
+        <>
+          <CircleCheck size={18} /> {result.message}
+        </>,
+      );
       setTimeout(() => {
         window.location.reload();
       }, 1500);
     } else {
-      setStatus(`❌ Error: ${result.message}`);
+      setStatus(
+        <>
+          <CircleX size={18} /> Error: {result.message}
+        </>,
+      );
     }
   };
 

@@ -17,6 +17,9 @@ import {
   Tags,
   Plus,
   Check,
+  Loader,
+  CircleCheck,
+  AlertTriangle,
 } from "lucide-react";
 import { useLanguage, useRecipeBook } from "../../../context";
 import { uploadRecipeImage } from "../../../firebase/imageService";
@@ -226,7 +229,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     if (files.length === 0) return;
 
     setUploadingImage(true);
-    setSavedMessage("⏳ " + files.length + " file(s)...");
+    setSavedMessage(
+      <>
+        <Loader size={18} className={classes.spinIcon} /> {files.length}{" "}
+        file(s)...
+      </>,
+    );
 
     const resetInput = () => {
       try {
@@ -237,7 +245,11 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
 
     const safetyTimer = setTimeout(() => {
       setUploadingImage(false);
-      setSavedMessage("⚠️ Timeout");
+      setSavedMessage(
+        <>
+          <AlertTriangle size={18} /> Timeout
+        </>,
+      );
       resetInput();
       setTimeout(() => setSavedMessage(""), 4000);
     }, 60000);
@@ -247,7 +259,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       if (!userId) throw new Error("Not logged in");
       const urls = [];
       for (let i = 0; i < files.length; i++) {
-        setSavedMessage("⏳ " + (i + 1) + "/" + files.length + "...");
+        setSavedMessage(
+          <>
+            <Loader size={18} className={classes.spinIcon} /> {i + 1}/
+            {files.length}...
+          </>,
+        );
         const url = await uploadRecipeImage(
           userId,
           `${person.id}_${Date.now()}_${i}`,
@@ -259,11 +276,19 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         const allImages = [...(prev.images || []), ...urls];
         return { ...prev, images: allImages, image_src: allImages[0] || "" };
       });
-      setSavedMessage("✅ " + urls.length + " uploaded");
+      setSavedMessage(
+        <>
+          <CircleCheck size={18} /> {urls.length} uploaded
+        </>,
+      );
       setTimeout(() => setSavedMessage(""), 3000);
     } catch (err) {
       console.error("Image upload failed:", err);
-      setSavedMessage("⚠️ " + (err.message || "Failed"));
+      setSavedMessage(
+        <>
+          <AlertTriangle size={18} /> {err.message || "Failed"}
+        </>,
+      );
       setTimeout(() => setSavedMessage(""), 5000);
     } finally {
       clearTimeout(safetyTimer);
@@ -425,7 +450,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
 
     if (filledIngredients.length > 0 && ingredientsChanged) {
       try {
-        setSavedMessage("⏳ מחשב ערכים תזונתיים...");
+        setSavedMessage(
+          <>
+            <Loader size={18} className={classes.spinIcon} /> מחשב ערכים
+            תזונתיים...
+          </>,
+        );
         const result = await calculateNutrition(
           filledIngredients,
           editedPerson.servings,
@@ -438,15 +468,23 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         } else {
           console.warn("Nutrition calculation returned error:", result?.error);
           const msg =
-            result?.error === "QUOTA_EXCEEDED"
-              ? t("recipes", "nutritionQuotaError")
-              : `⚠️ ${t("recipes", "nutritionError")}`;
+            result?.error === "QUOTA_EXCEEDED" ? (
+              t("recipes", "nutritionQuotaError")
+            ) : (
+              <>
+                <AlertTriangle size={18} /> {t("recipes", "nutritionError")}
+              </>
+            );
           setSavedMessage(msg);
           await new Promise((r) => setTimeout(r, 3000));
         }
       } catch (err) {
         console.error("Nutrition calculation failed:", err);
-        setSavedMessage(`⚠️ ${t("recipes", "nutritionError")}`);
+        setSavedMessage(
+          <>
+            <AlertTriangle size={18} /> {t("recipes", "nutritionError")}
+          </>,
+        );
         await new Promise((r) => setTimeout(r, 3000));
       }
     }
@@ -480,8 +518,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     await onSave(updatedPerson);
     createdCategoriesRef.current = [];
     setSaving(false);
-    setSavedMessage("✅ " + t("recipes", "saved"));
-    setTimeout(() => onCancel(), 2000);
+    setSavedMessage(
+      <>
+        <CircleCheck size={18} /> <span>{t("recipes", "saved")}</span>
+      </>,
+    );
+    setTimeout(() => onCancel(), 3000);
   };
 
   // ========== Add Category Inline ==========

@@ -33,6 +33,11 @@ export default defineConfig({
         rewrite: (path) =>
           path.replace(/^\/api\/translate/, "/translate_a/single"),
       },
+      "/firebase-storage": {
+        target: "https://firebasestorage.googleapis.com",
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/firebase-storage/, ""),
+      },
     },
   },
 });

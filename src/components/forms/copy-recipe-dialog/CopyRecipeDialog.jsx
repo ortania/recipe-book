@@ -93,7 +93,7 @@ function CopyRecipeDialog({ recipeName, currentUserId, onCopy, onCancel }) {
     setResults({ success, failed });
     setDone(true);
     if (failed.length === 0) {
-      setTimeout(() => onCancel(), 2000);
+      setTimeout(() => onCancel(), 3000);
     }
   };
 

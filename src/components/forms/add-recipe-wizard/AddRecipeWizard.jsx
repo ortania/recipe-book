@@ -44,6 +44,7 @@ import {
   Plus,
   Sparkles,
   MessageCircle,
+  CircleCheck,
 } from "lucide-react";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
@@ -993,8 +994,12 @@ function AddRecipeWizard({
       console.error("🍎 NUTRITION - Failed to save recipe:", err);
     }
     setSaving(false);
-    setSavedMessage("✅ " + t("recipes", "saved"));
-    setTimeout(() => onCancel(), 5000);
+    setSavedMessage(
+      <>
+        <CircleCheck size={18} /> <span>{t("recipes", "saved")}</span>
+      </>,
+    );
+    setTimeout(() => onCancel(), 10000);
   };
 
   // ========== Stepper ==========
