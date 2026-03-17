@@ -1,30 +1,49 @@
 function loadImage(src) {
-  // In dev, proxy Firebase Storage through Vite to bypass CORS
-  let fetchUrl = src;
-  if (
-    typeof window !== "undefined" &&
-    window.location.hostname === "localhost" &&
-    src.includes("firebasestorage.googleapis.com")
-  ) {
-    fetchUrl = src.replace(
-      "https://firebasestorage.googleapis.com",
-      "/firebase-storage",
-    );
-  }
-  return new Promise((resolve, reject) => {
-    fetch(fetchUrl)
-      .then((res) => res.blob())
-      .then((blob) => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          const img = new Image();
-          img.onload = () => resolve(img);
-          img.onerror = reject;
-          img.src = reader.result;
-        };
-        reader.readAsDataURL(blob);
+  const proxyUrl = src.includes("firebasestorage.googleapis.com")
+    ? src.replace("https://firebasestorage.googleapis.com", "/firebase-storage")
+    : null;
+
+  function fetchAsDataUrl(url) {
+    return fetch(url)
+      .then((res) => {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.blob();
       })
-      .catch(reject);
+      .then(
+        (blob) =>
+          new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onloadend = () => resolve(reader.result);
+            reader.onerror = reject;
+            reader.readAsDataURL(blob);
+          }),
+      );
+  }
+
+  function loadAsImg(dataUrl) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = dataUrl;
+    });
+  }
+
+  // 1) Try Vite proxy (works in dev on desktop)
+  // 2) If proxy fails, try crossOrigin img (works in production & mobile)
+  const proxyAttempt = proxyUrl
+    ? fetchAsDataUrl(proxyUrl).then(loadAsImg)
+    : Promise.reject(new Error("no proxy"));
+
+  return proxyAttempt.catch(() => {
+    const cb = src.includes("?") ? `&_cb=${Date.now()}` : `?_cb=${Date.now()}`;
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = src + cb;
+    });
   });
 }
 
@@ -199,8 +218,19 @@ export async function generateRecipeImage(recipe, t, language) {
   let loadedImg = null;
   if (recipe.image_src) {
     try {
+      console.log(
+        "[ExportImage] Loading image:",
+        recipe.image_src.substring(0, 80) + "...",
+      );
       loadedImg = await loadImage(recipe.image_src);
-    } catch {
+      console.log(
+        "[ExportImage] Image loaded successfully:",
+        loadedImg.width,
+        "x",
+        loadedImg.height,
+      );
+    } catch (err) {
+      console.warn("[ExportImage] Failed to load image:", err);
       loadedImg = null;
     }
   }
