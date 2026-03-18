@@ -282,15 +282,17 @@
 .clearChips {
   background: none;
   border: none;
-  color: var(--text-muted);
+  color: var(--link-color);
   font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.3em 0.5em;
   transition: color 0.15s ease;
+  text-decoration: underline;
 }
 
 .clearChips:hover {
-  color: var(--text-primary);
+  /* color: var(--text-primary); */
+  opacity: var(--hover-opacity);
 }
 
 .searchHeader {
