@@ -10,17 +10,22 @@
 
 .modalHeader {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 1.25rem 1.5rem;
+  padding: 0.75rem 0.5rem;
   flex-shrink: 0;
 }
 
 .modalTitle {
+  flex: 1;
+  text-align: center;
   font-size: var(--large-font);
   font-weight: var(--font-weight-quaternary);
   margin: 0;
   color: var(--text-primary);
+}
+
+.headerSpacer {
+  width: 22px;
 }
 
 .search {
@@ -94,25 +99,29 @@
 }
 
 .clearBtn {
-  color: var(--text-primary);
+  color: var(--link-color);
   cursor: pointer;
   font-size: var(--basic-font);
   font-weight: 500;
   padding: 0.5em 1em;
   transition: 0.2s ease;
-  background: var(--bg-primary);
-  border-radius: var(--btn-border-radius);
-  border: 2px solid var(--border-color);
+  /* background: var(--bg-primary); */
+  /* border-radius: var(--btn-border-radius);
+  border: 2px solid var(--border-color); */
+  background: none;
+  border: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+  text-decoration: underline;
 }
 
 .clearBtn:hover {
   /* background: var(--bg-hover); */
   /* border-color: var(--border-accent-primary); */
-  color: var(--border-error);
-  border-color: var(--border-error);
+  /* color: var(--border-error);
+  border-color: var(--border-error); */
+  opacity: var(--hover-opacity);
 }
 
 .list {

@@ -5,7 +5,7 @@ import useTranslatedList from "../../hooks/useTranslatedList";
 import { getCategoryIcon } from "../../utils/categoryIcons";
 import { Trash2 } from "lucide-react";
 import { SearchBox } from "../controls/search";
-import { CloseButton } from "../controls/close-button";
+import { BackButton } from "../controls/back-button";
 import { CategoryCard } from "../category-card";
 import classes from "./categories-sheet-content.module.css";
 
@@ -94,10 +94,27 @@ function CategoriesSheetContent({
     <div className={`${classes.content} ${className || ""}`}>
       {onClose && (
         <div className={classes.modalHeader}>
+          <BackButton onClick={onClose} size={22} />
           <span className={classes.modalTitle}>{t("nav", "categories")}</span>
-          <CloseButton onClick={onClose} />
+          <button
+            type="button"
+            className={classes.viewToggleBtn}
+            onClick={toggleViewMode}
+            title={
+              viewMode === "list"
+                ? t("recipesView", "gridView")
+                : t("recipesView", "listView")
+            }
+          >
+            {viewMode === "list" ? (
+              <LayoutGrid size={20} />
+            ) : (
+              <Rows4 size={20} />
+            )}
+          </button>
         </div>
       )}
+
       <div className={classes.search}>
         <SearchBox
           searchTerm={categorySearch}
@@ -111,32 +128,22 @@ function CategoriesSheetContent({
       </div>
 
       <div className={classes.hintRow}>
-        <p className={classes.hint}>{t("categories", "multiSelectHint")}</p>
-        <button
-          type="button"
-          className={classes.viewToggleBtn}
-          onClick={toggleViewMode}
-          title={
-            viewMode === "list"
-              ? t("recipesView", "gridView")
-              : t("recipesView", "listView")
-          }
-        >
-          {viewMode === "list" ? <LayoutGrid size={20} /> : <Rows4 size={20} />}
-        </button>
+        {!isAllSelected && selectedCount > 0 ? (
+          <>
+            <span className={classes.activeCount}>
+              {selectedCount} {t("categories", "selected")}
+            </span>
+            <button
+              className={classes.clearBtn}
+              onClick={clearCategorySelection}
+            >
+              {t("categories", "clearAll")}
+            </button>
+          </>
+        ) : (
+          <p className={classes.hint}>{t("categories", "multiSelectHint")}</p>
+        )}
       </div>
-
-      {!isAllSelected && selectedCount > 0 && (
-        <div className={classes.activeBar}>
-          <span className={classes.activeCount}>
-            {selectedCount} {t("categories", "selected")}
-          </span>
-          <button className={classes.clearBtn} onClick={clearCategorySelection}>
-            <Trash2 size={16} />
-            {t("categories", "clear")}
-          </button>
-        </div>
-      )}
 
       {viewMode === "list" ? (
         <div className={classes.list}>

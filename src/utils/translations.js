@@ -9,7 +9,7 @@ const translations = {
       mixed: "Home",
     },
     categories: {
-      he: "בחירת קטגוריות",
+      he: "קטגוריות",
       en: "Categories",
       ru: "Категории",
       de: "Kategorien",
@@ -1213,6 +1213,13 @@ const translations = {
 
   // ===================== CATEGORIES =====================
   categories: {
+    clearAll: {
+      he: "נקה הכל",
+      en: "Clear All",
+      ru: "Очистить всё",
+      de: "Alle löschen",
+      mixed: "Clear All",
+    },
     addCategory: {
       he: "הוסף קטגוריה",
       en: "Add New Category",
@@ -1419,11 +1426,7 @@ const translations = {
       mixed: "selected",
     },
     multiSelectHint: {
-      he: "ניתן לבחור מספר קטגוריות",
-      en: "You can select multiple categories",
-      ru: "Можно выбрать несколько категорий",
-      de: "Sie können mehrere Kategorien auswählen",
-      mixed: "You can select multiple categories",
+      he: "בחר קטגוריות להצגה במתכונים",
     },
     allRecipes: {
       he: "כל המתכונים",

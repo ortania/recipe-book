@@ -22,6 +22,7 @@ import { useRecipeBook, useLanguage, useRadio } from "../../context";
 import { CategoriesManagement } from "../categories-management";
 import { Modal } from "../modal";
 import { CloseButton } from "../controls/close-button";
+import { BackButton } from "../controls/back-button";
 import { BottomSheet } from "../controls/bottom-sheet";
 import { CategoriesSheetContent } from "../categories-sheet-content";
 import classes from "./navigation.module.css";
@@ -285,7 +286,7 @@ function Navigation({ onLogout, links }) {
 
           {!isGlobalRecipesPage && (
             <>
-              {!isSharerProfilePage && (
+              {/* {!isSharerProfilePage && (
                 <button
                   className={classes.navLink}
                   onClick={() => {
@@ -297,7 +298,7 @@ function Navigation({ onLogout, links }) {
                   <Settings2 size={18} className={classes.icon} />
                   {t("categories", "manage")}
                 </button>
-              )}
+              )} */}
 
               <button
                 className={classes.navLink}
@@ -429,17 +430,8 @@ function Navigation({ onLogout, links }) {
                 onClick={() => setShowCategoriesSheet(false)}
               />
               <div className={classes.catPopup}>
-                <div className={classes.catPopupHeader}>
-                  <span className={classes.catPopupTitle}>
-                    {t("nav", "categories")}
-                  </span>
-                  <CloseButton
-                    className={classes.catPopupClose}
-                    onClick={() => setShowCategoriesSheet(false)}
-                    size={25}
-                  />
-                </div>
                 <CategoriesSheetContent
+                  onClose={() => setShowCategoriesSheet(false)}
                   onManage={() => {
                     setShowCategoriesSheet(false);
                     managementFromSheetRef.current = true;

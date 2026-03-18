@@ -862,7 +862,7 @@ function RecipesView({
 
   const mobileHeaderActions = showTabs ? (
     <>
-      {showCategories && (
+      {/* {showCategories && (
         <button
           className={classes.mobileHeaderBtn}
           onClick={() => setShowCategoriesSheet(true)}
@@ -870,7 +870,7 @@ function RecipesView({
         >
           <Tags size={20} />
         </button>
-      )}
+      )} */}
       {sharerOptions.length > 0 && onSelectSharer && (
         <button
           className={classes.mobileHeaderBtn}
@@ -1157,7 +1157,7 @@ function RecipesView({
             </div>
           )}
           <div className={classes.desktopHeaderActions}>
-            {showCategories && (
+            {/* {showCategories && (
               <button
                 className={classes.desktopHeaderBtn}
                 onClick={() => setShowCategoriesSheet(true)}
@@ -1165,7 +1165,7 @@ function RecipesView({
               >
                 <Tags size={28} />
               </button>
-            )}
+            )} */}
             {sharerOptions.length > 0 && onSelectSharer && (
               <button
                 className={classes.desktopHeaderBtn}
@@ -1843,17 +1843,8 @@ function RecipesView({
                 onClick={() => setShowCategoriesSheet(false)}
               />
               <div className={classes.categoriesPopup}>
-                <div className={classes.categoriesPopupHeader}>
-                  <span className={classes.categoriesPopupTitle}>
-                    {t("nav", "categories")}
-                  </span>
-                  <CloseButton
-                    className={classes.categoriesPopupClose}
-                    onClick={() => setShowCategoriesSheet(false)}
-                    size={25}
-                  />
-                </div>
                 <CategoriesSheetContent
+                  onClose={() => setShowCategoriesSheet(false)}
                   onManage={() => {
                     setShowCategoriesSheet(false);
                     setShowManagement(true);
