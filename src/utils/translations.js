@@ -5002,6 +5002,38 @@ const translations = {
       mixed: "How to activate?",
     },
   },
+
+  // ===================== COMMENTS =====================
+  comments: {
+    title: {
+      he: "תגובות",
+      en: "Comments",
+      ru: "Комментарии",
+      de: "Kommentare",
+      mixed: "Comments",
+    },
+    placeholder: {
+      he: "כתוב תגובה...",
+      en: "Write a comment...",
+      ru: "Написать комментарий...",
+      de: "Kommentar schreiben...",
+      mixed: "כתוב תגובה...",
+    },
+    empty: {
+      he: "אין תגובות עדיין. היה הראשון להגיב!",
+      en: "No comments yet. Be the first to comment!",
+      ru: "Пока нет комментариев. Будьте первым!",
+      de: "Noch keine Kommentare. Sei der Erste!",
+      mixed: "אין תגובות עדיין. היה הראשון להגיב!",
+    },
+    commentsCount: {
+      he: "תגובות",
+      en: "comments",
+      ru: "комментариев",
+      de: "Kommentare",
+      mixed: "comments",
+    },
+  },
 };
 
 export const LANGUAGES = [

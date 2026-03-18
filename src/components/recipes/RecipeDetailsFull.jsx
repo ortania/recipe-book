@@ -36,6 +36,7 @@ import {
   ListOrdered,
   Lightbulb,
   MessageCircle,
+  MessageSquare,
   Apple,
   Files,
   Info,
@@ -61,6 +62,8 @@ import { BackButton } from "../controls/back-button";
 import { AddButton } from "../controls/add-button";
 import { ExportImageButton } from "./export-image-button";
 import ChatWindow from "../chat/ChatWindow";
+import { CommentsSection } from "../comments-section";
+import { useComments } from "../../hooks/useComments";
 
 function RecipeDetailsFull({
   recipe,
@@ -86,6 +89,7 @@ function RecipeDetailsFull({
 }) {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
+  const { commentCount } = useComments(recipe.id);
   // State management
   const [activeTab, setActiveTabRaw] = useState("ingredients");
   const setActiveTab = useCallback(
@@ -869,6 +873,15 @@ function RecipeDetailsFull({
           </>
         )}
 
+        {commentCount > 0 && (
+          <div className={classes.commentCountRow}>
+            <MessageSquare size={14} />
+            <span>
+              {commentCount} {t("comments", "commentsCount")}
+            </span>
+          </div>
+        )}
+
         {((recipe.difficulty && recipe.difficulty !== "Unknown") ||
           hasTime(recipe.prepTime) ||
           hasTime(recipe.cookTime)) && (
@@ -1260,6 +1273,8 @@ function RecipeDetailsFull({
             />
           )}
         </div>
+
+        {activeTab !== "chat" && <CommentsSection recipeId={recipe.id} />}
       </div>
     </div>
   );

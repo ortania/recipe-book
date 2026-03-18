@@ -23,6 +23,15 @@ service cloud.firestore {
                      && request.resource.data.rating >= 1
                      && request.resource.data.rating <= 5;
       }
+
+      // Comments subcollection: any logged-in user can read/create, only comment owner can delete
+      match /comments/{commentId} {
+        allow read: if request.auth != null;
+        allow create: if request.auth != null;
+        allow update: if request.auth != null;
+        allow delete: if request.auth != null
+                      && resource.data.userId == request.auth.uid;
+      }
     }
 
     // Categories: owner can read/write; any logged-in user can read categories of public-profile users

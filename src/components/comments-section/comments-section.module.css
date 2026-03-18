@@ -1,0 +1,68 @@
+.section {
+  margin-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.75rem 0;
+  color: var(--text-primary);
+  font-size: var(--basic-font);
+  font-weight: 600;
+  font-family: inherit;
+}
+
+.toggleTitle {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.toggleIcon {
+  color: var(--text-secondary);
+}
+
+.badge {
+  background: var(--active-color-primary);
+  color: #fff;
+  font-size: var(--very-small-font);
+  font-weight: 700;
+  min-width: 1.3em;
+  height: 1.3em;
+  padding: 0 0.35em;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+.expandIcon {
+  color: var(--text-tertiary, #999);
+  display: flex;
+  align-items: center;
+}
+
+.content {
+  padding-bottom: 0.5rem;
+}
+
+.list {
+  max-height: 25rem;
+  overflow-y: auto;
+}
+
+.loadingText,
+.emptyText {
+  font-size: var(--small-font);
+  color: var(--text-tertiary, #999);
+  text-align: center;
+  padding: 1rem 0;
+  margin: 0;
+}

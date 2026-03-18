@@ -606,6 +606,16 @@
   color: var(--text-secondary);
 }
 
+.commentCountRow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  font-size: var(--small-font);
+  color: var(--text-tertiary, #999);
+  margin-bottom: 0.25rem;
+}
+
 .rating {
   display: flex;
   justify-content: center;
@@ -1383,7 +1393,7 @@
 
 .disclaimerIcon {
   flex-shrink: 0;
-  margin-top: 0.2rem;
+  margin-top: 0.5rem;
   opacity: 0.7;
 }
 
