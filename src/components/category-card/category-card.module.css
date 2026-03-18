@@ -19,8 +19,16 @@
 }
 
 .cardSelected {
-  border-color: var(--active-color-primary);
+  border-width: 2.5px;
   box-shadow: 0 0 0 2px var(--active-color-primary);
+}
+
+.selectedOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  display: none;
 }
 
 .cardImage {
@@ -67,9 +75,9 @@
 }
 
 .cardCount {
-  font-size: var(--very-small-font);
+  font-size: var(--small-font);
   color: rgba(255, 255, 255, 0.85);
-  background: rgba(0, 0, 0, 0.35);
+  /* background: rgba(0, 0, 0, 0.35); */
   padding: 0.15em 0.45em;
   border-radius: 8px;
   font-weight: 500;
@@ -97,7 +105,6 @@
   grid-template-columns: repeat(3, 1fr);
   gap: 1.5rem 0.75rem;
 }
-
 
 @media (max-width: 480px) {
   .cardsGrid {

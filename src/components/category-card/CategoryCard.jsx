@@ -18,7 +18,18 @@ function CategoryCard({
     <button
       type="button"
       className={`${classes.card} ${selected ? classes.cardSelected : ""}`}
-      onClick={onClick}
+      style={
+        selected
+          ? {
+              borderColor: category.color,
+              boxShadow: `0 0 0 2px ${category.color}`,
+            }
+          : undefined
+      }
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick?.();
+      }}
     >
       {imageSrc ? (
         <img
@@ -38,12 +49,23 @@ function CategoryCard({
           />
         </div>
       )}
+      {selected && (
+        <div
+          className={classes.selectedOverlay}
+          style={{ backgroundColor: `${category.color || "#607D8B"}40` }}
+        />
+      )}
       <div className={classes.cardOverlay}>
         <span className={classes.cardName}>{name}</span>
         {count != null && <span className={classes.cardCount}>{count}</span>}
       </div>
       {selected && (
-        <div className={classes.checkBadge}>
+        <div
+          className={classes.checkBadge}
+          style={{
+            backgroundColor: category.color || "var(--active-color-primary)",
+          }}
+        >
           <Check size={14} strokeWidth={3} />
         </div>
       )}
