@@ -373,12 +373,19 @@ function RecipeDetailsFull({
           className={`${classes.imageContainer} ${classes.imageContainerWithFallback}`}
           onTouchStart={(e) => {
             if (allImages.length <= 1) return;
+            const tag = e.target.closest("button, a, [role='button']");
+            if (tag) {
+              imageTouchRef.current.swiping = false;
+              imageTouchRef.current.ignore = true;
+              return;
+            }
+            imageTouchRef.current.ignore = false;
             imageTouchRef.current.startX = e.touches[0].clientX;
             imageTouchRef.current.startY = e.touches[0].clientY;
             imageTouchRef.current.swiping = false;
           }}
           onTouchMove={(e) => {
-            if (allImages.length <= 1) return;
+            if (allImages.length <= 1 || imageTouchRef.current.ignore) return;
             const dx = Math.abs(
               e.touches[0].clientX - imageTouchRef.current.startX,
             );
@@ -391,7 +398,12 @@ function RecipeDetailsFull({
             }
           }}
           onTouchEnd={(e) => {
-            if (allImages.length <= 1 || !imageTouchRef.current.swiping) return;
+            if (
+              allImages.length <= 1 ||
+              imageTouchRef.current.ignore ||
+              !imageTouchRef.current.swiping
+            )
+              return;
             const dx =
               e.changedTouches[0].clientX - imageTouchRef.current.startX;
             if (Math.abs(dx) > 40) {
@@ -467,12 +479,19 @@ function RecipeDetailsFull({
           className={classes.lightboxOverlay}
           onClick={() => setShowImageLightbox(false)}
           onTouchStart={(e) => {
+            const tag = e.target.closest("button, a, [role='button']");
+            if (tag) {
+              imageTouchRef.current.swiping = false;
+              imageTouchRef.current.ignore = true;
+              return;
+            }
+            imageTouchRef.current.ignore = false;
             imageTouchRef.current.startX = e.touches[0].clientX;
             imageTouchRef.current.startY = e.touches[0].clientY;
             imageTouchRef.current.swiping = false;
           }}
           onTouchMove={(e) => {
-            if (allImages.length <= 1) return;
+            if (allImages.length <= 1 || imageTouchRef.current.ignore) return;
             const dx = Math.abs(
               e.touches[0].clientX - imageTouchRef.current.startX,
             );
@@ -484,7 +503,12 @@ function RecipeDetailsFull({
             }
           }}
           onTouchEnd={(e) => {
-            if (allImages.length <= 1 || !imageTouchRef.current.swiping) return;
+            if (
+              allImages.length <= 1 ||
+              imageTouchRef.current.ignore ||
+              !imageTouchRef.current.swiping
+            )
+              return;
             e.stopPropagation();
             const dx =
               e.changedTouches[0].clientX - imageTouchRef.current.startX;

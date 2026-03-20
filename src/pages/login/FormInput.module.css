@@ -15,7 +15,7 @@
 
 .inputWrapperinput::placeholder {
   color: var(--clr-input-placeholder);
-  font-style: italic;
+  /* font-style: italic; */
   font-size: --input-placeholder-font-size;
 }
 
@@ -85,7 +85,7 @@
   transition: all 0.2s;
   color: var(-clr-btn-icon-text);
 
-  border-radius: 8px;
+  border-radius: var(--icon-border-radius);
 }
 
 .eyeButton svg {
