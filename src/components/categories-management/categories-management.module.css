@@ -1,6 +1,6 @@
 .container {
   width: 100%;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -14,7 +14,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 1.5rem;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   z-index: 10;
   flex-shrink: 0;
 }
@@ -37,19 +37,19 @@
   align-items: center;
   justify-content: center;
   background: transparent;
-  /* border: 1px solid var(--border-color); */
+  /* border: 1px solid var(--clr-border-light); */
   border: none;
   border-radius: 8px;
   padding: 0.35em;
   font-size: 2rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .sortBtn:hover {
-  color: var(--text-secondary);
-  /* background: var(--bg-hover); */
+  color: var(--clr-text-secondary);
+  /* background: var(--clr-bg-hover); */
   transform: scale(1.1);
 }
 
@@ -85,7 +85,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: grab;
   padding: 0.2em;
   flex-shrink: 0;
@@ -98,11 +98,11 @@
 }
 
 .dragHandle:hover {
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .catRow:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .catInfo {
@@ -143,7 +143,7 @@
   border: none;
   cursor: pointer;
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   padding: 0.3rem;
   border-radius: 6px;
   transition: all 0.15s ease;
@@ -153,8 +153,8 @@
 }
 
 .editBtn:hover {
-  color: var(--text-secondary);
-  background: var(--bg-hover);
+  color: var(--clr-text-secondary);
+  background: var(--clr-bg-hover);
 }
 
 .deleteBtn {
@@ -175,7 +175,7 @@
   padding: 0.75rem 1rem;
   background: transparent;
   border: none;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   font-weight: 700;
   cursor: pointer;
@@ -184,7 +184,7 @@
 }
 
 .addNewBtn:hover {
-  opacity: var(--hover-opacity);
+  /* opacity: var(--hover-opacity); */
 }
 
 /* Inline form */
@@ -193,7 +193,7 @@
   margin: 0.5rem 0;
   background: var(--bg-tertiary);
   border-radius: 12px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
@@ -209,7 +209,7 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  border: 1.5px solid var(--border-color);
+  border: 1.5px solid var(--clr-border-light);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -220,12 +220,12 @@
 }
 
 .iconPickerToggle:hover {
-  border-color: var(--text-muted);
+  border-color: var(--clr-text-muted);
 }
 
 .inlineInput {
   flex: 1;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 8px;
   padding: 0.5rem 0.75rem;
   font-size: var(--basic-font);
@@ -246,7 +246,7 @@
 
 .pickerLabel {
   font-size: var(--very-small-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   font-weight: 500;
 }
 
@@ -266,13 +266,13 @@
   align-items: center;
   justify-content: center;
   font-size: 1.9rem;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   cursor: pointer;
   transition: all 0.15s ease;
 }
 
 .iconOption:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
   color: var(--clr-text-primary);
 }
 
@@ -319,10 +319,10 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.4em 0.8em;
-  border: 1px dashed var(--border-color);
+  border: 1px dashed var(--clr-border-light);
   border-radius: 8px;
   background: none;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-size: var(--small-font);
   cursor: pointer;
   transition: all 0.2s ease;
@@ -372,8 +372,8 @@
 }
 
 .cancelBtn {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-secondary);
+  border: 1px solid var(--clr-border-light);
   color: var(--clr-text-primary);
   font-size: var(--basic-font);
   cursor: pointer;
@@ -383,7 +383,7 @@
 }
 
 .cancelBtn:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .addBtn {
@@ -410,7 +410,7 @@
 /* Fixed bottom bar with shadow above to indicate scrollable content */
 .bottomBar {
   flex-shrink: 0;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   position: relative;
   z-index: 5;
   box-shadow: 0 -8px 16px -4px rgba(0, 0, 0, 0.1);
@@ -427,7 +427,7 @@
 
 .doneBtn {
   background: var(--clr-text-primary);
-  color: var(--bg-primary);
+  color: var(--clr-bg-primary);
   border: none;
   font-size: var(--basic-font);
   font-weight: 600;
@@ -438,7 +438,7 @@
 }
 
 .doneBtn:hover {
-  background: var(--text-secondary);
+  background: var(--clr-text-secondary);
 }
 
 /* Mobile */

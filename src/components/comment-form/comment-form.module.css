@@ -10,8 +10,8 @@
   display: flex;
   align-items: center;
   gap: 0.35rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-secondary);
+  border: 1px solid var(--clr-border-light);
   border-radius: 24px;
   padding: 0.35rem 0.5rem;
   transition: border-color 0.2s ease;
@@ -43,7 +43,7 @@
 .clearBtn {
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;

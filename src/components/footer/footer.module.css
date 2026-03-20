@@ -1,15 +1,5 @@
 .footer {
   margin: 0;
-  /* padding: 0.5rem 0;
-  background: var(--bg-tertiary);
-  border-top: 1px solid var(--border-color);
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  margin-inline-start: 220px;
-  z-index: 999;
-  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08); */
   display: none;
 }
 
@@ -44,7 +34,7 @@
 }
 
 .footerLink.active {
-  background-color: var(--clr-btn-outline-bg-active);
+  background-color: var(--clr-btn-secondary-bg);
   border-radius: 50px;
 }
 
@@ -52,9 +42,9 @@
   stroke-width: 2;
 }
 
-.footerIcon {
+/* .footerIcon {
   font-size: 2rem;
-}
+} */
 
 .footerLabel {
   font-size: var(--small-font);
@@ -69,9 +59,7 @@
     padding-bottom: calc(0.4rem + env(safe-area-inset-bottom, 0px));
     display: block;
 
-    background: var(--bg-tertiary);
-    /* border-top: 1px solid var(--border-color); */
-    /* border-top: 1px solid var(--bg-primary); */
+    background: var(--clr-bg-footer);
     position: fixed;
     /* bottom: 0;
     left: 0;
@@ -80,6 +68,7 @@
     inset-block-end: 0;
 
     z-index: 999;
+    /* gradient abouve footer */
     box-shadow:
       0 -2rem 2rem rgba(0, 0, 0, 0.05),
       0 -7rem 9rem rgba(0, 0, 0, 0.08);
@@ -96,7 +85,7 @@
      background: linear-gradient(
       to bottom,
       transparent 0%,
-      var(--bg-primary) 100%
+      var(--clr-bg-primary) 100%
     ); 
 
     background: linear-gradient(

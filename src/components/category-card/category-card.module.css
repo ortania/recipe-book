@@ -5,8 +5,8 @@
   border-radius: 8px;
   overflow: hidden;
   cursor: pointer;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-secondary);
+  border: 1px solid var(--clr-border-light);
   padding: 0;
   transition:
     border-color 0.2s ease,
@@ -49,7 +49,7 @@
 .placeholderIcon {
   width: 2.5rem;
   height: 2.5rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 .cardOverlay {

@@ -11,7 +11,7 @@
   position: sticky;
   top: 0;
   z-index: 10;
-  background: var(--bg-primary);
+  background: var(--clr-bg-primary);
   padding-bottom: 0.5rem;
 }
 
@@ -39,7 +39,7 @@
 .noResults {
   text-align: center;
   padding: 3rem 2rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   font-size: 1.1rem;
 }
 
@@ -51,13 +51,13 @@
 }
 
 .subtitle {
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   margin-bottom: 0.75rem;
 }
 
 .intro {
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   line-height: 1.6;
   max-width: 500px;
@@ -79,15 +79,15 @@
 }
 
 .tab {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
   color: var(--clr-text-primary);
   padding: 0.2em 0.6em;
 }
 
 .tab:hover {
   border-color: var(--clr-text-primary) !important;
-  background: var(--bg-card) !important;
+  background: var(--clr-bg-card) !important;
   /* box-shadow: none !important; */
   color: var(--clr-text-primary) !important;
   /* transform: translateY(-1px); */
@@ -114,7 +114,7 @@
 }
 
 .content {
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: var(--shadow-md);
@@ -144,7 +144,7 @@
 }
 
 .listItem:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .itemName {
@@ -176,7 +176,7 @@
   /* background: var(--clr-text-primary); */
   color: var(--clr-text-primary);
   /* border-radius: 8px; */
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
   font-weight: 700;
   text-align: center;
 }
@@ -193,7 +193,7 @@
 }
 
 .tableRow:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .note {

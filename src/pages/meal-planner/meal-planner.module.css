@@ -18,7 +18,7 @@
   align-items: flex-start;
   justify-content: space-between;
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 12px;
   padding: 1.4rem 1.8rem;
   margin-bottom: 1.4rem;
@@ -36,7 +36,7 @@
 
 .dateRange {
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   display: block;
   margin-top: 0.15rem;
 }
@@ -56,7 +56,7 @@
   border: 1px solid var(--clr-text-primary);
   border-radius: 6px;
   background: var(--clr-text-primary);
-  color: var(--bg-primary);
+  color: var(--clr-bg-primary);
   font-size: var(--basic-font);
   cursor: pointer;
   transition: opacity 0.15s;
@@ -80,16 +80,16 @@
   padding: 0.5em 1.2em;
   border: 1px solid var(--clr-btn-main-border);
   border-radius: 6px;
-  background: var(--bg-card);
-  color: var(--text-secondary);
+  background: var(--clr-bg-card);
+  color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .headerBtnOutline:hover {
-  background: var(--bg-hover);
-  border-color: var(--border-color);
+  background: var(--clr-bg-hover);
+  border-color: var(--clr-border-light);
 }
 
 /* ===== Days Grid ===== */
@@ -101,8 +101,8 @@
 
 /* ===== Day Card ===== */
 .dayCard {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -144,7 +144,7 @@
 
 .dayDate {
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 .dayBody {
@@ -155,7 +155,7 @@
 /* ===== Meal Block ===== */
 .mealBlock {
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
   margin-bottom: 0.5rem;
@@ -177,7 +177,7 @@
 
 .mealIcon {
   font-size: var(--basic-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .mealRecipeItem {
@@ -185,7 +185,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.35rem 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .mealRecipeItem:last-child {
@@ -194,7 +194,7 @@
 
 .recipeName {
   font-size: var(--basic-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   cursor: pointer;
 }
 
@@ -206,7 +206,7 @@
 .removeBtn {
   background: none;
   border: none;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.2em;
@@ -229,7 +229,7 @@
   border: none;
   border-radius: 0 0 12px 12px;
   background: var(--clr-text-primary);
-  color: var(--bg-primary);
+  color: var(--clr-bg-primary);
   font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
@@ -243,7 +243,7 @@
 
 /* ===== Shopping List Modal ===== */
 .shoppingModal {
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 14px;
   width: 100%;
   max-width: 460px;
@@ -259,7 +259,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.1rem 1.3rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .shoppingModalTitle {
@@ -271,13 +271,13 @@
 .shoppingProgress {
   padding: 0.5rem 1.3rem;
   font-size: var(--basic-font);
-  color: var(--text-muted);
-  border-bottom: 1px solid var(--border-color);
+  color: var(--clr-text-muted);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .shoppingEmpty {
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   text-align: center;
   padding: 2.5rem 1rem;
 }
@@ -298,7 +298,7 @@
   cursor: pointer;
   padding: 0.45rem 0;
   font-size: var(--basic-font);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .shoppingItem:last-child {
@@ -320,11 +320,11 @@
 
 .shoppingNameChecked {
   text-decoration: line-through;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 .shoppingQty {
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   font-size: var(--basic-font);
 }
 
@@ -333,17 +333,17 @@
   width: calc(100% - 2.6rem);
   margin: 0.7rem 1.3rem;
   padding: 0.5em;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 8px;
-  background: var(--bg-card);
-  color: var(--text-muted);
+  background: var(--clr-bg-card);
+  color: var(--clr-text-muted);
   font-size: var(--basic-font);
   cursor: pointer;
   text-align: center;
 }
 
 .uncheckBtn:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 /* ===== Recipe Picker Modal ===== */
@@ -359,7 +359,7 @@
 }
 
 .pickerModal {
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 14px;
   width: 100%;
   max-width: 460px;
@@ -375,7 +375,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.1rem 1.3rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .pickerTitle {
@@ -388,7 +388,7 @@
   background: none;
   border: none;
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   padding: 0.3em;
 }
@@ -396,7 +396,7 @@
 .mealTabs {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .mealTab {
@@ -406,7 +406,7 @@
   background: none;
   font-size: var(--basic-font);
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   text-align: center;
   border-bottom: 2px solid transparent;
@@ -428,13 +428,13 @@
   width: 100%;
   text-align: start;
   cursor: pointer;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
   transition: background 0.15s;
   font-size: var(--basic-font);
 }
 
 .catListItem:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .catListItem:last-child {
@@ -460,7 +460,7 @@
 
 .catListCount {
   font-size: var(--small-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   flex-shrink: 0;
 }
 
@@ -469,7 +469,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .backBtn {
@@ -488,7 +488,7 @@
 
 .pickerSubCount {
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 .doneBtn {
@@ -496,7 +496,7 @@
   border: none;
   border-radius: 6px;
   background: var(--clr-text-primary);
-  color: var(--bg-primary);
+  color: var(--clr-bg-primary);
   font-size: var(--small-font);
   font-weight: 600;
   cursor: pointer;
@@ -519,7 +519,7 @@
 
 .pickerSearch {
   padding: 0.7rem 1.3rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .pickerSearchBox {
@@ -548,7 +548,7 @@
 }
 
 .pickerItem:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .pickerItemImage {
@@ -581,7 +581,7 @@
 .pickerEmpty {
   text-align: center;
   padding: 2rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   font-size: var(--basic-font);
 }
 

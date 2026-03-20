@@ -32,7 +32,7 @@
   border-radius: 20px;
   font-size: var(--basic-font);
   font-weight: 500;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   transition: color 0.25s ease;
   white-space: nowrap;

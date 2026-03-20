@@ -3,11 +3,11 @@
   bottom: 2rem;
   left: 1rem;
   z-index: 10;
-  background-color: var(--bg-card);
+  background-color: var(--clr-bg-card);
   color: var(--clr-text-primary);
   /* background-color: #0f2842;
   color: white; */
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   cursor: pointer;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   transition:

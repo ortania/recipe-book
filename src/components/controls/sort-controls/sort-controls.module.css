@@ -5,16 +5,16 @@
 
 .sortButton {
   padding: 0.7rem 1.4rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 6px;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   cursor: pointer;
   transition: all 0.2s;
   font-size: 1.2rem;
 }
 
 .sortButton:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .sortButton.active {

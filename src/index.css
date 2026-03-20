@@ -146,6 +146,11 @@ Variables
   /* --clr-success: #1a9c5a;
   --clr-success-hover: #2e7d32;
   --clr-success-dark: #155724; */
+  /* saved, added, deleted, checkbox, etc. */
+
+  /* --active-color-primary: #1a9c5a;
+  --dark-active-color: #155724;
+  --active-color-secondary: #2e7d32; */
 
   --clr-danger-bg: var(--clr-danger-100);
   --clr-danger-bg-hover: var(--clr-danger-200);
@@ -170,6 +175,8 @@ Variables
   --clr-text-hover: var(--clr-neutral-800);
   --clr-text-active: var(--clr-neutral-900);
 
+  --clr-bg-chip-hover: var(--clr-tertiary-200);
+
   /* =========================
      BUTTONS - MAIN (Brown)
   ========================= */
@@ -188,13 +195,13 @@ Variables
   /* =========================
      BUTTONS - SECONDARY (Green)
   ========================= */
-  --clr-btn-secondary-bg: var(--clr-secondary-500);
+  --clr-btn-secondary-bg: var(--clr-secondary-200);
   --clr-btn-secondary-bg-hover: var(--clr-secondary-600);
   --clr-btn-secondary-bg-active: var(--clr-secondary-700);
 
   --clr-btn-secondary-text: #ffffff;
 
-  --clr-btn-secondary-border: var(--clr-secondary-500);
+  --clr-btn-secondary-border: var(--clr-secondary-200);
   --clr-btn-secondary-border-hover: var(--clr-secondary-600);
   --clr-btn-secondary-border-active: var(--clr-secondary-700);
 
@@ -270,9 +277,17 @@ Variables
   /* =========================
      BACKGROUNDS
   ========================= */
+
   --clr-bg-page: var(--clr-tertiary-100);
   --clr-bg-card: #ffffff;
   --clr-bg-soft: var(--clr-tertiary-200);
+  --clr-bg-footer: var(--clr-bg-card);
+  --clr-bg-sidebar: var(--clr-bg-card);
+  --clr-bg-chip: var(--clr-bg-card);
+
+  --clr-bg-primary: var(--clr-tertiary-100);
+  --clr-bg-secondary: var(--clr-bg-card);
+  --clr-bg-tertiary: var(--clr-tertiary-200);
 
   /* =========================
      BORDERS
@@ -280,6 +295,7 @@ Variables
   --clr-border-light: var(--clr-neutral-200);
   --clr-border-medium: var(--clr-neutral-300);
   --clr-border-strong: var(--clr-neutral-400);
+  --clr-border-accent-primary: var(--clr-brown-700);
 
   /* =========================
      LINK
@@ -347,73 +363,23 @@ Variables
   --skeleton-highlight: var(--clr-neutral-100);
   --skeleton-border-radius: 0.5rem;
 
+  /* chat */
+  --clr-bubble-user: var(--clr-tertiary-200);
+  --clr-bubble-assistant-bg: var(--clr-bg-card);
+
+  --clr-bubble-user-text: var(--clr-text-primary);
+  --clr-bubble-assistant-text: var(--clr-brown-700);
+
+  --clr-bubble-avatar-bg: var(--clr-neutral-600);
+
   /* general */
   --transition: all 0.2s ease;
-  --scale: 1.1;
+  --scale: 1.05;
   --spacing: 0;
   --max-width: 900px;
-  --text-muted: var(--clr-neutral-600);
-
-  /* --------------------------------------------------------- */
-  /* --------------------------------------------------------- */
-  /* --------------------------------------------------------- */
-
-  /* basic colors and variables*/
-
-  --secondary-color: var(--clr-brown-2);
-
-  /* saved, added, deleted, checkbox, etc. */
-
-  --active-color-primary: #1a9c5a;
-  --dark-active-color: #155724;
-  --active-color-secondary: #2e7d32;
-
-  /* text */
-
-  --text-secondary: var(--clr-brown-2);
-
-  /* backgrounds */
-  --bg-primary: var(--clr-tertiary-100);
-  --bg-secondary: var(--clr-bg-card);
-  --bg-tertiary: var(--clr-tertiary-200);
-
-  --bg-input: var(--clr-bg-card);
-  --bg-card: var(--clr-bg-card);
-  --bg-sidebar: var(--clr-bg-card);
-
-  --bg-hover: var(--clr-bg-hover);
-
-  --bg-chip: var(--clr-bg-card);
-  --bg-chip-hover: var(--clr-tertiary-200);
-
-  /* states + accents */
-  --bg-error: var(--clr-danger-100);
-
-  --bg-accent-primary: var(--clr-brown-700);
-  --bg-accent-secondary: rgba(107, 79, 42, 0.08); /* נגזר מה-brown */
-  --bg-accent-tertiary: var(--clr-neutral-600);
-
-  /* borders */
-  --border-color: var(--clr-border-light);
-  --border-error: var(--clr-danger-700);
-  --border-light: var(--clr-border-light);
-
-  --border-accent-primary: var(--clr-brown-700);
-  --border-accent-secondary: var(--clr-brown-600);
-
-  --input-border-radius: 1.2rem;
   --divider: var(--clr-neutral-200);
-
-  /* chat */
-  --bubble-user: var(--clr-tertiary-200);
-  --bubble-assistant: var(--clr-bg-card);
-
-  --bubble-user-text: var(--clr-text-primary);
-  --bubble-assistant-text: var(--clr-brown-700);
-
-  --bubble-avatar: var(--clr-neutral-600);
-
-  --hover-opacity: 0.7;
+  --clr-accent-primary: var(--clr-brown-700);
+  --clr-accent-secondary: var(--clr-neutral-600);
 }
 
 /*
@@ -431,7 +397,7 @@ Variables
 
 
   --text-primary: #e8e8e8;
-  --text-secondary: #b0b8c8;
+  --clr-text-secondary: #b0b8c8;
   --text-muted: #7a8599;
   --text-on-primary: #ffffff;
 
@@ -510,7 +476,7 @@ body {
   font-family: var(--font-heading);
   font-stretch: condensed;
 
-  background-color: var(--bg-primary);
+  background-color: var(--clr-bg-primary);
   color: var(--clr-text-primary);
   line-height: 1.5;
   font-size: 1.2rem;

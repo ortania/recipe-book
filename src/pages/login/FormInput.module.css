@@ -51,7 +51,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   pointer-events: none;
   z-index: 1;
 }
@@ -152,4 +152,3 @@
 .clearButton:hover svg {
   stroke: var(--clr-primary-700);
 }
-

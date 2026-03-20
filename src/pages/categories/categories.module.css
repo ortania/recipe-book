@@ -29,7 +29,7 @@
   height: 40px;
   border-radius: 50%;
   border: 1px solid var(--clr-text-primary);
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   color: var(--clr-text-primary);
   font-size: 1.1rem;
   cursor: pointer;
@@ -41,7 +41,7 @@
 }
 
 .iconButton:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
   transform: scale(1.05);
 }
 
@@ -78,7 +78,7 @@
 }
 
 .groupCard {
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 8px;
   padding: 1rem;
   margin-bottom: 1rem;
@@ -113,7 +113,7 @@
   border: none;
   padding: 0.25rem;
   cursor: pointer;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   transition: color 0.2s;
 }
 
@@ -130,7 +130,7 @@
   padding: 0.2rem 0.8rem;
   border-radius: 12px;
   font-size: var(--very-small-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .groups {
@@ -160,8 +160,8 @@
 
 .searchInput {
   flex: 1;
-  border: 1px solid var(--border-color);
-  background: var(--bg-card);
+  border: 1px solid var(--clr-border-light);
+  background: var(--clr-bg-card);
   font-size: var(--basic-font);
   outline: none;
   color: var(--clr-text-primary);
@@ -173,18 +173,18 @@
 }
 
 .searchInput::placeholder {
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 .searchInput:focus {
-  border-color: var(--border-color);
+  border-color: var(--clr-border-light);
 }
 
 .filterButton,
 .sortingButton {
   padding: 1rem 0.75rem;
   background: transparent;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: var(button-border-radius);
   font-size: var(--basic-font);
   font-weight: 400;

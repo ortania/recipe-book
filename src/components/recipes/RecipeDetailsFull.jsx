@@ -574,7 +574,7 @@ function RecipeDetailsFull({
                 left: 0,
                 right: 0,
                 zIndex: 99,
-                background: "var(--bg-primary)",
+                background: "var(--clr-bg-primary)",
                 boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
                 paddingInline: "1rem",
               }

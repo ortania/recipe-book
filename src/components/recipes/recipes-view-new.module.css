@@ -14,7 +14,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--bg-primary);
+  background: var(--clr-bg-primary);
 }
 
 .viewToggleWrapper {
@@ -143,7 +143,7 @@
     position: sticky;
     top: 0;
     z-index: 100;
-    background: var(--bg-primary);
+    background: var(--clr-bg-primary);
     padding-top: 0.3rem;
     margin-top: -3.5rem;
   }
@@ -173,7 +173,7 @@
     margin: 0;
     min-height: 0;
     display: none;
-    background: var(--bg-primary);
+    background: var(--clr-bg-primary);
   }
 
   .noTabsMode .viewToggleWrapper {
@@ -225,7 +225,7 @@
     z-index: 99;
     padding: 0.6rem 1rem 0.75rem;
     margin: 0;
-    background: var(--bg-primary);
+    background: var(--clr-bg-primary);
     flex-wrap: nowrap;
     gap: 0.6rem;
   }
@@ -256,7 +256,7 @@
 
 .filterChipsLabel {
   font-size: var(--basic-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-weight: 500;
 }
 
@@ -267,7 +267,7 @@
   padding: 0.3em 0.75em;
   border-radius: 50px;
   border: 1.5px solid;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   font-size: var(--small-font);
   font-weight: 500;
   cursor: pointer;
@@ -287,11 +287,11 @@
   padding: 0.3em 0.5em;
   transition: color 0.15s ease;
   text-decoration: underline;
+  text-decoration-color: currentColor;
 }
 
 .clearChips:hover {
-  /* color: var(--clr-text-primary); */
-  opacity: var(--hover-opacity);
+  transform: var(--link-transform-hover);
 }
 
 .searchHeader {
@@ -306,7 +306,7 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--bg-primary);
+  background: var(--clr-bg-primary);
 }
 
 .mobileSearchSort {
@@ -358,10 +358,10 @@
   height: 32px;
   padding-inline-start: 0.75rem;
   padding-inline-end: 0.75rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 10px;
-  background: var(--bg-input);
-  color: var(--text-muted);
+  background: var(--clr-input-bg);
+  color: var(--clr-text-muted);
   font-size: var(--basic-font);
   cursor: pointer;
   transition:
@@ -372,12 +372,12 @@
 }
 
 .searchTrigger:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .searchTriggerIcon {
   flex-shrink: 0;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 .searchTriggerText {
@@ -400,8 +400,8 @@
 .filterButton,
 .sortingButton {
   padding: 0.5em 0.75em;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
   border-radius: var(--btn-border-radius);
   font-size: var(--basic-font);
   font-weight: 400;
@@ -428,14 +428,14 @@
 
 .filterButton:hover,
 .sortingButton:hover {
-  background: var(--bg-hover);
-  border-color: var(--border-color);
+  background: var(--clr-bg-hover);
+  border-color: var(--clr-border-light);
 }
 
 .dropdownMenu {
   position: fixed;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
   border-radius: 8px;
   box-shadow: var(--shadow-md);
   min-width: 200px;
@@ -485,13 +485,13 @@
   width: 100%;
   padding: 0.75rem 1rem;
   border: none;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   color: var(--clr-text-primary);
   text-align: start;
   cursor: pointer;
   font-size: var(--small-font);
   transition: background 0.2s ease;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .dropdownMenu .dropdownClose button {
@@ -508,11 +508,11 @@
 }
 
 .dropdownMenu button:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .dropdownMenu button.active {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
   color: var(--clr-text-primary);
   font-weight: 600;
 }
@@ -534,9 +534,9 @@
   width: auto;
   padding: 0.4rem 0.75rem;
   border-radius: 20px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   font-size: var(--very-small-font);
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
 }
 
 .filterSection button.active {
@@ -564,11 +564,11 @@
 .keywordInput {
   width: 100%;
   padding: 0.5rem 2rem 0.5rem 0.75rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 6px;
   font-size: var(--small-font);
   outline: none;
-  background-color: var(--bg-card) !important;
+  background-color: var(--clr-bg-card) !important;
   transition: border-color 0.2s;
   box-sizing: border-box;
   color: var(--clr-text-primary) !important;
@@ -581,8 +581,8 @@
 }
 
 .keywordInput:focus {
-  border-color: var(--border-accent-primary);
-  background-color: var(--bg-card) !important;
+  border-color: var(--clr-border-accent-primary);
+  background-color: var(--clr-bg-card) !important;
   color: var(--clr-text-primary) !important;
   -webkit-text-fill-color: var(--clr-text-primary) !important;
 }
@@ -591,12 +591,12 @@
 .keywordInput:-webkit-autofill:hover,
 .keywordInput:-webkit-autofill:focus {
   -webkit-text-fill-color: var(--clr-text-primary) !important;
-  -webkit-box-shadow: 0 0 0px 1000px var(--bg-card) inset !important;
-  background-color: var(--bg-card) !important;
+  -webkit-box-shadow: 0 0 0px 1000px var(--clr-bg-card) inset !important;
+  background-color: var(--clr-bg-card) !important;
 }
 
 .keywordInput::placeholder {
-  color: var(--text-muted) !important;
+  color: var(--clr-text-muted) !important;
   opacity: 0.6 !important;
 }
 
@@ -607,7 +607,7 @@
   transform: translateY(-50%);
   background: none;
   border: none;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   font-size: var(--very-small-font);
   padding: 0.25rem;
@@ -621,7 +621,7 @@
 
 .filterDivider {
   height: 1px;
-  background: var(--border-color);
+  background: var(--clr-border-light);
   margin: 0.5rem 0;
 }
 
@@ -634,16 +634,16 @@
 .ingredientInput {
   flex: 1;
   padding: 0.4rem 0.6rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 8px;
   font-size: var(--small-font);
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   color: var(--clr-text-primary);
   outline: none;
 }
 
 .ingredientInput:focus {
-  border-color: var(--border-accent-primary);
+  border-color: var(--clr-border-accent-primary);
 }
 
 .ingredientAddBtn {
@@ -676,8 +676,8 @@
   align-items: center;
   gap: 0.25rem;
   padding: 0.2rem 0.5rem;
-  background: var(--bg-hover);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-hover);
+  border: 1px solid var(--clr-border-light);
   border-radius: 16px;
   font-size: var(--small-font);
   color: var(--clr-text-primary);
@@ -688,7 +688,7 @@
   padding: 0 0.15rem !important;
   border: none !important;
   background: none !important;
-  color: var(--text-muted) !important;
+  color: var(--clr-text-muted) !important;
   cursor: pointer;
   font-size: 0.75rem;
   line-height: 1;
@@ -702,7 +702,7 @@
   padding: 0.3em 0.7em !important;
   border: none !important;
   /* background: #ff5252 !important; */
-  background: var(--bg-accent-primary) !important;
+  background: var(--clr-accent-primary) !important;
   color: white !important;
   text-align: center;
   cursor: pointer;
@@ -762,7 +762,7 @@
 }
 
 .seeMore:hover {
-  opacity: var(--hover-opacity);
+  transform: var(--link-transform-hover);
 }
 
 .categorySection {
@@ -780,7 +780,7 @@
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
   gap: 1.2rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .recipeCount {
@@ -857,8 +857,8 @@
 
 .selectedCategoryTag {
   background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color);
+  color: var(--clr-text-secondary);
+  border: 1px solid var(--clr-border-light);
   border-radius: 1rem;
   padding: 0.3em 0.8em;
   font-size: var(--small-font);
@@ -894,7 +894,7 @@
 
 .loadingText {
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   margin: 0;
 }
 
@@ -971,7 +971,7 @@
 }
 
 .recentlyViewedScroll::-webkit-scrollbar-thumb {
-  background: var(--border-color);
+  background: var(--clr-border-light);
   border-radius: 4px;
 }
 
@@ -1014,7 +1014,7 @@
   height: 72px;
   border-radius: 50%;
   object-fit: cover;
-  border: 2px solid var(--border-color);
+  border: 2px solid var(--clr-border-light);
 }
 
 .recentlyViewedName {
@@ -1051,7 +1051,7 @@
     width: 100% !important;
     height: 65vh;
     max-height: 75vh !important;
-    background: var(--bg-card);
+    background: var(--clr-bg-card);
     overflow: hidden;
     z-index: 10003 !important;
     display: flex;
@@ -1067,16 +1067,16 @@
     width: 36px;
     height: 4px;
     border-radius: 2px;
-    background: var(--border-color);
+    background: var(--clr-border-light);
     margin: 0.6rem auto 0.25rem;
     flex-shrink: 0;
   }
 
   .dropdownClose {
     flex-shrink: 0;
-    background: var(--bg-card);
+    background: var(--clr-bg-card);
     padding: 0.4rem 0.8rem 0.2rem;
-    border-bottom: 1px solid var(--border-color);
+    border-bottom: 1px solid var(--clr-border-light);
   }
 
   .dropdownScrollable {
@@ -1155,7 +1155,7 @@
 }
 
 .viewToggleIcon:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 /* Hide add-recipe dropdown on mobile (FAB replaces it) */
@@ -1189,7 +1189,7 @@
 }
 
 .desktopHeaderBtn:hover {
-  opacity: var(--hover-opacity);
+  /* opacity: var(--hover-opacity); */
 }
 
 @media (max-width: 768px) {
@@ -1215,7 +1215,7 @@
 }
 
 .categorySection:has(.compactList) {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .compactItem {
@@ -1223,13 +1223,13 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
   cursor: pointer;
   transition: background 0.15s ease;
 }
 
 .compactItem:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .compactItem:last-child {
@@ -1251,13 +1251,13 @@
   font-size: var(--basic-font);
   color: var(--clr-link);
   text-decoration: underline;
+  text-decoration-color: currentColor;
   cursor: pointer;
   white-space: nowrap;
   margin-inline-end: 0.5rem;
 }
 .compactSharer:hover {
-  opacity: var(--hover-opacity);
-  transform: scale(var(--scale));
+  transform: var(--link-transform-hover);
 }
 
 .compactActions {
@@ -1276,7 +1276,7 @@
   padding: 0.3em;
   border: none;
   background: none;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   font-size: var(--basic-font);
   border-radius: 6px;
@@ -1288,7 +1288,7 @@
 
 .compactActionBtn:hover {
   color: var(--clr-text-primary);
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .compactDanger {
@@ -1310,8 +1310,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-hover);
-  color: var(--text-muted);
+  background: var(--clr-bg-hover);
+  color: var(--clr-text-muted);
   overflow: hidden;
 }
 
@@ -1333,8 +1333,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-hover);
-  color: var(--text-muted);
+  background: var(--clr-bg-hover);
+  color: var(--clr-text-muted);
 }
 
 /* ===== Mobile header action buttons ===== */
@@ -1355,14 +1355,14 @@
 }
 
 .mobileHeaderBtn:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .mobileHeaderBadge {
   position: absolute;
   top: -4px;
   inset-inline-end: -6px;
-  background: var(--bg-accent-primary);
+  background: var(--clr-accent-primary);
   color: #fff;
   font-size: 0.6rem;
   min-width: 14px;
@@ -1423,7 +1423,7 @@
 
 .categoriesSheetActiveCount {
   font-size: var(--small-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-weight: 500;
 }
 
@@ -1440,7 +1440,7 @@
 }
 
 .categoriesSheetClear:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .categoriesSheetList {
@@ -1468,7 +1468,7 @@
 }
 
 .categorySheetItem:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .categorySheetItem:active {
@@ -1506,7 +1506,7 @@
 
 .categorySheetCountNum {
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   flex-shrink: 0;
   min-width: 1.5em;
   text-align: center;
@@ -1520,16 +1520,16 @@
   padding: 0.7rem 1rem;
   margin-top: 0.5rem;
   background: none;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 10px;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   cursor: pointer;
   font-size: var(--basic-font);
   transition: all 0.15s;
 }
 
 .categoryManageBtn:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
   color: var(--clr-text-primary);
 }
 
@@ -1546,7 +1546,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: var(--bg-primary);
+  background: var(--clr-bg-primary);
   border-radius: 14px;
   width: 95vw;
   max-width: 420px;
@@ -1576,7 +1576,7 @@
   display: flex;
   align-items: center;
   padding: 0.75rem 0.5rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
   flex-shrink: 0;
 }
 
@@ -1594,7 +1594,7 @@
   justify-content: center;
   background: none;
   border: none;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   padding: 0.3em;
   border-radius: 6px;
@@ -1602,7 +1602,7 @@
 }
 
 .categoriesPopupClose:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
   color: var(--clr-text-primary);
 }
 
@@ -1643,16 +1643,16 @@
 }
 
 .sharerItem:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .sharerItemActive {
-  background: var(--bg-accent-primary);
+  background: var(--clr-accent-primary);
   color: #fff;
   font-weight: 600;
 }
 
 .sharerItemActive:hover {
-  background: var(--bg-accent-primary);
+  background: var(--clr-accent-primary);
   opacity: 0.9;
 }

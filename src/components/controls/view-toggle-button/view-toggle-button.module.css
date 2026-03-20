@@ -1,5 +1,5 @@
 .viewToggleButton {
-  background-color: var(--text-secondary);
+  background-color: var(--clr-text-secondary);
   color: white;
   border-radius: 4px;
   padding: 0.7em 1em;
@@ -8,5 +8,5 @@
 }
 
 .viewToggleButton:hover {
-  background-color: var(--text-muted);
+  background-color: var(--clr-text-muted);
 }

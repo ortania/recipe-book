@@ -14,7 +14,7 @@
   margin: 0 0 2rem;
   font-size: var(--basic-font);
   line-height: 1.6;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .buttons {
@@ -35,22 +35,22 @@
 
 .confirmButton {
   background: var(--clr-text-primary);
-  color: var(--bg-primary);
+  color: var(--clr-bg-primary);
   border: none;
 }
 
 .confirmButton:hover {
-  background: var(--text-secondary);
+  background: var(--clr-text-secondary);
 }
 
 .cancelButton {
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   color: var(--clr-text-primary);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
 }
 
 .cancelButton:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 @media (max-width: 768px) {

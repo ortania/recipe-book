@@ -17,14 +17,14 @@
   margin: 0;
   padding-top: 0;
   z-index: 10005;
-  background: var(--bg-primary);
+  background: var(--clr-bg-primary);
   overflow: hidden;
 }
 
 .recipeCardCooking .headerButtonsCooking {
   max-width: var(--max-width);
   border: none;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
   background: transparent;
   box-shadow: none;
   position: relative;
@@ -87,7 +87,7 @@
   padding: 0.75rem 1.5rem;
   z-index: 10006;
   box-sizing: border-box;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   flex-shrink: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
@@ -161,8 +161,8 @@
   width: 100%;
   max-width: 1200px;
   flex-shrink: 0;
-  /* background: var(--bg-card); */
-  background: var(--bg-primary);
+  /* background: var(--clr-bg-card); */
+  background: var(--clr-bg-primary);
   z-index: 10;
   padding: 3rem 1.5rem 0;
   box-sizing: border-box;
@@ -195,9 +195,9 @@
   padding-bottom: calc(0.75rem + env(safe-area-inset-bottom, 0px));
   box-sizing: border-box;
   flex-shrink: 0;
-  /* background: var(--bg-card); */
-  background: var(--bg-primary);
-  /* border-top: 1px solid var(--border-color); */
+  /* background: var(--clr-bg-card); */
+  background: var(--clr-bg-primary);
+  /* border-top: 1px solid var(--clr-border-light); */
 }
 
 .servingSelector {
@@ -205,8 +205,8 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 0;
-  /* background: var(--bg-card); */
-  background: var(--bg-primary);
+  /* background: var(--clr-bg-card); */
+  background: var(--clr-bg-primary);
   border-radius: 0;
   margin-bottom: 0;
   width: 100%;
@@ -230,14 +230,14 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 2px solid var(--border-color);
-  background: var(--bg-card);
+  border: 2px solid var(--clr-border-light);
+  background: var(--clr-bg-card);
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   font-size: var(--large-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   transition: all 0.2s ease;
 }
 
@@ -246,8 +246,8 @@
 }
 
 .servingButtonCooking:hover {
-  background: var(--bg-hover);
-  border-color: var(--border-color);
+  background: var(--clr-bg-hover);
+  border-color: var(--clr-border-light);
 }
 
 .servingLabelCooking {
@@ -263,8 +263,8 @@
   margin-bottom: 0;
   width: 100%;
   max-width: var(--max-width);
-  /* background: var(--bg-card); */
-  background: var(--bg-primary);
+  /* background: var(--clr-bg-card); */
+  background: var(--clr-bg-primary);
 }
 
 .tab {
@@ -280,7 +280,7 @@
 
   font-size: var(--large-font);
   font-weight: 600;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   transition: all 0.2s ease;
   margin-bottom: -3px;
@@ -292,11 +292,11 @@
 }
 
 .tab:hover {
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .tab:not(.activeTab) {
-  border-bottom-color: var(--border-color);
+  border-bottom-color: var(--clr-border-light);
 }
 
 .activeTab {
@@ -348,7 +348,7 @@
   cursor: pointer;
   -webkit-appearance: none;
   appearance: none;
-  background: var(--border-color);
+  background: var(--clr-border-light);
 }
 
 .progressSlider::-webkit-slider-thumb {
@@ -394,7 +394,7 @@
 .navButton {
   background-color: var(--bg-tertiary);
   border: 1px solid var(--clr-btn-main-border);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   border-radius: var(--btn-border-radius);
   box-shadow: none;
 }
@@ -447,7 +447,7 @@
   gap: 0.3rem;
   font-size: var(--large-font);
   font-weight: 400;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .headerServingsCount {
@@ -614,7 +614,7 @@
   height: 0;
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
-  border-bottom: 14px solid var(-border);
+  border-bottom: 14px solid var(--clr-success-border);
   animation: micArrowBounce 1s ease-in-out infinite;
   z-index: 10;
 }
@@ -638,7 +638,7 @@
   bottom: calc(1.5rem + env(safe-area-inset-bottom, 0px));
   left: 50%;
   transform: translateX(-50%);
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border: 2px solid #9810fa;
   border-radius: 14px;
   padding: 1.2rem 1.4rem;
@@ -671,7 +671,7 @@
   background: none;
   border: none;
   font-size: 1.5rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   padding: 0.2em;
   line-height: 1;
@@ -741,7 +741,7 @@
   /* background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%); */
   border-radius: 16px;
   /* box-shadow: 0 2px 8px rgba(3, 105, 161, 0.08); */
-  /* border: 1px solid var(--border-color); */
+  /* border: 1px solid var(--clr-border-light); */
   border: none;
   box-shadow: none;
   position: relative;
@@ -773,20 +773,20 @@
   display: flex;
   align-items: center;
   gap: 0rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: var(--btn-border-radius);
   padding: 0.6rem 0.8rem;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
 }
 .timerControlsFrame button {
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   width: 32px;
   height: 32px;
 }
 
 .timerLabel {
   font-size: var(--basic-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   white-space: nowrap;
   padding: 0 0 0 1em;
 }
@@ -807,10 +807,10 @@
   align-items: center;
   column-gap: 10px;
   padding: 0.45rem 0.75rem;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: var(--btn-border-radius);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.07);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   font-variant-numeric: tabular-nums;
 }
 
@@ -832,7 +832,7 @@
 }
 
 .timerClockIcon {
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .timerRemoveBtn {
@@ -842,7 +842,7 @@
   padding: 2px;
   display: flex;
   align-items: center;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 .timerRemoveBtn:hover {
@@ -873,7 +873,7 @@
   min-width: 40px;
   text-align: center;
   background: var(--bg-main);
-  /* border: 1px solid var(--border-color); */
+  /* border: 1px solid var(--clr-border-light); */
   /* border-radius: 8px; */
   border: none;
   padding: 0.2rem 0.4rem;
@@ -897,7 +897,7 @@
 .stopButton {
   padding: 0.6em 1.2em;
   font-size: var(--small-font);
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   color: var(--clr-btn-main-bg);
   border: 1px solid var(--clr-btn-main-bg);
   border-radius: var(--btn-border-radius);
@@ -913,7 +913,7 @@
 .startButton:hover {
   /* background: #547a8e; */
   /* color: white; */
-  opacity: var(--hover-opacity) !important;
+  /* opacity: var(--hover-opacity) !important; */
 }
 
 .stopButton {
@@ -958,7 +958,7 @@
 
 .completionMessage {
   font-size: var(--basic-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   margin-bottom: 2rem;
 }
 

@@ -93,7 +93,7 @@ function RecipeListSkeleton() {
         gap: "1rem",
         padding: "0.75rem 1rem",
         marginBottom: "0.5rem",
-        background: "var(--bg-card)",
+        background: "var(--clr-bg-card)",
         borderRadius: 4,
         boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
       }}
@@ -349,7 +349,7 @@ function RecipeDetailSkeleton() {
               display: "flex",
               gap: "1rem",
               marginBottom: "1rem",
-              borderBottom: "1px solid var(--border-color)",
+              borderBottom: "1px solid var(--clr-border-light)",
               paddingBottom: "0.75rem",
             }}
           >
@@ -450,8 +450,8 @@ function App() {
     <QueryClientProvider client={queryClient}>
       <LanguageProvider>
         <SkeletonTheme
-          baseColor="var(--border-color)"
-          highlightColor="var(--bg-hover)"
+          baseColor="var(--clr-border-light)"
+          highlightColor="var(--clr-bg-hover)"
         >
           <RecipeBookProvider>
             <Router>

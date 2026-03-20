@@ -12,7 +12,7 @@
 
 .resultsCount {
   font-size: var(--basic-font);
-  /* color: var(--text-muted); */
+  /* color: var(--clr-text-muted); */
   color: var(--clr-text-primary);
   margin-bottom: 0.75rem;
   padding-inline-start: 0.25rem;
@@ -29,7 +29,7 @@
 
 .emptyHint {
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   margin: 0;
   line-height: 1.6;
 }
@@ -54,7 +54,7 @@
 
 .noResultsHint {
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   margin: 0;
   line-height: 1.6;
 }

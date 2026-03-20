@@ -3,7 +3,7 @@
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
-  background: var(--bg-primary);
+  background: var(--clr-bg-primary);
 }
 
 .contentWrapper {
@@ -38,7 +38,7 @@
   flex: 1;
   display: flex;
   justify-content: center;
-  background-color: var(--bg-primary);
+  background-color: var(--clr-bg-primary);
   padding: 1.5rem;
   padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
 }
@@ -70,7 +70,7 @@
 .loading {
   min-height: 100vh;
   min-height: 100dvh;
-  background-color: var(--bg-primary);
+  background-color: var(--clr-bg-primary);
   max-width: 1200px;
   margin: 0 auto;
   padding: 0 1.5rem 1.5rem 1.5rem;
@@ -135,7 +135,7 @@
   width: 100vw;
   background: linear-gradient(
     135deg,
-    var(--bg-primary) 0%,
+    var(--clr-bg-primary) 0%,
     var(--bg-tertiary) 100%
   );
 }
@@ -210,7 +210,7 @@
 }
 
 .convContent {
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 12px;
   padding: 1.5rem;
   box-shadow: var(--shadow-md, 0 1px 6px rgba(0, 0, 0, 0.06));
@@ -240,8 +240,8 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem 1.2rem;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
   border-radius: 12px;
 }
 
@@ -266,8 +266,8 @@
 }
 
 .mealDayCard {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
   border-radius: 12px;
   display: flex;
   flex-direction: column;
@@ -284,7 +284,7 @@
 
 .mealBlock {
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
 }
@@ -298,15 +298,15 @@
 
 .shopHeaderBlock {
   background: var(--bg-tertiary);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 16px;
   padding: 1.5rem;
   margin-bottom: 1rem;
 }
 
 .shopCatList {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color, var(--border-color));
+  background: var(--clr-bg-card);
+  border: 1px solid var(--border-color, var(--clr-border-light));
   border-radius: 12px;
   overflow: hidden;
 }
@@ -316,7 +316,7 @@
   align-items: center;
   gap: 0.8rem;
   padding: 0.7rem 1rem;
-  border-bottom: 1px solid var(--border-color, var(--border-color));
+  border-bottom: 1px solid var(--border-color, var(--clr-border-light));
 }
 
 .shopCatRow:last-child {
@@ -331,7 +331,7 @@
   display: flex;
   justify-content: center;
   padding: 1.5rem;
-  background: var(--bg-primary);
+  background: var(--clr-bg-primary);
 }
 
 .detailSkeleton {
@@ -344,7 +344,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  background: var(--bg-primary);
+  background: var(--clr-bg-primary);
 }
 
 .detailActionBar {
@@ -352,7 +352,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .detailBody {

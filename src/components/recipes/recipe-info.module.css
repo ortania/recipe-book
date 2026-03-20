@@ -1,9 +1,9 @@
 .contactCard {
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 16px;
   padding: 1.5rem;
   box-shadow: var(--shadow-md);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   transition:
     transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
     box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1),
@@ -47,7 +47,7 @@
   height: 100px;
   border-radius: 12px;
   object-fit: cover;
-  border: 3px solid var(--border-color);
+  border: 3px solid var(--clr-border-light);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   transition:
     transform 0.3s ease,
@@ -74,7 +74,7 @@
 .contactCard p:nth-of-type(2),
 .contactCard p:nth-of-type(3) {
   font-size: 1.2rem;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .groupTags {
@@ -127,13 +127,13 @@
   background: var(--bg-tertiary);
   border-radius: 10px;
   margin: 0.5rem 0;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
 }
 
 .infoItem {
   font-size: var(--very-small-font);
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   display: flex;
   align-items: center;
   gap: 0.35rem;

@@ -1,23 +1,23 @@
 .inputForm {
   padding: 0.75rem 0 1.25rem;
-  background: var(--bg-primary);
+  background: var(--clr-bg-primary);
   z-index: 100;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--clr-border-light);
   flex-shrink: 0;
 }
 
 .inputWrap {
   display: flex;
   align-items: center;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 24px;
   padding: 0.4rem;
-  background: var(--bg-input);
+  background: var(--clr-input-bg);
   transition: border-color 0.2s ease;
 }
 
 .inputWrap:focus-within {
-  border-color: var(--border-color);
+  border-color: var(--clr-border-light);
 }
 
 .input {
@@ -37,7 +37,7 @@
 }
 
 .input::placeholder {
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 .input:disabled {
@@ -53,7 +53,7 @@
 .imageBtn {
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -67,7 +67,7 @@
 
 .imageBtn:hover:not(:disabled) {
   color: var(--clr-text-primary);
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .sendBtn {
@@ -114,7 +114,7 @@
 .micBtn {
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -128,7 +128,7 @@
 
 .micBtn:hover:not(:disabled) {
   color: var(--clr-text-primary);
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .micActive {
@@ -149,7 +149,7 @@
 .clearBtn {
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;

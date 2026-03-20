@@ -16,6 +16,6 @@
 }
 
 .backButton:hover {
-  opacity: var(--hover-opacity);
-  transform: scale(1.2);
+  /* opacity: var(--hover-opacity); */
+  transform: var(--scale);
 }

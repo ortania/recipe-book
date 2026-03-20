@@ -7,7 +7,7 @@
   gap: 16px;
   padding: 0 16px 16px 16px;
   background-color: inherit;
-  border-inline-end: 1px solid var(--border-color);
+  border-inline-end: 1px solid var(--clr-border-light);
   min-width: 250px;
   align-self: flex-start;
 }
@@ -15,8 +15,8 @@
 .groupActions {
   padding-bottom: 16px;
   padding-top: 16px;
-  border-bottom: 1px solid var(--border-color);
-  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
+  border-top: 1px solid var(--clr-border-light);
   display: flex;
   gap: 8px;
   align-items: center;
@@ -65,7 +65,7 @@
 }
 
 .addCategoryBtn:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
   transform: scale(1.02);
 }
 
@@ -106,7 +106,7 @@
 }
 
 .groupButton:hover {
-  background-color: var(--bg-hover);
+  background-color: var(--clr-bg-hover);
   transform: translateX(4px);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
@@ -204,11 +204,11 @@
 }
 
 .reorderButton {
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .reorderButton:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
   color: var(--clr-text-primary);
 }
 
@@ -219,8 +219,8 @@
 
 .editButton,
 .deleteButton {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
   border-radius: 6px;
   padding: 0.4rem 0.6rem;
   cursor: pointer;
@@ -247,12 +247,12 @@
 .conversationsSection {
   margin-top: auto;
   padding: 1rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--clr-border-light);
 }
 
 .conversationsTab {
   padding: 0.75rem 1rem;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 8px;
   font-weight: 600;
   color: var(--clr-text-primary);
@@ -262,14 +262,14 @@
 
 .conversationsSeparator {
   height: 1px;
-  background: var(--border-color);
+  background: var(--clr-border-light);
   margin: 0.75rem 0;
 }
 
 .chatLogLabel {
   padding: 0.5rem 1rem;
   font-size: 0.9rem;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-weight: 500;
 }
 
@@ -361,7 +361,7 @@
   }
 
   .mobileToggle:hover {
-    background: var(--bg-hover);
+    background: var(--clr-bg-hover);
   }
 
   .categoriesContent {
@@ -370,8 +370,8 @@
     left: 0;
     right: 0;
     z-index: 10001;
-    background: var(--bg-card);
-    border-bottom: 1px solid var(--border-color);
+    background: var(--clr-bg-card);
+    border-bottom: 1px solid var(--clr-border-light);
     max-height: 0;
     overflow: hidden;
     transition: max-height 0.3s ease;
@@ -394,7 +394,7 @@
   .groupActions {
     padding-top: 1rem;
     padding-bottom: 0;
-    border-top: 1px solid var(--border-color);
+    border-top: 1px solid var(--clr-border-light);
     border-bottom: none;
   }
 

@@ -45,7 +45,7 @@
 .hint {
   margin: 0;
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 .viewToggleBtn {
@@ -65,7 +65,7 @@
 }
 
 .viewToggleBtn:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 @media (min-width: 769px) {
@@ -78,7 +78,7 @@
 
   .viewToggleBtn:hover {
     background: none;
-    opacity: var(--hover-opacity);
+    /* opacity: var(--hover-opacity); */
   }
 }
 
@@ -94,7 +94,7 @@
 
 .activeCount {
   font-size: var(--basic-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-weight: 500;
 }
 
@@ -105,19 +105,20 @@
   font-weight: 500;
   padding: 0.5em 1em;
   transition: 0.2s ease;
-  /* background: var(--bg-primary); */
+  /* background: var(--clr-bg-primary); */
   /* border-radius: var(--btn-border-radius);
-  border: 2px solid var(--border-color); */
+  border: 2px solid var(--clr-border-light); */
   background: none;
   border: none;
   display: flex;
   align-items: center;
   gap: 0.5rem;
   text-decoration: underline;
+  text-decoration-color: currentColor;
 }
 
 .clearBtn:hover {
-  opacity: var(--hover-opacity);
+  transform: var(--link-transform-hover)
 }
 
 .list {
@@ -146,7 +147,7 @@
 }
 
 .item:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .item:active {
@@ -185,7 +186,7 @@
 
 .count {
   font-size: var(--basic-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   flex-shrink: 0;
   min-width: 1.5em;
   text-align: center;
@@ -199,9 +200,9 @@
   padding: 0.7rem 1rem;
   margin-top: 0.5rem;
   background: none;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 10px;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   font-weight: 700;
   flex-shrink: 0;
@@ -212,7 +213,7 @@
 }
 
 .manageBtn:hover {
-  opacity: var(--hover-opacity);
+  /* opacity: var(--hover-opacity); */
 }
 
 .cardsGrid {

@@ -22,10 +22,10 @@
 /* Disabled button styles */
 .disabled {
   background-color: var(--bg-tertiary) !important;
-  color: var(--text-muted) !important;
+  color: var(--clr-text-muted) !important;
   cursor: not-allowed !important;
   transform: none !important;
-  border-color: var(--border-color) !important;
+  border-color: var(--clr-border-light) !important;
 }
 
 .disabled:hover {

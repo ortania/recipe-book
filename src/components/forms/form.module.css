@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  background-color: var(--bg-card);
+  background-color: var(--clr-bg-card);
   padding: 2rem;
   border-radius: 8px;
   box-shadow: var(--shadow-sm);
@@ -21,7 +21,7 @@
 .form input {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 4px;
   font-size: var(--basic-font);
   user-select: text;
@@ -29,7 +29,7 @@
 
 .form input:focus {
   outline: none;
-  border-color: var(--bg-accent-primary);
+  border-color: var(--clr-accent-primary);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
 }
 
@@ -51,12 +51,12 @@
 }
 
 .submitBtn {
-  background-color: var(--bg-accent-primary);
+  background-color: var(--clr-accent-primary);
   color: white;
 }
 
 .submitBtn:hover {
-  background-color: var(--bg-accent-primary);
+  background-color: var(--clr-accent-primary);
 }
 
 .cancelBtn {
@@ -65,7 +65,7 @@
 }
 
 .cancelBtn:hover {
-  background-color: var(--bg-hover);
+  background-color: var(--clr-bg-hover);
 }
 
 /* Additional styles for groups section in edit form */
@@ -108,9 +108,9 @@
 .select {
   width: 100%;
   padding: 8px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 4px;
-  background-color: var(--bg-card);
+  background-color: var(--clr-bg-card);
   min-height: 100px;
   margin-bottom: 1rem;
 }
@@ -158,7 +158,7 @@
 .textarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 4px;
   font-size: var(--basic-font);
   font-family: inherit;
@@ -168,7 +168,7 @@
 
 .textarea:focus {
   outline: none;
-  border-color: var(--border-accent-primary);
+  border-color: var(--clr-border-accent-primary);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
 }
 
@@ -195,13 +195,13 @@
   padding: 1rem;
   background-color: var(--bg-tertiary);
   border-radius: 4px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
 }
 
 .urlInput {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 4px;
   font-size: var(--basic-font);
 }
@@ -234,7 +234,7 @@
 }
 
 .importSubmitBtn:disabled {
-  background-color: var(--border-color);
+  background-color: var(--clr-border-light);
   cursor: not-allowed;
 }
 
@@ -251,7 +251,7 @@
 }
 
 .importCancelBtn:hover {
-  background-color: var(--bg-hover);
+  background-color: var(--clr-bg-hover);
 }
 
 .errorMessage {
@@ -266,14 +266,14 @@
 
 .divider {
   height: 1px;
-  background-color: var(--border-color);
+  background-color: var(--clr-border-light);
   margin: 0.5rem 0;
 }
 
 .pasteTextarea {
   width: 100%;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 4px;
   font-size: var(--very-small-font);
   font-family: inherit;
@@ -327,8 +327,8 @@
 .tabActive {
   flex: 1;
   padding: 0.5rem 1rem;
-  border: 1px solid var(--border-color);
-  background-color: var(--bg-card);
+  border: 1px solid var(--clr-border-light);
+  background-color: var(--clr-bg-card);
   border-radius: 4px;
   font-size: var(--very-small-font);
   cursor: pointer;
@@ -336,7 +336,7 @@
 }
 
 .tab:hover {
-  background-color: var(--bg-hover);
+  background-color: var(--clr-bg-hover);
 }
 
 .tabActive {
@@ -354,7 +354,7 @@
   padding: 1rem;
   background-color: var(--bg-tertiary);
   border-radius: 8px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
 }
 
 .listHeader {
@@ -394,7 +394,7 @@
 .dragHandle {
   display: flex;
   align-items: center;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: grab;
   padding: 0.5rem 0.25rem;
   font-size: var(--basic-font);
@@ -405,40 +405,40 @@
 }
 
 .itemRow:hover .dragHandle {
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .itemInput {
   flex: 1;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 4px;
   font-size: var(--basic-font);
-  background-color: var(--bg-card);
+  background-color: var(--clr-bg-card);
   user-select: text;
 }
 
 .itemInput:focus {
   outline: none;
-  border-color: var(--border-accent-primary);
+  border-color: var(--clr-border-accent-primary);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
 }
 
 .itemTextarea {
   flex: 1;
   padding: 0.75rem 1rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 4px;
   font-size: var(--basic-font);
   font-family: inherit;
   resize: vertical;
-  background-color: var(--bg-card);
+  background-color: var(--clr-bg-card);
   user-select: text;
 }
 
 .itemTextarea:focus {
   outline: none;
-  border-color: var(--border-accent-primary);
+  border-color: var(--clr-border-accent-primary);
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
 }
 
@@ -462,7 +462,7 @@
   max-height: 200px;
   object-fit: cover;
   border-radius: 8px;
-  border: 2px solid var(--border-color);
+  border: 2px solid var(--clr-border-light);
   margin-top: 0.5rem;
 }
 
@@ -495,10 +495,10 @@
 .difficultySelect {
   width: 100%;
   padding: 0.75rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 8px;
   font-size: var(--basic-font);
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   cursor: pointer;
   transition: border-color 0.2s ease;
 }
@@ -514,7 +514,7 @@
   padding: 1rem;
   background-color: var(--bg-tertiary);
   border-radius: 8px;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
 }
 
 .nutritionGrid {
@@ -532,13 +532,13 @@
 
 .nutritionField label {
   font-size: var(--basic-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-weight: 500;
 }
 
 .nutritionField input {
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 4px;
   font-size: var(--mall-font);
   direction: rtl;
@@ -553,13 +553,13 @@
 
 .nutritionNoteField label {
   font-size: var(--basic-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-weight: 500;
 }
 
 .nutritionNoteField input {
   padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 4px;
   font-size: var(--small-font);
   direction: rtl;

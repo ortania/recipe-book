@@ -2,7 +2,7 @@
   position: fixed;
   bottom: 2rem;
   right: 2rem;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border: 2px solid #4ecdc4;
   border-radius: 0.5rem;
   padding: 1.5rem;
@@ -99,13 +99,13 @@
 .categoriesList {
   margin-top: 1rem;
   padding-top: 1rem;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--clr-border-light);
 }
 
 .categoriesList h4 {
   margin: 0 0 0.75rem 0;
   font-size: 1rem;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .categoriesList ul {
@@ -118,7 +118,7 @@
 .categoriesList li {
   margin-bottom: 0.5rem;
   font-size: 0.875rem;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .categoriesList li strong {

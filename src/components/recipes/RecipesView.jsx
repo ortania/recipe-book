@@ -1010,7 +1010,7 @@ function RecipesView({
                       gap: "1rem",
                       padding: "0.75rem 1rem",
                       marginBottom: "0.5rem",
-                      background: "var(--bg-card)",
+                      background: "var(--clr-bg-card)",
                       borderRadius: 4,
                       boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                     }}
@@ -1390,7 +1390,7 @@ function RecipesView({
                       gap: "1rem",
                       padding: "0.75rem 1rem",
                       marginBottom: "0.5rem",
-                      background: "var(--bg-card)",
+                      background: "var(--clr-bg-card)",
                       borderRadius: 4,
                       boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
                     }}

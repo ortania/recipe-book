@@ -9,7 +9,7 @@
   width: 100vw;
   background: linear-gradient(
     135deg,
-    var(--bg-primary) 0%,
+    var(--clr-bg-primary) 0%,
     var(--bg-tertiary) 100%
   );
   padding: 2rem;
@@ -97,7 +97,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   font-size: var(--basic-font);
 }
 
@@ -106,7 +106,7 @@
   content: "";
   flex: 1;
   height: 1px;
-  background: var(--border-color);
+  background: var(--clr-border-light);
 }
 
 .googleBtn {
@@ -116,7 +116,7 @@
   gap: 0.75rem;
   width: 100%;
   padding: 0.85rem 1.2rem;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: var(--btn-border-radius);
   background: var(--clr-input-bg);
   color: var(--clr-text-primary);
@@ -176,14 +176,14 @@
 /* Note: .error keeps red tones as intentional error styling */
 
 .landingCard {
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 24px;
   padding: 3rem 2.5rem;
   max-width: 420px;
   width: 100%;
   text-align: center;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -297,7 +297,7 @@
 
 .subtitle {
   text-align: center;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   margin: 0 0 1rem 0;
   line-height: 1.5;
@@ -316,7 +316,7 @@
 }
 
 .backButton:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
@@ -334,6 +334,7 @@
   font-size: var(--large-font);
   cursor: pointer;
   text-decoration: underline;
+  text-decoration-color: currentColor;
   margin-top: 0.5rem;
   transition: var(--transition);
   align-self: flex-start;

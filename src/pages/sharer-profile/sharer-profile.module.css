@@ -24,8 +24,8 @@
   height: 66px;
   min-width: 66px;
   border-radius: 15px;
-  background: var(--bg-accent-primary);
-  /* background: var(--bubble-avatar); */
+  background: var(--clr-accent-primary);
+  /* background: var(--clr-bubble-avatar-bg); */
   color: #fff;
   display: flex;
   align-items: center;
@@ -52,7 +52,7 @@
   gap: 0.4rem;
   padding: 0.5em 1.2em;
   border-radius: var(--btn-border-radius);
-  border: 1.5px solid var(--border-accent-primary);
+  border: 1.5px solid var(--clr-border-accent-primary);
   background: transparent;
   color: var(--clr-text-primary);
   font-size: var(--basic-font);
@@ -62,7 +62,7 @@
 }
 
 .followBtn:hover {
-  opacity: var(--hover-opacity);
+  /* opacity: var(--hover-opacity); */
 }
 .followBtnActive {
   background: var(--clr-success-bg-hover);
@@ -71,7 +71,7 @@
 }
 
 .followBtnActive:hover {
-  opacity: var(--hover-opacity);
+  /* opacity: var(--hover-opacity); */
   background: var(--clr-success-bg-hover);
   color: var(--clr-btn-main-text);
 }

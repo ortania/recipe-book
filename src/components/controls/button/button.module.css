@@ -33,12 +33,12 @@
 }
 
 .favorite {
-  background-color: var(--bg-card);
+  background-color: var(--clr-bg-card);
   border: 1px solid #ffd700 !important;
   color: var(--clr-text-primary);
 }
 
 .favorite:hover {
-  background-color: var(--bg-hover);
+  background-color: var(--clr-bg-hover);
   border-color: #ffcc00;
 }

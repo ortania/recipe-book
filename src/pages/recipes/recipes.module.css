@@ -45,7 +45,7 @@
 }
 
 .confirmDialog {
-  background-color: var(--bg-card);
+  background-color: var(--clr-bg-card);
   padding: 2rem;
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
@@ -75,7 +75,7 @@
   padding: 0.5em 1em;
   background-color: var(--bg-tertiary);
   color: var(--clr-text-primary);
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 4px;
   cursor: pointer;
   font-size: var(--basic-font);
@@ -94,7 +94,7 @@
 }
 
 .cancelButton:hover {
-  background-color: var(--bg-hover);
+  background-color: var(--clr-bg-hover);
 }
 
 .confirmButton:hover {

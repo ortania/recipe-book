@@ -3,10 +3,10 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.5em 1em;
-  border: 1px solid var(--border-color);
+  border: 1px solid var(--clr-border-light);
   border-radius: 20px;
-  background: var(--bg-card);
-  color: var(--text-secondary);
+  background: var(--clr-bg-card);
+  color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   font-weight: 500;
   cursor: pointer;
@@ -15,8 +15,8 @@
 }
 
 .exportButton:hover {
-  background: var(--bg-hover);
-  border-color: var(--border-color);
+  background: var(--clr-bg-hover);
+  border-color: var(--clr-border-light);
   color: var(--clr-text-primary);
 }
 
@@ -43,8 +43,8 @@
   display: inline-block;
   width: 16px;
   height: 16px;
-  border: 2px solid var(--border-color);
-  border-top-color: var(--border-accent-primary);
+  border: 2px solid var(--clr-border-light);
+  border-top-color: var(--clr-border-accent-primary);
   border-radius: 50%;
   animation: spin 0.6s linear infinite;
 }
@@ -73,7 +73,7 @@
 }
 
 .menuItem:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .menuItem:disabled {
@@ -88,7 +88,7 @@
 
 .menuItemIcon {
   font-size: 1.7rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   flex-shrink: 0;
   display: flex;
   align-items: center;

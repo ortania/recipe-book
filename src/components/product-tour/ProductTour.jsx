@@ -180,7 +180,7 @@ function OnboardingScene({ screenKey, t }) {
   };
   const subtitleStyle = {
     fontSize: "1.7rem",
-    color: "var(--text-secondary)",
+    color: "var(--clr-text-secondary)",
     margin: 0,
     textAlign: "center",
     maxWidth: 340,
@@ -246,7 +246,7 @@ function OnboardingScene({ screenKey, t }) {
           <span
             style={{
               fontSize: "1.5rem",
-              color: "var(--text-secondary)",
+              color: "var(--clr-text-secondary)",
               textAlign: "center",
             }}
           >

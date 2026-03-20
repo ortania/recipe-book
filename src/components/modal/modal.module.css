@@ -12,7 +12,7 @@
 }
 
 .modalContent {
-  background-color: var(--bg-card);
+  background-color: var(--clr-bg-card);
   padding: 2rem;
   border-radius: 20px;
   box-shadow: 0 0.625rem 2.5rem rgba(0, 0, 0, 0.3);
@@ -24,7 +24,7 @@
 
 @media screen and (max-width: 768px) {
   .modalOverlay {
-    background-color: var(--bg-primary);
+    background-color: var(--clr-bg-primary);
   }
 
   .modalContent {

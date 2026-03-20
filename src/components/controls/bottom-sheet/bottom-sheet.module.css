@@ -19,7 +19,7 @@
 .sheet {
   position: relative;
   z-index: 1;
-  background: var(--bg-primary);
+  background: var(--clr-bg-primary);
   border-radius: 16px 16px 0 0;
 
   max-block-size: 88dvh;
@@ -80,7 +80,7 @@
   background: none;
   border: none;
   font-size: 1.3rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   padding: 0.25em;
   line-height: 1;

@@ -5,8 +5,8 @@
 .trigger {
   padding: 0.5em 0.75em;
   line-height: 1.5;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
   border-radius: 20px;
   font-size: var(--basic-font);
   font-weight: 400;
@@ -22,7 +22,7 @@
 }
 
 .trigger:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .hideOnMobile {
@@ -44,8 +44,8 @@
 
 .dropdownMenu {
   position: fixed;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
   border-radius: 8px;
   box-shadow: var(--shadow-md);
   min-width: 200px;
@@ -72,13 +72,13 @@
   width: 100%;
   padding: 0.75rem 1rem;
   border: none;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   color: var(--clr-text-primary);
   text-align: start;
   cursor: pointer;
   font-size: var(--small-font);
   transition: background 0.2s ease;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .dropdownMenu .dropdownClose button {
@@ -95,7 +95,7 @@
 }
 
 .dropdownMenu button:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 @media (max-width: 768px) {
@@ -143,7 +143,7 @@
     display: block;
     width: 36px;
     height: 4px;
-    background: var(--border-color);
+    background: var(--clr-border-light);
     border-radius: 2px;
     margin: 0.5rem auto 0.25rem;
     flex-shrink: 0;
@@ -151,7 +151,7 @@
 
   .dropdownClose {
     flex-shrink: 0;
-    background: var(--bg-card);
+    background: var(--clr-bg-card);
     padding: 0.4rem 0.8rem 0.2rem;
   }
 

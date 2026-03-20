@@ -5,12 +5,12 @@
   height: 100vh;
   height: 100dvh;
   width: 230px;
-  background: var(--bg-sidebar);
+  background: var(--clr-bg-sidebar);
   display: flex;
   flex-direction: column;
   padding: 2rem 1rem;
   box-shadow: none;
-  border-inline-end: 1px solid var(--border-color);
+  border-inline-end: 1px solid var(--clr-border-light);
   z-index: 1000;
   overflow: hidden;
   transition:
@@ -51,7 +51,7 @@
 .logo {
   font-size: 1.9rem;
   font-weight: 400;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   padding: 0 0 1.5rem 1rem;
   margin-bottom: 1rem;
   letter-spacing: 0;
@@ -111,11 +111,11 @@
 }
 
 .navLink:hover {
-  background-color: var(--bg-hover);
+  background-color: var(--clr-bg-hover);
 }
 
 .active {
-  background-color: var(--bg-hover);
+  background-color: var(--clr-bg-hover);
   font-weight: 700;
 
   /* color: var(--clr-success-text); */
@@ -144,7 +144,7 @@
   flex: 1;
   background: transparent;
   border: none;
-  /* color: var(--text-muted); */
+  /* color: var(--clr-text-muted); */
   color: var(--clr-text-primary);
   padding: 0.5rem 1rem;
   padding-right: 0;
@@ -160,7 +160,7 @@
 }
 
 .sectionHeaderBtn:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .sectionHeaderBtn span {
@@ -172,7 +172,7 @@
 .clearCategoriesBtn {
   background: none;
   border: none;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   font-size: 1.5rem;
   cursor: pointer;
   padding: 0.3em 0.6em;
@@ -183,12 +183,12 @@
 
 .clearCategoriesBtn:hover {
   color: var(--clr-text-primary);
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .sectionCount {
   font-weight: 400;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   font-size: var(--small-font);
 }
 
@@ -198,7 +198,7 @@
 
 .chevron {
   font-size: 1.3rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 .categoryList {
@@ -236,7 +236,7 @@
 }
 
 .categoryItem:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .categoryActive {
@@ -269,7 +269,7 @@
 
 .categoryCount {
   font-size: var(--small-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   margin-inline-start: auto;
   flex-shrink: 0;
 }
@@ -285,7 +285,7 @@
 .categoryActionBtn {
   background: transparent;
   border: none;
-  /* color: var(--text-muted); */
+  /* color: var(--clr-text-muted); */
   color: var(--clr-text-primary);
   font-size: var(--basic-font);
   /* font-weight: 600; */
@@ -306,7 +306,7 @@
   align-items: center;
   gap: 1rem;
   padding: 0.75rem 1rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   font-size: var(--basic-font);
   font-weight: 500;
   border-radius: 8px;
@@ -347,7 +347,7 @@
 }
 
 .chatHistoryItem:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
   color: var(--clr-text-primary);
 }
 
@@ -365,7 +365,7 @@
 }
 
 .chatPopup {
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 12px;
   width: 90%;
   max-width: 600px;
@@ -380,7 +380,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .chatPopupHeader h3 {
@@ -393,7 +393,7 @@
   background: transparent;
   border: none;
   font-size: 1.5rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   padding: 0.25rem 0.5rem;
   border-radius: 4px;
@@ -401,7 +401,7 @@
 }
 
 .closePopup:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .chatPopupContent {
@@ -425,7 +425,7 @@
 .chatQuestion p,
 .chatAnswer p {
   margin: 0;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   line-height: 1.6;
   white-space: pre-wrap;
 }
@@ -434,7 +434,7 @@
   background: var(--bg-tertiary);
   padding: 1rem;
   /* border-radius: 8px; */
-  border-inline-start: 2px solid var(--border-accent-primary);
+  border-inline-start: 2px solid var(--clr-border-accent-primary);
 }
 
 .chatLogHeader {
@@ -455,7 +455,7 @@
 }
 
 .chatLogHeader:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .chatLogHeader span {
@@ -482,7 +482,7 @@
 }
 
 .chatLogItem:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .chatLogTitle {
@@ -497,7 +497,7 @@
 
 .chatLogDate {
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 /* ===== Chat History Popup/Modal Content ===== */
@@ -525,7 +525,7 @@
 .chatHistoryEmpty {
   padding: 2rem 1.25rem;
   text-align: center;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   font-size: var(--basic-font);
 }
 
@@ -539,7 +539,7 @@
 }
 
 .chatAccordionItem {
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .chatAccordionItem:last-child {
@@ -583,7 +583,7 @@
 }
 
 .chatModalContent {
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 12px;
   width: 100%;
   max-width: 600px;
@@ -598,7 +598,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--clr-border-light);
 }
 
 .chatModalHeader h3 {
@@ -612,7 +612,7 @@
   background: none;
   border: none;
   font-size: 1.2rem;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
   cursor: pointer;
   padding: 0.25rem;
   display: flex;
@@ -643,7 +643,7 @@
 .messageRole {
   font-size: var(--very-small-font);
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--clr-text-secondary);
 }
 
 .userMessage .messageRole {
@@ -676,13 +676,13 @@
   padding: 0.75rem 1rem;
   text-align: center;
   font-size: var(--very-small-font);
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 .userInfo {
   padding: 1rem;
   margin-top: auto;
-  border-top: 1px solid var(--border-color);
+  border-top: 1px solid var(--clr-border-light);
   margin-bottom: 0.5rem;
   display: flex;
   align-items: center;
@@ -697,7 +697,7 @@
 }
 
 .userName {
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   font-size: var(--basic-font);
   font-weight: 400;
 }
@@ -709,7 +709,7 @@
 .logoutButton {
   background: transparent;
   border: none;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   padding: 0.65rem 0rem;
   font-size: var(--basic-font);
   cursor: pointer;
@@ -723,7 +723,7 @@
 }
 
 .logoutButton:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .logoutButton:active {
@@ -743,7 +743,7 @@
 }
 
 .hamburger:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .overlay {
@@ -755,7 +755,7 @@
 }
 
 .sidebarCloseBtn {
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
 }
 
 /* Hide top bar when modal is open on any screen size */
@@ -777,7 +777,7 @@
     left: 0;
     right: 0;
     z-index: 10002;
-    background: var(--bg-primary);
+    background: var(--clr-bg-primary);
     padding: 0.6rem 1rem;
     padding-top: calc(0.6rem + env(safe-area-inset-top, 0px));
     gap: 0.5rem;
@@ -914,7 +914,7 @@
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: var(--bg-primary);
+  background: var(--clr-bg-primary);
   border-radius: 14px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
   z-index: 10200;
@@ -961,7 +961,7 @@
   justify-content: center;
   background: none;
   border: none;
-  color: var(--text-muted);
+  color: var(--clr-text-muted);
   cursor: pointer;
   padding: 0.3rem;
   border-radius: 6px;
@@ -969,7 +969,7 @@
 }
 
 .catPopupClose:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
   color: var(--clr-text-primary);
 }
 

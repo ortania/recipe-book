@@ -7,7 +7,7 @@
   position: absolute;
   top: calc(100% + 0.5rem);
   inset-inline-start: 0;
-  background: var(--bg-card);
+  background: var(--clr-bg-card);
   border-radius: 18px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
   z-index: 1000;
@@ -49,7 +49,7 @@
 }
 
 .dropdownItem:hover {
-  background: var(--bg-hover);
+  background: var(--clr-bg-hover);
 }
 
 .dropdownLabel {
@@ -69,7 +69,7 @@
 
 .dropdownIcon {
   font-size: 2rem;
-  /* color: var(--text-muted); */
+  /* color: var(--clr-text-muted); */
   flex-shrink: 0;
   display: flex;
   align-items: center;
