@@ -53,23 +53,6 @@ function EditCategory({ category, onSave, onCancel }) {
           value={groupDescription}
           onChange={(e) => setGroupDescription(e.target.value)}
         />
-        <div className={classes.colorPicker}>
-          <label className={classes.colorLabel}>
-            {t("categories", "color")}
-          </label>
-          <div className={classes.colorOptions}>
-            {COLORS.map((color) => (
-              <button
-                key={color}
-                type="button"
-                className={`${classes.colorButton} ${groupColor === color ? classes.selectedColor : ""}`}
-                style={{ backgroundColor: color }}
-                onClick={() => setGroupColor(color)}
-                title={color}
-              />
-            ))}
-          </div>
-        </div>
         <div className={classes.formButtons}>
           <button
             type="button"

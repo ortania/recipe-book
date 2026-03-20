@@ -4,7 +4,7 @@
   justify-content: center;
   border: none;
   background: none;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: 2.2rem;
   cursor: pointer;
   transition: all 0.3s ease;
@@ -13,7 +13,6 @@
 
 .voiceChatIcon.active {
   /* color: green; */
-  
 }
 
 .voiceChatIcon.speaking {

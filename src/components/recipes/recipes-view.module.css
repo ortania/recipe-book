@@ -22,7 +22,7 @@
 .noResults {
   font-size: 2rem;
   padding: 2rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   text-align: center;
   grid-column: 1 / -1;
   min-height: 200px;

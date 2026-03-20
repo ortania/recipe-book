@@ -22,7 +22,7 @@
 
 .title {
   font-size: var(--very-large-font);
-  color: var(--clr-heading);
+  color: var(--clr-text-heading);
   font-weight: var(--font-weight-heading);
   margin: 0;
 }
@@ -71,7 +71,7 @@
 .settingItemLabel {
   font-size: var(--basic-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .settingItemValue {
@@ -106,7 +106,7 @@
 .modalTitle {
   font-size: var(--large-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
   display: flex;
   align-items: center;
@@ -129,7 +129,7 @@
 
 .fontSizeLabel {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-weight: var(--font-weight-secondary);
 }
 
@@ -155,7 +155,7 @@
 
 .scaleValue {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-weight: var(--font-weight-tertiary);
   text-align: center;
 }
@@ -201,13 +201,13 @@
 
 .previewTitle {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin-bottom: 0.5rem;
 }
 
 .previewText {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   line-height: 1.5;
 }
 
@@ -246,7 +246,7 @@
 
 .languageName {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .resetButton {
@@ -318,11 +318,11 @@
 .privacyLabel {
   font-size: var(--basic-font);
   font-weight: var(--font-weight-tertiary);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 .privacyDesc {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   line-height: 1.4;
 }
 

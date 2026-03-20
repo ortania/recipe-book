@@ -21,7 +21,7 @@
   font-size: var(--large-font);
   font-weight: var(--font-weight-quaternary);
   margin: 0;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .headerSpacer {
@@ -55,7 +55,7 @@
   justify-content: center;
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   padding: 0.25em;
   border-radius: 6px;
@@ -70,7 +70,7 @@
 
 @media (min-width: 769px) {
   .viewToggleBtn {
-    color: var(--icon-primary-color);
+    color: var(--clr-icon-default);
     padding: 0.35em;
     border-radius: 8px;
     transition: var(--transition);
@@ -99,7 +99,7 @@
 }
 
 .clearBtn {
-  color: var(--link-color);
+  color: var(--clr-link);
   cursor: pointer;
   font-size: var(--basic-font);
   font-weight: 500;
@@ -117,10 +117,6 @@
 }
 
 .clearBtn:hover {
-  /* background: var(--bg-hover); */
-  /* border-color: var(--border-accent-primary); */
-  /* color: var(--border-error);
-  border-color: var(--border-error); */
   opacity: var(--hover-opacity);
 }
 
@@ -146,7 +142,7 @@
   cursor: pointer;
   transition: all 0.15s ease;
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .item:hover {
@@ -180,10 +176,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: 8px;
+  width: 18px;
+  height: 18px;
   flex-shrink: 0;
+  background: none;
+  color: var(--clr-text-primary);
 }
 
 .count {

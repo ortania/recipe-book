@@ -26,7 +26,7 @@
   font-size: var(--basic-font);
   outline: none;
   background: var(--bg-input);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   box-sizing: border-box;
   text-overflow: ellipsis;
   transition:
@@ -107,14 +107,14 @@
 
 .clearSearch:hover {
   /* background: var(--border-color); */
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   transform: translateY(-50%) scale(1.1);
 }
 
 .clearSearch:focus {
   outline: none;
   background: var(--border-color);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 @media (max-width: 768px) {

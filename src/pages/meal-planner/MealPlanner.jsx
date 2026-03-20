@@ -274,9 +274,7 @@ function MealPlanner() {
                         <span
                           className={`${classes.shoppingName} ${isChecked ? classes.shoppingNameChecked : ""}`}
                         >
-                          {item.count > 1
-                            ? `${item.totalQty % 1 === 0 ? item.totalQty : item.totalQty.toFixed(1)} ${item.name}`
-                            : item.display}
+                          {item.displayText}
                         </span>
                       </label>
                     );
@@ -356,13 +354,10 @@ function MealPickerWrapper({
               className={classes.catListItem}
               onClick={() => setSelectedCat("all")}
             >
-              <span
-                className={classes.catListIcon}
-                style={{ background: "#6366f122", color: "#6366f1" }}
-              >
+              <span className={classes.catListIcon}>
                 {(() => {
                   const IC = getCategoryIcon("restaurant");
-                  return <IC />;
+                  return <IC size={16} />;
                 })()}
               </span>
               <span className={classes.catListName}>
@@ -380,13 +375,10 @@ function MealPickerWrapper({
                     className={classes.catListItem}
                     onClick={() => setSelectedCat(cat.id)}
                   >
-                    <span
-                      className={classes.catListIcon}
-                      style={{ background: `${cat.color}22`, color: cat.color }}
-                    >
+                    <span className={classes.catListIcon}>
                       {(() => {
                         const IC = getCategoryIcon(cat.icon);
-                        return <IC />;
+                        return <IC size={16} />;
                       })()}
                     </span>
                     <span className={classes.catListName}>

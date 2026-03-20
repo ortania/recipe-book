@@ -67,7 +67,7 @@ export function useTouchDragDrop(onReorder) {
     clone.style.pointerEvents = "none";
     clone.style.transition = "none";
     clone.style.background = "var(--bg-card, white)";
-    clone.style.border = "2px solid var(--active-color-primary)";
+    clone.style.border = "2px solid var(--clr-success)";
     clone.style.transform = "scale(1.02)";
     document.body.appendChild(clone);
 
@@ -77,14 +77,14 @@ export function useTouchDragDrop(onReorder) {
     indicator.style.left = "0";
     indicator.style.right = "0";
     indicator.style.height = "3px";
-    indicator.style.background = "var(--active-color-primary)";
+    indicator.style.background = "var(--clr-success)";
     indicator.style.borderRadius = "2px";
     indicator.style.zIndex = "99998";
     indicator.style.display = "none";
     indicator.style.pointerEvents = "none";
     // Add dot decorations on ends
     indicator.style.boxShadow =
-      "-4px 0 0 0 var(--active-color-primary), 4px 0 0 0 var(--active-color-primary)";
+      "-4px 0 0 0 var(--clr-success), 4px 0 0 0 var(--clr-success)";
     list.style.position = "relative";
     list.appendChild(indicator);
 

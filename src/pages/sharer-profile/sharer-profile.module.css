@@ -37,13 +37,13 @@
 .profileName {
   font-size: var(--huge-font);
   font-weight: var(--font-weight-tertiary);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
 }
 
 .recipeCount {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .followBtn {
@@ -54,7 +54,7 @@
   border-radius: var(--btn-border-radius);
   border: 1.5px solid var(--border-accent-primary);
   background: transparent;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   font-weight: var(--font-weight-tertiary);
   cursor: pointer;
@@ -65,20 +65,20 @@
   opacity: var(--hover-opacity);
 }
 .followBtnActive {
-  background: var(--active-color-secondary);
+  background: var(--clr-success-hover);
   color: var(--text-on-primary);
-  border-color: 1.5px solid var(--active-color-secondary);
+  border-color: 1.5px solid var(--clr-success-hover);
 }
 
 .followBtnActive:hover {
   opacity: var(--hover-opacity);
-  background: var(--active-color-secondary);
+  background: var(--clr-success-hover);
   color: var(--text-on-primary);
 }
 
 .privateNote {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-style: italic;
   margin-top: 0.25rem;
 }

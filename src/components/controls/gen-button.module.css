@@ -7,10 +7,10 @@
   gap: 0.5rem;
   border: none;
   border-radius: var(--btn-border-radius);
-  color: var(--text-on-primary);
-  background: var(--btn-bg-primary);
+  color: var(--clr-btn-main-text);
+  background: var(--clr-btn-main-bg);
   font-size: var(--basic-font);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: var(--clr-btn-main-font-weight);
   cursor: pointer;
   transition: var(--transition);
   padding: 0.8em 1.5em;
@@ -22,7 +22,7 @@
 }
 
 .genButton:hover {
-  background: var(--btn-bg-secondary);
+  background: var(--clr-btn-main-bg-hover);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
@@ -32,9 +32,9 @@
 }
 
 .genButton:hover:not(:disabled) {
-  color: var(--text-on-primary);
-  background: var(--btn-bg-secondary);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  color: var(--clr-btn-main-text);
+  background: var(--clr-btn-main-bg-hover);
+  box-shadow: var(--btn-box-shadow);
 }
 
 /* checkbox */
@@ -47,7 +47,7 @@
   height: 2rem;
   min-width: 2rem;
   min-height: 2rem;
-  border: 0.15rem solid var(--btn-bg-primary);
+  border: 0.15rem solid var(--clr-btn-main-bg);
   border-radius: 0.3rem;
   display: inline-flex;
   align-items: center;
@@ -58,7 +58,7 @@
 }
 
 .checkBox:checked {
-  background-color: var(--btn-bg-primary);
+  background-color: var(--clr-btn-main-bg);
 }
 
 .checkBox:checked::after {
@@ -71,6 +71,6 @@
 }
 
 /* .checkBox:hover {
-  border-color: var(--btn-bg-primary);
+  border-color: var(--clr-btn-main-bg);
   opacity: 0.6;
 } */

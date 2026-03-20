@@ -1355,7 +1355,6 @@ function RecipesView({
                   <button
                     key={cat.id}
                     className={classes.filterChip}
-                    style={{ borderColor: cat.color, color: cat.color }}
                     onClick={() => toggleCategory(cat.id)}
                   >
                     {getTranslatedGroup(cat)} ✕

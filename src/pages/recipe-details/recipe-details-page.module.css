@@ -27,7 +27,7 @@
 .backButton:hover {
   background: var(--bg-hover);
   border-color: var(--border-color);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .loading {

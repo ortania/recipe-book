@@ -84,9 +84,8 @@
 }
 
 .eyeButton:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   background-color: var(--bg-secondary);
-
 }
 
 .eyeButton:disabled {
@@ -139,6 +138,6 @@
 }
 
 .clearButton:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   background-color: var(--bg-secondary);
 }

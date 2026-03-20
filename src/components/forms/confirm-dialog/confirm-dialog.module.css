@@ -5,7 +5,7 @@
 
 .dialog h3 {
   margin: 0 0 0.75rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--large-font);
   font-weight: 700;
 }
@@ -34,7 +34,7 @@
 }
 
 .confirmButton {
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   color: var(--bg-primary);
   border: none;
 }
@@ -45,7 +45,7 @@
 
 .cancelButton {
   background: var(--bg-card);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   border: 1px solid var(--border-color);
 }
 

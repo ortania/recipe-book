@@ -17,8 +17,9 @@
   background: #ffffff;
   border-radius: 20px;
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  transition: left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-              width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition:
+    left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   pointer-events: none;
 }
 
@@ -38,11 +39,11 @@
 }
 
 .toggleButton:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .toggleButton.active {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 @media (max-width: 768px) {

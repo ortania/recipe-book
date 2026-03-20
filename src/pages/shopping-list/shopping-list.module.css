@@ -1,7 +1,7 @@
 .mobileTitle {
   font-size: var(--large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .page {
@@ -31,7 +31,7 @@
 .title {
   font-size: var(--very-large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
   text-align: start;
 }
@@ -55,9 +55,9 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.5em 1.2em;
-  border: 1px solid var(--text-primary);
+  border: 1px solid var(--clr-text-primary);
   border-radius: 6px;
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   color: var(--bg-primary);
   font-size: var(--basic-font);
   cursor: pointer;
@@ -113,7 +113,7 @@
 /* ===== Category List ===== */
 .catList {
   background: var(--bg-card);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -128,7 +128,7 @@
   width: 100%;
   text-align: start;
   cursor: pointer;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
   transition: background 0.15s;
   font-size: var(--basic-font);
 }
@@ -155,7 +155,7 @@
 .catListName {
   flex: 1;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .catListCount {
@@ -212,7 +212,7 @@
   transform: translateX(-50%);
   font-size: var(--basic-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   pointer-events: none;
   white-space: nowrap;
 }
@@ -238,7 +238,7 @@
 /* ===== Recipe List ===== */
 .recipeList {
   background: var(--bg-card);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -296,11 +296,11 @@
 .recipeItemName {
   flex: 1;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .recipeItemCheck {
-  color: var(--active-color-primary);
+  color: var(--clr-success);
   font-size: 2rem;
   flex-shrink: 0;
 }
@@ -316,7 +316,7 @@
 
 .listContainer {
   background: var(--bg-card);
-  border: 1px solid var(--border-light);
+  border: 1px solid var(--border-color);
   border-radius: 12px;
   overflow: hidden;
 }
@@ -326,7 +326,7 @@
   align-items: center;
   gap: 0.7rem;
   padding: 0.65rem 1rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
   cursor: pointer;
   transition: background 0.15s;
 }
@@ -356,8 +356,103 @@
 }
 
 .listItemText {
+  flex: 1;
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
+}
+
+.listItemActions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+.itemActionBtn {
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition:
+    color 0.15s,
+    background 0.15s;
+}
+
+.itemActionBtn:hover {
+  color: var(--clr-text-primary);
+  background: var(--bg-hover);
+}
+
+/* ===== Add Item Row ===== */
+.addItemRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.addItemInput {
+  flex: 1;
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  padding: 0.5rem 1rem;
+  font-size: var(--basic-font);
+  font-family: inherit;
+  background: var(--bg-secondary);
+  color: var(--clr-text-primary);
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.addItemInput:focus {
+  border-color: var(--clr-success);
+}
+
+.addItemInput::placeholder {
+  color: var(--text-muted);
+}
+
+.addItemBtn {
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  background: var(--clr-success);
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.15s;
+}
+
+.addItemBtn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.addItemBtn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+/* ===== Inline Edit ===== */
+.editInput {
+  flex: 1;
+  border: 1px solid var(--clr-success);
+  border-radius: 6px;
+  padding: 0.3rem 0.5rem;
+  font-size: var(--basic-font);
+  font-family: inherit;
+  background: var(--bg-primary);
+  color: var(--clr-text-primary);
+  outline: none;
 }
 
 /* Empty state */
@@ -378,7 +473,7 @@
 
 .emptyText {
   font-size: var(--large-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
   font-weight: 500;
 }

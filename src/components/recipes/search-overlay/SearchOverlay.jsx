@@ -746,7 +746,6 @@ function SearchOverlay({
               <button
                 key={cat.id}
                 className={parentClasses.filterChip}
-                style={{ borderColor: cat.color, color: cat.color }}
                 onClick={() => toggleCategory?.(cat.id)}
               >
                 {getTranslatedGroup?.(cat)} ✕

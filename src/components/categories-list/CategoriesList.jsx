@@ -125,13 +125,6 @@ function CategoriesList({
                   }`}
                   onClick={() => handleCategorySelect(group.id)}
                   title={getTranslatedDesc(group) || getTranslated(group)}
-                  style={{
-                    borderColor: group.color,
-                    backgroundColor:
-                      selectedGroup === group.id
-                        ? `${group.color}22`
-                        : "transparent",
-                  }}
                 >
                   {getTranslated(group)}
                   <span className={classes.contactCount}>

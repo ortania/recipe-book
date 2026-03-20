@@ -207,14 +207,11 @@ function CategoriesManagement({
     }
   };
 
-  const renderIconButton = (iconId, color) => {
+  const renderIconButton = (iconId) => {
     const IconComp = getCategoryIcon(iconId);
     return (
-      <span
-        className={classes.catIconWrap}
-        style={{ backgroundColor: `${color}22`, color: color }}
-      >
-        <IconComp />
+      <span className={classes.catIconWrap}>
+        <IconComp size={16} />
       </span>
     );
   };
@@ -226,11 +223,10 @@ function CategoriesManagement({
           type="button"
           className={classes.iconPickerToggle}
           onClick={() => setShowIconPicker(!showIconPicker)}
-          style={{ backgroundColor: `${formColor}22`, color: formColor }}
         >
           {(() => {
             const IC = getCategoryIcon(formIcon);
-            return <IC />;
+            return <IC size={18} />;
           })()}
         </button>
         <input
@@ -257,31 +253,14 @@ function CategoriesManagement({
                   type="button"
                   className={`${classes.iconOption} ${formIcon === item.id ? classes.iconSelected : ""}`}
                   onClick={() => setFormIcon(item.id)}
-                  style={
-                    formIcon === item.id
-                      ? { backgroundColor: `${formColor}22`, color: formColor }
-                      : undefined
-                  }
                 >
-                  <IC />
+                  <IC size={16} />
                 </button>
               );
             })}
           </div>
         </div>
       )}
-
-      <div className={classes.colorPickerRow}>
-        {COLORS.map((color) => (
-          <button
-            key={color}
-            type="button"
-            className={`${classes.colorDot} ${formColor === color ? classes.colorSelected : ""}`}
-            style={{ backgroundColor: color }}
-            onClick={() => setFormColor(color)}
-          />
-        ))}
-      </div>
 
       <div className={classes.imagePickerRow}>
         <input

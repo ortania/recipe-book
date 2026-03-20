@@ -37,14 +37,9 @@
   inset-inline: 0;
   inset-block-end: 0;
   block-size: 0.375rem;
-  background: linear-gradient(
-    to bottom,
-    rgb(0 0 0 / 0.08),
-    transparent
-  );
+  background: linear-gradient(to bottom, rgb(0 0 0 / 0.08), transparent);
   pointer-events: none;
 }
-
 
 .volumeNotification {
   position: fixed;
@@ -104,7 +99,7 @@
   gap: 0.5rem;
   padding: 0.5rem 1rem;
   /* border-radius: 25px; */
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   /* font-weight: 600; */
   border: none;
   cursor: pointer;
@@ -143,7 +138,7 @@
 
 .voiceRecognitionIndicator span {
   font-size: var(--large-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -305,7 +300,7 @@
 }
 
 .activeTab {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   border-bottom-color: currentColor;
   font-weight: 700;
 }
@@ -334,7 +329,7 @@
   font-size: var(--basic-font);
   /* font-weight: 700; */
   /* color: #10b981; */
-  color: var(--active-color-primary);
+  color: var(--clr-success);
   background: transparent;
   padding: 0;
   border-radius: 0;
@@ -398,7 +393,7 @@
 
 .navButton {
   background-color: var(--bg-tertiary);
-  border: 1px solid var(--btn-border-color);
+  border: 1px solid var(--clr-btn-main-border);
   color: var(--text-muted);
   border-radius: var(--btn-border-radius);
   box-shadow: none;
@@ -406,7 +401,7 @@
 
 .restartButton {
   color: var(--text-on-primary);
-  background: var(--btn-bg-primary);
+  background: var(--clr-btn-main-bg);
   font-size: var(--basic-font);
   display: flex;
   align-items: center;
@@ -422,7 +417,7 @@
 }
 
 .nextButton {
-  background-color: var(--active-color-primary);
+  background-color: var(--clr-success);
   color: white;
   border-radius: var(--btn-border-radius);
   box-shadow: none;
@@ -438,7 +433,7 @@
 .headerTitle {
   font-size: var(--huge-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
   white-space: nowrap;
   display: flex;
@@ -459,7 +454,7 @@
   font-weight: 600;
   min-width: 1.2em;
   text-align: center;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .servingBtnSmall {
@@ -483,7 +478,7 @@
   border: none;
   padding: 0.3em;
   font-size: 2.5rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
 }
 
@@ -506,7 +501,7 @@
   height: 0;
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
-  border-bottom: 14px solid var(--active-color-primary);
+  border-bottom: 14px solid var(--clr-success);
   animation: helpArrowBounce 1s ease-in-out infinite;
   z-index: 10;
 }
@@ -527,7 +522,7 @@
   justify-content: center;
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: 2.2rem;
   cursor: pointer;
   padding: 0.2em;
@@ -544,7 +539,7 @@
   justify-content: center;
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: 2rem;
   cursor: pointer;
   padding: 0.2em;
@@ -619,7 +614,7 @@
   height: 0;
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
-  border-bottom: 14px solid var(--active-color-primary);
+  border-bottom: 14px solid var(--clr-success);
   animation: micArrowBounce 1s ease-in-out infinite;
   z-index: 10;
 }
@@ -684,12 +679,12 @@
 }
 
 .helpClose:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .helpContent {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   line-height: 1.6;
 }
 
@@ -821,7 +816,7 @@
 
 .activeTimerLabel {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -890,7 +885,7 @@
   font-size: var(--very-large-font);
   font-family: var(--font-family) !important;
   /* font-weight: 700; */
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   text-align: center;
   width: 3ch;
   outline: none;
@@ -903,8 +898,8 @@
   padding: 0.6em 1.2em;
   font-size: var(--small-font);
   background: var(--bg-card);
-  color: var(--btn-bg-primary);
-  border: 1px solid var(--btn-bg-primary);
+  color: var(--clr-btn-main-bg);
+  border: 1px solid var(--clr-btn-main-bg);
   border-radius: var(--btn-border-radius);
   font-weight: var(--font-weight-tertiary);
   display: flex;
@@ -957,7 +952,7 @@
 .completionTitle {
   font-size: var(--huge-font);
   font-weight: bold;
-  color: var(--active-color-primary);
+  color: var(--clr-success);
   margin-bottom: 1rem;
 }
 
@@ -970,8 +965,8 @@
 .completionButton {
   padding: 1rem 2rem;
   font-size: var(--basic-font);
-  background-color: var(--active-color-primary);
-  background-color: var(--btn-bg-primary);
+  background-color: var(--clr-success);
+  background-color: var(--clr-btn-main-bg);
   color: white;
   border: none;
   border-radius: 8px;
@@ -1012,7 +1007,7 @@
   width: 100%;
   max-width: 100%;
   /* border: 2px solid #f9e79f; */
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   text-align: center;
   /* margin: 1.5rem 0; */
   gap: 2rem;
@@ -1022,7 +1017,7 @@
   display: block;
   font-size: var(--huge-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   /* margin-bottom: 0.3rem; */
   text-align: center;
   text-decoration: underline;
@@ -1033,7 +1028,7 @@
   font-size: var(--huge-font);
   text-align: center;
   line-height: 1.7;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 @keyframes fadeIn {

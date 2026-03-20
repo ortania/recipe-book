@@ -13,7 +13,7 @@
 .resultsCount {
   font-size: var(--basic-font);
   /* color: var(--text-muted); */
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin-bottom: 0.75rem;
   padding-inline-start: 0.25rem;
 }
@@ -48,7 +48,7 @@
 .noResultsTitle {
   font-size: var(--basic-font);
   font-weight: var(--font-weight-tertiary);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
 }
 
@@ -60,7 +60,7 @@
 }
 
 .backButton {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 /* Autocomplete / recent searches dropdown */
@@ -105,7 +105,7 @@
   cursor: pointer;
   text-align: start;
   font-size: var(--basic-font);
-  color: var(--text-primary, #333);
+  color: var(--clr-text-primary, #333);
   transition: background 0.15s;
 }
 
@@ -157,7 +157,7 @@
   border: 1px solid var(--border-color, #ddd);
   border-radius: 2rem;
   background: var(--bg-primary, #fff);
-  color: var(--text-primary, #333);
+  color: var(--clr-text-primary, #333);
   font-size: var(--basic-font);
   cursor: pointer;
   transition:
@@ -168,8 +168,8 @@
 
 .previousSearchChip:hover {
   background: var(--bg-hover, #f0f0f0);
-  border-color: var(--active-color-primary);
-  color: var(--active-color-primary);
+  border-color: var(--clr-success);
+  color: var(--clr-success);
 }
 
 .foundTermLabel {

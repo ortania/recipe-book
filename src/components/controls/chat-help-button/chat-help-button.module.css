@@ -13,9 +13,9 @@
   font-weight: 600;
   line-height: 1;
   border-radius: 50%;
-  border: 1.5px solid var(--primary-color);
+  border: 1.5px solid var(--clr-text-primary);
   background: transparent;
-  color: var(--primary-color);
+  color: var(--clr-text-primary);
   cursor: pointer;
   padding: 0;
   transition:
@@ -111,20 +111,20 @@
 }
 
 .close:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 /* ── Shared content styles (desktop popup + bottom sheet) */
 .content {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   line-height: 1.6;
 }
 
 .content strong {
   display: block;
   font-size: var(--basic-font);
-  color: var(--primary-color);
+  color: var(--clr-text-primary);
   margin-bottom: 0.3rem;
 }
 
@@ -153,13 +153,13 @@
   font-size: var(--basic-font);
   line-height: 1.5;
   white-space: pre-line;
-  border: 1.5px solid var(--border-light);
+  border: 1.5px solid var(--border-color);
   border-radius: 10px;
   background: var(--bg-secondary, rgba(0, 0, 0, 0.02));
 }
 
 .content li:last-child {
-  border-bottom: 1.5px solid var(--border-light);
+  border-bottom: 1.5px solid var(--border-color);
 }
 
 .content li.indent {
@@ -180,7 +180,7 @@
   padding: 0.5rem 0.75rem !important;
   font-weight: 700;
   font-size: calc(var(--basic-font) * 0.95);
-  color: var(--primary-color);
+  color: var(--clr-text-primary);
   border: none !important;
   border-radius: 8px !important;
   background: transparent !important;
@@ -201,7 +201,7 @@
   font-size: calc(var(--basic-font) * 0.88);
   color: var(--text-secondary);
   line-height: 1.7;
-  border: 1px dashed var(--border-light) !important;
+  border: 1px dashed var(--border-color) !important;
   border-radius: 8px !important;
   background: transparent !important;
   margin-inline-start: 0.6rem;

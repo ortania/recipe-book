@@ -113,7 +113,7 @@
     gap: 0.3rem;
     background: none;
     border: none;
-    color: var(--text-primary);
+    color: var(--clr-text-primary);
     font-size: var(--basic-font);
     padding: 0.2rem 0.4rem;
     cursor: pointer;
@@ -282,7 +282,7 @@
 .clearChips {
   background: none;
   border: none;
-  color: var(--link-color);
+  color: var(--clr-link);
   font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.3em 0.5em;
@@ -291,7 +291,7 @@
 }
 
 .clearChips:hover {
-  /* color: var(--text-primary); */
+  /* color: var(--clr-text-primary); */
   opacity: var(--hover-opacity);
 }
 
@@ -406,7 +406,7 @@
   border-radius: var(--btn-border-radius);
   font-size: var(--basic-font);
   font-weight: 400;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -478,7 +478,7 @@
   align-items: center;
   justify-content: center;
   margin-inline-end: auto;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
 }
 
@@ -487,12 +487,12 @@
   padding: 0.75rem 1rem;
   border: none;
   background: var(--bg-card);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   text-align: start;
   cursor: pointer;
   font-size: var(--small-font);
   transition: background 0.2s ease;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .dropdownMenu .dropdownClose button {
@@ -514,7 +514,7 @@
 
 .dropdownMenu button.active {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-weight: 600;
 }
 
@@ -542,7 +542,7 @@
 
 .filterSection button.active {
   /* background: #2196f3; */
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   color: white;
   /* border-color: #2196f3; */
 }
@@ -552,7 +552,7 @@
   width: 100%;
   font-size: var(--small-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin-bottom: 0.25rem;
   text-align: start;
 }
@@ -572,26 +572,26 @@
   background-color: var(--bg-card) !important;
   transition: border-color 0.2s;
   box-sizing: border-box;
-  color: var(--text-primary) !important;
+  color: var(--clr-text-primary) !important;
   font-family:
     -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   direction: rtl;
   text-align: right;
-  -webkit-text-fill-color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--clr-text-primary) !important;
   opacity: 1 !important;
 }
 
 .keywordInput:focus {
   border-color: var(--border-accent-primary);
   background-color: var(--bg-card) !important;
-  color: var(--text-primary) !important;
-  -webkit-text-fill-color: var(--text-primary) !important;
+  color: var(--clr-text-primary) !important;
+  -webkit-text-fill-color: var(--clr-text-primary) !important;
 }
 
 .keywordInput:-webkit-autofill,
 .keywordInput:-webkit-autofill:hover,
 .keywordInput:-webkit-autofill:focus {
-  -webkit-text-fill-color: var(--text-primary) !important;
+  -webkit-text-fill-color: var(--clr-text-primary) !important;
   -webkit-box-shadow: 0 0 0px 1000px var(--bg-card) inset !important;
   background-color: var(--bg-card) !important;
 }
@@ -617,7 +617,7 @@
 }
 
 .clearKeyword:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .filterDivider {
@@ -639,7 +639,7 @@
   border-radius: 8px;
   font-size: var(--small-font);
   background: var(--bg-card);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   outline: none;
 }
 
@@ -654,7 +654,7 @@
   padding: 0 !important;
   border-radius: 50% !important;
   /* background: #2196f3 !important; */
-  background: var(--btn-bg-primary) !important;
+  background: var(--clr-btn-main-bg) !important;
   color: white !important;
   border: none !important;
   font-size: 2.5rem !important;
@@ -681,7 +681,7 @@
   border: 1px solid var(--border-color);
   border-radius: 16px;
   font-size: var(--small-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .ingredientChipRemove {
@@ -696,7 +696,7 @@
 }
 
 .ingredientChipRemove:hover {
-  color: var(--text-primary) !important;
+  color: var(--clr-text-primary) !important;
 }
 
 .clearFiltersBtn {
@@ -734,7 +734,7 @@
 .sectionTitle {
   font-size: var(--large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
   padding-left: 1rem;
   /* padding-right: 1rem; */
@@ -751,7 +751,7 @@
   background: none;
   border: none;
   /* color: #2196f3; */
-  color: var(--link-color);
+  color: var(--clr-link);
   /* border-bottom: 1px solid currentColor; */
   text-decoration: underline;
   text-decoration-color: currentColor;
@@ -787,7 +787,7 @@
 .recipeCount {
   font-size: var(--basic-font);
   /* color: #999; */
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   padding: 0.2rem 1rem;
   text-align: end;
   margin-bottom: 1rem;
@@ -796,7 +796,7 @@
 .noResults {
   text-align: center;
   padding: 3rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
 }
 
@@ -923,7 +923,7 @@
 
 .emptyText {
   font-size: var(--large-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
   font-weight: 500;
   letter-spacing: 0;
@@ -1020,7 +1020,7 @@
 
 .recentlyViewedName {
   font-size: var(--small-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   text-align: center;
   max-width: 90px;
   overflow: hidden;
@@ -1143,7 +1143,7 @@
   background: none;
   border: none;
   border-radius: 10px;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   font-size: 12rem;
   height: 32px;
@@ -1182,7 +1182,7 @@
   justify-content: center;
   background: none;
   border: none;
-  color: var(--icon-primary-color);
+  color: var(--clr-icon-default);
   cursor: pointer;
   padding: 0.35em;
   border-radius: 8px;
@@ -1224,7 +1224,7 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
   cursor: pointer;
   transition: background 0.15s ease;
 }
@@ -1240,7 +1240,7 @@
 .compactName {
   flex: 1;
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-weight: 500;
   min-width: 0;
   overflow: hidden;
@@ -1288,7 +1288,7 @@
 }
 
 .compactActionBtn:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   background: var(--bg-hover);
 }
 
@@ -1348,7 +1348,7 @@
   appearance: none;
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   padding: 0.25em;
   border-radius: 6px;
@@ -1388,7 +1388,7 @@
   border: none;
   cursor: pointer;
   padding: 0.2em;
-  color: var(--icon-primary-color);
+  color: var(--clr-icon-default);
   transition: var(--transition);
 }
 
@@ -1431,7 +1431,7 @@
 .categoriesSheetClear {
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   font-size: var(--small-font);
   font-weight: 500;
@@ -1465,7 +1465,7 @@
   cursor: pointer;
   transition: all 0.15s ease;
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .categorySheetItem:hover {
@@ -1531,7 +1531,7 @@
 
 .categoryManageBtn:hover {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 /* ===== Desktop Categories Popup ===== */
@@ -1586,7 +1586,7 @@
   text-align: center;
   font-size: var(--large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .categoriesPopupClose {
@@ -1604,7 +1604,7 @@
 
 .categoriesPopupClose:hover {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .categoriesPopup .categoriesSheetContent {
@@ -1636,7 +1636,7 @@
   border: none;
   border-radius: 10px;
   background: none;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   cursor: pointer;
   text-align: start;

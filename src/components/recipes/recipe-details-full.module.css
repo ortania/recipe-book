@@ -21,7 +21,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.75rem 0;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
   background: var(--bg-primary);
   position: sticky;
   top: 4.5rem;
@@ -85,7 +85,7 @@
 }
 
 .actionIcon:hover {
-  /* color: var(--text-primary); */
+  /* color: var(--clr-text-primary); */
   background: var(--bg-hover);
 }
 
@@ -100,7 +100,7 @@
   padding: 0.5em 1.2em;
   border: none;
   border-radius: 20px;
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   color: var(--bg-primary);
   font-size: var(--basic-font);
   font-weight: 600;
@@ -178,7 +178,7 @@
   border-radius: 12px;
   width: 100%;
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   transition: background 0.15s;
   white-space: nowrap;
@@ -190,11 +190,11 @@
 }
 
 .moreMenuItemDanger {
-  color: var(--clr-red, #d32f2f);
+  color: var(--clr-danger-text);
 }
 
 .moreMenuItemDanger .moreMenuIcon {
-  color: var(--clr-red, #d32f2f);
+  color: var(--clr-danger-text);
 }
 
 .moreMenuLabel {
@@ -244,7 +244,7 @@
   justify-content: space-between;
   padding: 0.5rem 0;
   background: var(--bg-primary);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
   gap: 0.5rem;
   /* relative for absolute title centering */
   isolation: isolate;
@@ -267,7 +267,7 @@
   border: none;
   padding: 0.3em;
   font-size: 2.5rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   transition: color 0.2s;
   flex-shrink: 0;
@@ -292,7 +292,7 @@
   border: none;
   padding: 0;
   cursor: pointer;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   flex-shrink: 0;
   z-index: 1;
 }
@@ -303,7 +303,7 @@
   right: 3rem;
   font-size: var(--huge-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
   line-height: 1.3;
   text-align: center;
@@ -651,7 +651,7 @@
 .recipeName {
   font-size: var(--huge-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
   line-height: 1.3;
   text-align: center;
@@ -801,12 +801,12 @@
 }
 
 .cookingHelpClose:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .cookingHelpContent {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   line-height: 1.6;
 }
 
@@ -1003,7 +1003,7 @@
 
 .notesText {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   line-height: 1.8;
   margin: 0;
   white-space: pre-wrap;
@@ -1028,7 +1028,7 @@
   gap: 0.5rem;
   font-size: var(--large-font);
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .servingLabelIcon {
@@ -1060,7 +1060,7 @@
   justify-content: center;
   cursor: pointer;
   font-size: var(--large-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   transition: all 0.2s ease;
   font-weight: 600;
 }
@@ -1142,20 +1142,20 @@
   background: var(--bg-hover);
 } */
 .tab:hover {
-  border-color: var(--text-primary);
+  border-color: var(--clr-text-primary);
   background: var(--bg-hover);
   /* transform: translateY(-1px); */
 }
 
 .activeTab {
-  background: var(--text-primary);
-  border-color: var(--text-primary);
+  background: var(--clr-text-primary);
+  border-color: var(--clr-text-primary);
   color: white;
 }
 
 .activeTab:hover {
-  background: var(--text-primary);
-  border-color: var(--text-primary);
+  background: var(--clr-text-primary);
+  border-color: var(--clr-text-primary);
   color: white;
   /* transform: translateY(-1px); */
   opacity: 0.9;
@@ -1180,7 +1180,7 @@
   padding: 0.5em 1em;
   border-radius: 10px;
   background: var(--bg-hover);
-  color: var(--link-color);
+  color: var(--clr-link);
   font-size: var(--basic-font);
   font-weight: 500;
   text-decoration: none;
@@ -1195,7 +1195,7 @@
 .ingredientGroupHeader {
   padding: 0.6rem 0 0.3rem;
   font-weight: var(--font-weight-quaternary);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   border-bottom: 1px solid var(--bg-accent-tertiary);
   margin-top: 0.3rem;
@@ -1247,9 +1247,9 @@
 }
 
 .checkbox:checked {
-  background: var(--active-color-secondary);
+  background: var(--clr-success-hover);
   /* border-color: #4caf50; */
-  border-color: var(--active-color-secondary);
+  border-color: var(--clr-success-hover);
   position: relative;
 }
 
@@ -1269,7 +1269,7 @@
 .checkboxLabel span {
   flex: 1;
   line-height: 1.5;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .checkedText {
@@ -1296,7 +1296,7 @@
   cursor: pointer;
   font-size: 1rem;
   font-weight: 600;
-  color: var(--active-color-secondary);
+  color: var(--clr-success-hover);
   transition: background-color 0.2s;
 }
 
@@ -1353,7 +1353,7 @@
 
 .nutritionList li {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   line-height: 1.6;
   display: flex;
   align-items: center;

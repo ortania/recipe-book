@@ -105,14 +105,52 @@ const nonIngredientWords =
 const measurementWords =
   /^(כוס|כוסות|כף|כפות|כפית|כפיות|גרם|ק"ג|קילו|ליטר|מ"ל|מל|חבילה|חבילות|שקית|שקיות|יח'|יחידה|יחידות|קורט|קמצוץ|cup|cups|tbsp|tsp|tablespoon|teaspoon|gram|grams|kg|liter|ml|oz|ounce|ounces|pound|pounds|lb|lbs|piece|pieces|bunch|can|cans|clove|cloves|slice|slices|pinch|dash|handful)$/i;
 
+// Quantity adverbs to skip when extracting the key ("קצת מלח" → key should be "מלח")
+const quantityAdverbs = /^(קצת|מעט|הרבה|שפע|כמה|little|some|few|lots)$/i;
+
+// Ingredients to exclude entirely from the shopping list (common pantry basics)
+const EXCLUDED_INGREDIENT_LINE =
+  /^(מים|מייים|water|מלח ופלפל|salt and pepper|קצת מלח ופלפל|מלח|פלפל שחור|פלפל)$/i;
+const EXCLUDED_FULL_TEXT = /\b(מים|מייים|water)\b/i;
+const EXCLUDED_KEYS = new Set([
+  "מלח",
+  "salt",
+  "פלפל",
+  "pepper",
+  "מים",
+  "מייים",
+  "water",
+]);
+
+// Compound ingredient names — if the first meaningful word matches a key here,
+// consume the next word(s) to form the full name.
+const COMPOUND_NAMES = {
+  אבקת: "אבקת אפיה",
+  שיבולת: "שיבולת שועל",
+  גבינת: null, // keep next word: גבינת שמנת, גבינת קוטג'
+  שמנת: null, // keep next word: שמנת מתוקה, שמנת חמוצה
+  חמאת: null, // keep next word: חמאת בוטנים
+  קמח: null, // keep next word: קמח תירס, קמח מלא
+  שוקולד: null, // keep next word: שוקולד מריר, שוקולד חלב
+  רוטב: null, // keep next word: רוטב סויה, רוטב עגבניות
+  baking: "baking powder",
+  cream: null,
+  olive: "olive oil",
+  coconut: null,
+  soy: null,
+};
+
+// Preparation adjectives to strip from shopping display
+const PREP_STRIP =
+  /\s+(מגורד|מגורדים|מגורדת|קלוף|קלופים|קלופה|חצוי|חצויים|חצויה|מומס|מומסת|מומסים|מופשר|מופשרת|מופשרים)(\s|,|$)/gi;
+
 /**
  * Build a normalized key for aggregation.
- * Strategy: strip leading number, then take only the FIRST meaningful word.
+ * Strategy: strip leading number, then take the first meaningful word(s).
+ * Supports compound names: "אבקת אפיה" stays as-is, "שיבולת שועל" stays as-is.
  * "2 תפוחים, מכל זן" → "תפוחים"
- * "5 תפוחים קלופים" → "תפוחים"
- * "11 ביצים" → "ביצים"
- * "4 ביצים L" → "ביצים"
  * "3 כפות סוכר" → "סוכר" (skips measurement word כפות)
+ * "1 כפית אבקת אפיה" → "אבקת אפיה"
  */
 export function normalizeKey(s) {
   // Strip leading numbers, fractions, punctuation
@@ -127,8 +165,23 @@ export function normalizeKey(s) {
   // Split into words and find the first non-measurement word
   const words = stripped.split(/[\s,،.;:()\-–—]+/).filter(Boolean);
 
-  for (const word of words) {
-    if (!measurementWords.test(word) && word.length > 1) {
+  for (let i = 0; i < words.length; i++) {
+    const word = words[i];
+    if (
+      !measurementWords.test(word) &&
+      !quantityAdverbs.test(word) &&
+      word.length > 1
+    ) {
+      // Check if this word starts a compound name
+      if (word in COMPOUND_NAMES) {
+        const fixed = COMPOUND_NAMES[word];
+        if (fixed) return fixed; // exact compound like "אבקת אפיה"
+        // null means keep next word dynamically
+        const next = words[i + 1];
+        if (next && next.length > 1 && !measurementWords.test(next)) {
+          return word + " " + next;
+        }
+      }
       return word;
     }
   }
@@ -154,6 +207,28 @@ export function extractQty(s) {
   if (fracs[v]) return fracs[v];
   const num = parseFloat(v);
   return isNaN(num) ? 1 : num;
+}
+
+/**
+ * Extract the measurement unit from an ingredient string (e.g. "גרם" from "153 גרם סוכר").
+ */
+function extractUnit(s) {
+  const afterQty = s.replace(/^[\d\s½¼¾⅓⅔.,/\-]+/, "").trim();
+  const words = afterQty.split(/\s+/);
+  if (words.length > 1 && measurementWords.test(words[0])) {
+    return words[0];
+  }
+  return "";
+}
+
+/**
+ * Strip preparation-method adjectives for a cleaner shopping display.
+ */
+function cleanForShopping(s) {
+  return s
+    .replace(PREP_STRIP, "$2")
+    .replace(/\s{2,}/g, " ")
+    .trim();
 }
 
 // Lines that look like group headers when ingredients are newline-separated (display only)
@@ -206,7 +281,7 @@ export function parseIngredients(recipe) {
  * Build an aggregated shopping list from an array of recipe IDs.
  * @param {string[]} selectedIds - recipe IDs to include
  * @param {object[]} recipes - all available recipes
- * @returns {Array<{name: string, count: number, totalQty: number, display: string}>}
+ * @returns {Array<{name: string, unit: string, count: number, totalQty: number, display: string, displayText: string}>}
  */
 export function buildShoppingList(selectedIds, recipes) {
   const ingredientMap = {};
@@ -220,31 +295,54 @@ export function buildShoppingList(selectedIds, recipes) {
       if (!raw || raw.length < 2 || raw.length > 150) return;
       if (isGroupHeader(raw)) return;
       if (junkPatterns.test(raw)) return;
+      if (EXCLUDED_FULL_TEXT.test(raw)) return;
+
+      const stripped = raw.replace(/^[\d\s½¼¾⅓⅔.,/\-]+/, "").trim();
+      if (EXCLUDED_INGREDIENT_LINE.test(stripped)) return;
 
       const key = normalizeKey(raw) || raw.toLowerCase();
       if (!key || nonIngredientWords.test(key)) return;
+      if (EXCLUDED_KEYS.has(key)) return;
 
       const qty = extractQty(raw);
+      const unit = extractUnit(raw);
+      const cleaned = cleanForShopping(raw);
 
       if (ingredientMap[key]) {
         ingredientMap[key].count += 1;
         ingredientMap[key].totalQty += qty;
-        // Keep the longer display string for more context
-        if (raw.length > ingredientMap[key].display.length) {
-          ingredientMap[key].display = raw;
+        if (!ingredientMap[key].unit && unit) {
+          ingredientMap[key].unit = unit;
+        }
+        if (cleaned.length > ingredientMap[key].display.length) {
+          ingredientMap[key].display = cleaned;
         }
       } else {
         ingredientMap[key] = {
           name: key,
+          unit: unit,
           count: 1,
           totalQty: qty,
-          display: raw,
+          display: cleaned,
         };
       }
     });
   });
 
-  return Object.values(ingredientMap).sort((a, b) =>
-    a.name.localeCompare(b.name),
-  );
+  return Object.values(ingredientMap)
+    .map((item) => {
+      if (item.count > 1) {
+        const qtyStr =
+          item.totalQty % 1 === 0
+            ? String(item.totalQty)
+            : item.totalQty.toFixed(1);
+        item.displayText = item.unit
+          ? `${qtyStr} ${item.unit} ${item.name}`
+          : `${qtyStr} ${item.name}`;
+      } else {
+        item.displayText = item.display;
+      }
+      return item;
+    })
+    .sort((a, b) => a.name.localeCompare(b.name));
 }

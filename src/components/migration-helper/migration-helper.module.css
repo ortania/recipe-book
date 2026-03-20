@@ -13,7 +13,7 @@
 
 .container h3 {
   margin: 0 0 1rem 0;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: 1.125rem;
 }
 
@@ -90,7 +90,7 @@
   background: var(--bg-tertiary);
   border-radius: 0.25rem;
   font-size: 0.875rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   display: flex;
   align-items: center;
   gap: 0.3rem;
@@ -122,5 +122,5 @@
 }
 
 .categoriesList li strong {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }

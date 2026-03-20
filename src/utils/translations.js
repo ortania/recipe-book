@@ -4281,6 +4281,13 @@ const translations = {
       de: "Alle abwählen",
       mixed: "Uncheck all",
     },
+    addItemPlaceholder: {
+      he: "הוסף פריט...",
+      en: "Add item...",
+      ru: "Добавить...",
+      de: "Artikel hinzufügen...",
+      mixed: "Add item...",
+    },
     purchased: {
       he: "נקנו",
       en: "purchased",

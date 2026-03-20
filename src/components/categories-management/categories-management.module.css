@@ -23,7 +23,7 @@
   font-size: var(--large-font);
   font-weight: var(--font-weight-quaternary);
   margin: 0;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .headerActions {
@@ -127,7 +127,7 @@
 .catName {
   font-size: var(--basic-font);
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .catActions {
@@ -273,7 +273,7 @@
 
 .iconOption:hover {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .iconSelected {
@@ -301,7 +301,7 @@
 }
 
 .colorSelected {
-  border-color: var(--text-primary);
+  border-color: var(--clr-text-primary);
   transform: scale(1.2);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }
@@ -329,8 +329,8 @@
 }
 
 .imageUploadBtn:hover {
-  border-color: var(--active-color-primary);
-  color: var(--active-color-primary);
+  border-color: var(--clr-success);
+  color: var(--clr-success);
 }
 
 .imagePreviewWrap {
@@ -372,34 +372,34 @@
 }
 
 .cancelBtn {
-  background: transparent;
-  border: none;
-  color: var(--text-muted);
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   cursor: pointer;
-  padding: 0.4em 0.8em;
+  padding: 0.4em 1em;
   border-radius: 8px;
   transition: all 0.15s ease;
 }
 
 .cancelBtn:hover {
-  color: var(--text-primary);
   background: var(--bg-hover);
 }
 
 .addBtn {
-  background: var(--text-primary);
-  color: var(--bg-primary);
+  background: #2ecc71;
+  color: #fff;
   border: none;
   font-size: var(--basic-font);
   padding: 0.4em 1em;
   border-radius: 8px;
   cursor: pointer;
+  font-weight: 600;
   transition: all 0.15s ease;
 }
 
 .addBtn:hover {
-  background: var(--text-secondary);
+  background: #27ae60;
 }
 
 .addBtn:disabled {
@@ -426,7 +426,7 @@
 }
 
 .doneBtn {
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   color: var(--bg-primary);
   border: none;
   font-size: var(--basic-font);

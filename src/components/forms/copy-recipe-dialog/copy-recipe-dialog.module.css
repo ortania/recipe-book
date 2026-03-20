@@ -5,7 +5,7 @@
 
 .dialog h3 {
   margin-top: 0;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--large-font);
   margin-bottom: 0.5rem;
   font-weight: 700;
@@ -17,7 +17,7 @@
 
 .recipeName {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin-bottom: 1.5rem;
   margin-top: 0;
   font-style: italic;
@@ -33,7 +33,7 @@
   display: block;
   font-size: var(--basic-font);
   /* font-weight: 600; */
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin-bottom: 0.5rem;
 }
 
@@ -55,7 +55,7 @@
 }
 
 .emailInput:focus {
-  border: 1px solid var(--text-primary);
+  border: 1px solid var(--clr-text-primary);
 }
 
 .addButton {
@@ -106,7 +106,7 @@
   border: 1px solid var(--border-color);
   border-radius: 20px;
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-weight: 500;
 }
 
@@ -121,7 +121,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   padding: 0;
   border-radius: 50%;
@@ -148,7 +148,7 @@
 .buttons button {
   font-size: var(--basic-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
 }
 
@@ -162,9 +162,8 @@
 }
 
 .buttons button:last-of-type {
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   color: var(--bg-primary);
-
 }
 .buttons button:last-of-type:hover {
   background: var(--text-secondary);

@@ -45,7 +45,7 @@
 
 .loginForm .title {
   text-align: center;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: 2rem;
   font-weight: 700;
   margin: 0 0 1rem 0;
@@ -59,13 +59,13 @@
   /* font-size: var(--basic-font); */
   transition: all 0.3s ease;
   background: var(--bg-tertiary);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .loginForm input:not([type="checkbox"]):focus {
   box-shadow: none;
   outline: none;
-  border-color: var(--primary-color);
+  border-color: var(--clr-text-primary);
   background: var(--bg-card);
   /* box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); */
 }
@@ -141,7 +141,7 @@
   border: 1px solid var(--border-color);
   border-radius: 12px;
   background: var(--bg-card);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   font-weight: 500;
   cursor: pointer;
@@ -222,18 +222,18 @@
 .landingLogo {
   font-size: 3.5rem;
   font-weight: 400;
-  color: var(--text-muted);
+  color: var(--clr-text-primary);
   margin: 0;
 }
 
 .landingLogoBook {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-weight: var(--font-weight-tertiary);
 }
 
 .landingSubtitle {
   font-size: var(--basic-font);
-  color: var(--text-secondary);
+  color: var(--clr-text-primary);
   margin: 0;
   line-height: 1.6;
   max-width: 320px;
@@ -244,8 +244,8 @@
   padding: 1rem;
   border: none;
   border-radius: var(--btn-border-radius);
-  background: var(--btn-bg-primary);
-  color: var(--text-on-primary);
+  background: var(--clr-btn-main-bg);
+  color: var(--clr-btn-main-text);
   font-size: var(--basic-font);
   font-weight: var(--font-weight-tertiary);
   cursor: pointer;
@@ -254,7 +254,7 @@
 }
 
 .landingBtn:hover {
-  background: var(--btn-bg-secondary);
+  background: var(--clr-btn-main-bg-hover);
 }
 
 @media (max-width: 768px) {
@@ -292,29 +292,30 @@
 .signupLink {
   text-align: center;
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-link);
   margin: 0;
 }
 
 .signupLink:hover {
-  opacity: var(--hover-opacity);
+  transform: var(--link-transform-hover);
 }
 
 .link {
-  color: var(-text-primary);
-  font-weight: 600;
+  color: var(--clr-link);
+  font-weight: var(--link-font-weight);
   cursor: pointer;
   text-decoration: underline;
+  text-decoration-color: currentColor;
 }
 
 .link:hover {
-  color: var(--text-secondary);
+  transform: var(--link-transform-hover);
 }
 
 .forgotPassword {
   text-align: center;
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0.5rem 0 0 0;
 }
 
@@ -330,7 +331,7 @@
   border: none;
   border-radius: 12px;
   background: var(--bg-tertiary);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   padding: 1rem 2rem;
   font-size: var(--basic-font);
   font-weight: 600;
@@ -353,7 +354,7 @@
   width: 100%;
   text-align: center;
   font-weight: var(-font-weight-tertiary);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--large-font);
   cursor: pointer;
   text-decoration: underline;
@@ -368,7 +369,7 @@
 
 .success {
   background: #d4edda;
-  color: var(--dark-active-color);
+  color: var(--clr-success-dark);
   color: var(--success-color);
   padding: 1rem;
   border-radius: 12px;

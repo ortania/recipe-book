@@ -155,7 +155,7 @@
 
 .itemLabel {
   font-size: var(--basic-font);
-  color: var(--text-primary, #333);
+  color: var(--clr-text-primary, #333);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -166,7 +166,7 @@
   font-size: var(--basic-font);
   font-weight: var(--font-weight-quaternary);
   font-variant-numeric: tabular-nums;
-  color: var(--text-primary, #333);
+  color: var(--clr-text-primary, #333);
 }
 
 .itemActions {

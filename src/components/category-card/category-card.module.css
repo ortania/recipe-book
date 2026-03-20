@@ -20,7 +20,7 @@
 
 .cardSelected {
   border-width: 2.5px;
-  box-shadow: 0 0 0 2px var(--active-color-primary);
+  box-shadow: 0 0 0 2px var(--clr-success);
 }
 
 .selectedOverlay {
@@ -49,6 +49,7 @@
 .placeholderIcon {
   width: 2.5rem;
   height: 2.5rem;
+  color: var(--text-muted);
 }
 
 .cardOverlay {
@@ -82,7 +83,7 @@
 .cardCount {
   font-size: var(--small-font);
   background: rgba(255, 255, 255, 0.6);
-  color: rgba(0, 0, 0, .85);
+  color: rgba(0, 0, 0, 0.85);
   padding: 0.35em 0.75em;
   border-radius: 12px;
   font-weight: 700;
@@ -99,7 +100,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--active-color-primary);
+  background: var(--clr-success);
   color: #fff;
   display: flex;
   align-items: center;

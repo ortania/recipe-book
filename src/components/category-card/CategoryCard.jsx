@@ -18,14 +18,6 @@ function CategoryCard({
     <button
       type="button"
       className={`${classes.card} ${selected ? classes.cardSelected : ""}`}
-      style={
-        selected
-          ? {
-              borderColor: category.color,
-              boxShadow: `0 0 0 2px ${category.color}`,
-            }
-          : undefined
-      }
       onClick={(e) => {
         e.stopPropagation();
         onClick?.();
@@ -39,33 +31,17 @@ function CategoryCard({
           loading="lazy"
         />
       ) : (
-        <div
-          className={classes.cardPlaceholder}
-          style={{ backgroundColor: "#fff" }}
-        >
-          <IconComp
-            className={classes.placeholderIcon}
-            style={{ color: category.color || "#888" }}
-          />
+        <div className={classes.cardPlaceholder}>
+          <IconComp className={classes.placeholderIcon} />
         </div>
       )}
-      {selected && (
-        <div
-          className={classes.selectedOverlay}
-          style={{ backgroundColor: `${category.color || "#607D8B"}40` }}
-        />
-      )}
+      {selected && <div className={classes.selectedOverlay} />}
       <div className={classes.cardOverlay}>
         <span className={classes.cardName}>{name}</span>
         {count != null && <span className={classes.cardCount}>{count}</span>}
       </div>
       {selected && (
-        <div
-          className={classes.checkBadge}
-          style={{
-            backgroundColor: category.color || "var(--active-color-primary)",
-          }}
-        >
+        <div className={classes.checkBadge}>
           <Check size={14} strokeWidth={3} />
         </div>
       )}

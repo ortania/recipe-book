@@ -123,7 +123,7 @@
 .recipeName {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0 0 0.5rem 0;
   line-height: 1.3;
   text-align: center;
@@ -202,7 +202,7 @@
 .notesTitle {
   font-size: var(--basic-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0 0 0.5rem 0;
 }
 
@@ -227,7 +227,7 @@
 .servingLabel {
   font-size: var(--basic-font);
   font-weight: 400;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .servingLabelCooking {
@@ -258,7 +258,7 @@
   justify-content: center;
   cursor: pointer;
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   transition: all 0.2s ease;
   font-weight: 600;
 }
@@ -295,7 +295,7 @@
 .tabsCooking {
   display: flex;
   gap: 0;
-  border-bottom: 2px solid var(--border-light);
+  border-bottom: 2px solid var(--border-color);
   margin-bottom: 1.5rem;
 }
 
@@ -326,8 +326,8 @@
 }
 
 .activeTab {
-  border-bottom-color: var(--text-primary);
-  background: var(--text-primary);
+  border-bottom-color: var(--clr-text-primary);
+  background: var(--clr-text-primary);
   color: var(--bg-primary);
 }
 
@@ -345,7 +345,7 @@
 .ingredientItem,
 .instructionItem {
   padding: 0.75rem 0;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
   font-size: var(--basic-font);
 }
 
@@ -401,7 +401,7 @@
 .checkboxLabel span {
   flex: 1;
   line-height: 1.5;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .checkedText {

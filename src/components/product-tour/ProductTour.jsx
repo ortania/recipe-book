@@ -174,7 +174,7 @@ function OnboardingScene({ screenKey, t }) {
   const titleStyle = {
     fontSize: "1.9rem",
     fontWeight: 700,
-    color: "var(--text-primary)",
+    color: "var(--clr-text-primary)",
     margin: 0,
     textAlign: "center",
   };
@@ -189,7 +189,7 @@ function OnboardingScene({ screenKey, t }) {
   };
   const bulletStyle = {
     fontSize: "1.7rem",
-    color: "var(--text-primary)",
+    color: "var(--clr-text-primary)",
     padding: "0.4rem 0.8rem",
     background: "var(--bg-tertiary)",
     borderRadius: 8,
@@ -238,7 +238,7 @@ function OnboardingScene({ screenKey, t }) {
             style={{
               fontSize: "1.5rem",
               fontWeight: 700,
-              color: "var(--text-primary)",
+              color: "var(--clr-text-primary)",
             }}
           >
             {t("onboarding", data.tipLabel)}

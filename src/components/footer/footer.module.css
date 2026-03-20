@@ -30,10 +30,11 @@
   flex-direction: column;
   align-items: center;
   gap: 0.2rem;
-  padding: 0.4em 0.6em;
+
+  padding: 0.375em 0.75em;
   text-decoration: none;
-  color: var(--text-muted);
-  /* color: unset; */
+
+  color: var(--clr-btn-icon-text);
   border-radius: 8px;
   border: none;
   background: none;
@@ -43,14 +44,12 @@
 }
 
 .footerLink.active {
-  color: var(--active-color-primary);
-  background-color: var(--bg-hover);
-  border-bottom: 2px solid currentColor;
-  border-radius: 0;
+  background-color: var(--clr-btn-outline-bg-active);
+  border-radius: 50px;
 }
 
-.footerLink.active .footerIcon {
-  stroke-width: 3;
+.footerLink .footerIcon {
+  stroke-width: 2;
 }
 
 .footerIcon {

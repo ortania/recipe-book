@@ -26,7 +26,7 @@
 .title {
   font-size: var(--large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
   text-align: start;
 }
@@ -99,7 +99,7 @@
 .cardName {
   font-size: var(--basic-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0 0 0.4rem;
   line-height: 1.3;
 }
@@ -107,7 +107,7 @@
 .cardExpanded {
   margin-top: 0.75rem;
   padding-top: 0.75rem;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid var(--border-color);
 }
 
 .expandSection {
@@ -119,7 +119,7 @@
 .expandSection strong {
   display: block;
   margin-bottom: 0.3rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .expandList {
@@ -204,18 +204,20 @@
   border: 1px solid var(--border-color);
   border-radius: 8px;
   background: var(--bg-card);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--small-font);
   cursor: pointer;
   min-width: 160px;
 }
 .sharerSelect:focus {
   outline: none;
-  border-color: var(--text-primary);
+  border-color: var(--clr-text-primary);
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .spinner {

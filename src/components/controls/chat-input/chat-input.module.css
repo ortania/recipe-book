@@ -2,7 +2,7 @@
   padding: 0.75rem 0 1.25rem;
   background: var(--bg-primary);
   z-index: 100;
-  border-top: 1px solid var(--border-light);
+  border-top: 1px solid var(--border-color);
   flex-shrink: 0;
 }
 
@@ -28,7 +28,7 @@
   font-family: inherit;
   background: transparent;
   padding: 0.4rem 1rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   min-width: 0;
   resize: none;
   overflow-y: auto;
@@ -66,7 +66,7 @@
 }
 
 .imageBtn:hover:not(:disabled) {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   background: var(--bg-hover);
 }
 
@@ -127,7 +127,7 @@
 }
 
 .micBtn:hover:not(:disabled) {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   background: var(--bg-hover);
 }
 
@@ -169,7 +169,7 @@
 }
 
 .clearBtn:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .imageBtn:disabled,

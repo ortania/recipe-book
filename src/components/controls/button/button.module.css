@@ -1,7 +1,7 @@
 /* Button variants */
 .primary {
   /* background-color: #2196f3; */
-  background-color: var(--text-primary);
+  background-color: var(--clr-text-primary);
   color: white;
   border: none;
 }
@@ -35,7 +35,7 @@
 .favorite {
   background-color: var(--bg-card);
   border: 1px solid #ffd700 !important;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .favorite:hover {

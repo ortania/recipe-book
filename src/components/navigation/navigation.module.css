@@ -85,7 +85,7 @@
 }
 
 .navLink {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   text-decoration: none;
   font-size: var(--basic-font);
   padding: 0.65rem 1rem;
@@ -107,7 +107,7 @@
 
 .icon {
   font-size: 1.7rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .navLink:hover {
@@ -118,12 +118,12 @@
   background-color: var(--bg-hover);
   font-weight: 700;
 
-  /* color: var(--active-color-primary); */
+  /* color: var(--clr-success); */
   font-weight: 800;
 }
 
 .active .icon {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .separator {
@@ -145,7 +145,7 @@
   background: transparent;
   border: none;
   /* color: var(--text-muted); */
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   padding: 0.5rem 1rem;
   padding-right: 0;
   font-size: var(--basic-font);
@@ -182,7 +182,7 @@
 }
 
 .clearCategoriesBtn:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   background: var(--bg-hover);
 }
 
@@ -225,7 +225,7 @@
   margin: 0.2rem 0;
   font-size: var(--basic-font);
   font-weight: 400;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   text-align: start;
   /* border-radius: 0 6px 6px 0; */
@@ -286,7 +286,7 @@
   background: transparent;
   border: none;
   /* color: var(--text-muted); */
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   /* font-weight: 600; */
   cursor: pointer;
@@ -298,7 +298,7 @@
 }
 
 .categoryActionBtn:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .chatLogSection {
@@ -339,7 +339,7 @@
   width: 100%;
   padding: 0.75rem 0.5rem;
   text-align: start;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   font-weight: 500;
   cursor: pointer;
@@ -348,7 +348,7 @@
 
 .chatHistoryItem:hover {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .chatPopupOverlay {
@@ -386,7 +386,7 @@
 .chatPopupHeader h3 {
   margin: 0;
   font-size: 1.25rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .closePopup {
@@ -418,7 +418,7 @@
 .chatAnswer strong {
   display: block;
   margin-bottom: 0.5rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
 }
 
@@ -441,7 +441,7 @@
   width: 100%;
   background: transparent;
   border: none;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   padding: 0.65rem 1rem;
   border-radius: 6px;
   cursor: pointer;
@@ -488,7 +488,7 @@
 .chatLogTitle {
   font-size: var(--very-small-font);
   font-weight: 400;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin-bottom: 0.15rem;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -519,7 +519,7 @@
   margin: 0;
   font-size: var(--large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .chatHistoryEmpty {
@@ -549,7 +549,7 @@
 .chatBackBtn {
   background: none;
   border: none;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   font-size: var(--basic-font);
   font-weight: 500;
@@ -605,7 +605,7 @@
   margin: 0;
   font-size: 1.1rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .chatModalClose {
@@ -622,7 +622,7 @@
 }
 
 .chatModalClose:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .chatModalBody {
@@ -669,7 +669,7 @@
 
 .assistantMessage .messageText {
   background: var(--bg-tertiary);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .noChatHistory {
@@ -737,7 +737,7 @@
   padding: 0;
   cursor: pointer;
   font-size: 2.5rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   transition: all 0.2s ease;
   flex-shrink: 0;
 }
@@ -952,7 +952,7 @@
   text-align: center;
   font-size: var(--large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .catPopupClose {
@@ -970,7 +970,7 @@
 
 .catPopupClose:hover {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .catPopup .categoryList {

@@ -173,7 +173,7 @@
 } */
 
 .clearBtn {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   font-size: var(--basic-font);
   font-weight: 500;
@@ -190,8 +190,8 @@
 
 .clearBtn:hover {
   /* background: var(--bg-hover); */
-  color: var(--border-error);
-  border-color: var(--border-error);
+  color: var(--clr-danger-text);
+  border-color: currentColor;
 }
 
 /* Idea suggestion chips */
@@ -203,7 +203,7 @@
 .ideasTitle {
   font-size: var(--basic-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0 0 0.3rem;
 }
 
@@ -235,7 +235,7 @@
 .ideaChip:hover:not(:disabled) {
   background: var(--bg-hover);
   border-color: var(--text-muted);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .ideaChip:disabled {
@@ -311,12 +311,12 @@
 }
 
 .imageBtn:hover:not(:disabled) {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   background: var(--bg-hover);
 }
 
 .sendBtn:hover:not(:disabled) {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   background: var(--bg-hover);
 }
 
@@ -365,7 +365,7 @@
   border: 1px solid var(--border-accent-primary);
   border-radius: 6px;
   background: #faf5ff;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
@@ -398,7 +398,7 @@
   border-radius: 6px;
   font-size: var(--basic-font);
   outline: none;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .customUpdateInput:focus {

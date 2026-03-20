@@ -1,7 +1,7 @@
 .mobileTitle {
   font-size: var(--large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 /* ===== Page ===== */
@@ -29,7 +29,7 @@
 .title {
   font-size: var(--very-large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
   text-align: start;
 }
@@ -53,9 +53,9 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.5em 1.2em;
-  border: 1px solid var(--text-primary);
+  border: 1px solid var(--clr-text-primary);
   border-radius: 6px;
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   color: var(--bg-primary);
   font-size: var(--basic-font);
   cursor: pointer;
@@ -78,7 +78,7 @@
 
 .headerBtnOutline {
   padding: 0.5em 1.2em;
-  border: 1px solid var(--btn-border-color);
+  border: 1px solid var(--clr-btn-main-border);
   border-radius: 6px;
   background: var(--bg-card);
   color: var(--text-secondary);
@@ -138,7 +138,7 @@
 .dayName {
   font-size: var(--basic-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   line-height: 1.2;
 }
 
@@ -171,7 +171,7 @@
   gap: 0.4rem;
   font-size: var(--basic-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin-bottom: 0.15rem;
 }
 
@@ -185,7 +185,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.35rem 0;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .mealRecipeItem:last-child {
@@ -228,7 +228,7 @@
   padding: 0.55em;
   border: none;
   border-radius: 0 0 12px 12px;
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   color: var(--bg-primary);
   font-size: var(--basic-font);
   font-weight: 600;
@@ -259,7 +259,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.1rem 1.3rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .shoppingModalTitle {
@@ -272,7 +272,7 @@
   padding: 0.5rem 1.3rem;
   font-size: var(--basic-font);
   color: var(--text-muted);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .shoppingEmpty {
@@ -298,7 +298,7 @@
   cursor: pointer;
   padding: 0.45rem 0;
   font-size: var(--basic-font);
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .shoppingItem:last-child {
@@ -308,13 +308,13 @@
 .shoppingCheckbox {
   width: 18px;
   height: 18px;
-  accent-color: var(--text-primary);
+  accent-color: var(--clr-text-primary);
   cursor: pointer;
   flex-shrink: 0;
 }
 
 .shoppingName {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
 }
 
@@ -375,7 +375,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 1.1rem 1.3rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .pickerTitle {
@@ -396,7 +396,7 @@
 .mealTabs {
   display: flex;
   gap: 0;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .mealTab {
@@ -414,8 +414,8 @@
 }
 
 .mealTabActive {
-  color: var(--text-primary);
-  border-bottom-color: var(--text-primary);
+  color: var(--clr-text-primary);
+  border-bottom-color: var(--clr-text-primary);
 }
 
 .catListItem {
@@ -428,7 +428,7 @@
   width: 100%;
   text-align: start;
   cursor: pointer;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
   transition: background 0.15s;
   font-size: var(--basic-font);
 }
@@ -455,7 +455,7 @@
 .catListName {
   flex: 1;
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .catListCount {
@@ -469,7 +469,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .backBtn {
@@ -495,7 +495,7 @@
   padding: 0.3em 0.8em;
   border: none;
   border-radius: 6px;
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   color: var(--bg-primary);
   font-size: var(--small-font);
   font-weight: 600;
@@ -519,7 +519,7 @@
 
 .pickerSearch {
   padding: 0.7rem 1.3rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .pickerSearchBox {
@@ -574,7 +574,7 @@
 
 .pickerItemName {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-weight: 500;
 }
 

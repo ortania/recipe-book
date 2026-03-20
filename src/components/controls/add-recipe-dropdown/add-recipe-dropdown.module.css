@@ -41,7 +41,7 @@
   border-radius: 12px;
   width: 100%;
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   transition: background 0.15s;
   white-space: nowrap;

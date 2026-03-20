@@ -168,24 +168,10 @@ function CategoriesSheetContent({
                   key={group.id}
                   className={`${classes.item} ${isSelected ? classes.itemActive : ""}`}
                   onClick={() => toggleCategory(group.id)}
-                  style={
-                    isSelected
-                      ? {
-                          borderColor: group.color,
-                          backgroundColor: `${group.color}15`,
-                        }
-                      : undefined
-                  }
                 >
                   <span className={classes.label}>
-                    <span
-                      className={classes.icon}
-                      style={{
-                        backgroundColor: `${group.color}18`,
-                        color: group.color,
-                      }}
-                    >
-                      <IconComp size={18} />
+                    <span className={classes.icon}>
+                      <IconComp size={14} />
                     </span>
                     <span className={classes.name}>
                       {group.id === "all"

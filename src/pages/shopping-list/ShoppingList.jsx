@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { FiCheck, FiShoppingCart, FiPrinter, FiTrash2 } from "react-icons/fi";
-import { Globe } from "lucide-react";
+import { Globe, Plus, FilePenLine, Trash2, Check } from "lucide-react";
 import SearchBox from "../../components/controls/search/SearchBox";
 import { SortButton } from "../../components/controls/sort-button";
 import { search } from "../../components/recipes/utils";
@@ -26,6 +26,11 @@ function ShoppingList() {
   const [selectedCat, setSelectedCat] = useState(null);
   const [checkedItems, setCheckedItems] = useState({});
   const [showList, setShowList] = useState(false);
+  const [manualItems, setManualItems] = useState([]);
+  const [newItemText, setNewItemText] = useState("");
+  const [editingKey, setEditingKey] = useState(null);
+  const [editText, setEditText] = useState("");
+  const [editedItems, setEditedItems] = useState({});
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
   const [globalRecipes, setGlobalRecipes] = useState([]);
   const [loadingGlobal, setLoadingGlobal] = useState(false);
@@ -125,8 +130,59 @@ function ShoppingList() {
   const handleClear = () => {
     setSelectedRecipes([]);
     setCheckedItems({});
+    setManualItems([]);
     setShowList(false);
   };
+
+  const handleAddManualItem = () => {
+    const text = newItemText.trim();
+    if (!text) return;
+    const id = `manual_${Date.now()}`;
+    setManualItems((prev) => [...prev, { id, text }]);
+    setNewItemText("");
+  };
+
+  const handleDeleteItem = (id) => {
+    setManualItems((prev) => prev.filter((m) => m.id !== id));
+  };
+
+  const handleStartEdit = (key, currentText) => {
+    setEditingKey(key);
+    setEditText(currentText);
+  };
+
+  const handleSaveEdit = (key) => {
+    const text = editText.trim();
+    if (!text) {
+      setEditingKey(null);
+      return;
+    }
+    if (key.startsWith("manual_")) {
+      setManualItems((prev) =>
+        prev.map((m) => (m.id === key ? { ...m, text } : m)),
+      );
+    } else {
+      setEditedItems((prev) => ({ ...prev, [key]: text }));
+    }
+    setEditingKey(null);
+  };
+
+  const combinedList = useMemo(() => {
+    const generated = shoppingList.map((item) => {
+      const key = item.name.toLowerCase();
+      return {
+        key,
+        text: editedItems[key] || item.displayText,
+        isManual: false,
+      };
+    });
+    const manual = manualItems.map((m) => ({
+      key: m.id,
+      text: m.text,
+      isManual: true,
+    }));
+    return [...generated, ...manual];
+  }, [shoppingList, manualItems, editedItems]);
 
   if (showList && selectedRecipes.length > 0) {
     return (
@@ -141,7 +197,7 @@ function ShoppingList() {
           )}
           <span className={classes.subtitle}>
             {selectedRecipes.length} {t("recipesView", "recipesCount")},{" "}
-            {shoppingList.length} {t("mealPlanner", "items")}
+            {combinedList.length} {t("mealPlanner", "items")}
           </span>
           <div className={classes.listHeaderActions}>
             <button className={classes.headerBtn} onClick={handlePrint}>
@@ -153,27 +209,89 @@ function ShoppingList() {
           </div>
         </div>
 
+        <div className={classes.addItemRow}>
+          <input
+            type="text"
+            className={classes.addItemInput}
+            value={newItemText}
+            onChange={(e) => setNewItemText(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleAddManualItem();
+            }}
+            placeholder={t("mealPlanner", "addItemPlaceholder")}
+          />
+          <button
+            className={classes.addItemBtn}
+            onClick={handleAddManualItem}
+            disabled={!newItemText.trim()}
+          >
+            <Plus size={18} />
+          </button>
+        </div>
+
         <div className={classes.listContainer}>
-          {shoppingList.map((item) => {
-            const key = item.name.toLowerCase();
-            const isChecked = checkedItems[key];
+          {combinedList.map((item) => {
+            const isChecked = checkedItems[item.key];
+            const isEditing = editingKey === item.key;
             return (
-              <label
-                key={key}
+              <div
+                key={item.key}
                 className={`${classes.listItem} ${isChecked ? classes.listItemChecked : ""}`}
               >
                 <input
                   type="checkbox"
                   checked={!!isChecked}
-                  onChange={() => toggleChecked(key)}
+                  onChange={() => toggleChecked(item.key)}
                   className={classes.checkbox + " " + buttonClasses.checkBox}
                 />
-                <span className={classes.listItemText}>
-                  {item.count > 1
-                    ? `${item.totalQty % 1 === 0 ? item.totalQty : item.totalQty.toFixed(1)} ${item.name}`
-                    : item.display}
-                </span>
-              </label>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    className={classes.editInput}
+                    value={editText}
+                    onChange={(e) => setEditText(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") handleSaveEdit(item.key);
+                      if (e.key === "Escape") setEditingKey(null);
+                    }}
+                    onBlur={() => handleSaveEdit(item.key)}
+                    autoFocus
+                  />
+                ) : (
+                  <span
+                    className={classes.listItemText}
+                    onClick={() => handleStartEdit(item.key, item.text)}
+                  >
+                    {item.text}
+                  </span>
+                )}
+                <div className={classes.listItemActions}>
+                  {!isEditing && (
+                    <button
+                      className={classes.itemActionBtn}
+                      onClick={() => handleStartEdit(item.key, item.text)}
+                    >
+                      <FilePenLine size={14} />
+                    </button>
+                  )}
+                  {item.isManual && !isEditing && (
+                    <button
+                      className={classes.itemActionBtn}
+                      onClick={() => handleDeleteItem(item.key)}
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  )}
+                  {isEditing && (
+                    <button
+                      className={classes.itemActionBtn}
+                      onClick={() => handleSaveEdit(item.key)}
+                    >
+                      <Check size={14} />
+                    </button>
+                  )}
+                </div>
+              </div>
             );
           })}
         </div>
@@ -227,10 +345,7 @@ function ShoppingList() {
             className={classes.catListItem}
             onClick={handleSelectCommunity}
           >
-            <span
-              className={classes.catListIcon}
-              style={{ background: "#10b98122", color: "#10b981" }}
-            >
+            <span className={classes.catListIcon}>
               <Globe size={20} />
             </span>
             <span className={classes.catListName}>
@@ -248,13 +363,10 @@ function ShoppingList() {
                 setFolderSearch("");
               }}
             >
-              <span
-                className={classes.catListIcon}
-                style={{ background: "#6366f122", color: "#6366f1" }}
-              >
+              <span className={classes.catListIcon}>
                 {(() => {
                   const IC = getCategoryIcon("restaurant");
-                  return <IC />;
+                  return <IC size={16} />;
                 })()}
               </span>
               <span className={classes.catListName}>
@@ -278,13 +390,10 @@ function ShoppingList() {
                       setFolderSearch("");
                     }}
                   >
-                    <span
-                      className={classes.catListIcon}
-                      style={{ background: `${cat.color}22`, color: cat.color }}
-                    >
+                    <span className={classes.catListIcon}>
                       {(() => {
                         const IC = getCategoryIcon(cat.icon);
-                        return <IC />;
+                        return <IC size={16} />;
                       })()}
                     </span>
                     <span className={classes.catListName}>

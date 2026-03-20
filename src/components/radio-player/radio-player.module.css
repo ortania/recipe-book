@@ -47,9 +47,9 @@
 }
 
 .title {
-  font-weight:  var(--font-size-quaternary);
+  font-weight: var(--font-size-quaternary);
   font-size: 2rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   flex: 1;
 }
 

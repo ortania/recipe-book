@@ -18,7 +18,7 @@
 .mobileTitle {
   font-size: var(--large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .header {
@@ -46,7 +46,7 @@
 .header h1 {
   font-size: var(--very-large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin-bottom: 0.5rem;
 }
 
@@ -81,21 +81,21 @@
 .tab {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   padding: 0.2em 0.6em;
 }
 
 .tab:hover {
-  border-color: var(--text-primary) !important;
+  border-color: var(--clr-text-primary) !important;
   background: var(--bg-card) !important;
   /* box-shadow: none !important; */
-  color: var(--text-primary) !important;
+  color: var(--clr-text-primary) !important;
   /* transform: translateY(-1px); */
 }
 
 .activeTab {
-  background: var(--btn-bg-primary);
-  border-color: var(--text-primary);
+  background: var(--clr-btn-main-bg);
+  border-color: var(--clr-text-primary);
   color: var(--text-on-primary);
 }
 
@@ -149,7 +149,7 @@
 
 .itemName {
   font-weight: 500;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   flex: 1;
   font-size: var(--basic-font);
 }
@@ -173,8 +173,8 @@
   gap: 1rem;
   padding: 1rem;
   /* background: #667eea; */
-  /* background: var(--text-primary); */
-  color: var(--text-primary);
+  /* background: var(--clr-text-primary); */
+  color: var(--clr-text-primary);
   /* border-radius: 8px; */
   border-bottom: 1px solid var(--border-color);
   font-weight: 700;
@@ -223,7 +223,7 @@
 
 .question {
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   margin-bottom: 0.75rem;
 }

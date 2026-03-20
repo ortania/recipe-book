@@ -27,7 +27,7 @@
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   cursor: pointer;
   background: none;
@@ -45,7 +45,7 @@
 }
 
 .backLink:hover {
-  /* color: var(--text-primary); */
+  /* color: var(--clr-text-primary); */
   /* transform: scale(1.2); */
   opacity: 0.8;
 }
@@ -71,7 +71,7 @@
 
 .methodCloseBtn:hover {
   /* background: #f5f5f5; */
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .screenTopBar {
@@ -118,13 +118,13 @@
 
 .wizardCloseBtn:hover {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .methodTitle {
   font-size: var(--very-large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   text-align: center;
   margin: 0 0 0.5rem 0;
 }
@@ -197,7 +197,7 @@
   /* font-size: 1.4rem; */
   font-size: 2rem;
   /* color: white; */
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   flex-shrink: 0;
 }
 
@@ -272,7 +272,7 @@
 .methodCardTitle {
   font-size: var(--basic-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0 0 0.2rem 0;
 }
 
@@ -292,7 +292,7 @@
 .screenTitle {
   font-size: var(--very-large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0 0 0.3rem 0;
 }
 
@@ -305,7 +305,7 @@
 .fieldLabel {
   font-size: var(--basic-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin-bottom: 0.5rem;
   display: block;
 }
@@ -343,7 +343,7 @@
 
 .progressBar {
   height: 100%;
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   border-radius: 3px;
   transition: width 0.3s ease;
 }
@@ -372,7 +372,7 @@
 
 .tipBold {
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .continueBtn {
@@ -397,7 +397,7 @@
 }
 
 .continueBtn:not(:disabled) {
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   cursor: pointer;
 }
 
@@ -418,7 +418,7 @@
   border-radius: 12px;
   font-size: var(--basic-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -472,7 +472,7 @@
 .stepperTitle {
   font-size: var(--large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
 }
 
@@ -508,11 +508,11 @@
 }
 
 .segmentActive::before {
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
 }
 
 .segmentCurrent::before {
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
 }
 
 .segmentClickable {
@@ -535,7 +535,7 @@
 .stepSectionTitle {
   font-size: var(--large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0 0 0.3rem 0;
 }
 
@@ -594,7 +594,7 @@
 }
 
 .formInput:focus {
-  border-color: var(--active-color-primary);
+  border-color: var(--clr-success);
 }
 
 .formSelect {
@@ -631,7 +631,7 @@
 }
 
 .formTextarea:focus {
-  border-color: var(--active-color-primary);
+  border-color: var(--clr-success);
 }
 
 /* ========== Dynamic Lists (Ingredients/Instructions) ========== */
@@ -663,13 +663,13 @@
 }
 
 .inputBox:focus-within {
-  border-color: var(--active-color-primary);
+  border-color: var(--clr-success);
 }
 
 .dynamicItemNumber {
   font-size: var(--basic-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   flex-shrink: 0;
   line-height: 1.5;
 }
@@ -747,7 +747,7 @@
 }
 
 .instructionBox:focus-within {
-  border-color: var(--active-color-primary);
+  border-color: var(--clr-success);
 }
 
 .instructionContent {
@@ -862,8 +862,8 @@
 }
 
 .addItemBtn:hover {
-  border-color: var(--active-color-primary);
-  color: var(--active-color-primary);
+  border-color: var(--clr-success);
+  color: var(--clr-success);
 }
 
 .addGroupBtn {
@@ -889,8 +889,8 @@
 .addGroupBtn:hover {
   /* border-color: #9810fa;
   color: #9810fa; */
-  border-color: var(--active-color-primary);
-  color: var(--active-color-primary);
+  border-color: var(--clr-success);
+  color: var(--clr-success);
 }
 
 /* Parse ingredients: collapsible; help icon shows explanation */
@@ -918,7 +918,7 @@
 .parseIngredientsTitle {
   font-size: var(--basic-font);
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
 }
 .parseIngredientsHeaderIcons {
@@ -939,7 +939,7 @@
   border-radius: 50%;
 }
 .parseIngredientsHelpBtn:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   background: var(--bg-hover);
 }
 .parseIngredientsHelpPopover {
@@ -963,12 +963,12 @@
   border-radius: 4px;
 }
 .parseIngredientsHelpClose:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   background: var(--bg-hover);
 }
 .parseIngredientsHelpBody {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   line-height: 1.5;
 }
 .parseIngredientsHelpBlock {
@@ -988,7 +988,7 @@
 }
 .parseIngredientsHelpText {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0;
   line-height: 1.5;
   white-space: pre-line;
@@ -1038,7 +1038,7 @@
   padding: 0.6em 1.25em;
   font-size: var(--basic-font);
   font-weight: 600;
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -1072,7 +1072,7 @@
 }
 
 .imageUploadArea:hover {
-  border-color: var(--active-color-primary);
+  border-color: var(--clr-success);
   background: #f0fff5;
 }
 
@@ -1112,7 +1112,7 @@
 .imageOptionBtn:hover {
   border-color: currentColor;
   background: #f0fff5;
-  color: var(--active-color-primary);
+  color: var(--clr-success);
 }
 
 .imageOptionIcon {
@@ -1121,7 +1121,7 @@
 }
 
 .imageOptionBtn:hover .imageOptionIcon {
-  color: var(--active-color-primary);
+  color: var(--clr-success);
 }
 
 .imageHint {
@@ -1133,7 +1133,7 @@
 }
 
 .dropActive {
-  outline: 3px dashed var(--active-color-primary);
+  outline: 3px dashed var(--clr-success);
   outline-offset: 4px;
   background: rgba(46, 204, 113, 0.06);
 }
@@ -1229,7 +1229,7 @@
 }
 
 .categoryChip:hover {
-  border-color: var(--active-color-primary);
+  border-color: var(--clr-success);
 }
 
 @media (hover: none) {
@@ -1240,7 +1240,7 @@
 
 .categoryChipActive {
   background: var(--bg-hover);
-  color: var(--active-color-primary);
+  color: var(--clr-success);
 }
 
 .addCategoryChip {
@@ -1258,15 +1258,15 @@
 }
 
 .addCategoryChip:hover {
-  border-color: var(--active-color-primary);
-  color: var(--active-color-primary);
+  border-color: var(--clr-success);
+  color: var(--clr-success);
 }
 
 .newCategoryInline {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  border: 1px solid var(--active-color-primary);
+  border: 1px solid var(--clr-success);
   border-radius: 20px;
   padding: 0.25em 0.5em;
   background: var(--bg-card);
@@ -1280,7 +1280,7 @@
   font-family: inherit;
   padding: 0.25em 0.4em;
   width: 8rem;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .newCategoryInput::placeholder {
@@ -1292,7 +1292,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--active-color-primary);
+  background: var(--clr-success);
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -1326,7 +1326,7 @@
 }
 
 .newCategoryCancelBtn:hover {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 /* ========== Summary Screen ========== */
@@ -1340,14 +1340,14 @@
 
 .summaryIcon {
   font-size: 3rem;
-  color: var(--active-color-primary);
+  color: var(--clr-success);
   margin-bottom: 0.5rem;
 }
 
 .summaryTitle {
   font-size: var(--large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0 0 0.3rem 0;
 }
 
@@ -1364,10 +1364,10 @@
   padding: 0.6em 1.2em;
   background: var(--bg-card);
 
-  border: 1px solid var(--active-color-primary);
+  border: 1px solid var(--clr-success);
   border-radius: 12px;
 
-  color: var(--active-color-primary);
+  color: var(--clr-success);
   font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
@@ -1375,7 +1375,7 @@
 }
 
 .previewBtn:hover {
-  background: var(--active-color-primary);
+  background: var(--clr-success);
   color: white;
 }
 
@@ -1459,7 +1459,7 @@
 .previewName {
   font-size: var(--very-large-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 0 0 0.75rem 0;
   text-align: center;
 }
@@ -1473,13 +1473,13 @@
   color: var(--text-secondary);
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid var(--border-light);
+  border-bottom: 1px solid var(--border-color);
 }
 
 .previewSectionTitle {
   font-size: var(--basic-font);
   font-weight: 700;
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   margin: 1rem 0 0.5rem 0;
 }
 
@@ -1487,7 +1487,7 @@
   margin: 0;
   padding: 0 1.2rem;
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   line-height: 1.7;
 }
 
@@ -1520,7 +1520,7 @@
 
 .favoriteLabel {
   font-size: var(--basic-font);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
 }
 
@@ -1557,7 +1557,7 @@
 
 .moveBtn:not(:disabled):hover {
   background: var(--bg-hover);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
 }
 
 .moveBtn:disabled {
@@ -1592,11 +1592,11 @@
 }
 
 .dragOverAbove {
-  box-shadow: 0 -3px 0 0 var(--active-color-primary);
+  box-shadow: 0 -3px 0 0 var(--clr-success);
 }
 
 .dragOverBelow {
-  box-shadow: 0 3px 0 0 var(--active-color-primary);
+  box-shadow: 0 3px 0 0 var(--clr-success);
 }
 
 /* ========== Star Rating ========== */
@@ -1626,14 +1626,14 @@
 }
 
 .stepErrorText {
-  color: var(--error-color);
+  color: var(--clr-danger-text);
   font-size: var(--basic-font, 0.9rem);
   text-align: center;
   margin: 0.75rem 0 0;
   padding: 0.5rem 1rem;
   background: var(--bg-error);
   /* border: 1px solid #fecaca; */
-  border: 1px solid var(--border-error);
+  border: 1px solid var(--clr-danger-border);
   border-radius: 8px;
   animation: fadeInError 0.3s ease;
 }
@@ -1659,13 +1659,13 @@
 
 .savedMessage {
   font-size: var(--very-large-font);
-  color: var(--active-color-primary);
+  color: var(--clr-success);
   font-weight: 600;
   animation: fadeInMsg 0.3s ease;
   display: inline-flex;
   align-items: center;
   line-height: 1;
-  gap: .5rem;
+  gap: 0.5rem;
 }
 
 .savedMessage svg {
@@ -1700,11 +1700,11 @@
   flex: 1;
   padding: 0.9rem;
   background: var(--bg-tertiary);
-  border: 1px solid var(--btn-border-color);
+  border: 1px solid var(--clr-btn-main-border);
   border-radius: var(--btn-small-border-radius);
   font-size: var(--basic-font);
   font-weight: var(--font-weight-tertiary);
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   cursor: pointer;
   transition: var(--transition);
 }
@@ -1716,7 +1716,7 @@
 .nextBtn {
   flex: 1.5;
   padding: 0.9rem;
-  background: var(--text-primary);
+  background: var(--clr-text-primary);
   border: none;
   border-radius: var(--btn-small-border-radius);
   font-size: var(--basic-font);
