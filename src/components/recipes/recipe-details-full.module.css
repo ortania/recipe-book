@@ -191,10 +191,12 @@
 
 .moreMenuItemDanger {
   color: var(--clr-danger-text);
+  font-weight: var(--danger-text-font-weight);
 }
 
 .moreMenuItemDanger .moreMenuIcon {
   color: var(--clr-danger-text);
+  font-weight: var(--danger-text-font-weight);
 }
 
 .moreMenuLabel {
@@ -1194,7 +1196,7 @@
 
 .ingredientGroupHeader {
   padding: 0.6rem 0 0.3rem;
-  font-weight: var(--font-weight-quaternary);
+  font-weight: 700;
   color: var(--clr-text-primary);
   font-size: var(--basic-font);
   border-bottom: 1px solid var(--bg-accent-tertiary);
@@ -1247,9 +1249,9 @@
 }
 
 .checkbox:checked {
-  background: var(--clr-success-hover);
+  background: var(--clr-success-bg-hover);
   /* border-color: #4caf50; */
-  border-color: var(--clr-success-hover);
+  border-color: var(--clr-success-bg-hover);
   position: relative;
 }
 

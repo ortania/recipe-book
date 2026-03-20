@@ -1234,8 +1234,8 @@ function RecipesView({
                     <Bookmark
                       size={isMobile ? 24 : 30}
                       strokeWidth={1.5}
-                      fill="var(--accent-color-1)"
-                      stroke="var(--accent-color-1)"
+                      fill="var(--clr-primary-700)"
+                      stroke="var(--clr-primary-700)"
                     />
                   ) : (
                     <Bookmark size={isMobile ? 24 : 30} strokeWidth={1.5} />
@@ -1747,12 +1747,12 @@ function RecipesView({
                         size={16}
                         fill={
                           savedRecipes.includes(person.id)
-                            ? "var(--accent-color-1)"
+                            ? "var(--clr-primary-700)"
                             : "none"
                         }
                         stroke={
                           savedRecipes.includes(person.id)
-                            ? "var(--accent-color-1)"
+                            ? "var(--clr-primary-700)"
                             : "currentColor"
                         }
                       />

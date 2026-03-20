@@ -33,9 +33,9 @@
 
 .loginForm {
   padding: 3rem;
-  background: var(--bg-card);
+  background: var(--clr-input-bg);
   border-radius: 20px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  /* box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15); */
   width: 100%;
   max-width: 440px;
   display: flex;
@@ -46,27 +46,34 @@
 .loginForm .title {
   text-align: center;
   color: var(--clr-text-primary);
-  font-size: 2rem;
-  font-weight: 700;
+  font-size: var(--font-heading-size);
+  font-weight: var(--font-weight-heading);
   margin: 0 0 1rem 0;
 }
 
 .loginForm input:not([type="checkbox"]) {
   box-shadow: none;
   padding: 1rem 1.2rem;
-  border: 1px solid var(--border-color);
-  border-radius: 12px;
-  /* font-size: var(--basic-font); */
+  border: 1px solid var(--clr-input-border);
+  border-radius: var(--input-border-radius);
   transition: all 0.3s ease;
-  background: var(--bg-tertiary);
-  color: var(--clr-text-primary);
+  background: var(--clr-input-bg);
+  color: var(--clr-input-text);
+}
+
+.loginForm input:not([type="checkbox"]):-webkit-autofill,
+.loginForm input:not([type="checkbox"]):-webkit-autofill:hover,
+.loginForm input:not([type="checkbox"]):-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--clr-input-bg) inset;
+  -webkit-text-fill-color: var(--clr-input-text);
+  transition: background-color 5000s ease-in-out 0s;
 }
 
 .loginForm input:not([type="checkbox"]):focus {
   box-shadow: none;
   outline: none;
-  border-color: var(--clr-text-primary);
-  background: var(--bg-card);
+  border-color: var(--clr-input-border-focus);
+  background: var(--clr-input-bg-focus);
   /* box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); */
 }
 
@@ -79,35 +86,6 @@
 .passwordInput input {
   width: 100%;
   padding-right: 3.5rem;
-}
-
-.eyeButton {
-  position: absolute;
-  right: 1rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-  color: var(--text-secondary);
-  /* width: 2rem;
-  height: 2rem; */
-  border-radius: 50%;
-}
-
-.eyeButton:hover {
-  color: #2196f3;
-  background-color: rgba(33, 150, 243, 0.1);
-}
-
-.eyeButton svg {
-  width: 2.4rem;
-  height: 2.4rem;
 }
 
 .loginForm button[type="submit"] {
@@ -139,18 +117,18 @@
   width: 100%;
   padding: 0.85rem 1.2rem;
   border: 1px solid var(--border-color);
-  border-radius: 12px;
-  background: var(--bg-card);
+  border-radius: var(--btn-border-radius);
+  background: var(--clr-input-bg);
   color: var(--clr-text-primary);
   font-size: var(--basic-font);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .googleBtn:hover:not(:disabled) {
-  background: var(--bg-tertiary);
-  border-color: var(--text-muted);
+  background: var(--clr-btn-outline-bg-hover);
+  border-color: var(--clr-btn-outline-border-hover);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -190,7 +168,8 @@
   align-items: center;
   justify-content: center;
   gap: 0.4rem;
-  color: var(--error-color, #e53e3e);
+  color: var(--clr-danger-text);
+  font-weight: var(--danger-text-font-weight);
   font-size: var(--basic-font);
   margin: 0;
 }
@@ -228,7 +207,7 @@
 
 .landingLogoBook {
   color: var(--clr-text-primary);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: 600;
 }
 
 .landingSubtitle {
@@ -247,7 +226,7 @@
   background: var(--clr-btn-main-bg);
   color: var(--clr-btn-main-text);
   font-size: var(--basic-font);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
   /* box-shadow: 0 4px 16px rgba(0, 102, 204, 0.3); */
@@ -292,12 +271,7 @@
 .signupLink {
   text-align: center;
   font-size: var(--basic-font);
-  color: var(--clr-link);
   margin: 0;
-}
-
-.signupLink:hover {
-  transform: var(--link-transform-hover);
 }
 
 .link {
@@ -306,6 +280,8 @@
   cursor: pointer;
   text-decoration: underline;
   text-decoration-color: currentColor;
+  display: inline-block;
+  transition: var(--transition);
 }
 
 .link:hover {
@@ -315,7 +291,7 @@
 .forgotPassword {
   text-align: center;
   font-size: var(--basic-font);
-  color: var(--clr-text-primary);
+  color: var(--clr-link);
   margin: 0.5rem 0 0 0;
 }
 
@@ -353,23 +329,23 @@
 .tourLink {
   width: 100%;
   text-align: center;
-  font-weight: var(-font-weight-tertiary);
-  color: var(--clr-text-primary);
+  font-weight: var(--link-font-weight);
+  color: var(--clr-link);
   font-size: var(--large-font);
   cursor: pointer;
   text-decoration: underline;
   margin-top: 0.5rem;
-  transition: color 0.2s ease;
+  transition: var(--transition);
   align-self: flex-start;
 }
 
 .tourLink:hover {
-  opacity: var(--hover-opacity);
+  transform: var(--link-transform-hover);
 }
 
 .success {
   background: #d4edda;
-  color: var(--clr-success-dark);
+  color: var(--clr-success-text);
   color: var(--success-color);
   padding: 1rem;
   border-radius: 12px;

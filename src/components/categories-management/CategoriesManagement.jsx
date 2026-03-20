@@ -2,9 +2,8 @@ import React, { useState, useRef, useCallback } from "react";
 import { FaRegEdit } from "react-icons/fa";
 import { GoTrash } from "react-icons/go";
 import { PiPlusLight } from "react-icons/pi";
-import { FiMenu } from "react-icons/fi";
 import { LuArrowUpDown } from "react-icons/lu";
-import { Camera, X as LuX } from "lucide-react";
+import { Camera, X as LuX, GripVertical } from "lucide-react";
 import { Modal } from "../modal";
 import { CloseButton } from "../controls/close-button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
@@ -366,7 +365,7 @@ function CategoriesManagement({
                     handleTouchStart(e, index, "categories", listRef)
                   }
                 >
-                  <FiMenu size={16} />
+                  <GripVertical size={16} />
                 </span>
                 <div className={classes.catInfo}>
                   {renderIconButton(category.icon, category.color)}

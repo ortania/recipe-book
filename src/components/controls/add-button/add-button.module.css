@@ -25,10 +25,10 @@
   border-radius: 12px;
   width: var(--btn-circle-primary);
   height: var(--btn-circle-primary);
-  font-size: var(--btn-icon-primary);
+  font-size: var(--basic-font);
   border: 1.5px solid var(--border-accent-primary);
   background: var(--clr-btn-main-bg);
-  color: var(--text-on-primary);
+  color: var(--clr-btn-main-text);
 }
 
 .withText {

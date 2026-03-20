@@ -144,7 +144,7 @@
 
 .infoDot {
   color: var(--text-muted);
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .categoryTags {
@@ -395,7 +395,7 @@
   transform: translate(-50%, -50%);
   color: white;
   font-size: 0.8rem;
-  font-weight: bold;
+  font-weight: 700;
 }
 
 .checkboxLabel span {

@@ -73,8 +73,7 @@
 
 .groupDescription {
   color: var(--clr-grey-3);
-  font-weight: normal;
-  font-size: 1.4rem;
+  font-size: var(--basic-font);
 }
 
 .loadMoreContainer {
@@ -756,7 +755,7 @@
   text-decoration: underline;
   text-decoration-color: currentColor;
   font-size: var(--basic-font);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
   padding-inline-end: 1rem;
@@ -1250,7 +1249,7 @@
 
 .compactSharer {
   font-size: var(--basic-font);
-  color: var(--accent-color-1);
+  color: var(--clr-link);
   text-decoration: underline;
   cursor: pointer;
   white-space: nowrap;

@@ -58,7 +58,6 @@
 
 .footerLabel {
   font-size: var(--small-font);
-  font-weight: var(--font-weight-primary);
   white-space: nowrap;
 }
 

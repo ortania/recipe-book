@@ -329,7 +329,7 @@
   font-size: var(--basic-font);
   /* font-weight: 700; */
   /* color: #10b981; */
-  color: var(--clr-success);
+  color: var(-text);
   background: transparent;
   padding: 0;
   border-radius: 0;
@@ -387,7 +387,7 @@
   border: none;
   /* border-radius: 15px; */
   cursor: pointer;
-  font-weight: var(--font-weight-quaternary);
+  font-weight: 700;
   transition: var(--transition);
 }
 
@@ -400,7 +400,7 @@
 }
 
 .restartButton {
-  color: var(--text-on-primary);
+  color: var(--clr-btn-main-text);
   background: var(--clr-btn-main-bg);
   font-size: var(--basic-font);
   display: flex;
@@ -417,7 +417,7 @@
 }
 
 .nextButton {
-  background-color: var(--clr-success);
+  background-color: var(--clr-success-bg);
   color: white;
   border-radius: var(--btn-border-radius);
   box-shadow: none;
@@ -501,7 +501,7 @@
   height: 0;
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
-  border-bottom: 14px solid var(--clr-success);
+  border-bottom: 14px solid var(--clr-success-border);
   animation: helpArrowBounce 1s ease-in-out infinite;
   z-index: 10;
 }
@@ -614,7 +614,7 @@
   height: 0;
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
-  border-bottom: 14px solid var(--clr-success);
+  border-bottom: 14px solid var(-border);
   animation: micArrowBounce 1s ease-in-out infinite;
   z-index: 10;
 }
@@ -901,7 +901,7 @@
   color: var(--clr-btn-main-bg);
   border: 1px solid var(--clr-btn-main-bg);
   border-radius: var(--btn-border-radius);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: 600;
   display: flex;
   align-items: center;
   gap: 0.4rem;
@@ -952,7 +952,7 @@
 .completionTitle {
   font-size: var(--huge-font);
   font-weight: bold;
-  color: var(--clr-success);
+  color: var(--clr-success-text);
   margin-bottom: 1rem;
 }
 
@@ -965,7 +965,7 @@
 .completionButton {
   padding: 1rem 2rem;
   font-size: var(--basic-font);
-  background-color: var(--clr-success);
+  background-color: var(--clr-success-bg);
   background-color: var(--clr-btn-main-bg);
   color: white;
   border: none;

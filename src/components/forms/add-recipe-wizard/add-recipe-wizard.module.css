@@ -353,12 +353,12 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.8rem 1rem;
-  background: var(--tip-bg);
+  background: var(--clr-tip-bg);
   border-radius: 12px;
   margin-top: 1rem;
   font-size: var(--basic-font);
-  color: var(--tip-color);
-  border: 1px solid var(--tip-border);
+  color: var(--clt-tip);
+  border: 1px solid var(--clr-tip-border);
 }
 
 .tipBoxPurple {
@@ -594,7 +594,7 @@
 }
 
 .formInput:focus {
-  border-color: var(--clr-success);
+  border-color: var(--clr-success-border);
 }
 
 .formSelect {
@@ -631,7 +631,7 @@
 }
 
 .formTextarea:focus {
-  border-color: var(--clr-success);
+  border-color: var(--clr-success_border);
 }
 
 /* ========== Dynamic Lists (Ingredients/Instructions) ========== */
@@ -663,7 +663,7 @@
 }
 
 .inputBox:focus-within {
-  border-color: var(--clr-success);
+ border-color: var(--clr-success_border);
 }
 
 .dynamicItemNumber {
@@ -747,7 +747,7 @@
 }
 
 .instructionBox:focus-within {
-  border-color: var(--clr-success);
+  border-color: var(--clr-success-border);
 }
 
 .instructionContent {
@@ -862,8 +862,8 @@
 }
 
 .addItemBtn:hover {
-  border-color: var(--clr-success);
-  color: var(--clr-success);
+  border-color: var(--clr-success-border);
+  color: var(--clr-success-text);
 }
 
 .addGroupBtn {
@@ -889,8 +889,8 @@
 .addGroupBtn:hover {
   /* border-color: #9810fa;
   color: #9810fa; */
-  border-color: var(--clr-success);
-  color: var(--clr-success);
+  border-color: var(-border);
+  color: var(--clr-success-text);
 }
 
 /* Parse ingredients: collapsible; help icon shows explanation */
@@ -1072,7 +1072,7 @@
 }
 
 .imageUploadArea:hover {
-  border-color: var(--clr-success);
+  border-color: var(--clr-success-border);
   background: #f0fff5;
 }
 
@@ -1112,7 +1112,7 @@
 .imageOptionBtn:hover {
   border-color: currentColor;
   background: #f0fff5;
-  color: var(--clr-success);
+  color: var(--clr-success-text);
 }
 
 .imageOptionIcon {
@@ -1121,7 +1121,7 @@
 }
 
 .imageOptionBtn:hover .imageOptionIcon {
-  color: var(--clr-success);
+  color: var(--clr-success-text);
 }
 
 .imageHint {
@@ -1133,7 +1133,7 @@
 }
 
 .dropActive {
-  outline: 3px dashed var(--clr-success);
+  outline: 3px dashed var(--clr-success-border);
   outline-offset: 4px;
   background: rgba(46, 204, 113, 0.06);
 }
@@ -1229,7 +1229,7 @@
 }
 
 .categoryChip:hover {
-  border-color: var(--clr-success);
+  border-color: var(--clr-success-border);
 }
 
 @media (hover: none) {
@@ -1240,7 +1240,7 @@
 
 .categoryChipActive {
   background: var(--bg-hover);
-  color: var(--clr-success);
+  color: var(--clr-success-text);
 }
 
 .addCategoryChip {
@@ -1258,15 +1258,15 @@
 }
 
 .addCategoryChip:hover {
-  border-color: var(--clr-success);
-  color: var(--clr-success);
+  border-color: var(--clr-success-border);
+  color: var(--clr-success-text);
 }
 
 .newCategoryInline {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  border: 1px solid var(--clr-success);
+  border: 1px solid var(--clr-success-border);
   border-radius: 20px;
   padding: 0.25em 0.5em;
   background: var(--bg-card);
@@ -1292,7 +1292,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--clr-success);
+  background: var(--clr-success-bg);
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -1340,7 +1340,7 @@
 
 .summaryIcon {
   font-size: 3rem;
-  color: var(--clr-success);
+  color: var(--clr-success-text);
   margin-bottom: 0.5rem;
 }
 
@@ -1364,10 +1364,10 @@
   padding: 0.6em 1.2em;
   background: var(--bg-card);
 
-  border: 1px solid var(--clr-success);
+  border: 1px solid var(--clr-success-border);
   border-radius: 12px;
 
-  color: var(--clr-success);
+  color: var(--clr-success-text);
   font-size: var(--basic-font);
   font-weight: 600;
   cursor: pointer;
@@ -1375,7 +1375,7 @@
 }
 
 .previewBtn:hover {
-  background: var(--clr-success);
+  background: var(--clr-success-bg);
   color: white;
 }
 
@@ -1592,11 +1592,11 @@
 }
 
 .dragOverAbove {
-  box-shadow: 0 -3px 0 0 var(--clr-success);
+  box-shadow: 0 -3px 0 0 var(--clr-success-bg);
 }
 
 .dragOverBelow {
-  box-shadow: 0 3px 0 0 var(--clr-success);
+  box-shadow: 0 3px 0 0 var(--clr-success-bg);
 }
 
 /* ========== Star Rating ========== */
@@ -1626,8 +1626,9 @@
 }
 
 .stepErrorText {
-  color: var(--clr-danger-text);
+  color: var(--clr-danger-tex);
   font-size: var(--basic-font, 0.9rem);
+  font-weight: var(--danger-text-font-weight);
   text-align: center;
   margin: 0.75rem 0 0;
   padding: 0.5rem 1rem;
@@ -1659,7 +1660,7 @@
 
 .savedMessage {
   font-size: var(--very-large-font);
-  color: var(--clr-success);
+  color: var(--clr-success-text);
   font-weight: 600;
   animation: fadeInMsg 0.3s ease;
   display: inline-flex;
@@ -1703,7 +1704,7 @@
   border: 1px solid var(--clr-btn-main-border);
   border-radius: var(--btn-small-border-radius);
   font-size: var(--basic-font);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: 600;
   color: var(--clr-text-primary);
   cursor: pointer;
   transition: var(--transition);
@@ -1720,7 +1721,7 @@
   border: none;
   border-radius: var(--btn-small-border-radius);
   font-size: var(--basic-font);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: 600;
   color: white;
   cursor: pointer;
   display: flex;

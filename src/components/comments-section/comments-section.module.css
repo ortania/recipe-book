@@ -29,7 +29,7 @@
 }
 
 .badge {
-  background: var(--clr-success);
+  background: var(--clr-success-bg);
   color: #fff;
   font-size: var(--very-small-font);
   font-weight: 700;

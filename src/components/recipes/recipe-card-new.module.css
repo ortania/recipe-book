@@ -67,8 +67,8 @@
 
 .sharerName {
   font-size: var(--basic-font);
-  color: var(--accent-color-1);
-  font-weight: var(--font-weight-secondary);
+  color: var(--clr-link);
+  font-weight: var(--link-font-weight);
   text-decoration: underline;
   text-decoration-color: currentColor;
   cursor: pointer;

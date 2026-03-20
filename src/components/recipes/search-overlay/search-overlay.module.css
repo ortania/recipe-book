@@ -168,8 +168,8 @@
 
 .previousSearchChip:hover {
   background: var(--bg-hover, #f0f0f0);
-  border-color: var(--clr-success);
-  color: var(--clr-success);
+  border-color: var(--clr-success-border);
+  color: var(--clr-success-text);
 }
 
 .foundTermLabel {

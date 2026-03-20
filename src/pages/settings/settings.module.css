@@ -130,7 +130,7 @@
 .fontSizeLabel {
   font-size: var(--basic-font);
   color: var(--clr-text-primary);
-  font-weight: var(--font-weight-secondary);
+  font-weight: 500;
 }
 
 .fontSizeSlider {
@@ -156,7 +156,7 @@
 .scaleValue {
   font-size: var(--basic-font);
   color: var(--clr-text-primary);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: 600;
   text-align: center;
 }
 
@@ -317,7 +317,7 @@
 }
 .privacyLabel {
   font-size: var(--basic-font);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: 600;
   color: var(--clr-text-primary);
 }
 .privacyDesc {

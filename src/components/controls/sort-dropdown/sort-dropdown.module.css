@@ -44,5 +44,5 @@
 }
 
 .option.active .hint {
-  color: var(--clr-success);
+  color: var(--clr-success-text);
 }

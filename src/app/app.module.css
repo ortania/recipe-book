@@ -149,7 +149,7 @@
 
 .loginSkeletonLogo {
   animation: loginSkeletonPulse 2s ease-in-out infinite;
-  color: var(--text-secondary, #888);
+  color: var(--skeleton-highlight);
 }
 
 .loginSkeletonIcon {

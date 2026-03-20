@@ -191,6 +191,7 @@
 .clearBtn:hover {
   /* background: var(--bg-hover); */
   color: var(--clr-danger-text);
+  font-weight: var(--danger-text-font-weight);
   border-color: currentColor;
 }
 

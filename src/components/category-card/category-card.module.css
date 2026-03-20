@@ -20,7 +20,7 @@
 
 .cardSelected {
   border-width: 2.5px;
-  box-shadow: 0 0 0 2px var(--clr-success);
+  box-shadow: 0 0 0 2px var(--clr-success-bg);
 }
 
 .selectedOverlay {
@@ -100,7 +100,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--clr-success);
+  background: var(--clr-success-bg);
   color: #fff;
   display: flex;
   align-items: center;

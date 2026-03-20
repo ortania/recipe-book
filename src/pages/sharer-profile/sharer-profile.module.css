@@ -31,12 +31,12 @@
   align-items: center;
   justify-content: center;
   font-size: var(--huge-font);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: 600;
 }
 
 .profileName {
   font-size: var(--huge-font);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: 600;
   color: var(--clr-text-primary);
   margin: 0;
 }
@@ -56,7 +56,7 @@
   background: transparent;
   color: var(--clr-text-primary);
   font-size: var(--basic-font);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
 }
@@ -65,15 +65,15 @@
   opacity: var(--hover-opacity);
 }
 .followBtnActive {
-  background: var(--clr-success-hover);
-  color: var(--text-on-primary);
-  border-color: 1.5px solid var(--clr-success-hover);
+  background: var(--clr-success-bg-hover);
+  color: var(--clr-btn-main-text);
+  border-color: 1.5px solid var(--clr-success-bg-hover);
 }
 
 .followBtnActive:hover {
   opacity: var(--hover-opacity);
-  background: var(--clr-success-hover);
-  color: var(--text-on-primary);
+  background: var(--clr-success-bg-hover);
+  color: var(--clr-btn-main-text);
 }
 
 .privateNote {

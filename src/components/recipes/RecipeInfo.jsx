@@ -156,8 +156,8 @@ function RecipeInfo({
               {isSaved ? (
                 <Bookmark
                   size={16}
-                  fill="var(--accent-color-1)"
-                  stroke="var(--accent-color-1)"
+                  fill="var(--clr-primary-700)"
+                  stroke="var(--clr-primary-700)"
                 />
               ) : (
                 <Bookmark size={16} color="#333" strokeWidth={2} />

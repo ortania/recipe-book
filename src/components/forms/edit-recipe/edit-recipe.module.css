@@ -90,7 +90,7 @@
 
 .savedMessage {
   font-size: var(--very-large-font);
-  color: var(--clr-success);
+  color: var(--clr-success-text);
   font-weight: 600;
   animation: fadeIn 0.3s ease;
   display: inline-flex;
@@ -221,14 +221,14 @@
 }
 
 .sidebarTabActive {
-  color: var(--clr-success);
+  color: var(--clr-success-text);
   background: var(--bg-card);
-  border-right-color: var(--clr-success);
+  border-right-color: var(--clr-success-border);
   font-weight: 600;
 }
 
 .sidebarTabActive:hover {
-  color: var(--clr-success);
+  color: var(--clr-success-text);
   background: var(--bg-card);
 }
 
@@ -294,7 +294,7 @@
 }
 
 .formInput:focus {
-  border-color: var(--clr-success);
+  border-color: var(--clr-success-border);
 }
 
 .formTextarea {
@@ -317,7 +317,7 @@
 }
 
 .formTextarea:focus {
-  border-color: var(--clr-success);
+  border-color: var(--clr-success-border);
 }
 
 .formSelect {
@@ -438,11 +438,11 @@
 }
 
 .dragOverAbove {
-  box-shadow: 0 -3px 0 0 var(--clr-success);
+  box-shadow: 0 -3px 0 0 var(--clr-success-bg);
 }
 
 .dragOverBelow {
-  box-shadow: 0 3px 0 0 var(--clr-success);
+  box-shadow: 0 3px 0 0 var(--clr-success-bg);
 }
 
 .dynamicItemNumber {
@@ -468,7 +468,7 @@
 }
 
 .inputBox:focus-within {
-  border-color: var(--clr-success);
+  border-color: var(--clr-success-border);
 }
 
 .dynamicItemInput {
@@ -539,7 +539,7 @@
 }
 
 .instructionBox:focus-within {
-  border-color: var(--clr-success);
+  border-color: var(--clr-success-border);
 }
 
 .instructionContent {
@@ -655,8 +655,8 @@
 }
 
 .addItemBtn:hover {
-  border-color: var(--clr-success);
-  color: var(--clr-success);
+  border-color: var(-border);
+  color: var(--clr-success-text);
 }
 
 .addGroupBtn {
@@ -682,8 +682,8 @@
 .addGroupBtn:hover {
   /* border-color: #9810fa;
   color: #9810fa; */
-  border-color: var(--clr-success);
-  color: var(--clr-success);
+  border-color: var(--clr-success-border);
+  color: var(--clr-success-text);
 }
 
 .dragHandle {
@@ -722,11 +722,11 @@
 }
 
 .imageUploadArea:hover {
-  border-color: var(--clr-success);
+  border-color: var(--clr-success-border);
 }
 
 .dropActive {
-  outline: 3px dashed var(--clr-success);
+  outline: 3px dashed var(--clr-success-border);
   outline-offset: 4px;
   background: rgba(46, 204, 113, 0.06);
 }
@@ -812,8 +812,8 @@
 }
 
 .addImageBtn:hover {
-  border-color: var(--clr-success);
-  color: var(--clr-success);
+  border-color: var(--clr-success-border);
+  color: var(--clr-success-text);
 }
 
 /* ========== Categories ========== */
@@ -859,7 +859,7 @@
 }
 
 .categoryChip:hover {
-  border-color: var(--clr-success);
+  border-color: var(--clr-success-border);
 }
 
 @media (hover: none) {
@@ -870,7 +870,7 @@
 
 .categoryChipActive {
   background: var(--bg-hover);
-  color: var(--clr-success);
+  color: var(--clr-success-text);
 }
 
 .addCategoryChip {
@@ -888,15 +888,15 @@
 }
 
 .addCategoryChip:hover {
-  border-color: var(--clr-success);
-  color: var(--clr-success);
+  border-color: var(--clr-success-border);
+  color: var(--clr-success-text);
 }
 
 .newCategoryInline {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  border: 1px solid var(--clr-success);
+  border: 1px solid var(--clr-success-border);
   border-radius: 20px;
   padding: 0.25em 0.5em;
   background: var(--bg-card);
@@ -922,7 +922,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--clr-success);
+  background: var(-bg);
   color: #fff;
   border: none;
   border-radius: 50%;
@@ -1095,8 +1095,8 @@
   .sidebarTabActive,
   .sidebarTabActive:hover {
     border-right-color: transparent;
-    border-bottom-color: var(--clr-success);
-    color: var(--clr-success);
+    border-bottom-color: var(-border);
+    color: var(--clr-success-text);
     background: none;
   }
 

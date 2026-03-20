@@ -177,7 +177,7 @@
   border: none;
   color: var(--text-secondary);
   font-size: var(--basic-font);
-  font-weight: var(--font-weight-quaternary);
+  font-weight: 700;
   cursor: pointer;
   transition: var(--transition);
   width: 100%;
@@ -330,7 +330,7 @@
 
 .imageUploadBtn:hover {
   border-color: var(--clr-success);
-  color: var(--clr-success);
+  color: var(--clr-success-text);
 }
 
 .imagePreviewWrap {

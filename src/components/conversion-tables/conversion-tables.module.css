@@ -96,13 +96,13 @@
 .activeTab {
   background: var(--clr-btn-main-bg);
   border-color: var(--clr-text-primary);
-  color: var(--text-on-primary);
+  color: var(--clr-btn-main-text);
 }
 
 .activeTab:hover {
   background: var(--btn-bg-secondary) !important;
   border: 1px solid var(--btn-bg-secondary);
-  color: var(--text-on-primary) !important;
+  color: var(--clr-btn-main-text) !important;
 }
 
 .tabIcon {
@@ -199,9 +199,9 @@
 .note {
   margin-top: 1.5rem;
   padding: 1rem;
-  background: var(--tip-bg);
-  border-inline-start: 2px solid var(--tip-border);
-  color: var(--tip-color);
+  background: var(--clr-tip-bg);
+  border-inline-start: 2px solid var(--clr-tip-border);
+  color: var(--clt-tip);
   line-height: 1.6;
   grid-column: 1 / -1;
   font-size: var(--basic-font);

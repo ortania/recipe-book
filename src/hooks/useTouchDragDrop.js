@@ -84,7 +84,7 @@ export function useTouchDragDrop(onReorder) {
     indicator.style.pointerEvents = "none";
     // Add dot decorations on ends
     indicator.style.boxShadow =
-      "-4px 0 0 0 var(--clr-success), 4px 0 0 0 var(--clr-success)";
+      "-4px 0 0 0 var(--clr-success-bg), 4px 0 0 0 var(--clr-success-bg)";
     list.style.position = "relative";
     list.appendChild(indicator);
 

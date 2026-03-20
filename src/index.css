@@ -100,6 +100,19 @@ Variables
   --clr-danger-100: #fdecec;
 
   /* =========================
+     SUCCESS (Green)
+  ========================= */
+  --clr-success-900: #14532d;
+  --clr-success-800: #166534;
+  --clr-success-700: #15803d;
+  --clr-success-600: #16a34a;
+  --clr-success-500: #22c55e;
+  --clr-success-400: #4ade80;
+  --clr-success-300: #86efac;
+  --clr-success-200: #bbf7d0;
+  --clr-success-100: #dcfce7;
+
+  /* =========================
      TEXT
   ========================= */
   --clr-text-primary: var(--clr-neutral-700);
@@ -123,20 +136,27 @@ Variables
   /* =========================
      STATES (Success / Danger)
   ========================= */
-  --clr-success-bg: var(--clr-secondary-100);
-  --clr-success-bg-hover: var(--clr-secondary-200);
-  --clr-success-bg-active: var(--clr-secondary-300);
-  --clr-success-text: var(--clr-secondary-700);
-  --clr-success-border: var(--clr-secondary-300);
+  --clr-success-bg: var(--clr-success-100);
+  --clr-success-bg-hover: var(--clr-success-200);
+  --clr-success-bg-active: var(--clr-success-300);
+
+  --clr-success-text: var(--clr-success-700);
+  --clr-success-border: var(--clr-success-300);
+
+  /* --clr-success: #1a9c5a;
+  --clr-success-hover: #2e7d32;
+  --clr-success-dark: #155724; */
 
   --clr-danger-bg: var(--clr-danger-100);
   --clr-danger-bg-hover: var(--clr-danger-200);
   --clr-danger-bg-active: var(--clr-danger-300);
 
-  --clr-danger-text: var(--clr-danger-700);
+  --clr-danger-text: var(--clr-danger-400);
   --clr-danger-text-strong: var(--clr-danger-800);
 
-  --clr-danger-border: var(--clr-danger-300);
+  --clr-danger-border: var(--clr-danger-500);
+
+  --danger-text-font-weight: 600;
 
   /* =========================
      GLOBAL INTERACTIONS
@@ -211,8 +231,11 @@ Variables
   --clr-btn-icon-bg-hover: var(--clr-secondary-300);
   --clr-btn-icon-bg-active: var(--clr-secondary-400);
 
+  /* --clr-btn-icon-text: var(--clr-neutral-700);
+  --clr-btn-icon-text-hover: var(--clr-neutral-900);
+  --clr-btn-icon-text-active: var(--clr-neutral-900); */
   --clr-btn-icon-text: var(--clr-neutral-700);
-  --clr-btn-icon-text-hover: var(--clr-neutral-800);
+  --clr-btn-icon-text-hover: var(--clr-primary-700);
   --clr-btn-icon-text-active: var(--clr-neutral-900);
 
   --clr-btn-icon-border: var(--clr-secondary-300);
@@ -228,6 +251,7 @@ Variables
 
   --clr-input-text: var(--clr-text-primary);
   --clr-input-placeholder: var(--clr-text-muted);
+  --input-placeholder-font-size: var(--small-font);
 
   --clr-input-border: var(--clr-neutral-200);
   --clr-input-border-hover: var(--clr-neutral-300);
@@ -240,6 +264,8 @@ Variables
   --clr-search-border-focus: var(--clr-secondary-400);
   --clr-search-icon: var(--clr-icon-muted);
   --clr-search-icon-focus: var(--clr-icon-active);
+
+  --input-border-radius: 12px;
 
   /* =========================
      BACKGROUNDS
@@ -264,6 +290,16 @@ Variables
   --link-font-weight: 500;
 
   /* =========================
+     TIP
+  ========================= */
+
+  --clr-tip-bg: #f5f1ec;
+  --clr-tip-border: var(--clr-brown-200);
+  --clt-tip: var(--clr-brown-800);
+  --tip-border-radius: 12px;
+  --tip-label-font-weight: 500;
+
+  /* =========================
      SHADOWS
   ========================= */
   --light-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
@@ -272,50 +308,9 @@ Variables
   --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-  /* --------------------------------------------------------- */
-  /* --------------------------------------------------------- */
-  /* --------------------------------------------------------- */
-
-  --transition: all 0.2s ease;
-  --scale: 1.1;
-  --spacing: 0;
-  --max-width: 900px;
-
-  /* basic colors and variables*/
-
-  --secondary-color: var(--clr-brown-2);
-
-  /* saved, added, deleted, checkbox, etc. */
-  --clr-success: #1a9c5a;
-  --clr-success-hover: #2e7d32;
-  --clr-success-dark: #155724;
-  --active-color-primary: #1a9c5a;
-  --dark-active-color: #155724;
-  --active-color-secondary: #2e7d32;
-  /* ------------------------------------- */
-
-  --accent-color-1: #914c03;
-  --accent-color-2: #9a652d;
-  --accent-color-3: #1a9c5a;
-  --accent-color-4: #1a9c5a;
-  --accent-color-5: #1a9c5a;
-
-  /* text */
-
-  --text-primary: var(--clr-text-primary);
-  --text-secondary: var(--clr-brown-2);
-  --text-muted: #888888;
-  --text-on-primary: var(--clr-btn-main-text);
-
-  --font-primary: "Noto Sans Hebrew", sans-serif;
-  --font-heading: var(--font-primary);
-  --font-heading: var(--font-primary);
-  --font-weight-heading: 600;
-  --font-weight-primary: 400;
-  --font-weight-secondary: 500;
-  --font-weight-tertiary: 600;
-  --font-weight-quaternary: 700;
-  --font-weight-quinary: 800;
+  /* =========================
+     GENERAL
+  ========================= */
 
   /* fonts variables */
   --huge-font: 2.2rem;
@@ -325,18 +320,58 @@ Variables
   --small-font: 1.3rem;
   --very-small-font: 1.1rem;
 
+  --font-primary: "Noto Sans Hebrew", sans-serif;
+  --font-heading: var(--font-primary);
+  --font-heading-size: var(--very-large-font);
+  --font-weight-heading: 600;
+  --font-weight-primary: 400;
+  --font-weight-secondary: 500;
+  --font-weight-tertiary: 600;
+  --font-weight-quaternary: 700;
+  --font-weight-quinary: 800;
+
   /* =====button sizing and more (mobile-first) ===== */
 
+  /* button font */
   --btn-circle-primary: 2.75rem;
-  --btn-icon-primary: 1.4rem;
   --btn-circle: 3rem;
   --btn-icon: 1.5rem;
 
+  /* button other */
   --btn-border-radius: 2rem;
   --btn-small-border-radius: 12px;
   --btn-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 
-  /* ===== Semantic theme tokens (light = default) ===== */
+  /* skeleton */
+  --skeleton-bg: var(--clr-neutral-300);
+  --skeleton-highlight: var(--clr-neutral-100);
+  --skeleton-border-radius: 0.5rem;
+
+  /* general */
+  --transition: all 0.2s ease;
+  --scale: 1.1;
+  --spacing: 0;
+  --max-width: 900px;
+  --text-muted: var(--clr-neutral-600);
+
+  /* --------------------------------------------------------- */
+  /* --------------------------------------------------------- */
+  /* --------------------------------------------------------- */
+
+  /* basic colors and variables*/
+
+  --secondary-color: var(--clr-brown-2);
+
+  /* saved, added, deleted, checkbox, etc. */
+
+  --active-color-primary: #1a9c5a;
+  --dark-active-color: #155724;
+  --active-color-secondary: #2e7d32;
+
+  /* text */
+
+  --text-secondary: var(--clr-brown-2);
+
   /* backgrounds */
   --bg-primary: var(--clr-tertiary-100);
   --bg-secondary: var(--clr-bg-card);
@@ -377,17 +412,6 @@ Variables
   --bubble-assistant-text: var(--clr-brown-700);
 
   --bubble-avatar: var(--clr-neutral-600);
-
-  /* tip */
-
-  --tip-bg: #f5f1ec;
-  --tip-border: var(--clr-brown-200);
-  --tip-color: var(--clr-brown-800);
-  --tip-border-radius: 12px;
-  --tip-label-font-weight: 500;
-
-  /* --tip-bg: var(--clr-brown-50);
-  --tip-border: var(--clr-brown-200); */
 
   --hover-opacity: 0.7;
 }
@@ -446,6 +470,7 @@ html,
 body,
 #root {
   min-block-size: 100%;
+  font-weight: var(--font-weight-primary);
 }
 
 .app {
