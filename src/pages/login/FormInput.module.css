@@ -35,7 +35,7 @@
 }
 
 .inputWrapper input:disabled {
-  opacity: 0.6;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 }
 
@@ -100,7 +100,7 @@
 }
 
 .eyeButton:disabled {
-  opacity: 0.5;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 }
 

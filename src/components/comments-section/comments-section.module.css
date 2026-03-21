@@ -32,7 +32,7 @@
   background: var(--clr-success-bg);
   color: #fff;
   font-size: var(--very-small-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   min-width: 1.3em;
   height: 1.3em;
   padding: 0 0.35em;

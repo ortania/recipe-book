@@ -23,18 +23,18 @@
 
 .genButton:hover {
   background: var(--clr-btn-main-bg-hover);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  /* box-shadow: var(--btn-box-shadow); */
 }
 
 .genButton:disabled {
-  opacity: 0.6;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 }
 
 .genButton:hover:not(:disabled) {
   color: var(--clr-btn-main-text);
   background: var(--clr-btn-main-bg-hover);
-  box-shadow: var(--btn-box-shadow);
+  /* box-shadow: var(--btn-box-shadow); */
 }
 
 /* checkbox */

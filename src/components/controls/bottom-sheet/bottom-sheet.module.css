@@ -69,7 +69,7 @@
 
 .title {
   font-size: var(--large-font, 1.1rem);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   line-height: 1;
   display: flex;

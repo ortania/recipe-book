@@ -164,7 +164,7 @@
 
 .itemTime {
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   font-variant-numeric: tabular-nums;
   color: var(--clr-text-primary, #333);
 }

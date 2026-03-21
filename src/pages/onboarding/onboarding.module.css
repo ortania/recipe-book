@@ -76,7 +76,7 @@
 
 .title {
   font-size: var(--very-large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0;
   line-height: 1.3;

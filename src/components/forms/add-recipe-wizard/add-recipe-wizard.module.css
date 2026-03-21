@@ -123,7 +123,7 @@
 
 .methodTitle {
   font-size: var(--very-large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   text-align: center;
   margin: 0 0 0.5rem 0;
@@ -271,7 +271,7 @@
 
 .methodCardTitle {
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0 0 0.2rem 0;
 }
@@ -291,7 +291,7 @@
 /* ========== From URL Screen ========== */
 .screenTitle {
   font-size: var(--very-large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0 0 0.3rem 0;
 }
@@ -371,7 +371,7 @@
 }
 
 .tipBold {
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
 }
 
@@ -407,7 +407,7 @@
 
 .continueBtn:disabled {
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: var(--disabled-opacity);
 }
 
 .aiParseBtn {
@@ -433,7 +433,7 @@
 
 .aiParseBtn:disabled {
   cursor: not-allowed;
-  opacity: 0.5;
+  opacity: var(--disabled-opacity);
 }
 
 .errorText {
@@ -471,7 +471,7 @@
 
 .stepperTitle {
   font-size: var(--large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0;
 }
@@ -534,7 +534,7 @@
 
 .stepSectionTitle {
   font-size: var(--large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0 0 0.3rem 0;
 }
@@ -668,7 +668,7 @@
 
 .dynamicItemNumber {
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   flex-shrink: 0;
   line-height: 1.5;
@@ -821,7 +821,7 @@
   padding: 0;
   border: none;
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   /* color: #9810fa; */
   color: var(--clr-accent-secondary);
   outline: none;
@@ -1050,7 +1050,7 @@
 .parseIngredientsApplyBtn:disabled {
   background: var(--clr-border-light);
   cursor: not-allowed;
-  opacity: 0.8;
+  opacity: var(--disabled-opacity);
 }
 
 /* ========== Image Upload ========== */
@@ -1308,7 +1308,7 @@
 }
 
 .newCategoryConfirmBtn:disabled {
-  opacity: 0.4;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 }
 
@@ -1346,7 +1346,7 @@
 
 .summaryTitle {
   font-size: var(--large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0 0 0.3rem 0;
 }
@@ -1458,7 +1458,7 @@
 
 .previewName {
   font-size: var(--very-large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0 0 0.75rem 0;
   text-align: center;
@@ -1478,7 +1478,7 @@
 
 .previewSectionTitle {
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 1rem 0 0.5rem 0;
 }
@@ -1497,7 +1497,7 @@
 
 .previewGroupHeader {
   list-style: none;
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: #9810fa;
   margin-top: 0.6rem;
   margin-bottom: 0.15rem;
@@ -1828,7 +1828,7 @@
 }
 
 .calculateNutritionBtn:disabled {
-  opacity: 0.6;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
   box-shadow: none;
 }

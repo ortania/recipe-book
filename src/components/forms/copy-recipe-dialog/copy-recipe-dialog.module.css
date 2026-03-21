@@ -8,7 +8,7 @@
   color: var(--clr-text-primary);
   font-size: var(--large-font);
   margin-bottom: 0.5rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -77,7 +77,7 @@
 }
 
 .addButton:disabled {
-  opacity: 0.5;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 }
 

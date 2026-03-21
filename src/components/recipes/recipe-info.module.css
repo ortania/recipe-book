@@ -142,7 +142,7 @@
 
 .recipeName {
   font-size: 1.3rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0.5rem 0 0.25rem;
   text-align: center;

@@ -316,8 +316,9 @@ Variables
   ========================= */
 
   --clr-tip-bg: #f5f1ec;
+  
   --clr-tip-border: var(--clr-brown-200);
-  --clt-tip: var(--clr-brown-800);
+  --clr-tip: var(--clr-brown-800);
   --tip-border-radius: 12px;
   --tip-label-font-weight: 500;
   --icon-border-radius: 8px;
@@ -387,7 +388,7 @@ Variables
   --clr-accent-secondary: var(--clr-neutral-600);
   --clr-accent-tertiary: var(--clr-primary-700);
   --clr-accent-tertiary-hover: var(--clr-primary-800);
-  
+
   --disabled-opacity: 0.4;
 
   --clr-clear-danger-hover: var(--clr-danger-500);
@@ -570,6 +571,10 @@ img {
   max-width: 100%;
   display: block;
   height: auto;
+}
+
+strong {
+  font-weight: 600;
 }
 
 @media (min-width: 80rem) {

@@ -1,6 +1,6 @@
 .mobileTitle {
   font-size: var(--large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
 }
 
@@ -30,7 +30,7 @@
 
 .title {
   font-size: var(--very-large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0;
   text-align: start;
@@ -434,7 +434,7 @@
 }
 
 .addItemBtn:disabled {
-  opacity: 0.3;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 }
 

@@ -657,8 +657,6 @@
   white-space: nowrap;
 }
 
-
-
 .clearFiltersBtn:hover {
   color: var(--clr-clear-danger-hover) !important;
   /* background-color: var(--clr-bg-danger-hover) !important; */
@@ -677,7 +675,7 @@
 
 .sectionTitle {
   font-size: var(--large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0;
   padding-left: 1rem;
@@ -1529,7 +1527,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
 }
 

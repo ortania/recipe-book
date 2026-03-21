@@ -84,6 +84,6 @@
 }
 
 .sendBtn:disabled {
-  opacity: 0.3;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 }

@@ -180,6 +180,7 @@
 
 /* Clear all button */
 .clearAllButton {
+  color: var(--text-primary);
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;

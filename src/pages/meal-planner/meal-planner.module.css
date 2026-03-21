@@ -1,6 +1,6 @@
 .mobileTitle {
   font-size: var(--large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
 }
 
@@ -28,7 +28,7 @@
 
 .title {
   font-size: var(--very-large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0;
   text-align: start;
@@ -70,7 +70,7 @@
   background: #ef4444;
   color: white;
   font-size: var(--very-small-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   padding: 0.05em 0.45em;
   border-radius: 10px;
   margin-inline-start: 0.25rem;
@@ -125,7 +125,7 @@
   align-items: center;
   justify-content: center;
   color: white;
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   font-size: var(--basic-font);
   flex-shrink: 0;
 }
@@ -137,7 +137,7 @@
 
 .dayName {
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   line-height: 1.2;
 }
@@ -170,7 +170,7 @@
   align-items: center;
   gap: 0.4rem;
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin-bottom: 0.15rem;
 }
@@ -264,7 +264,7 @@
 
 .shoppingModalTitle {
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   margin: 0;
 }
 
@@ -380,7 +380,7 @@
 
 .pickerTitle {
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   margin: 0;
 }
 

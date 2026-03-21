@@ -175,7 +175,7 @@
 .imageBtn:disabled,
 .sendBtn:disabled,
 .micBtn:disabled {
-  opacity: 0.3;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 }
 

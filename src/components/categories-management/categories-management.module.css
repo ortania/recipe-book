@@ -177,7 +177,7 @@
   border: none;
   color: var(--clr-text-primary);
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   transition: var(--transition);
   width: 100%;
@@ -333,7 +333,7 @@
   padding: 0.4em 0.8em;
   border: 1px solid var(--clr-btn-outline-border);
   border-radius: var(--btn-small-border-radius);
-  background: none;
+  background: var(--clr-btn-outline-bg);
   color: var(--clr-btn-outline-text);
   font-size: var(--small-font);
   cursor: pointer;
@@ -341,7 +341,8 @@
 }
 
 .imageUploadBtn:hover {
-  border-color: var(--clr-btn-outline-border-active);
+  border-color: var(--clr-btn-outline-border-hover);
+  background: var(--clr-btn-outline-bg-hover);
 }
 
 .imagePreviewWrap {

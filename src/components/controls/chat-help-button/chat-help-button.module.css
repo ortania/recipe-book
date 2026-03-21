@@ -178,7 +178,7 @@
   align-items: center;
   gap: 0.4rem;
   padding: 0.5rem 0.75rem !important;
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   font-size: calc(var(--basic-font) * 0.95);
   color: var(--clr-text-primary);
   border: none !important;

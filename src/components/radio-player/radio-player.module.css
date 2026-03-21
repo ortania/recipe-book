@@ -47,7 +47,7 @@
 }
 
 .title {
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   font-size: 2rem;
   color: var(--clr-text-primary);
   flex: 1;

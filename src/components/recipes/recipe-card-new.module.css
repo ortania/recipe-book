@@ -194,7 +194,7 @@
   font-weight: 500;
 
   color: var(--clr-text-primary);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   transition: var(--transition);
   z-index: 2;

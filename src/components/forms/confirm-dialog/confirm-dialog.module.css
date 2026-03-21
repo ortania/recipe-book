@@ -7,7 +7,7 @@
   margin: 0 0 0.75rem;
   color: var(--clr-text-primary);
   font-size: var(--large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
 }
 
 .dialog p {

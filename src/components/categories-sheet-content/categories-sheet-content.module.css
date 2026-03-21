@@ -19,7 +19,7 @@
   flex: 1;
   text-align: center;
   font-size: var(--large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   margin: 0;
   color: var(--clr-text-primary);
 }
@@ -99,7 +99,7 @@
 }
 
 .clearBtn {
-  color: var(--clr-link);
+  color: var(--clr-text-primary);
   cursor: pointer;
   font-size: var(--basic-font);
   font-weight: 500;
@@ -118,7 +118,7 @@
 }
 
 .clearBtn:hover {
-  transform: var(--link-transform-hover)
+  color: var(--clr-clear-danger-hover);
 }
 
 .list {
@@ -204,7 +204,7 @@
   border-radius: 10px;
   color: var(--clr-text-secondary);
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   flex-shrink: 0;
 
   cursor: pointer;

@@ -249,7 +249,7 @@
 
 .sectionTitle {
   font-size: var(--large-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0 0 1.5rem 0;
   letter-spacing: 0;
@@ -447,7 +447,7 @@
 
 .dynamicItemNumber {
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   flex-shrink: 0;
   line-height: 1.5;
@@ -616,7 +616,7 @@
   padding: 0;
   border: none;
   font-size: var(--basic-font);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   /* color: #9810fa; */
   color: var(--clr-accent-secondary);
   outline: none;
@@ -938,7 +938,7 @@
 }
 
 .newCategoryConfirmBtn:disabled {
-  opacity: 0.4;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
 }
 
@@ -1198,7 +1198,7 @@
 }
 
 .calculateNutritionBtn:disabled {
-  opacity: 0.6;
+  opacity: var(--disabled-opacity);
   cursor: not-allowed;
   box-shadow: none;
 }

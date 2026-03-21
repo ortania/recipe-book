@@ -21,7 +21,7 @@
 .heroTitle {
   font-size: 2.4rem;
   color: var(--clr-text-primary);
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   line-height: 1.3;
   margin: 0 0 0.8rem;
 }
@@ -103,7 +103,7 @@
 
 .featuresHeading {
   font-size: 1.6rem;
-  font-weight: 700;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-grey-1);
   text-align: center;
   margin: 0 0 2.5rem;
