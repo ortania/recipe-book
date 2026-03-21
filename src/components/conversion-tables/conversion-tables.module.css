@@ -51,13 +51,13 @@
 }
 
 .subtitle {
-  color: var(--clr-text-secondary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   margin-bottom: 0.75rem;
 }
 
 .intro {
-  color: var(--clr-text-secondary);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   line-height: 1.6;
   max-width: 500px;
@@ -65,7 +65,7 @@
   padding: 1rem;
   background: var(--bg-tertiary);
   border-radius: 8px;
-  border-right: 4px solid #667eea;
+  /* border-right: 4px solid #667eea; */
 }
 
 .tabs {

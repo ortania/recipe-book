@@ -180,7 +180,7 @@ function OnboardingScene({ screenKey, t }) {
   };
   const subtitleStyle = {
     fontSize: "1.7rem",
-    color: "var(--clr-text-secondary)",
+    color: "var(--clr-text-primary)",
     margin: 0,
     textAlign: "center",
     maxWidth: 340,
@@ -191,18 +191,22 @@ function OnboardingScene({ screenKey, t }) {
     fontSize: "1.7rem",
     color: "var(--clr-text-primary)",
     padding: "0.4rem 0.8rem",
-    background: "var(--bg-tertiary)",
+    background: "var(--clr-tip-bg)",
+    border: "1px solid var(--clr-tip-border)",
     borderRadius: 8,
     textAlign: "center",
   };
   const tipBoxStyle = {
+    color: "var(--clr-text-primary)",
     marginTop: "1rem",
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     gap: "0.2rem",
     padding: "0.6rem 0.8rem",
-    background: "rgba(0,102,204,0.08)",
+    // background: "rgba(0,102,204,0.08)",
+    background: "var(--clr-tip-bg)",
+    border: "1px solid var(--clr-tip-border)",
     borderRadius: 10,
     maxWidth: 340,
     width: "100%",
@@ -237,7 +241,7 @@ function OnboardingScene({ screenKey, t }) {
           <span
             style={{
               fontSize: "1.5rem",
-              fontWeight: 700,
+              fontWeight: "var(--font-weight-heading)",
               color: "var(--clr-text-primary)",
             }}
           >
