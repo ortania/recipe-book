@@ -127,14 +127,6 @@ Variables
   --clr-text-on-light: var(--clr-neutral-700);
 
   /* =========================
-     ICONS
-  ========================= */
-  --clr-icon-default: var(--clr-neutral-600);
-  --clr-icon-hover: var(--clr-neutral-800);
-  --clr-icon-active: var(--clr-neutral-900);
-  --clr-icon-muted: var(--clr-neutral-500);
-
-  /* =========================
      STATES (Success / Danger)
   ========================= */
   --clr-success-bg: var(--clr-success-100);
@@ -143,6 +135,10 @@ Variables
 
   --clr-success-text: var(--clr-success-700);
   --clr-success-border: var(--clr-success-300);
+
+  --clr-success-dark-bg: var(--clr-success-700);
+  --clr-success-dark-bg-hover: var(--clr-success-800);
+  --clr-success-dark-bg-active: var(--clr-success-900);
 
   /* --clr-success: #1a9c5a;
   --clr-success-hover: #2e7d32;
@@ -196,7 +192,7 @@ Variables
   /* =========================
      BUTTONS - SECONDARY (Green)
   ========================= */
-  --clr-btn-secondary-bg: var(--clr-secondary-200);
+  --clr-btn-secondary-bg: var(--clr-secondary-500);
   --clr-btn-secondary-bg-hover: var(--clr-secondary-600);
   --clr-btn-secondary-bg-active: var(--clr-secondary-700);
 
@@ -224,17 +220,26 @@ Variables
   ========================= */
   --clr-btn-outline-bg: transparent;
   --clr-btn-outline-bg-hover: var(--clr-tertiary-100);
-  --clr-btn-outline-bg-active: var(--clr-tertiary-200);
+  /* --clr-btn-outline-bg-active: var(--clr-tertiary-200); */
 
   --clr-btn-outline-text: var(--clr-neutral-700);
 
   --clr-btn-outline-border: var(--clr-neutral-400);
   --clr-btn-outline-border-hover: var(--clr-neutral-500);
-  --clr-btn-outline-border-active: var(--clr-neutral-600);
+  /* --clr-btn-outline-border-active: var(--clr-neutral-600); */
+
+  --clr-btn-outline-bg-active: var(--clr-secondary-200);
+  --clr-btn-outline-border-active: var(--clr-secondary-500);
+  --clr-btn-outline-text-active: var(--clr-secondary-800);
 
   /* =========================
      BUTTONS - ICON
   ========================= */
+  --clr-icon-default: var(--clr-neutral-600);
+  --clr-icon-hover: var(--clr-neutral-800);
+  --clr-icon-active: var(--clr-neutral-900);
+  --clr-icon-muted: var(--clr-neutral-500);
+
   --clr-btn-icon-bg: var(--clr-secondary-200);
   --clr-btn-icon-bg-hover: var(--clr-secondary-300);
   --clr-btn-icon-bg-active: var(--clr-secondary-400);
@@ -259,7 +264,7 @@ Variables
 
   --clr-input-text: var(--clr-text-primary);
   --clr-input-placeholder: var(--clr-text-muted);
-  --input-placeholder-font-size: var(--small-font);
+  --input-placeholder-font-size: var(--basic-font);
 
   --clr-input-border: var(--clr-neutral-200);
   --clr-input-border-hover: var(--clr-neutral-300);
@@ -315,7 +320,6 @@ Variables
   --clt-tip: var(--clr-brown-800);
   --tip-border-radius: 12px;
   --tip-label-font-weight: 500;
-  --small-btn-border-radius: 8px;
   --icon-border-radius: 8px;
   --form-border-radius: 12px;
 
@@ -345,10 +349,6 @@ Variables
   --font-heading-size: var(--very-large-font);
   --font-weight-heading: 600;
   --font-weight-primary: 400;
-  --font-weight-secondary: 500;
-  --font-weight-tertiary: 600;
-  --font-weight-quaternary: 700;
-  --font-weight-quinary: 800;
 
   /* =====button sizing and more (mobile-first) ===== */
 
@@ -378,13 +378,23 @@ Variables
 
   /* general */
   --transition: all 0.2s ease;
-  --scale: 1.05;
+  --scale: 1.07;
   --spacing: 0;
   --max-width: 900px;
   --divider: var(--clr-neutral-200);
+
   --clr-accent-primary: var(--clr-brown-700);
   --clr-accent-secondary: var(--clr-neutral-600);
+  --clr-accent-tertiary: var(--clr-primary-700);
+  --clr-accent-tertiary-hover: var(--clr-primary-800);
+  
   --disabled-opacity: 0.4;
+
+  --clr-clear-danger-hover: var(--clr-danger-500);
+  --clr-bg-danger-hover: var(--clr-danger-100);
+  --clr-error-message: var(-clr-primary-700);
+
+  --clr-footer-bg: var(--clr-secondary-200);
 }
 
 /*
@@ -663,4 +673,12 @@ html {
 
 [data-theme="dark"] .react-loading-skeleton {
   background-color: #2a2a3e !important;
+}
+
+/* Sharer profile mobile: swap back arrow and hamburger positions */
+body.sharer-profile-mobile #mobile-top-bar > button:first-child {
+  order: 10;
+}
+body.sharer-profile-mobile #mobile-top-bar > #mobile-header-actions-portal {
+  order: -1;
 }

@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
+import { createPortal } from "react-dom";
 import { useParams, useNavigate } from "react-router-dom";
 import { UserPlus, UserCheck } from "lucide-react";
+import { BackButton } from "../../components/controls/back-button";
 import { useRecipeBook, useLanguage } from "../../context";
 import {
   fetchSharerRecipes,
@@ -23,6 +25,19 @@ function SharerProfile() {
   const [sharerCategories, setSharerCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
+  const [mobileActionsEl, setMobileActionsEl] = useState(null);
+
+  useEffect(() => {
+    const mql = window.matchMedia("(max-width: 767px)");
+    const handler = (e) => setIsMobile(e.matches);
+    mql.addEventListener("change", handler);
+    return () => mql.removeEventListener("change", handler);
+  }, []);
+
+  useEffect(() => {
+    setMobileActionsEl(document.getElementById("mobile-header-actions-portal"));
+  }, []);
 
   useEffect(() => {
     const load = async () => {
@@ -63,6 +78,22 @@ function SharerProfile() {
       setIsFollowing(currentUser.following.includes(sharerUserId));
     }
   }, [currentUser?.following, sharerUserId]);
+
+  const isPublic = sharerData?.publicProfile || false;
+
+  useEffect(() => {
+    if (loading) return;
+    if (!isPublic) {
+      const topBar = document.getElementById("mobile-top-bar");
+      if (topBar) topBar.style.display = "none";
+      return () => {
+        if (topBar) topBar.style.display = "";
+      };
+    } else if (isMobile) {
+      document.body.classList.add("sharer-profile-mobile");
+      return () => document.body.classList.remove("sharer-profile-mobile");
+    }
+  }, [isPublic, isMobile, loading]);
 
   const handleFollow = async () => {
     if (!currentUser) return;
@@ -108,11 +139,35 @@ function SharerProfile() {
   }
 
   const sharerName = sharerData?.displayName || "";
-  const isPublic = sharerData?.publicProfile || false;
 
   return (
     <div className={classes.page}>
+      {/* Public profile (mobile): back arrow portaled to the hamburger row */}
+      {isPublic && isMobile && mobileActionsEl &&
+        createPortal(
+          <BackButton onClick={() => navigate(-1)} size={22} />,
+          mobileActionsEl,
+        )}
+
       <div className={classes.profileSection}>
+        {/* Non-public (mobile): inline arrow on the name row */}
+        {!isPublic && isMobile && (
+          <BackButton
+            onClick={() => navigate(-1)}
+            size={24}
+            className={classes.inlineBackBtn}
+          />
+        )}
+
+        {/* Desktop: inline arrow for both public & non-public */}
+        {!isMobile && (
+          <BackButton
+            onClick={() => navigate(-1)}
+            size={26}
+            className={classes.desktopBackBtn}
+          />
+        )}
+
         <div className={classes.avatar}>
           {sharerName.charAt(0).toUpperCase()}
         </div>
@@ -167,7 +222,6 @@ function SharerProfile() {
           defaultSortField="rating"
           defaultSortDirection="desc"
           sortStorageKey="sharerRecipesSortPreference"
-          backAction={() => navigate(-1)}
           backLabel={`${t("sharerProfile", "backToRecipesOf")} ${sharerName}`}
           showTabs={false}
           hasContentAbove

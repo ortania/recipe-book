@@ -234,7 +234,7 @@ function Navigation({ onLogout, links }) {
   return (
     <>
       {!isRecipeDetailsPage && !isSettingsPage && (
-        <div className={classes.mobileTopBar}>
+        <div id="mobile-top-bar" className={classes.mobileTopBar}>
           <button className={classes.hamburger} onClick={toggleSidebar}>
             {isOpen ? null : <Menu size={22} />}
           </button>

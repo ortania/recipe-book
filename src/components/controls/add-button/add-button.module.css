@@ -22,11 +22,11 @@
 
 /* Primary circle (+ add) */
 .circlePrimary {
-  border-radius: 12px;
+  border-radius: var(--btn-small-border-radius);
   width: var(--btn-circle-primary);
   height: var(--btn-circle-primary);
   font-size: var(--basic-font);
-  border: 1.5px solid var(--clr-border-accent-primary);
+  border: 1.5px solid var(--clr-btn-main-border);
   background: var(--clr-btn-main-bg);
   color: var(--clr-btn-main-text);
 }
@@ -36,7 +36,7 @@
   padding: 0.5em 1em;
   border-radius: 8px;
   border: 1px solid var(--clr-border-light);
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   font-size: var(--basic-font);
 }
 

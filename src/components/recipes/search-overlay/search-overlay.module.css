@@ -47,7 +47,7 @@
 
 .noResultsTitle {
   font-size: var(--basic-font);
-  font-weight: var(--font-weight-tertiary);
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0;
 }
@@ -184,9 +184,13 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.4em 0.75em;
-  border: 1px solid var(--border-color, #ddd);
-  border-radius: 0.5rem;
-  background: var(--bg-primary, #fff);
+  /* border: 1px solid var(--border-color, #ddd); */
+  border: none;
+  background: none;
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  border-radius: var(--btn-border-radius);
+  /* background: var(--bg-primary, #fff); */
   /* color: var(--text-muted, #888); */
   font-size: var(--basic-font);
   cursor: pointer;
@@ -195,12 +199,12 @@
     color 0.15s,
     border-color 0.15s;
   white-space: nowrap;
+  line-height: 1;
 }
 
 .clearAllButton:hover {
-  background: var(--bg-hover, #f5f5f5);
-  color: var(--danger-color, #e53935);
-  border-color: var(--danger-color, #e53935);
+  color: var(--clr-clear-danger-hover);
+  /* background-color: var(--clr-bg-danger-hover); */
 }
 
 .searchHeaderEdges {
@@ -221,12 +225,17 @@
   min-width: 0;
 }
 
-/* Mobile: same sticky pattern as .stickyTop */
+/* Mobile: match the exact vertical position of the normal searchHeader inside stickyTop */
 @media (max-width: 768px) {
   .mobileSearchHeader {
     margin-top: -3.5rem !important;
-    padding-top: 0.3rem !important;
+    padding-top: 0.9rem !important;
     z-index: 100;
+  }
+
+  .searchBoxRelative {
+    flex: 1 1 0% !important;
+    min-width: 0 !important;
   }
 }
 

@@ -21,7 +21,7 @@
 
 .title {
   font-size: var(--large-font);
-  font-weight: var(--font-weight-quaternary);
+  font-weight: var(--font-weight-heading);
   margin: 0;
   color: var(--clr-text-primary);
 }
@@ -39,7 +39,7 @@
   background: transparent;
   /* border: 1px solid var(--clr-border-light); */
   border: none;
-  border-radius: var(--small-btn-border-radius);
+  border-radius: var(--btn-small-border-radius);
   padding: 0.35em;
   font-size: 2rem;
   color: var(--clr-text-muted);
@@ -102,7 +102,7 @@
 }
 
 .catRow:hover {
-  background: var(--clr-bg-hover);
+  /* background: var(--clr-bg-hover); */
 }
 
 .catInfo {
@@ -332,7 +332,7 @@
   gap: 0.4rem;
   padding: 0.4em 0.8em;
   border: 1px solid var(--clr-btn-outline-border);
-  border-radius: var(--small-btn-border-radius);
+  border-radius: var(--btn-small-border-radius);
   background: none;
   color: var(--clr-btn-outline-text);
   font-size: var(--small-font);
@@ -348,7 +348,7 @@
   position: relative;
   width: 60px;
   height: 40px;
-  border-radius: var(--small-btn-border-radius);
+  border-radius: var(--btn-small-border-radius);
   overflow: hidden;
 }
 
@@ -389,7 +389,7 @@
   font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.4em 1em;
-  border-radius: var(--small-btn-border-radius);
+  border-radius: var(--btn-small-border-radius);
   transition: var(--transition);
 }
 
@@ -404,7 +404,7 @@
   border: none;
   font-size: var(--basic-font);
   padding: 0.4em 1em;
-  border-radius: var(--small-btn-border-radius);
+  border-radius: var(--btn-small-border-radius);
   cursor: pointer;
   font-weight: var(-clr-btn-main-font-weight);
   transition: var(--transition);

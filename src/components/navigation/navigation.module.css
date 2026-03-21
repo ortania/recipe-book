@@ -911,9 +911,9 @@
 
 .catPopup {
   position: fixed;
-  top: 50%;
+  top: 10vh;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   background: var(--clr-bg-primary);
   border-radius: 14px;
   box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
@@ -932,11 +932,11 @@
 @keyframes catPopupIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -48%);
+    transform: translateX(-50%) translateY(-8px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
   }
 }
 

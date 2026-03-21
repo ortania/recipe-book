@@ -1238,7 +1238,7 @@
   height: 20px;
   min-width: 20px;
   border-radius: 50%;
-  border: 2px solid var(--clr-border-light);
+  border: 2px solid var(--clr-success-dark-bg);
   cursor: pointer;
   margin-top: 0.1rem;
   appearance: none;
@@ -1249,10 +1249,24 @@
 }
 
 .checkbox:checked {
-  background: var(--clr-success-bg-hover);
-  /* border-color: #4caf50; */
-  border-color: var(--clr-success-bg-hover);
+  background: var(--clr-success-dark-bg);
+  border-color: var(--clr-success-dark-bg);
   position: relative;
+}
+
+.checkbox:hover {
+  border-color: var(--clr-success-dark-bg-hover);
+}
+
+.checkbox:checked:hover {
+  background: var(--clr-success-dark-bg-hover);
+  border-color: var(--clr-success-dark-bg-hover);
+}
+
+.checkbox:active,
+.checkbox:checked:active {
+  background: var(--clr-success-dark-bg-active);
+  border-color: var(--clr-success-dark-bg-active);
 }
 
 .checkbox:checked::after {

@@ -4,18 +4,18 @@
 
 .trigger {
   padding: 0.5em 0.75em;
-  line-height: 1.5;
-  background: var(--clr-bg-card);
-  border: 1px solid var(--clr-border-light);
+  background: var(--clr-btn-outline-bg);
+  border: 1px solid var(--clr-btn-outline-border);
+  border-radius: var(--btn-border-radius);
   border-radius: 20px;
   font-size: var(--basic-font);
-  font-weight: 400;
-  color: var(--clr-text-primary);
+  font-weight: var(--font-weight-primary);
+  color: var(--clr-btn-outline-text);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   /* height: 32px; */
   box-sizing: border-box;
   white-space: nowrap;

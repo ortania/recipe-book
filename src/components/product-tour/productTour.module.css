@@ -62,11 +62,11 @@
 }
 
 .segmentActive {
-  background: var(--clr-text-primary);
+  background: var(--clr-accent-primary);
 }
 
 .segmentCurrent {
-  background: var(--clr-text-primary);
+  background: var(--clr-accent-primary);
 }
 
 .sceneHeader {
@@ -434,7 +434,7 @@
   height: 28px;
   border-radius: 50%;
   background: var(--bg-tertiary);
-  color: var(--clr-text-secondary);
+  color: var(--clr-text-primary);
   font-size: 0.8rem;
   cursor: default;
 }
@@ -727,7 +727,7 @@
 }
 
 .skipBtn {
-  color: var(--clr-link);
+  color: var(--clr-text-primary);
   font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.5em;
@@ -740,7 +740,7 @@
 }
 
 .skipBtn:hover {
-  transform: var(--link-transform-hover);
+  transform: scale(var(--scale));
 }
 
 /* ========================================================

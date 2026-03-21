@@ -421,6 +421,19 @@ function SearchOverlay({
 
   const filterContent = (
     <div className={parentClasses.dropdownScrollable}>
+      {hasActiveFilters && isMobile && (
+        <>
+          <div className={parentClasses.filterSection}>
+            <button
+              className={parentClasses.clearFiltersBtn}
+              onClick={clearAllFilters}
+            >
+              {t("recipesView", "clearFilters")}
+            </button>
+          </div>
+          <div className={parentClasses.filterDivider} />
+        </>
+      )}
       <div className={parentClasses.filterSection}>
         <label className={parentClasses.filterLabel}>
           {t("recipesView", "sortByRating")}:
@@ -593,19 +606,6 @@ function SearchOverlay({
           </div>
         )}
       </div>
-      {hasActiveFilters && isMobile && (
-        <>
-          <div className={parentClasses.filterDivider} />
-          <div className={parentClasses.filterSection}>
-            <button
-              className={parentClasses.clearFiltersBtn}
-              onClick={clearAllFilters}
-            >
-              {t("recipesView", "clearFilters")}
-            </button>
-          </div>
-        </>
-      )}
     </div>
   );
 
@@ -615,13 +615,11 @@ function SearchOverlay({
     <div
       className={`${parentClasses.searchHeader} ${onToggleView ? classes.searchHeaderEdges : ""} ${isMobile ? classes.mobileSearchHeader : ""}`}
     >
-      <span className={parentClasses.desktopOnly}>
-        <BackButton
-          onClick={onClose}
-          size={28}
-          className={parentClasses.desktopHeaderBtn}
-        />
-      </span>
+      <BackButton
+        onClick={onClose}
+        size={isMobile ? 28 : 28}
+        className={isMobile ? "" : parentClasses.desktopHeaderBtn}
+      />
       <div
         className={
           onToggleView ? classes.searchCenter : classes.searchCenterDefault
@@ -650,7 +648,7 @@ function SearchOverlay({
               t("recipesView", "searchExample3"),
               t("recipesView", "searchExample4"),
             ]}
-            size="large"
+            size={isMobile ? "medium" : "large"}
             ref={searchInputRef}
           />
         </div>
@@ -690,7 +688,10 @@ function SearchOverlay({
                         {t("recipesView", "clearFilters")}
                       </button>
                     )}
-                    <CloseButton onClick={() => setShowFilterMenu(false)} />
+                    <CloseButton
+                      onClick={() => setShowFilterMenu(false)}
+                      size={20}
+                    />
                   </div>
                   {filterContent}
                 </div>
@@ -702,7 +703,7 @@ function SearchOverlay({
                 onClose={() => setShowFilterMenu(false)}
                 title={t("recipesView", "filter")}
               >
-                {filterContent}
+                <div style={{ minHeight: "50dvh" }}>{filterContent}</div>
               </BottomSheet>
             )}
           </div>
@@ -714,10 +715,10 @@ function SearchOverlay({
             options={SORT_OPTIONS}
           />
 
-          {hasAnythingActive && (
+          {hasAnythingActive && !isMobile && (
             <button className={classes.clearAllButton} onClick={clearSearch}>
-              <Trash2 size={16} />
-              <span className={parentClasses.hideOnMobile}>
+              <RotateCcw size={14} />
+              <span>
                 {t("categories", "clearAllFilters") || "נקה הכל"}
               </span>
             </button>

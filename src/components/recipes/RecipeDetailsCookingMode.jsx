@@ -471,7 +471,7 @@ function RecipeDetailsCookingMode({
                 onMouseDown={(e) => e.stopPropagation()}
                 className={classes.progressSlider}
                 style={{
-                  background: `linear-gradient(to right, #10b981 0%, #10b981 ${progress}%, #e5e7eb ${progress}%, #e5e7eb 100%)`,
+                  background: `linear-gradient(to right, var(--clr-accent-primary) 0%, var(--clr-accent-primary) ${progress}%, var(--clr-border-light) ${progress}%, var(--clr-border-light) 100%)`,
                 }}
               />
             </div>

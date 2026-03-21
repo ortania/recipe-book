@@ -2,13 +2,15 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: none;
   border: none;
   padding: 0.4rem;
   color: var(--clr-text-primary);
+  background: none;
   cursor: pointer;
   flex-shrink: 0;
-  transition: var(--transition);
+  transition:
+    transform 0.2s ease,
+    background-color 0.2s ease;
 }
 
 .backButton svg {
@@ -16,6 +18,5 @@
 }
 
 .backButton:hover {
-  /* opacity: var(--hover-opacity); */
-  transform: var(--scale);
+  transform: scale(var(--scale));
 }

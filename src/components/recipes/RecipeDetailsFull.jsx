@@ -41,7 +41,7 @@ import {
   Files,
   Info,
   Menu,
-  Sun,
+  MonitorSmartphone,
   Video,
   Flame,
   Drumstick,
@@ -774,7 +774,7 @@ function RecipeDetailsFull({
               onClick={toggleWakeLock}
               title={t("recipes", "keepScreenOn")}
             >
-              <Sun size={22} />
+              <MonitorSmartphone size={22} />
             </button>
             {wakeLockToast && (
               <div className={classes.wakeLockToast}>{wakeLockToast}</div>

@@ -71,7 +71,7 @@
 
 .editTitleGroup h2 {
   font-size: var(--large-font);
-  font-weight: var(--font-weight-quaternary);
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0;
 }
@@ -221,14 +221,14 @@
 }
 
 .sidebarTabActive {
-  color: var(--clr-success-text);
+  color: var(--clr-accent);
   background: var(--clr-bg-card);
-  border-right-color: var(--clr-success-border);
+  /* border-right-color: var(--clr-accent); */
   font-weight: 600;
 }
 
 .sidebarTabActive:hover {
-  color: var(--clr-success-text);
+  color: var(--clr-accent-tertiary-hover);
   background: var(--clr-bg-card);
 }
 
@@ -1095,8 +1095,8 @@
   .sidebarTabActive,
   .sidebarTabActive:hover {
     border-right-color: transparent;
-    border-bottom-color: var(--clr-success-border);
-    color: var(--clr-success-text);
+    border-bottom-color: var(--clr-accent);
+    color: var(--clr-accent-tertiary);
     background: none;
   }
 

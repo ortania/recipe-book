@@ -400,17 +400,17 @@
 .filterButton,
 .sortingButton {
   padding: 0.5em 0.75em;
-  background: var(--clr-bg-card);
-  border: 1px solid var(--clr-border-light);
+  background: var(--clr-btn-outline-bg);
+  border: 1px solid var(--clr-btn-outline-border);
   border-radius: var(--btn-border-radius);
   font-size: var(--basic-font);
-  font-weight: 400;
-  color: var(--clr-text-primary);
+  font-weight: var(--font-weight-primary);
+  color: var(--clr-btn-outline-text);
   cursor: pointer;
   display: flex;
   align-items: center;
   gap: 0.3rem;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   box-sizing: border-box;
   white-space: nowrap;
 }
@@ -428,8 +428,8 @@
 
 .filterButton:hover,
 .sortingButton:hover {
-  background: var(--clr-bg-hover);
-  border-color: var(--clr-border-light);
+  background: var(--clr-btn-outline-bg-hover);
+  border-color: var(--clr-btn-outline-border-hover);
 }
 
 .dropdownMenu {
@@ -540,83 +540,19 @@
 }
 
 .filterSection button.active {
-  /* background: #2196f3; */
-  background: var(--clr-text-primary);
-  color: white;
-  /* border-color: #2196f3; */
+  background: var(--clr-btn-main-bg);
+  color: var(--clr-btn-main-text);
+  border-color: var(--clr-btn-main-border);
 }
 
 .filterLabel {
   display: block;
   width: 100%;
   font-size: var(--small-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin-bottom: 0.25rem;
   text-align: start;
-}
-
-.inputWrapper {
-  position: relative;
-  width: 100%;
-}
-
-.keywordInput {
-  width: 100%;
-  padding: 0.5rem 2rem 0.5rem 0.75rem;
-  border: 1px solid var(--clr-border-light);
-  border-radius: 6px;
-  font-size: var(--small-font);
-  outline: none;
-  background-color: var(--clr-bg-card) !important;
-  transition: border-color 0.2s;
-  box-sizing: border-box;
-  color: var(--clr-text-primary) !important;
-  font-family:
-    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  direction: rtl;
-  text-align: right;
-  -webkit-text-fill-color: var(--clr-text-primary) !important;
-  opacity: 1 !important;
-}
-
-.keywordInput:focus {
-  border-color: var(--clr-border-accent-primary);
-  background-color: var(--clr-bg-card) !important;
-  color: var(--clr-text-primary) !important;
-  -webkit-text-fill-color: var(--clr-text-primary) !important;
-}
-
-.keywordInput:-webkit-autofill,
-.keywordInput:-webkit-autofill:hover,
-.keywordInput:-webkit-autofill:focus {
-  -webkit-text-fill-color: var(--clr-text-primary) !important;
-  -webkit-box-shadow: 0 0 0px 1000px var(--clr-bg-card) inset !important;
-  background-color: var(--clr-bg-card) !important;
-}
-
-.keywordInput::placeholder {
-  color: var(--clr-text-muted) !important;
-  opacity: 0.6 !important;
-}
-
-.clearKeyword {
-  position: absolute;
-  right: 0.5rem;
-  top: 50%;
-  transform: translateY(-50%);
-  background: none;
-  border: none;
-  color: var(--clr-text-muted);
-  cursor: pointer;
-  font-size: var(--very-small-font);
-  padding: 0.25rem;
-  transition: color 0.2s;
-  z-index: 10;
-}
-
-.clearKeyword:hover {
-  color: var(--clr-text-primary);
 }
 
 .filterDivider {
@@ -635,7 +571,7 @@
   flex: 1;
   padding: 0.4rem 0.6rem;
   border: 1px solid var(--clr-border-light);
-  border-radius: 8px;
+  border-radius: var(--input-border-radius);
   font-size: var(--small-font);
   background: var(--clr-bg-card);
   color: var(--clr-text-primary);
@@ -644,6 +580,10 @@
 
 .ingredientInput:focus {
   border-color: var(--clr-border-accent-primary);
+}
+
+.ingredientInput::placeholder {
+  font-size: var(--small-font);
 }
 
 .ingredientAddBtn {
@@ -699,24 +639,29 @@
 }
 
 .clearFiltersBtn {
-  padding: 0.3em 0.7em !important;
+  /* padding: 0.3em 0.7em !important; */
+
+  background: transparent !important;
+  /* border: 0.0625rem solid var(--clr-border-light) !important; */
   border: none !important;
-  /* background: #ff5252 !important; */
-  background: var(--clr-accent-primary) !important;
-  color: white !important;
+  /* border-radius: var(--btn-border-radius); */
+  color: var(--clr-text-primary) !important;
+  padding: 0 !important;
+  text-decoration: underline;
+  text-decoration-color: currentColor;
   text-align: center;
   cursor: pointer;
   font-size: var(--basic-font) !important;
-  font-weight: 600;
-  border-radius: 16px !important;
   transition: var(--transition);
   width: auto !important;
-  border-bottom: none !important;
   white-space: nowrap;
 }
 
+
+
 .clearFiltersBtn:hover {
-  background: #e04040 !important;
+  color: var(--clr-clear-danger-hover) !important;
+  /* background-color: var(--clr-bg-danger-hover) !important; */
 }
 
 .section {
@@ -1189,7 +1134,7 @@
 }
 
 .desktopHeaderBtn:hover {
-  /* opacity: var(--hover-opacity); */
+  transform: scale(var(--scale));
 }
 
 @media (max-width: 768px) {
@@ -1225,7 +1170,7 @@
   padding: 0.75rem 1rem;
   border-bottom: 1px solid var(--clr-border-light);
   cursor: pointer;
-  transition: background 0.15s ease;
+  transition: var(--transition);
 }
 
 .compactItem:hover {
@@ -1543,9 +1488,9 @@
 
 .categoriesPopup {
   position: fixed;
-  top: 50%;
+  top: 10vh;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   background: var(--clr-bg-primary);
   border-radius: 14px;
   width: 95vw;
@@ -1564,11 +1509,11 @@
 @keyframes categoriesPopupIn {
   from {
     opacity: 0;
-    transform: translate(-50%, -48%);
+    transform: translateX(-50%) translateY(-8px);
   }
   to {
     opacity: 1;
-    transform: translate(-50%, -50%);
+    transform: translateX(-50%);
   }
 }
 

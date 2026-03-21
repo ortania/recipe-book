@@ -5,7 +5,7 @@ import useTranslatedList from "../../hooks/useTranslatedList";
 import { getCategoryIcon } from "../../utils/categoryIcons";
 import { Trash2 } from "lucide-react";
 import { SearchBox } from "../controls/search";
-import { BackButton } from "../controls/back-button";
+import { CloseButton } from "../controls/close-button";
 import { CategoryCard } from "../category-card";
 import classes from "./categories-sheet-content.module.css";
 
@@ -94,7 +94,7 @@ function CategoriesSheetContent({
     <div className={`${classes.content} ${className || ""}`}>
       {onClose && (
         <div className={classes.modalHeader}>
-          <BackButton onClick={onClose} size={22} />
+          <CloseButton onClick={onClose} />
           <span className={classes.modalTitle}>{t("nav", "categories")}</span>
           <button
             type="button"
@@ -123,7 +123,7 @@ function CategoriesSheetContent({
             if (!val) clearCategorySelection();
           }}
           placeholder={t("categories", "searchCategory")}
-          size="small"
+          size="large"
         />
       </div>
 

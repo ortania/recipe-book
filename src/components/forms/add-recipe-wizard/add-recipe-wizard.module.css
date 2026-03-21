@@ -1073,7 +1073,7 @@
 
 .imageUploadArea:hover {
   border-color: var(--clr-success-border);
-  background: #f0fff5;
+  background: var(--clr-success-bg);
 }
 
 .imageUploadIcon {
@@ -1111,7 +1111,7 @@
 
 .imageOptionBtn:hover {
   border-color: currentColor;
-  background: #f0fff5;
+  background: var(--clr-success-bg);
   color: var(--clr-success-text);
 }
 

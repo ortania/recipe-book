@@ -8,8 +8,18 @@
   display: flex;
   justify-content: flex-start;
   align-items: center;
-  gap: 2rem;
+  gap: 1rem;
   padding: 1.5rem 1.5rem;
+}
+
+.inlineBackBtn {
+  flex-shrink: 0;
+  order: -1;
+}
+
+.desktopBackBtn {
+  flex-shrink: 0;
+  order: -1;
 }
 
 .profileHeader {
@@ -52,28 +62,27 @@
   gap: 0.4rem;
   padding: 0.5em 1.2em;
   border-radius: var(--btn-border-radius);
-  border: 1.5px solid var(--clr-border-accent-primary);
-  background: transparent;
-  color: var(--clr-text-primary);
+  border: 1.5px solid var(--clr-btn-outline-border);
+  background: var(--clr-btn-outline-bg);
+  color: var(--clr-btn-outline-text);
   font-size: var(--basic-font);
-  font-weight: 600;
+  /* font-weight: 600; */
   cursor: pointer;
   transition: var(--transition);
 }
 
 .followBtn:hover {
-  /* opacity: var(--hover-opacity); */
+  background: var(--clr-btn-outline-bg-hover);
 }
 .followBtnActive {
-  background: var(--clr-success-bg-hover);
-  color: var(--clr-btn-main-text);
-  border-color: 1.5px solid var(--clr-success-bg-hover);
+  background: var(--clr-btn-outline-bg-active);
+  border-color: var(--clr-btn-outline-border-active);
+  color: var(--clr-btn-outline-text-active);
 }
 
 .followBtnActive:hover {
-  /* opacity: var(--hover-opacity); */
-  background: var(--clr-success-bg-hover);
-  color: var(--clr-btn-main-text);
+  /* background: var(--clr-success-bg-hover);
+  color: var(--clr-btn-main-text); */
 }
 
 .privateNote {

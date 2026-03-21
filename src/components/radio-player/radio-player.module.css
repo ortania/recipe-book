@@ -57,7 +57,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: var(--clr-text-secondary);
+  color: var(--clr-text-primary);
   font-size: 2rem;
   padding: 0.2rem;
   display: flex;

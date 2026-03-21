@@ -34,7 +34,7 @@
 }
 
 .footerLink.active {
-  background-color: var(--clr-btn-secondary-bg);
+  background-color: var(--clr-footer-bg);
   border-radius: 50px;
 }
 

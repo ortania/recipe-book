@@ -96,7 +96,7 @@ function SortButton({ sortField, sortDirection, onSortChange, options }) {
               sortDirection={sortDirection}
               onSortChange={onSortChange}
               options={options}
-              size={25}
+              size={20}
             />
           </div>
         </>

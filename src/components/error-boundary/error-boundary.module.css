@@ -10,6 +10,6 @@
 
 .errorMessage {
   font-size: var(--basic-font);
-  color: var(--clr-text-secondary);
+  color: var(--clr-error-message);
   text-align: center;
 }

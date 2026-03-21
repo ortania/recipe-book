@@ -20,9 +20,9 @@ const AddButton = ({
       title={title}
     >
       {sign === "-" ? (
-        <Minus size="1em" strokeWidth={STROKE} />
+        <Minus size="1.5em" strokeWidth={STROKE} />
       ) : sign === "+" ? (
-        <Plus size="1em" strokeWidth={STROKE} />
+        <Plus size="1.5em" strokeWidth={STROKE} />
       ) : null}
       {children}
     </button>

@@ -12,7 +12,7 @@ const CloseButton = ({
   type = "plain",
   className,
   title,
-  size,
+  size = 20,
 }) => {
   const [isMobile, setIsMobile] = useState(
     () => window.innerWidth < MOBILE_BREAKPOINT

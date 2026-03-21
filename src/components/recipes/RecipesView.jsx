@@ -616,6 +616,19 @@ function RecipesView({
   /* ── Shared filter/sort content for dropdown (desktop) + BottomSheet (mobile) ── */
   const filterContent = (
     <div className={classes.dropdownScrollable}>
+      {hasActiveFilters && isMobile && (
+        <>
+          <div className={classes.filterSection}>
+            <button
+              className={classes.clearFiltersBtn}
+              onClick={clearAllFilters}
+            >
+              {t("recipesView", "clearFilters")}
+            </button>
+          </div>
+          <div className={classes.filterDivider} />
+        </>
+      )}
       <div className={classes.filterSection}>
         <label className={classes.filterLabel}>
           {t("recipesView", "sortByRating")}:
@@ -792,19 +805,6 @@ function RecipesView({
           </div>
         )}
       </div>
-      {hasActiveFilters && (
-        <>
-          <div className={classes.filterDivider} />
-          <div className={classes.filterSection}>
-            <button
-              className={classes.clearFiltersBtn}
-              onClick={clearAllFilters}
-            >
-              {t("recipesView", "clearFilters")}
-            </button>
-          </div>
-        </>
-      )}
     </div>
   );
 

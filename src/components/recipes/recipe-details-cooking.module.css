@@ -389,6 +389,10 @@
   cursor: pointer;
   font-weight: 700;
   transition: var(--transition);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .navButton {
@@ -412,15 +416,20 @@
 }
 
 .restartButton:hover {
-  background: var(--btn-bg-secondary);
+  background: var(--clr-btn-main-bg-hover);
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .nextButton {
-  background-color: var(--clr-success-bg);
+  background-color: var(--clr-btn-secondary-bg);
   color: white;
   border-radius: var(--btn-border-radius);
   box-shadow: none;
+}
+
+.nextButton:hover {
+  background: var(--clr-btn-secondary-bg-hover);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 }
 
 .headerLeft {

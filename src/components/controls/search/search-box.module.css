@@ -18,7 +18,7 @@
 
 .searchInput {
   width: 100%;
-  border: 2px solid var(--clr-border-light);
+  border: 2px solid var(--clr-input-border);
   border-radius: var(--input-border-radius);
   padding-block: 0.5em;
   padding-inline-start: 3.5rem;
@@ -26,7 +26,7 @@
   font-size: var(--basic-font);
   outline: none;
   background: var(--clr-input-bg);
-  color: var(--clr-text-primary);
+  color: var(--clr-input-text);
   box-sizing: border-box;
   text-overflow: ellipsis;
   transition:
@@ -35,12 +35,12 @@
 }
 
 .searchInput::placeholder {
-  color: var(--clr-text-muted);
-  font-size: var(--basic-font);
+  color: var(--clr-input-placeholder);
+  font-size: var(--input-placeholder-font-size);
 }
 
 .searchInput:focus {
-  border-color: var(--clr-border-light);
+  border-color: var(--clr-input-border-focus);
 }
 
 /* --- Size: small --- */
@@ -49,24 +49,23 @@
   inset-inline-start: 0.6rem;
 }
 
-/* .small .searchInput {
+.small .searchInput {
   padding-block: 0.35rem;
   padding-inline-start: 3rem;
   padding-inline-end: 1.8rem;
   font-size: var(--basic-font);
-  border-radius: 12px;
-} */
+  border-radius: var(--btn-small-border-radius);
+} 
 
 .small .clearSearch {
-  /* width: 1.2rem;
+  width: 1.2rem;
   height: 1.2rem;
   font-size: 2.3rem;
-  background: none; */
+  background: none;
 }
 
 /* --- Size: large --- */
 .large .searchIcon {
-  font-size: 1.15rem;
   inset-inline-start: 0.9rem;
 }
 

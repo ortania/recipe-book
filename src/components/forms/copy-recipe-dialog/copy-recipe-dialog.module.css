@@ -194,7 +194,7 @@
 
 .errorMessage p {
   font-size: var(--basic-font);
-  color: #dc2626;
+  color: var(--clr-error-message);
   font-weight: 500;
 }
 
