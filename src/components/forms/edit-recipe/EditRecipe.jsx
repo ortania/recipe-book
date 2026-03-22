@@ -26,6 +26,8 @@ import { uploadRecipeImage } from "../../../firebase/imageService";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
 import buttonClasses from "../../controls/gen-button.module.css";
+import catShared from "../../../styles/shared/category-chips.module.css";
+import shared from "../../../styles/shared/form-shared.module.css";
 import classes from "./edit-recipe.module.css";
 import { CloseButton } from "../../controls";
 import { calculateNutrition } from "../../../services/openai";
@@ -610,14 +612,14 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </button>
       </div>
 
-      <div className={classes.formGroup}>
-        <label className={classes.formLabel}>
+      <div className={`${shared.formGroup} ${classes.formGroup}`}>
+        <label className={`${shared.formLabel} ${classes.formLabel}`}>
           {t("recipes", "recipeName")}
           <span>*</span>
         </label>
         <input
           type="text"
-          className={classes.formInput}
+          className={`${shared.formInput} ${classes.formInput}`}
           value={editedPerson.name}
           onChange={(e) =>
             setEditedPerson((prev) => ({ ...prev, name: e.target.value }))
@@ -626,8 +628,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       </div>
 
       <div className={classes.formRowThree}>
-        <div className={classes.formGroup}>
-          <label className={classes.formLabel}>{t("recipes", "rating")}</label>
+        <div className={`${shared.formGroup} ${classes.formGroup}`}>
+          <label className={`${shared.formLabel} ${classes.formLabel}`}>
+            {t("recipes", "rating")}
+          </label>
           <div className={classes.starRating}>
             {[1, 2, 3, 4, 5].map((star) => (
               <button
@@ -649,24 +653,24 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             ))}
           </div>
         </div>
-        <div className={classes.formGroup}>
-          <label className={classes.formLabel}>
+        <div className={`${shared.formGroup} ${classes.formGroup}`}>
+          <label className={`${shared.formLabel} ${classes.formLabel}`}>
             {t("recipes", "servings")}
           </label>
           <input
             type="number"
-            className={classes.formInput}
+            className={`${shared.formInput} ${classes.formInput}`}
             value={editedPerson.servings}
             onChange={handleServingsChange}
             min="1"
           />
         </div>
-        <div className={classes.formGroup}>
-          <label className={classes.formLabel}>
+        <div className={`${shared.formGroup} ${classes.formGroup}`}>
+          <label className={`${shared.formLabel} ${classes.formLabel}`}>
             {t("recipes", "difficulty")}
           </label>
           <select
-            className={classes.formSelect}
+            className={`${shared.formSelect} ${classes.formSelect}`}
             value={editedPerson.difficulty}
             onChange={(e) =>
               setEditedPerson((prev) => ({
@@ -684,16 +688,16 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </div>
       </div>
 
-      <div className={classes.formRow}>
-        <div className={classes.formGroup}>
-          <label className={classes.formLabel}>
+      <div className={`${shared.formRow} ${classes.formRow}`}>
+        <div className={`${shared.formGroup} ${classes.formGroup}`}>
+          <label className={`${shared.formLabel} ${classes.formLabel}`}>
             {t("recipes", "cookTime")} ({t("addWizard", "min")})
           </label>
           <input
             type="number"
             inputMode="numeric"
             min="0"
-            className={classes.formInput}
+            className={`${shared.formInput} ${classes.formInput}`}
             value={editedPerson.cookTime}
             onChange={(e) =>
               setEditedPerson((prev) => ({
@@ -703,15 +707,15 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             }
           />
         </div>
-        <div className={classes.formGroup}>
-          <label className={classes.formLabel}>
+        <div className={`${shared.formGroup} ${classes.formGroup}`}>
+          <label className={`${shared.formLabel} ${classes.formLabel}`}>
             {t("recipes", "prepTime")} ({t("addWizard", "min")})
           </label>
           <input
             type="number"
             inputMode="numeric"
             min="0"
-            className={classes.formInput}
+            className={`${shared.formInput} ${classes.formInput}`}
             value={editedPerson.prepTime}
             onChange={(e) =>
               setEditedPerson((prev) => ({
@@ -723,10 +727,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         </div>
       </div>
 
-      <div className={classes.formGroup}>
-        <label className={classes.formLabel}>{t("recipes", "notes")}</label>
+      <div className={`${shared.formGroup} ${classes.formGroup}`}>
+        <label className={`${shared.formLabel} ${classes.formLabel}`}>
+          {t("recipes", "notes")}
+        </label>
         <textarea
-          className={classes.formTextarea}
+          className={`${shared.formTextarea} ${classes.formTextarea}`}
           value={editedPerson.notes}
           onChange={(e) =>
             setEditedPerson((prev) => ({ ...prev, notes: e.target.value }))
@@ -734,11 +740,13 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         />
       </div>
 
-      <div className={classes.formGroup}>
-        <label className={classes.formLabel}>{t("recipes", "sourceUrl")}</label>
+      <div className={`${shared.formGroup} ${classes.formGroup}`}>
+        <label className={`${shared.formLabel} ${classes.formLabel}`}>
+          {t("recipes", "sourceUrl")}
+        </label>
         <input
           type="url"
-          className={classes.formInput}
+          className={`${shared.formInput} ${classes.formInput}`}
           placeholder="https://..."
           value={editedPerson.sourceUrl}
           onChange={(e) =>
@@ -751,7 +759,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       </div>
 
       {!person.copiedFrom && (
-        <div className={classes.formGroup}>
+        <div className={`${shared.formGroup} ${classes.formGroup}`}>
           <label className={classes.checkboxLabel}>
             <input
               type="checkbox"
@@ -778,7 +786,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     return (
       <>
         <h3 className={classes.sectionTitle}>{t("recipes", "ingredients")}</h3>
-        <div className={classes.dynamicList} ref={ingredientsListRef}>
+        <div className={`${shared.dynamicList} ${classes.dynamicList}`} ref={ingredientsListRef}>
           {editedPerson.ingredients.map((ing, i) => {
             const isGroup = isGroupHeader(ing);
             if (!isGroup) ingredientCounter++;
@@ -786,7 +794,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               <div
                 key={i}
                 data-drag-item
-                className={`${isGroup ? classes.groupItem : classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "ingredients" && dragIndex !== i ? (dragIndex > i ? classes.dragOverAbove : classes.dragOverBelow) : ""}`}
+                className={`${isGroup ? classes.groupItem : classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "ingredients" && dragIndex !== i ? (dragIndex > i ? `${shared.dragOverAbove} ${classes.dragOverAbove}` : `${shared.dragOverBelow} ${classes.dragOverBelow}`) : ""}`}
                 draggable
                 onDragStart={(e) => handleDragStart(e, i, "ingredients")}
                 onDragOver={(e) => handleDragOver(e, i)}
@@ -794,7 +802,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 onDragEnd={handleDragEnd}
               >
                 <span
-                  className={classes.dragHandle}
+                  className={`${shared.dragHandle} ${classes.dragHandle}`}
                   onTouchStart={(e) =>
                     handleTouchStart(e, i, "ingredients", ingredientsListRef)
                   }
@@ -802,9 +810,11 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                   <GripVertical size={16} />
                 </span>
                 {isGroup ? (
-                  <div className={classes.groupInputBox}>
+                  <div
+                    className={`${shared.groupInputBox} ${classes.groupInputBox}`}
+                  >
                     <input
-                      className={classes.groupInput}
+                      className={`${shared.groupInput} ${classes.groupInput}`}
                       placeholder={t("addWizard", "groupPlaceholder")}
                       value={getGroupName(ing)}
                       onChange={(e) =>
@@ -823,9 +833,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                     </button>
                   </div>
                 ) : (
-                  <div className={classes.inputBox}>
+                  <div className={`${shared.inputBox} ${classes.inputBox}`}>
                     <textarea
-                      className={classes.dynamicItemInput}
+                      className={`${shared.dynamicItemInput} ${classes.dynamicItemInput}`}
                       placeholder={`${t("addWizard", "ingredient")} ${ingredientCounter}`}
                       value={ing}
                       rows={1}
@@ -857,17 +867,17 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               </div>
             );
           })}
-          <div className={classes.addItemRow}>
+          <div className={`${shared.addItemRow} ${classes.addItemRow}`}>
             <button
               type="button"
-              className={classes.addItemBtn}
+              className={`${shared.addItemBtn} ${classes.addItemBtn}`}
               onClick={addIngredient}
             >
               + {t("addWizard", "addIngredient")}
             </button>
             <button
               type="button"
-              className={classes.addGroupBtn}
+              className={`${shared.addGroupBtn} ${classes.addGroupBtn}`}
               onClick={addIngredientGroup}
             >
               + {t("addWizard", "addGroup")}
@@ -881,12 +891,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const renderInstructionsTab = () => (
     <>
       <h3 className={classes.sectionTitle}>{t("recipes", "instructions")}</h3>
-      <div className={classes.dynamicList} ref={instructionsListRef}>
+      <div className={`${shared.dynamicList} ${classes.dynamicList}`} ref={instructionsListRef}>
         {editedPerson.instructions.map((inst, i) => (
           <div
             key={i}
             data-drag-item
-            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "instructions" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "instructions" && dragIndex !== i ? (dragIndex > i ? classes.dragOverAbove : classes.dragOverBelow) : ""}`}
+            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "instructions" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "instructions" && dragIndex !== i ? (dragIndex > i ? `${shared.dragOverAbove} ${classes.dragOverAbove}` : `${shared.dragOverBelow} ${classes.dragOverBelow}`) : ""}`}
             draggable
             onDragStart={(e) => handleDragStart(e, i, "instructions")}
             onDragOver={(e) => handleDragOver(e, i)}
@@ -894,27 +904,27 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             onDragEnd={handleDragEnd}
           >
             <span
-              className={classes.dragHandle}
+              className={`${shared.dragHandle} ${classes.dragHandle}`}
               onTouchStart={(e) =>
                 handleTouchStart(e, i, "instructions", instructionsListRef)
               }
             >
               <GripVertical size={16} />
             </span>
-            <div className={classes.instructionBox}>
+            <div className={`${shared.instructionBox} ${classes.instructionBox}`}>
               {editedPerson.instructions.length > 1 && (
                 <button
                   type="button"
-                  className={classes.instructionRemoveBtn}
+                  className={`${shared.instructionRemoveBtn} ${classes.instructionRemoveBtn}`}
                   onClick={() => removeInstruction(i)}
                 >
                   <X size={16} />
                 </button>
               )}
-              <div className={classes.instructionContent}>
-                <span className={classes.dynamicItemNumber}>{i + 1}.</span>
+              <div className={`${shared.instructionContent} ${classes.instructionContent}`}>
+                <span className={`${shared.dynamicItemNumber} ${classes.dynamicItemNumber}`}>{i + 1}.</span>
                 <textarea
-                  className={classes.dynamicItemTextarea}
+                  className={`${shared.dynamicItemTextarea} ${classes.dynamicItemTextarea}`}
                   placeholder={`${t("addWizard", "step")} ${i + 1}...`}
                   value={inst}
                   onChange={(e) => handleInstructionChange(i, e.target.value)}
@@ -935,18 +945,20 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         ))}
         <button
           type="button"
-          className={classes.addItemBtn}
+          className={`${shared.addItemBtn} ${classes.addItemBtn}`}
           onClick={addInstruction}
         >
           + {t("addWizard", "addStep")}
         </button>
       </div>
 
-      <div className={classes.formGroup}>
-        <label className={classes.formLabel}>{t("recipes", "videoUrl")}</label>
+      <div className={`${shared.formGroup} ${classes.formGroup}`}>
+        <label className={`${shared.formLabel} ${classes.formLabel}`}>
+          {t("recipes", "videoUrl")}
+        </label>
         <input
           type="url"
-          className={classes.formInput}
+          className={`${shared.formInput} ${classes.formInput}`}
           placeholder="https://youtube.com/..."
           value={editedPerson.videoUrl}
           onChange={(e) =>
@@ -977,7 +989,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       {editedPerson.images?.length > 0 ? (
         <>
           <div
-            className={`${classes.imageGrid} ${editImageDragOver ? classes.dropActive : ""}`}
+            className={`${classes.imageGrid} ${shared.imageGrid}${editImageDragOver ? classes.dropActive : ""}`}
             onDragOver={(e) => {
               e.preventDefault();
               setEditImageDragOver(true);
@@ -986,11 +998,14 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             onDrop={handleEditImageDrop}
           >
             {editedPerson.images.map((url, i) => (
-              <div key={i} className={classes.imageGridItem}>
+              <div
+                key={i}
+                className={`${shared.imageGridItem} ${classes.imageGridItem}`}
+              >
                 <img
                   src={url}
                   alt={`${i + 1}`}
-                  className={classes.imageGridPreview}
+                  className={`${shared.imageGridPreview} ${classes.imageGridPreview}`}
                 />
                 <button
                   type="button"
@@ -1053,7 +1068,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         <p className={classes.categorySubtitle}>
           {t("addWizard", "selectedCategories")}
         </p>
-        <div className={classes.categoryChips}>
+        <div className={`${catShared.categoryChips} ${classes.categoryChips}`}>
           {groups
             .filter(
               (g) => g.id !== "all" && editedPerson.categories.includes(g.id),
@@ -1062,7 +1077,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               <button
                 key={group.id}
                 type="button"
-                className={`${classes.categoryChip} ${classes.categoryChipActive}`}
+                className={`${catShared.categoryChip} ${classes.categoryChip} ${catShared.categoryChipActive} ${classes.categoryChipActive} `}
                 onClick={() => toggleCategory(group.id)}
               >
                 ✕ {getTranslatedGroup(group)}
@@ -1075,7 +1090,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         <p className={classes.categorySubtitle}>
           {t("addWizard", "availableCategories")}
         </p>
-        <div className={classes.categoryChips}>
+        <div className={`${catShared.categoryChips} ${classes.categoryChips}`}>
           {groups
             .filter(
               (g) => g.id !== "all" && !editedPerson.categories.includes(g.id),
@@ -1084,17 +1099,17 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               <button
                 key={group.id}
                 type="button"
-                className={classes.categoryChip}
+                className={`${classes.categoryChip} ${catShared.categoryChip}`}
                 onClick={() => toggleCategory(group.id)}
               >
                 + {getTranslatedGroup(group)}
               </button>
             ))}
           {showNewCategoryInput ? (
-            <div className={classes.newCategoryInline}>
+            <div className={`${catShared.newCategoryInline} ${classes.newCategoryInline}`}>
               <input
                 type="text"
-                className={classes.newCategoryInput}
+                className={`${catShared.newCategoryInput} ${classes.newCategoryInput}`}
                 placeholder={t("categories", "categoryName")}
                 value={newCategoryName}
                 onChange={(e) => setNewCategoryName(e.target.value)}
@@ -1112,7 +1127,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               />
               <button
                 type="button"
-                className={classes.newCategoryConfirmBtn}
+                className={`${catShared.newCategoryConfirmBtn} ${classes.newCategoryConfirmBtn}`}
                 onClick={handleAddNewCategory}
                 disabled={!newCategoryName.trim()}
               >
@@ -1120,7 +1135,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
               </button>
               <button
                 type="button"
-                className={classes.newCategoryCancelBtn}
+                className={`${catShared.newCategoryCancelBtn} ${classes.newCategoryCancelBtn}`}
                 onClick={() => {
                   setShowNewCategoryInput(false);
                   setNewCategoryName("");
@@ -1132,7 +1147,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           ) : (
             <button
               type="button"
-              className={classes.addCategoryChip}
+              className={`${catShared.addCategoryChip} ${classes.addCategoryChip}`}
               onClick={() => setShowNewCategoryInput(true)}
             >
               <Plus size={14} /> {t("categories", "addCategory")}
@@ -1172,7 +1187,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   return (
-    <Modal onClose={handleCancel} className={classes.noPadModal}>
+    <Modal
+      onClose={handleCancel}
+      className={`${shared.noPadModal} ${classes.noPadModal}`}
+    >
       <div className={classes.editContainer}>
         <div
           style={{

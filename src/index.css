@@ -160,8 +160,8 @@ Variables
   /* =========================
      GLOBAL INTERACTIONS
   ========================= */
-  --clr-bg-hover: var(--clr-tertiary-100);
-  --clr-bg-active: var(--clr-tertiary-200);
+  --clr-bg-hover: var(--clr-tertiary-200);
+  --clr-bg-active: var(--clr-tertiary-300);
 
   --clr-border-hover: var(--clr-neutral-400);
   --clr-border-active: var(--clr-neutral-500);

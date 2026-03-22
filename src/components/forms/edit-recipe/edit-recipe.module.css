@@ -1,12 +1,12 @@
 /* Edit Recipe - Sidebar Tab Layout */
 
-.srOnly {
+/* .srOnly {
   composes: srOnly from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
-.noPadModal {
+/* .noPadModal {
   composes: noPadModal from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
 .editContainer {
   display: flex;
@@ -214,8 +214,8 @@
 }
 
 .sidebarTabActive {
-  color: var(--clr-accent);
-  background: var(--clr-bg-card);
+  color: var(--clr-accent-tertiary);
+  background: var(--clr-bg-hover);
   /* border-right-color: var(--clr-accent); */
   font-weight: var(--font-weight-heading);
 }
@@ -250,38 +250,24 @@
 
 /* ========== Form Elements ========== */
 .formGroup {
-  composes: formGroup from '../../../styles/shared/form-shared.module.css';
+  /* composes: formGroup from '../../../styles/shared/form-shared.module.css'; */
   margin-bottom: 1.25rem;
 }
 
-.formLabel {
+/* .formLabel {
   composes: formLabel from '../../../styles/shared/form-shared.module.css';
-}
+} */
 
-.formInput {
-  composes: formInput from '../../../styles/shared/form-shared.module.css';
-}
-
-.formInput::placeholder {
-  color: var(--clr-text-muted);
-  font-style: italic;
-}
-
-.formTextarea {
+/* .formTextarea {
   composes: formTextarea from '../../../styles/shared/form-shared.module.css';
-}
+} */
 
-.formTextarea::placeholder {
-  color: var(--clr-text-muted);
-  font-style: italic;
-}
-
-.formSelect {
+/* .formSelect {
   composes: formSelect from '../../../styles/shared/form-shared.module.css';
-}
+} */
 
 .formRow {
-  composes: formRow from '../../../styles/shared/form-shared.module.css';
+  /* composes: formRow from '../../../styles/shared/form-shared.module.css'; */
   margin-bottom: 1.25rem;
 }
 
@@ -362,9 +348,9 @@
 }
 
 /* ========== Dynamic Lists ========== */
-.dynamicList {
+/* .dynamicList {
   composes: dynamicList from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
 .dynamicItem {
   display: flex;
@@ -380,41 +366,42 @@
   border: 2px dashed var(--border-color, #ccc);
 }
 
-.dragOverAbove {
+/* .dragOverAbove {
   composes: dragOverAbove from "../../../styles/shared/form-shared.module.css";
 }
 
 .dragOverBelow {
   composes: dragOverBelow from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
-.dynamicItemNumber {
+/* .dynamicItemNumber {
   composes: dynamicItemNumber from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
 .inputBox {
-  composes: inputBox from "../../../styles/shared/form-shared.module.css";
+  /* composes: inputBox from "../../../styles/shared/form-shared.module.css"; */
   align-items: center;
   position: relative;
+  background: red;
 }
 
-.dynamicItemInput {
+/* .dynamicItemInput {
   composes: dynamicItemInput from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
-.dynamicItemInput::placeholder {
+/* .dynamicItemInput::placeholder {
   color: var(--clr-text-muted);
   font-style: italic;
-}
+} */
 
-.dynamicItemTextarea {
+/* .dynamicItemTextarea {
   composes: dynamicItemTextarea from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
-.dynamicItemTextarea::placeholder {
+/* .dynamicItemTextarea::placeholder {
   color: var(--clr-text-muted);
   font-style: italic;
-}
+} */
 
 .removeItemBtn {
   background: none;
@@ -431,17 +418,17 @@
   color: var(--clr-danger-600);
 }
 
-.instructionBox {
+/* .instructionBox {
   composes: instructionBox from "../../../styles/shared/form-shared.module.css";
 }
 
 .instructionContent {
   composes: instructionContent from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
-.instructionRemoveBtn {
+/* .instructionRemoveBtn {
   composes: instructionRemoveBtn from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
 /* ========== Ingredient Group ========== */
 .groupItem {
@@ -463,15 +450,15 @@
   border: 2px dashed var(--border-color, #ccc);
 }
 
-.groupInputBox {
+/* .groupInputBox {
   composes: groupInputBox from "../../../styles/shared/form-shared.module.css";
 }
 
 .groupInput {
   composes: groupInput from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
-.addItemRow {
+/* .addItemRow {
   composes: addItemRow from "../../../styles/shared/form-shared.module.css";
 }
 
@@ -481,11 +468,11 @@
 
 .addGroupBtn {
   composes: addGroupBtn from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
-.dragHandle {
+/* .dragHandle {
   composes: dragHandle from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
 /* ========== Image Section ========== */
 .imageUploadArea {
@@ -507,9 +494,9 @@
   border-color: var(--clr-success-border);
 }
 
-.dropActive {
+/* .dropActive {
   composes: dropActive from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
 .imagePreview {
   width: 100%;
@@ -547,7 +534,7 @@
 }
 
 /* ========== Image Grid (multiple images) ========== */
-.imageGrid {
+/* .imageGrid {
   composes: imageGrid from "../../../styles/shared/form-shared.module.css";
 }
 
@@ -557,7 +544,7 @@
 
 .imageGridPreview {
   composes: imageGridPreview from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
 .imageGridItem .imageRemoveBtn {
   width: 24px;
@@ -588,9 +575,9 @@
 }
 
 /* ========== Categories ========== */
-.categoryCardsGrid {
+/* .categoryCardsGrid {
   composes: categoryCardsGrid from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
 .categorySection {
   margin-bottom: 1.25rem;
@@ -603,37 +590,37 @@
   margin: 2rem 0 1rem 0;
 }
 
-.categoryChips {
+/* .categoryChips {
   composes: categoryChips from "../../../styles/shared/category-chips.module.css";
-}
+} */
 
-.categoryChip {
+/* .categoryChip {
   composes: categoryChip from "../../../styles/shared/category-chips.module.css";
-}
+} */
 
-.categoryChipActive {
+/* .categoryChipActive {
   composes: categoryChipActive from "../../../styles/shared/category-chips.module.css";
-}
+} */
 
-.addCategoryChip {
+/* .addCategoryChip {
   composes: addCategoryChip from "../../../styles/shared/category-chips.module.css";
-}
+} */
 
-.newCategoryInline {
+/* .newCategoryInline {
   composes: newCategoryInline from "../../../styles/shared/category-chips.module.css";
-}
+} */
 
-.newCategoryInput {
+/* .newCategoryInput {
   composes: newCategoryInput from "../../../styles/shared/category-chips.module.css";
-}
+} */
 
-.newCategoryConfirmBtn {
+/* .newCategoryConfirmBtn {
   composes: newCategoryConfirmBtn from "../../../styles/shared/category-chips.module.css";
-}
+} */
 
-.newCategoryCancelBtn {
+/* .newCategoryCancelBtn {
   composes: newCategoryCancelBtn from "../../../styles/shared/category-chips.module.css";
-}
+} */
 
 /* ========== Nutrition ========== */
 .nutritionGrid {
@@ -670,16 +657,16 @@
 }
 
 /* Move buttons (for mobile touch reorder) */
-.moveButtons {
+/* .moveButtons {
   composes: moveButtons from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
-.moveBtn {
+/* .moveBtn {
   composes: moveBtn from "../../../styles/shared/form-shared.module.css";
-}
+} */
 
 /* ========== Responsive ========== */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .editContainer {
     flex-direction: column;
     height: 100vh;
@@ -729,7 +716,7 @@
     border-bottom: 3px solid transparent;
     font-weight: var(--font-weight-heading);
     color: var(--clr-text-muted);
-    transition: border-color 0.2s;
+    transition: var(--transition);
   }
 
   .sidebarTab:hover {
@@ -737,12 +724,11 @@
     background: none;
   }
 
-  .sidebarTabActive,
-  .sidebarTabActive:hover {
+  .sidebarTabActive {
     border-right-color: transparent;
-    border-bottom-color: var(--clr-accent);
-    color: var(--clr-accent-tertiary);
-    background: none;
+    border-bottom-color: var(--clr-accent-tertiary);
+    color: var(--clr-accent-tertiary) !important;
+    background: var(--clr-bg-hover) !important;
   }
 
   .sidebarTabIcon {
@@ -809,7 +795,7 @@
 }
 
 /* Calculate Nutrition */
-.nutritionActions {
+/* .nutritionActions {
   composes: nutritionActions from "../../../styles/shared/form-shared.module.css";
 }
 
@@ -831,4 +817,4 @@
   text-align: center;
   margin: 0.25rem 0 0.75rem;
   font-style: italic;
-}
+} */

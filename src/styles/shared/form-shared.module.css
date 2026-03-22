@@ -46,6 +46,12 @@
   line-height: 1.5;
 }
 
+.dynamicItemInput::placeholder {
+  color: var(--clr-text-muted);
+  font-style: italic;
+}
+
+
 .dynamicItemTextarea {
   flex: 1;
   min-width: 0;
@@ -60,6 +66,11 @@
   box-sizing: border-box;
   background: transparent;
   overflow: hidden;
+}
+
+.dynamicItemTextarea::placeholder {
+  color: var(--clr-text-muted);
+  font-style: italic;
 }
 
 /* ========== Instruction Elements ========== */
@@ -363,14 +374,15 @@
   display: flex;
   gap: 0.5rem;
   padding: 0.8rem 1rem;
-  border: 1px solid var(--clr-border-light);
-  border-radius: 12px;
-  background: var(--bg-tertiary);
-  transition: border-color 0.2s;
+  border: 1px solid var(--clr-input-border);
+  border-radius: var(--input-border-radius);
+  background: var(--clr-input-bg);
+  transition: var(--transition);
 }
 
 .inputBox:focus-within {
-  border-color: var(--clr-success-border);
+  border-color: var(--clr-input-border-focus);
+  background: var(--clr-input-bg-focus);
 }
 
 /* ========== Form Fields ========== */
@@ -395,14 +407,19 @@
 
 .formInput {
   padding: 0.8rem 1rem;
-  border: 1px solid var(--clr-border-light);
-  border-radius: 12px;
+  border: 1px solid var(--clr-input-border);
+  border-radius: var(--input-border-radius);
   font-size: var(--basic-font);
   outline: none;
-  transition: border-color 0.2s;
+  transition: var(--transition);
   width: 100%;
   box-sizing: border-box;
-  background: var(--bg-tertiary);
+  background: var(--clr-input-bg);
+}
+
+.formInput::placeholder {
+  color: var(--clr-text-muted);
+  font-style: italic;
 }
 
 .formInput:focus {
@@ -433,6 +450,11 @@
   width: 100%;
   box-sizing: border-box;
   background: var(--bg-tertiary);
+}
+
+.formTextarea::placeholder {
+  color: var(--clr-text-muted);
+  /* font-style: italic; */
 }
 
 .formTextarea:focus {
