@@ -38,12 +38,12 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-card, #fff);
-  color: var(--text-muted, #999);
+  background: var(--clr-bg-card, #fff);
+  color: var(--clr-text-muted, #999);
   font-size: var(--basic-font);
   font-style: italic;
   border-radius: 25px;
-  border: 2px dashed var(--text-muted, #ccc);
+  border: 2px dashed var(--clr-text-muted, #ccc);
   opacity: 0.8;
 }
 
@@ -57,7 +57,7 @@
 
 .recipeName {
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0 0 0.25rem 0;
   line-height: 1.3;
@@ -117,7 +117,7 @@
   cursor: pointer;
   transition: all 0.2s ease;
   z-index: 2;
-  color: #333;
+  color: var(--clr-text-primary);
   -webkit-appearance: none;
   appearance: none;
   overflow: visible;
@@ -125,13 +125,13 @@
 }
 
 .favoriteButton:hover {
-  background: white;
+  background: var(--clr-bg-card);
   transform: scale(1.1);
 }
 
 .favoriteButton.active {
   /* background: #ff6b6b; */
-  color: white;
+  color: var(--clr-white);
 }
 
 .actionButtons {
@@ -160,17 +160,17 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: #333;
+  color: var(--clr-text-primary);
 }
 
 .actionButton:hover {
-  background: white;
+  background: var(--clr-bg-card);
   transform: scale(1.05);
 }
 
 .actionButton.danger {
   /* background: rgba(244, 67, 54, 0.9); */
-  color: white;
+  color: var(--clr-white);
 }
 
 .actionButton.danger:hover {
@@ -204,7 +204,7 @@
 
 .copyButton:hover {
   background: var(--clr-text-primary);
-  color: white;
+  color: var(--clr-white);
   transform: translateX(-50%) scale(var(--scale));
 }
 
@@ -213,8 +213,8 @@
 }
 
 .copyButton.copied {
-  background: #4caf50;
-  color: white;
+  background: var(--clr-success-500);
+  color: var(--clr-white);
 }
 
 .reorderActions {
@@ -258,8 +258,8 @@
   position: fixed;
   top: 2rem;
   right: 2rem;
-  background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--clr-success-500) 0%, var(--clr-success-600) 100%);
+  color: var(--clr-white);
   padding: 1rem 1.5rem;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
@@ -295,8 +295,8 @@
   position: fixed;
   top: 2rem;
   right: 2rem;
-  background: linear-gradient(135deg, #e53935 0%, #c62828 100%);
-  color: white;
+  background: linear-gradient(135deg, var(--clr-danger-600) 0%, var(--clr-danger-800) 100%);
+  color: var(--clr-white);
   padding: 1em 1.5em;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
@@ -323,7 +323,7 @@
 }
 
 .ratingLabel {
-  font-size: var(--verysmall-font);
+  font-size: var(--very-small-font);
   color: var(--clr-text-secondary);
   min-width: 3.5rem;
 }

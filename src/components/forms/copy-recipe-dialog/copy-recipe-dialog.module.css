@@ -32,7 +32,7 @@
 .inputLabel {
   display: block;
   font-size: var(--basic-font);
-  /* font-weight: 600; */
+
   color: var(--clr-text-primary);
   margin-bottom: 0.5rem;
 }
@@ -65,7 +65,7 @@
   background: var(--clr-accent-primary);
   color: var(--clr-bg-primary);
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   transition: all 0.2s ease;
   white-space: nowrap;
@@ -82,7 +82,7 @@
 }
 
 .errorText {
-  color: #dc2626;
+  color: var(--clr-danger-600);
   font-size: var(--basic-font);
   margin: 0.4rem 0 0;
   text-align: right;
@@ -102,7 +102,7 @@
   align-items: center;
   gap: 0.3rem;
   padding: 0.3rem 0.5rem 0.3rem 0.75rem;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border: 1px solid var(--clr-border-light);
   border-radius: 20px;
   font-size: var(--basic-font);
@@ -128,7 +128,7 @@
   transition: all 0.15s;
   width: 20px;
   height: 20px;
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
 }
 
 .chipRemove:hover {
@@ -147,7 +147,7 @@
 
 .buttons button {
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   cursor: pointer;
 }
@@ -188,8 +188,8 @@
 
 .successMessage p {
   font-size: var(--large-font);
-  color: #2e7d32;
-  font-weight: 600;
+  color: var(--clr-success-700);
+  font-weight: var(--font-weight-heading);
 }
 
 .errorMessage p {

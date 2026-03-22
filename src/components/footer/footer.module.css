@@ -55,7 +55,7 @@
   .footer {
     border-radius: 16px 16px 0 0;
     margin-inline-start: 0;
-    padding: 0.4rem 0;
+    padding: 0.4rem 1rem;
     padding-bottom: calc(0.4rem + env(safe-area-inset-bottom, 0px));
     display: block;
 

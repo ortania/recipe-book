@@ -13,7 +13,7 @@
 }
 
 .dragOver {
-  border: 2px dashed #2196f3;
+  border: 2px dashed var(--clr-secondary-500);
   border-radius: 12px;
-  background: rgba(33, 150, 243, 0.05);
+  background: rgba(138, 154, 91, 0.05);
 }

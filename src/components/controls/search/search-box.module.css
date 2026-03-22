@@ -11,7 +11,7 @@
   top: 50%;
   transform: translateY(-50%);
   color: var(--clr-text-muted);
-  font-size: 1.5rem;
+  font-size:var(--basic-font);
   pointer-events: none;
   z-index: 1;
 }

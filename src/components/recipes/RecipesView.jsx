@@ -1216,8 +1216,8 @@ function RecipesView({
                     <Heart
                       size={isMobile ? 24 : 30}
                       strokeWidth={1.5}
-                      fill="red"
-                      stroke="red"
+                      fill="var(--clr-favorite)"
+                      stroke="var(--clr-favorite)"
                     />
                   ) : (
                     <Heart size={isMobile ? 24 : 30} strokeWidth={1.5} />

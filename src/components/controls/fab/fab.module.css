@@ -15,7 +15,7 @@
   color: var(--clr-btn-main-text);
   border: none;
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   z-index: 1000;
   transition:
@@ -81,7 +81,7 @@
 .menu {
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0.5rem;
   padding: 0.2rem;
 }
 
@@ -91,13 +91,13 @@
   justify-content: space-between;
   padding: 0.85rem 1rem;
   border: none;
-  background: var(--bg-tertiary);
-  border-radius: 12px;
+  background: var(--clr-bg-tertiary);
+  border-radius: var(--input-border-radius);
   width: 100%;
   font-size: var(--basic-font);
   color: var(--clr-text-primary);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: var(--transition);
   white-space: nowrap;
   text-align: start;
 }
@@ -108,7 +108,7 @@
 
 .menuLabel {
   flex: 1;
-  font-weight: 500;
+  font-weight: var(--font-weight-secondary);
 }
 
 .menuIcon {

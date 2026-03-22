@@ -37,7 +37,7 @@
 }
 
 .input::placeholder {
-  color: var(--text-tertiary, #aaa);
+  color: var(--clr-input-placeholder);
 }
 
 .clearBtn {

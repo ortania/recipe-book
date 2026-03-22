@@ -89,16 +89,15 @@ Variables
   /* =========================
      DANGER (Warm Red)
   ========================= */
-  --clr-danger-900: #5c1a1a;
-  --clr-danger-800: #7a2323;
-  --clr-danger-700: #a13030;
-  --clr-danger-600: #c44545;
-  --clr-danger-500: #e35d5d; /* base */
-  --clr-danger-400: #ea7a7a;
-  --clr-danger-300: #f2a3a3;
-  --clr-danger-200: #f7caca;
-  --clr-danger-100: #fdecec;
-
+  --clr-danger-900: #7f1d1d;
+  --clr-danger-800: #991b1b;
+  --clr-danger-700: #b91c1c;
+  --clr-danger-600: #dc2626;
+  --clr-danger-500: #ef4444; /* base */
+  --clr-danger-400: #f87171;
+  --clr-danger-300: #fca5a5;
+  --clr-danger-200: #fecaca;
+  --clr-danger-100: #fee2e2;
   /* =========================
      SUCCESS (Green)
   ========================= */
@@ -116,6 +115,7 @@ Variables
      TEXT
   ========================= */
   --clr-text-primary: var(--clr-neutral-700);
+  --clr-text-primary-hover: var(--clr-neutral-800);
   --clr-text-secondary: var(--clr-neutral-600);
   --clr-text-secondary-hover: var(--clr-neutral-800);
   --clr-text-muted: var(--clr-neutral-500);
@@ -140,25 +140,22 @@ Variables
   --clr-success-dark-bg-hover: var(--clr-success-800);
   --clr-success-dark-bg-active: var(--clr-success-900);
 
-  /* --clr-success: #1a9c5a;
-  --clr-success-hover: #2e7d32;
-  --clr-success-dark: #155724; */
-  /* saved, added, deleted, checkbox, etc. */
-
-  /* --active-color-primary: #1a9c5a;
-  --dark-active-color: #155724;
-  --active-color-secondary: #2e7d32; */
-
   --clr-danger-bg: var(--clr-danger-100);
   --clr-danger-bg-hover: var(--clr-danger-200);
   --clr-danger-bg-active: var(--clr-danger-300);
 
-  --clr-danger-text: var(--clr-danger-400);
+  --clr-danger-text: var(-var(--clr-danger-600));
   --clr-danger-text-strong: var(--clr-danger-800);
+  --clr-danger-bg-active-strong: var(--clr-danger-500);
 
   --clr-danger-border: var(--clr-danger-500);
 
+  --clr-clear-text-danger-hover: var(--clr-danger-700);
+  --clr-bg-danger-hover: var(--clr-danger-100);
+  --clr-error-message: var(--clr-primary-700);
+
   --danger-text-font-weight: 600;
+
 
   /* =========================
      GLOBAL INTERACTIONS
@@ -220,7 +217,7 @@ Variables
   ========================= */
   --clr-btn-outline-bg: transparent;
   --clr-btn-outline-bg-hover: var(--clr-tertiary-100);
-  /* --clr-btn-outline-bg-active: var(--clr-tertiary-200); */
+  --clr-btn-outline-bg-hover-2: var(--clr-tertiary-200);
 
   --clr-btn-outline-text: var(--clr-neutral-700);
 
@@ -295,6 +292,12 @@ Variables
   --clr-bg-secondary: var(--clr-bg-card);
   --clr-bg-tertiary: var(--clr-tertiary-200);
 
+  /*
+   * Legacy token: edit/add forms used var(--bg-tertiary) before shared CSS.
+   * In light theme it was effectively the same as the card (modal) surface.
+   */
+  --bg-tertiary: var(--clr-bg-card);
+
   /* =========================
      BORDERS
   ========================= */
@@ -316,7 +319,7 @@ Variables
   ========================= */
 
   --clr-tip-bg: #f5f1ec;
-  
+
   --clr-tip-border: var(--clr-brown-200);
   --clr-tip: var(--clr-brown-800);
   --tip-border-radius: 12px;
@@ -339,17 +342,19 @@ Variables
 
   /* fonts variables */
   --huge-font: 2.2rem;
-  --very-large-font: 1.9rem;
-  --large-font: 1.7rem;
-  --basic-font: 1.5rem;
-  --small-font: 1.3rem;
-  --very-small-font: 1.1rem;
+  --very-large-font: 2rem;
+  --large-font: 1.8rem;
+  --basic-font: 1.6rem;
+  --input-font: 1.6rem;
+  --small-font: 1.4rem;
+  --very-small-font: 1.2rem;
 
   --font-primary: "Noto Sans Hebrew", sans-serif;
   --font-heading: var(--font-primary);
   --font-heading-size: var(--very-large-font);
   --font-weight-heading: 600;
   --font-weight-primary: 400;
+  --font-weight-secondary: 500;
 
   /* =====button sizing and more (mobile-first) ===== */
 
@@ -384,18 +389,44 @@ Variables
   --max-width: 900px;
   --divider: var(--clr-neutral-200);
 
+  --clr-white: #fff;
   --clr-accent-primary: var(--clr-brown-700);
   --clr-accent-secondary: var(--clr-neutral-600);
   --clr-accent-tertiary: var(--clr-primary-700);
   --clr-accent-tertiary-hover: var(--clr-primary-800);
+  --clr-accent-quaternary: var(--clr-success-800);
 
   --disabled-opacity: 0.4;
 
-  --clr-clear-danger-hover: var(--clr-danger-500);
-  --clr-bg-danger-hover: var(--clr-danger-100);
-  --clr-error-message: var(-clr-primary-700);
-
   --clr-footer-bg: var(--clr-secondary-200);
+
+  --clr-favorite: var(--clr-danger-500);
+
+  /* =========================
+     STAR / RATING
+  ========================= */
+  --clr-star: #f5a623;
+  --clr-star-hover: #e09520;
+
+  /* =========================
+     WARNING
+  ========================= */
+  --clr-warning: #f39c12;
+  --clr-warning-hover: #e67e22;
+  --clr-warning-bg: #fff9f0;
+  --clr-warning-bg-hover: #fff3e0;
+
+  /* =========================
+     ORANGE
+  ========================= */
+  --clr-orange: #ff9800;
+  --clr-orange-hover: #f57c00;
+
+  /* =========================
+     TEAL
+  ========================= */
+  /* migration color */
+  --clr-teal: #4ecdc4;
 }
 
 /*
@@ -530,7 +561,7 @@ textarea,
 select {
   /* font-size: max(1rem, inherit); */
   /* for safari  so it will not make zoom out*/
-  font-size: 16px !important;
+  font-size: var(--input-font) !important;
 }
 ul {
   list-style-type: none;
@@ -554,17 +585,17 @@ h1 {
 }
 
 h2 {
-  font-size: 2.5rem;
+  font-size: var(--very-large-font);
 }
 
 h3 {
-  font-size: 2rem;
+  font-size: var(--large-font);
 }
 
 p {
   margin-bottom: 1.3rem;
   color: var(--clr-text-primary);
-  font-size: 1.8rem;
+  font-size: var(--basic-font);
 }
 
 img {
@@ -574,7 +605,7 @@ img {
 }
 
 strong {
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
 }
 
 @media (min-width: 80rem) {
@@ -593,7 +624,7 @@ strong {
   }
 
   p {
-    font-size: 1.8rem;
+    font-size: var(--basic-font);
   }
 }
 

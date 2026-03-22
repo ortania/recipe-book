@@ -87,7 +87,13 @@ export default function TimerWidget() {
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
     >
-      <div className={classes.header} onClick={() => setExpanded(!expanded)}>
+      <div className={classes.header} onClick={() => {
+        if (!pos && widgetRef.current) {
+          const rect = widgetRef.current.getBoundingClientRect();
+          setPos({ x: rect.left, y: rect.top });
+        }
+        setExpanded(!expanded);
+      }}>
         <GripHorizontal size={14} className={classes.dragHandle} />
         <div className={classes.headerLeft}>
           <Timer size={16} />
@@ -111,7 +117,7 @@ export default function TimerWidget() {
         </div>
         {topTimer.running && (
           <button
-            className={classes.headerStopBtn}
+            className={classes.stopBtn}
             onClick={(e) => {
               e.stopPropagation();
               stopTimer(topTimer.id);

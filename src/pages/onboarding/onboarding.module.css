@@ -7,7 +7,7 @@
   background: linear-gradient(
     135deg,
     var(--clr-bg-primary) 0%,
-    var(--bg-tertiary) 100%
+    var(--clr-bg-tertiary) 100%
   );
   padding: 2rem;
   padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
@@ -99,7 +99,7 @@
   font-size: var(--basic-font);
   color: var(--clr-text-primary);
   padding: 0.5rem 1rem;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border-radius: 10px;
   text-align: center;
   transition: background 0.2s ease;
@@ -115,13 +115,13 @@
 .tipLabel {
   font-size: var(--basic-font);
   font-weight: var(--tip-label-font-weight);
-  color: var(--clt-tip);
+  color: var(--clr-tip);
 }
 
 .tipText {
   composes: tipText from '../../styles/shared/onboarding-shared.module.css';
   font-size: var(--basic-font);
-  color: var(--clt-tip);
+  color: var(--clr-tip);
   line-height: 1.5;
 }
 

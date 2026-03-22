@@ -65,12 +65,12 @@
   height: 30px;
   border-radius: 50%;
   background: var(--clr-bubble-avatar-bg);
-  color: white;
+  color: var(--color-white);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   flex-shrink: 0;
   margin-top: 0.2rem;
 }
@@ -203,7 +203,7 @@
 
 .ideasTitle {
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0 0 0.3rem;
 }
@@ -341,19 +341,19 @@
 
 .applyBtn {
   padding: 0.3em 0.8em;
-  border: 1px solid #10b981;
+  border: 1px solid var(--clr-success-500);
   border-radius: 6px;
-  background: #f0fdf4;
-  color: #10b981;
+  background: var(--clr-success-100);
+  color: var(--clr-success-500);
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .applyBtn:hover:not(:disabled) {
-  background: #10b981;
-  color: white;
+  background: var(--clr-success-500);
+  color: var(--clr-white);
 }
 
 .applyBtn:disabled {
@@ -365,17 +365,17 @@
   padding: 0.3em 0.8em;
   border: 1px solid var(--clr-border-accent-primary);
   border-radius: 6px;
-  background: #faf5ff;
+  background: var(--clr-brown-50);
   color: var(--clr-text-primary);
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   transition: all 0.15s;
 }
 
 .customChooseBtn:hover:not(:disabled) {
   background: var(--clr-accent-primary);
-  color: white;
+  color: var(--clr-white);
 }
 
 .customChooseBtn:disabled {
@@ -411,9 +411,9 @@
   border: 1px solid var(--clr-border-accent-primary);
   border-radius: 6px;
   background: var(--clr-accent-primary);
-  color: white;
+  color: var(--clr-white);
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   white-space: nowrap;
 }
@@ -440,9 +440,9 @@
 
 .updateSummary {
   font-size: var(--basic-font);
-  color: #10b981;
-  background: #f0fdf4;
-  border: 1px solid #bbf7d0;
+  color: var(--clr-success-500);
+  background: var(--clr-success-100);
+  border: 1px solid var(--clr-success-200);
   border-radius: 6px;
   padding: 0.4em 0.6em;
   line-height: 1.5;
@@ -457,7 +457,7 @@
   gap: 0.3rem;
   margin-top: 0.5rem;
   padding-top: 0.5rem;
-  border-top: 1px solid #bbf7d0;
+  border-top: 1px solid var(--clr-success-200);
   font-size: var(--basic-font);
   color: var(--clr-text-muted);
   line-height: 1.4;

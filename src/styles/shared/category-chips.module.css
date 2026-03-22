@@ -21,7 +21,7 @@
 
 @media (hover: none) {
   .categoryChip:hover {
-    border-color: #e0e0e0;
+    border-color: var(--clr-neutral-200);
   }
 }
 
@@ -80,7 +80,7 @@
   align-items: center;
   justify-content: center;
   background: var(--clr-success-bg);
-  color: #fff;
+  color: var(--clr-white);
   border: none;
   border-radius: 50%;
   width: 2.2rem;

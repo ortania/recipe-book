@@ -136,7 +136,7 @@
   background: linear-gradient(
     135deg,
     var(--clr-bg-primary) 0%,
-    var(--bg-tertiary) 100%
+    var(--clr-bg-tertiary) 100%
   );
 }
 
@@ -172,7 +172,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--text-muted, #aaa);
+  background: var(--clr-text-muted, #aaa);
   opacity: 0.4;
   animation: loginDotBounce 1.4s ease-in-out infinite;
 }
@@ -224,7 +224,7 @@
   justify-content: space-between;
   align-items: center;
   padding: 0.75rem 1rem;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border-radius: 8px;
 }
 
@@ -283,7 +283,7 @@
 }
 
 .mealBlock {
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border: 1px solid var(--clr-border-light);
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
@@ -297,7 +297,7 @@
 }
 
 .shopHeaderBlock {
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border: 1px solid var(--clr-border-light);
   border-radius: 16px;
   padding: 1.5rem;

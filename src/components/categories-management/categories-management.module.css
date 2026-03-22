@@ -54,8 +54,8 @@
 }
 
 .sortBtnActive {
-  color: #4f9dde;
-  border-color: #4f9dde;
+  color: var(--clr-secondary-400);
+  border-color: var(--clr-secondary-400);
   background: rgba(79, 157, 222, 0.08);
 }
 
@@ -120,13 +120,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
+  font-size: var(--basic-font);
   flex-shrink: 0;
 }
 
 .catName {
   font-size: var(--basic-font);
-  font-weight: 500;
+  font-weight: var(--font-weight-secondary);
   color: var(--clr-text-primary);
 }
 
@@ -158,11 +158,11 @@
 }
 
 .deleteBtn {
-  color: #e74c3c;
+  color: var(--clr-danger-500);
 }
 
 .deleteBtn:hover {
-  color: #c0392b;
+  color: var(--clr-danger-700);
   background: rgba(231, 76, 60, 0.1);
 }
 
@@ -367,7 +367,7 @@
   height: 18px;
   border-radius: 50%;
   background: rgba(0, 0, 0, 0.6);
-  color: #fff;
+  color: var(--clr-white);
   border: none;
   display: flex;
   align-items: center;
@@ -407,7 +407,7 @@
   padding: 0.4em 1em;
   border-radius: var(--btn-small-border-radius);
   cursor: pointer;
-  font-weight: var(-clr-btn-main-font-weight);
+  font-weight: var(--clr-btn-main-font-weight);
   transition: var(--transition);
 }
 
@@ -430,21 +430,12 @@
   box-shadow: 0 -8px 16px -4px rgba(0, 0, 0, 0.1);
 }
 
-/* Footer */
-/* .footer {
-  padding: 1rem 1.5rem;
-  display: flex;
-  justify-content: flex-end;
-  border-radius: 16px 16px 0 0;
-  padding-bottom: env(safe-area-inset-bottom);
-} */
-
 .doneBtn {
   background: var(--clr-text-primary);
   color: var(--clr-bg-primary);
   border: none;
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   padding: 0.6em 2em;
   border-radius: 10px;
   cursor: pointer;

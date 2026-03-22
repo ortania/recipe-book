@@ -7,7 +7,7 @@
 
 .categoryTag {
   padding: 0.4rem 0.8rem;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border-radius: 12px;
   border: 1px solid var(--clr-border-light);
   font-size: var(--basic-font);
@@ -22,19 +22,19 @@
   gap: 0.5rem;
   margin-bottom: 1rem;
   padding: 0.75rem;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border-radius: 8px;
   font-size: var(--basic-font);
 }
 
 .sourceLabel {
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-secondary);
   margin-right: 0.5rem;
 }
 
 .sourceLink {
-  color: #667eea;
+  color: var(--clr-brown-600);
   text-decoration: none;
   word-break: break-all;
 }

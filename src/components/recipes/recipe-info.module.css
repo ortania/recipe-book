@@ -23,7 +23,7 @@
   left: 0;
   right: 0;
   height: 4px;
-  background: linear-gradient(90deg, #ff6b6b 0%, #ee5a6f 50%, #f06595 100%);
+  background: linear-gradient(90deg, var(--clr-danger-400) 0%, var(--clr-danger-400) 50%, var(--clr-danger-400) 100%);
   border-radius: 16px 16px 0 0;
 }
 
@@ -32,7 +32,7 @@
   box-shadow:
     0 4px 8px rgba(0, 0, 0, 0.08),
     0 16px 32px rgba(0, 0, 0, 0.12);
-  border-color: #ff6b6b;
+  border-color: var(--clr-danger-400);
 }
 
 .favoriteContainer {
@@ -66,7 +66,7 @@
 
 .contactCard p:first-of-type {
   font-size: 1.8rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0.5rem 0;
 }
@@ -89,7 +89,7 @@
   padding: 0.4em 0.9em;
   border-radius: 20px;
   font-size: var(--very-small-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   border: 2px solid;
   display: inline-block;
   transition: all 0.2s ease;
@@ -101,21 +101,21 @@
 }
 
 .groupTag.green {
-  background-color: #c6efce;
-  border-color: #3e8e41;
-  color: #3e8e41;
+  background-color: var(--clr-success-200);
+  border-color: var(--clr-success-700);
+  color: var(--clr-success-700);
 }
 
 .groupTag.red {
-  background-color: #ffcdd2;
-  border-color: #b71c1c;
-  color: #b71c1c;
+  background-color: var(--clr-danger-200);
+  border-color: var(--clr-danger-800);
+  color: var(--clr-danger-800);
 }
 
 .groupTag.blue {
-  background-color: #add8e6;
-  border-color: #2196f3;
-  color: #2196f3;
+  background-color: var(--clr-secondary-100);
+  border-color: var(--clr-secondary-500);
+  color: var(--clr-secondary-500);
 }
 
 .recipeInfo {
@@ -124,7 +124,7 @@
   flex-wrap: wrap;
   justify-content: center;
   padding: 0.75rem 1.25rem;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border-radius: 10px;
   margin: 0.5rem 0;
   border: 1px solid var(--clr-border-light);
@@ -132,7 +132,7 @@
 
 .infoItem {
   font-size: var(--very-small-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-secondary);
   display: flex;
   align-items: center;

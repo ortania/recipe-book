@@ -6,7 +6,7 @@
   z-index: 9999;
   min-width: 260px;
   max-width: 360px;
-  background: var(--card-bg, #fff);
+  background: var(--clr-bg-card);
   border-radius: 16px;
   box-shadow:
     0 4px 24px rgba(0, 0, 0, 0.18),
@@ -46,8 +46,8 @@
   padding: 10px 14px;
   cursor: grab;
   gap: 8px;
-  background: linear-gradient(135deg, #10b981, #059669);
-  color: #fff;
+  background: var(--clr-accent-secondary);
+  color: var(--clr-white);
 }
 
 .header:active {
@@ -70,7 +70,7 @@
 
 .headerLabel {
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -79,43 +79,28 @@
 
 .headerTime {
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   font-variant-numeric: tabular-nums;
 }
 
 .finished {
   animation: pulse 1s infinite;
-  color: #fbbf24;
+  color: var(--clr-white);
 }
 
 .badge {
-  background: rgba(255, 255, 255, 0.25);
+  background: var(--clr-btn-soft-bg);
+  color: var(--clr-btn-soft-text);
   padding: 1px 7px;
   border-radius: 10px;
   font-size: var(--basic-font);
-  font-weight: 600;
-}
-
-.headerStopBtn {
-  background: rgba(255, 255, 255, 0.25);
-  color: #fff;
-  border: none;
-  border-radius: 6px;
-  padding: 4px 8px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  flex-shrink: 0;
-}
-
-.headerStopBtn:active {
-  background: rgba(255, 255, 255, 0.4);
+  font-weight: var(--font-weighht-heading);
 }
 
 .expandBtn {
   background: none;
   border: none;
-  color: #fff;
+  color: var(--clr-white);
   cursor: pointer;
   padding: 2px;
   display: flex;
@@ -134,7 +119,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 8px 14px;
-  border-bottom: 1px solid var(--border-color, #e5e7eb);
+  border-bottom: 1px solid var(--clr-border-color);
 }
 
 .item:last-child {
@@ -142,7 +127,7 @@
 }
 
 .itemDone {
-  background: #fef3c7;
+  background: var(--clr-bg-card);
 }
 
 .itemInfo {
@@ -166,7 +151,7 @@
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   font-variant-numeric: tabular-nums;
-  color: var(--clr-text-primary, #333);
+  color: var(--clr-accent-quaternary);
 }
 
 .itemActions {
@@ -177,8 +162,8 @@
 }
 
 .stopBtn {
-  background: #ef4444;
-  color: #fff;
+  background: var(--clr-danger-bg-active-strong);
+  color: var(--clr-white);
   border: none;
   border-radius: 6px;
   padding: 4px 8px;
@@ -190,7 +175,7 @@
 .removeBtn {
   background: none;
   border: none;
-  color: var(--text-muted, #999);
+  color: var(--clr-text-muted, #999);
   cursor: pointer;
   padding: 2px;
   display: flex;
@@ -198,7 +183,7 @@
 }
 
 .removeBtn:hover {
-  color: #ef4444;
+  color: var(--clr-danger-500);
 }
 
 .clearBtn {
@@ -206,17 +191,20 @@
   width: calc(100% - 28px);
   margin: 6px 14px;
   padding: 6px;
-  background: var(--bg-hover, #f3f4f6);
+  background: var(--clr-btn-soft-bg);
   border: none;
   border-radius: 8px;
   font-size: var(--basic-font);
-  color: var(--ttext-primary, #666);
+  color: var(--clr-text-primary);
+  /* text-decoration: underline;
+  text-decoration-color: currentColor; */
   cursor: pointer;
   text-align: center;
+  transition: var(--transition);
 }
 
 .clearBtn:hover {
-  background: var(--border-color, #e5e7eb);
+  background: var(--clr-btn-soft-bg-hover);
 }
 
 @media (max-width: 768px) {

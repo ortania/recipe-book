@@ -17,7 +17,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border: 1px solid var(--clr-border-light);
   border-radius: 12px;
   padding: 1.4rem 1.8rem;
@@ -67,8 +67,8 @@
 }
 
 .badge {
-  background: #ef4444;
-  color: white;
+  background: var(--clr-danger-500);
+  color: var(--clr-white);
   font-size: var(--very-small-font);
   font-weight: var(--font-weight-heading);
   padding: 0.05em 0.45em;
@@ -124,7 +124,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: white;
+  color: var(--clr-white);
   font-weight: var(--font-weight-heading);
   font-size: var(--basic-font);
   flex-shrink: 0;
@@ -154,7 +154,7 @@
 
 /* ===== Meal Block ===== */
 .mealBlock {
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border: 1px solid var(--clr-border-light);
   border-radius: 6px;
   padding: 0.6rem 0.8rem;
@@ -199,7 +199,7 @@
 }
 
 .recipeName:hover {
-  color: #2196f3;
+  color: var(--clr-secondary-500);
   text-decoration: underline;
 }
 
@@ -215,7 +215,7 @@
 }
 
 .removeBtn:hover {
-  color: #e74c3c;
+  color: var(--clr-danger-500);
 }
 
 /* ===== Add Meal Button ===== */
@@ -231,7 +231,7 @@
   background: var(--clr-text-primary);
   color: var(--clr-bg-primary);
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   transition: opacity 0.15s;
   margin-top: auto;
@@ -405,7 +405,7 @@
   border: none;
   background: none;
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-muted);
   cursor: pointer;
   text-align: center;
@@ -475,7 +475,7 @@
 .backBtn {
   background: none;
   border: none;
-  color: #2196f3;
+  color: var(--clr-secondary-500);
   font-size: var(--small-font);
   cursor: pointer;
   padding: 0.3em 0;
@@ -498,7 +498,7 @@
   background: var(--clr-text-primary);
   color: var(--clr-bg-primary);
   font-size: var(--small-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
 }
 
@@ -507,11 +507,11 @@
 }
 
 .pickerItemAdded {
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
 }
 
 .pickerItemCheck {
-  color: #10b981;
+  color: var(--clr-success-500);
   font-size: 1.1rem;
   flex-shrink: 0;
   margin-inline-start: auto;
@@ -556,7 +556,7 @@
   height: 40px;
   border-radius: 8px;
   object-fit: cover;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   flex-shrink: 0;
 }
 
@@ -564,7 +564,7 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   display: flex;
   align-items: center;
   justify-content: center;

@@ -263,10 +263,12 @@ function AddRecipeWizard({
       setScreen("manual");
       setManualStep(0);
     } catch (err) {
+      console.error("[ImportURL]", err);
       if (err.message && err.message.startsWith("BLOCKED:")) {
         setImportError(t("addWizard", "importBlocked"));
       } else {
-        setImportError(t("addWizard", "importFailed"));
+        const detail = err.message || String(err);
+        setImportError(`${t("addWizard", "importFailed")} (${detail})`);
       }
     } finally {
       clearInterval(progressRef.current);
@@ -2118,7 +2120,7 @@ function AddRecipeWizard({
       </label>
       <input
         type="url"
-        className={classes.urlInput}
+        className={`${classes.formInput} ${classes.formInputLtr}`}
         placeholder="https://example.com/recipe/chocolate-cake"
         value={recipeUrl}
         onChange={(e) => setRecipeUrl(e.target.value)}
@@ -2191,7 +2193,7 @@ function AddRecipeWizard({
         {t("addWizard", "recipeTextLabel")}
       </label>
       <textarea
-        className={classes.textArea}
+        className={`${classes.formTextarea} ${classes.formTextareaPaste}`}
         placeholder={t("addWizard", "textPlaceholder")}
         value={recipeText}
         onChange={(e) => setRecipeText(e.target.value)}
@@ -2284,7 +2286,7 @@ function AddRecipeWizard({
             {t("addWizard", "recordedText")}:
           </label>
           <textarea
-            className={classes.textArea}
+            className={`${classes.formTextarea} ${classes.formTextareaPaste}`}
             value={recordingText}
             onChange={(e) => setRecordingText(e.target.value)}
             rows={6}

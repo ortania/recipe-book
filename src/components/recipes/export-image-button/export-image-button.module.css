@@ -61,7 +61,7 @@
   justify-content: space-between;
   padding: 0.85rem 1rem;
   border: none;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border-radius: 12px;
   width: 100%;
   font-size: var(--basic-font);

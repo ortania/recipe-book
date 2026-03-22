@@ -1,11 +1,11 @@
 /* Edit Recipe - Sidebar Tab Layout */
 
 .srOnly {
-  composes: srOnly from '../../../styles/shared/form-shared.module.css';
+  composes: srOnly from "../../../styles/shared/form-shared.module.css";
 }
 
 .noPadModal {
-  composes: noPadModal from '../../../styles/shared/form-shared.module.css';
+  composes: noPadModal from "../../../styles/shared/form-shared.module.css";
 }
 
 .editContainer {
@@ -83,7 +83,7 @@
 .savedMessage {
   font-size: var(--very-large-font);
   color: var(--clr-success-text);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   animation: fadeIn 0.3s ease;
   display: inline-flex;
   align-items: center;
@@ -150,7 +150,7 @@
   border: none;
   border-radius: 12px;
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   transition: background 0.2s;
 }
@@ -170,6 +170,7 @@
 .sidebar {
   width: 120px;
   min-width: 120px;
+  /* Match pre-refactor: var(--bg-tertiary) → now alias to card (modal) surface */
   background: var(--bg-tertiary);
   border-left: 1px solid var(--clr-border-light);
   padding: 1rem 0;
@@ -216,7 +217,7 @@
   color: var(--clr-accent);
   background: var(--clr-bg-card);
   /* border-right-color: var(--clr-accent); */
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
 }
 
 .sidebarTabActive:hover {
@@ -296,25 +297,25 @@
   background: none;
   border: none;
   cursor: pointer;
-  font-size: 1.5rem;
+  font-size: var(--basic-font);
   color: var(--clr-border-light);
-  transition: color 0.2s;
+  transition: var(--transition);
   padding: 0;
   display: flex;
   align-items: center;
 }
 
 .favoriteBtn span {
-  transition: color 0.2s;
+  transition: var(--transition);
   padding: 0.5em;
 }
 
 .favoriteBtn span:hover {
-  color: #e53935;
+  color: var(--clr-danger-text);
 }
 
 .favoriteBtnActive {
-  color: #e53935;
+  color: var(--clr-danger-text-strong);
 }
 
 .favoriteBtn span,
@@ -357,12 +358,12 @@
 }
 
 .starBtnActive {
-  color: #ffc107;
+  color: var(--clr-star);
 }
 
 /* ========== Dynamic Lists ========== */
 .dynamicList {
-  composes: dynamicList from '../../../styles/shared/form-shared.module.css';
+  composes: dynamicList from "../../../styles/shared/form-shared.module.css";
 }
 
 .dynamicItem {
@@ -380,25 +381,25 @@
 }
 
 .dragOverAbove {
-  composes: dragOverAbove from '../../../styles/shared/form-shared.module.css';
+  composes: dragOverAbove from "../../../styles/shared/form-shared.module.css";
 }
 
 .dragOverBelow {
-  composes: dragOverBelow from '../../../styles/shared/form-shared.module.css';
+  composes: dragOverBelow from "../../../styles/shared/form-shared.module.css";
 }
 
 .dynamicItemNumber {
-  composes: dynamicItemNumber from '../../../styles/shared/form-shared.module.css';
+  composes: dynamicItemNumber from "../../../styles/shared/form-shared.module.css";
 }
 
 .inputBox {
-  composes: inputBox from '../../../styles/shared/form-shared.module.css';
+  composes: inputBox from "../../../styles/shared/form-shared.module.css";
   align-items: center;
   position: relative;
 }
 
 .dynamicItemInput {
-  composes: dynamicItemInput from '../../../styles/shared/form-shared.module.css';
+  composes: dynamicItemInput from "../../../styles/shared/form-shared.module.css";
 }
 
 .dynamicItemInput::placeholder {
@@ -407,7 +408,7 @@
 }
 
 .dynamicItemTextarea {
-  composes: dynamicItemTextarea from '../../../styles/shared/form-shared.module.css';
+  composes: dynamicItemTextarea from "../../../styles/shared/form-shared.module.css";
 }
 
 .dynamicItemTextarea::placeholder {
@@ -418,7 +419,7 @@
 .removeItemBtn {
   background: none;
   border: none;
-  color: gray;
+  color: var(--clr-text-muted);
   cursor: pointer;
   font-size: 1.2rem;
   padding: 0.2rem;
@@ -427,19 +428,19 @@
 }
 
 .removeItemBtn:hover {
-  color: #e53935;
+  color: var(--clr-danger-600);
 }
 
 .instructionBox {
-  composes: instructionBox from '../../../styles/shared/form-shared.module.css';
+  composes: instructionBox from "../../../styles/shared/form-shared.module.css";
 }
 
 .instructionContent {
-  composes: instructionContent from '../../../styles/shared/form-shared.module.css';
+  composes: instructionContent from "../../../styles/shared/form-shared.module.css";
 }
 
 .instructionRemoveBtn {
-  composes: instructionRemoveBtn from '../../../styles/shared/form-shared.module.css';
+  composes: instructionRemoveBtn from "../../../styles/shared/form-shared.module.css";
 }
 
 /* ========== Ingredient Group ========== */
@@ -463,27 +464,27 @@
 }
 
 .groupInputBox {
-  composes: groupInputBox from '../../../styles/shared/form-shared.module.css';
+  composes: groupInputBox from "../../../styles/shared/form-shared.module.css";
 }
 
 .groupInput {
-  composes: groupInput from '../../../styles/shared/form-shared.module.css';
+  composes: groupInput from "../../../styles/shared/form-shared.module.css";
 }
 
 .addItemRow {
-  composes: addItemRow from '../../../styles/shared/form-shared.module.css';
+  composes: addItemRow from "../../../styles/shared/form-shared.module.css";
 }
 
 .addItemBtn {
-  composes: addItemBtn from '../../../styles/shared/form-shared.module.css';
+  composes: addItemBtn from "../../../styles/shared/form-shared.module.css";
 }
 
 .addGroupBtn {
-  composes: addGroupBtn from '../../../styles/shared/form-shared.module.css';
+  composes: addGroupBtn from "../../../styles/shared/form-shared.module.css";
 }
 
 .dragHandle {
-  composes: dragHandle from '../../../styles/shared/form-shared.module.css';
+  composes: dragHandle from "../../../styles/shared/form-shared.module.css";
 }
 
 /* ========== Image Section ========== */
@@ -507,7 +508,7 @@
 }
 
 .dropActive {
-  composes: dropActive from '../../../styles/shared/form-shared.module.css';
+  composes: dropActive from "../../../styles/shared/form-shared.module.css";
 }
 
 .imagePreview {
@@ -547,15 +548,15 @@
 
 /* ========== Image Grid (multiple images) ========== */
 .imageGrid {
-  composes: imageGrid from '../../../styles/shared/form-shared.module.css';
+  composes: imageGrid from "../../../styles/shared/form-shared.module.css";
 }
 
 .imageGridItem {
-  composes: imageGridItem from '../../../styles/shared/form-shared.module.css';
+  composes: imageGridItem from "../../../styles/shared/form-shared.module.css";
 }
 
 .imageGridPreview {
-  composes: imageGridPreview from '../../../styles/shared/form-shared.module.css';
+  composes: imageGridPreview from "../../../styles/shared/form-shared.module.css";
 }
 
 .imageGridItem .imageRemoveBtn {
@@ -588,7 +589,7 @@
 
 /* ========== Categories ========== */
 .categoryCardsGrid {
-  composes: categoryCardsGrid from '../../../styles/shared/form-shared.module.css';
+  composes: categoryCardsGrid from "../../../styles/shared/form-shared.module.css";
 }
 
 .categorySection {
@@ -597,41 +598,41 @@
 
 .categorySubtitle {
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-secondary);
   margin: 2rem 0 1rem 0;
 }
 
 .categoryChips {
-  composes: categoryChips from '../../../styles/shared/category-chips.module.css';
+  composes: categoryChips from "../../../styles/shared/category-chips.module.css";
 }
 
 .categoryChip {
-  composes: categoryChip from '../../../styles/shared/category-chips.module.css';
+  composes: categoryChip from "../../../styles/shared/category-chips.module.css";
 }
 
 .categoryChipActive {
-  composes: categoryChipActive from '../../../styles/shared/category-chips.module.css';
+  composes: categoryChipActive from "../../../styles/shared/category-chips.module.css";
 }
 
 .addCategoryChip {
-  composes: addCategoryChip from '../../../styles/shared/category-chips.module.css';
+  composes: addCategoryChip from "../../../styles/shared/category-chips.module.css";
 }
 
 .newCategoryInline {
-  composes: newCategoryInline from '../../../styles/shared/category-chips.module.css';
+  composes: newCategoryInline from "../../../styles/shared/category-chips.module.css";
 }
 
 .newCategoryInput {
-  composes: newCategoryInput from '../../../styles/shared/category-chips.module.css';
+  composes: newCategoryInput from "../../../styles/shared/category-chips.module.css";
 }
 
 .newCategoryConfirmBtn {
-  composes: newCategoryConfirmBtn from '../../../styles/shared/category-chips.module.css';
+  composes: newCategoryConfirmBtn from "../../../styles/shared/category-chips.module.css";
 }
 
 .newCategoryCancelBtn {
-  composes: newCategoryCancelBtn from '../../../styles/shared/category-chips.module.css';
+  composes: newCategoryCancelBtn from "../../../styles/shared/category-chips.module.css";
 }
 
 /* ========== Nutrition ========== */
@@ -653,28 +654,28 @@
   align-items: center;
   gap: 0.5rem;
   padding: 0.8em 2em;
-  background: #fef2f2;
-  border: 2px solid #e53935;
+  background: var(--clr-danger-100);
+  border: 2px solid var(--clr-danger-600);
   border-radius: 12px;
-  color: #e53935;
+  color: var(--clr-danger-600);
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .deleteBtn:hover {
-  background: #e53935;
-  color: white;
+  background: var(--clr-danger-600);
+  color: var(--clr-white);
 }
 
 /* Move buttons (for mobile touch reorder) */
 .moveButtons {
-  composes: moveButtons from '../../../styles/shared/form-shared.module.css';
+  composes: moveButtons from "../../../styles/shared/form-shared.module.css";
 }
 
 .moveBtn {
-  composes: moveBtn from '../../../styles/shared/form-shared.module.css';
+  composes: moveBtn from "../../../styles/shared/form-shared.module.css";
 }
 
 /* ========== Responsive ========== */
@@ -726,7 +727,7 @@
     white-space: nowrap;
     border-right: none;
     border-bottom: 3px solid transparent;
-    font-weight: 600;
+    font-weight: var(--font-weight-heading);
     color: var(--clr-text-muted);
     transition: border-color 0.2s;
   }
@@ -809,19 +810,19 @@
 
 /* Calculate Nutrition */
 .nutritionActions {
-  composes: nutritionActions from '../../../styles/shared/form-shared.module.css';
+  composes: nutritionActions from "../../../styles/shared/form-shared.module.css";
 }
 
 .calculateNutritionBtn {
-  composes: calculateNutritionBtn from '../../../styles/shared/form-shared.module.css';
+  composes: calculateNutritionBtn from "../../../styles/shared/form-shared.module.css";
 }
 
 .calculateNutritionIcon {
-  composes: calculateNutritionIcon from '../../../styles/shared/form-shared.module.css';
+  composes: calculateNutritionIcon from "../../../styles/shared/form-shared.module.css";
 }
 
 .nutritionMessage {
-  composes: nutritionMessage from '../../../styles/shared/form-shared.module.css';
+  composes: nutritionMessage from "../../../styles/shared/form-shared.module.css";
 }
 
 .nutritionNote {

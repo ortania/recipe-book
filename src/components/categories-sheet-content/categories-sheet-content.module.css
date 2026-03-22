@@ -87,7 +87,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.4rem 0.5rem;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border-radius: 8px;
   flex-shrink: 0;
 }
@@ -118,7 +118,7 @@
 }
 
 .clearBtn:hover {
-  color: var(--clr-clear-danger-hover);
+  color: var(--clr-clear-text-danger-hover);
 }
 
 .list {
@@ -155,7 +155,7 @@
 }
 
 .itemActive {
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   border-color: currentColor;
 }
 

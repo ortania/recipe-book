@@ -3,7 +3,7 @@
   bottom: 2rem;
   right: 2rem;
   background: var(--clr-bg-card);
-  border: 2px solid #4ecdc4;
+  border: 2px solid var(--clr-teal);
   border-radius: 0.5rem;
   padding: 1.5rem;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -39,55 +39,55 @@
 }
 
 .checkBtn {
-  background: #3498db;
+  background: var(--clr-secondary-500);
   color: white;
 }
 
 .checkBtn:hover {
-  background: #2980b9;
+  background: var(--clr-secondary-600);
 }
 
 .migrateBtn {
-  background: #2ecc71;
-  color: white;
+  background: var(--clr-success-500);
+  color: var(--clr-white);
 }
 
 .migrateBtn:hover {
-  background: #27ae60;
+  background: var(--clr-success-600);
 }
 
 .cleanupBtn {
-  background: #e74c3c;
-  color: white;
+  background: var(--clr-danger-500);
+  color: var(--clr-white);
 }
 
 .cleanupBtn:hover {
-  background: #c0392b;
+  background: var(--clr-danger-700);
 }
 
 .initBtn {
-  background: #9b59b6;
-  color: white;
+  background: var(--clr-brown-600);
+  color: var(--clr-white);
 }
 
 .initBtn:hover {
-  background: #8e44ad;
+  background: var(--clr-brown-700);
 }
 
 .deleteBtn {
-  background: #c0392b;
-  color: white;
-  font-weight: 600;
+  background: var(--clr-danger-700);
+  color: var(--clr-white);
+  font-weight: var(--font-weight-heading);
 }
 
 .deleteBtn:hover {
-  background: #a93226;
+  background: var(--clr-danger-900);
 }
 
 .status {
   margin: 0.75rem 0;
   padding: 0.625rem;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border-radius: 0.25rem;
   font-size: 0.875rem;
   color: var(--clr-text-primary);

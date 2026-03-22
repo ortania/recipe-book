@@ -17,7 +17,7 @@
   padding: 0.6rem;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: .5rem;
 }
 
 @keyframes fadeIn {
@@ -37,8 +37,8 @@
   justify-content: space-between;
   padding: 0.85rem 1rem;
   border: none;
-  background: var(--bg-tertiary);
-  border-radius: 12px;
+  background: var(--clr-bg-tertiary);
+  border-radius: var(--input-border-radius);
   width: 100%;
   font-size: var(--basic-font);
   color: var(--clr-text-primary);

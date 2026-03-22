@@ -15,7 +15,7 @@
   height: 2.25rem;
   border-radius: 50%;
   overflow: hidden;
-  background: var(--bg-tertiary, #e8e8e8);
+  background: var(--clr-bg-tertiary, #e8e8e8);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -48,13 +48,13 @@
 
 .userName {
   font-size: var(--small-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
 }
 
 .time {
   font-size: var(--very-small-font);
-  color: var(--text-tertiary, #999);
+  color: var(--clr-text-muted);
 }
 
 .text {
@@ -83,18 +83,18 @@
   padding: 0.2em 0.35em;
   border-radius: 6px;
   font-size: var(--very-small-font);
-  color: var(--text-tertiary, #999);
+  color: var(--clr-text-muted);
   transition:
     color 0.2s ease,
     transform 0.15s ease;
 }
 
 .likeBtn:hover:not(:disabled) {
-  color: #e74c6f;
+  color: var(--clr-danger-500);
 }
 
 .likeBtnActive {
-  color: #e74c6f;
+  color: var(--clr-danger-500);
 }
 
 .likeBtnAnimate {
@@ -114,7 +114,7 @@
 }
 
 .likeCount {
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
 }
 
 .deleteBtn {
@@ -125,10 +125,10 @@
   cursor: pointer;
   padding: 0.2em 0.35em;
   border-radius: 6px;
-  color: var(--text-tertiary, #999);
+  color: var(--clr-text-muted);
   transition: color 0.2s ease;
 }
 
 .deleteBtn:hover {
-  color: #e74c3c;
+  color: var(--clr-danger-500);
 }

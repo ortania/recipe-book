@@ -37,7 +37,7 @@
 
 .hint {
   font-size: var(--small-font);
-  color: var(--clt-text-muted);
+  color: var(--clr-text-muted);
   flex-shrink: 0;
   white-space: nowrap;
 }

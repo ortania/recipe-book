@@ -71,7 +71,7 @@
 }
 
 .cardName {
-  color: #fff;
+  color: var(--clr-white);
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
@@ -101,7 +101,7 @@
   height: 22px;
   border-radius: 50%;
   background: var(--clr-success-bg);
-  color: #fff;
+  color: var(--clr-white);
   display: flex;
   align-items: center;
   justify-content: center;

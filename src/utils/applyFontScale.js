@@ -1,10 +1,11 @@
 const BASE_FONTS = {
   "--huge-font": 2.2,
-  "--very-large-font": 1.9,
-  "--large-font": 1.7,
-  "--basic-font": 1.5,
-  "--small-font": 1.2,
-  "--very-small-font": 1,
+  "--very-large-font": 2.0,
+  "--large-font": 1.8,
+  "--basic-font": 1.6,
+  "--input-font": 1.6, // ← add this
+  "--small-font": 1.4,
+  "--very-small-font": 1.2,
 };
 
 export function applyFontScale(scale) {

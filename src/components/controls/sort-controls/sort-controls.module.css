@@ -18,7 +18,7 @@
 }
 
 .sortButton.active {
-  background: #007bff;
-  color: white;
-  border-color: #0056b3;
+  background: var(--clr-secondary-500);
+  color: var(--clr-white);
+  border-color: var(--clr-secondary-700);
 }

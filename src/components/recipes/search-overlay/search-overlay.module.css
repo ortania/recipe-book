@@ -70,7 +70,7 @@
   inset-inline-start: 0;
   inset-inline-end: 0;
   z-index: 50;
-  background: var(--bg-primary, #fff);
+  background: var(--clr-bg-primary, #fff);
   border: 1px solid var(--border-color, #ddd);
   border-radius: 0.5rem;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
@@ -85,12 +85,12 @@
   gap: 0.4rem;
   padding: 0.5rem 0.75rem 0.25rem;
   font-size: var(--basic-font);
-  font-weight: 600;
-  color: var(--text-muted, #888);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-muted, #888);
 }
 
 .recentIcon {
-  color: var(--text-muted, #888);
+  color: var(--clr-text-muted, #888);
   flex-shrink: 0;
 }
 
@@ -110,7 +110,7 @@
 }
 
 .suggestionItem:hover {
-  background: var(--bg-hover, #f5f5f5);
+  background: var(--clr-bg-hover, #f5f5f5);
 }
 
 .suggestionImg {
@@ -138,8 +138,8 @@
   align-items: center;
   gap: 0.4rem;
   font-size: var(--basic-font);
-  font-weight: 600;
-  color: var(--text-muted, #888);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-muted, #888);
   margin: 0 0 0.75rem;
 }
 
@@ -156,7 +156,7 @@
   padding: 0.4em 0.85em;
   border: 1px solid var(--border-color, #ddd);
   border-radius: 2rem;
-  background: var(--bg-primary, #fff);
+  background: var(--clr-bg-primary, #fff);
   color: var(--clr-text-primary, #333);
   font-size: var(--basic-font);
   cursor: pointer;
@@ -167,7 +167,7 @@
 }
 
 .previousSearchChip:hover {
-  background: var(--bg-hover, #f0f0f0);
+  background: var(--clr-bg-hover, #f0f0f0);
   border-color: var(--clr-success-border);
   color: var(--clr-success-text);
 }
@@ -175,12 +175,12 @@
 .foundTermLabel {
   font-weight: 400;
   font-size: var(--basic-font);
-  color: var(--text-muted, #888);
+  color: var(--clr-text-muted, #888);
 }
 
 /* Clear all button */
 .clearAllButton {
-  color: var(--text-primary);
+  color: var(--clr-text-primary);
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
@@ -191,8 +191,8 @@
   text-decoration: underline;
   text-decoration-color: currentColor;
   border-radius: var(--btn-border-radius);
-  /* background: var(--bg-primary, #fff); */
-  /* color: var(--text-muted, #888); */
+  /* background: var(--clr-bg-primary, #fff); */
+  /* color: var(--clr-text-muted, #888); */
   font-size: var(--basic-font);
   cursor: pointer;
   transition:
@@ -204,8 +204,7 @@
 }
 
 .clearAllButton:hover {
-  color: var(--clr-clear-danger-hover);
-  /* background-color: var(--clr-bg-danger-hover); */
+  color: var(--clr-clear-text-danger-hover);
 }
 
 .searchHeaderEdges {

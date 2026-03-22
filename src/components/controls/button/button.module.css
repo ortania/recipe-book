@@ -2,7 +2,7 @@
 .primary {
   /* background-color: #2196f3; */
   background-color: var(--clr-text-primary);
-  color: white;
+  color: var(--clr-white);
   border: none;
 }
 
@@ -13,32 +13,33 @@
 }
 
 .danger {
-  background-color: #f44336;
-  color: white;
+  background-color: var(--clr-danger-bg);
+  color: var(--clr-danger-text);
   border: none;
 }
 
 .danger:hover {
-  background-color: #d32f2f;
+  background-color: var(--clr-danger-bg-hover);
 }
 
 .success {
-  background-color: #4caf50;
-  color: white;
+  background-color: var(--clr-success-bg);
+  color: var(-clr-success-text);
   border: none;
 }
 
 .success:hover {
-  background-color: #388e3c;
+  background-color: var(--clr-success-bg-hover: var(--clr-success-200);
+  --clr-success-bg-activ);
 }
 
 .favorite {
   background-color: var(--clr-bg-card);
-  border: 1px solid #ffd700 !important;
+  border: 1px solid var(--clr-star) !important;
   color: var(--clr-text-primary);
 }
 
 .favorite:hover {
   background-color: var(--clr-bg-hover);
-  border-color: #ffcc00;
+  border-color: var(--clr-star-hover);
 }

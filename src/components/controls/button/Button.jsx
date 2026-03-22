@@ -20,7 +20,7 @@ const Button = ({
   disabled, 
   className, 
   children,
-  type = 'button',
+  type = 'button', 
   title
 }) => {
   // Get the variant class based on the variant prop

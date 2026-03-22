@@ -52,7 +52,7 @@
 .handle {
   width: 2.25rem;
   height: 0.25rem;
-  background: var(--text-muted, #aaa);
+  background: var(--clr-text-muted, #aaa);
   border-radius: 9999px;
   opacity: 0.45;
 }
@@ -68,7 +68,7 @@
 }
 
 .title {
-  font-size: var(--large-font, 1.1rem);
+  font-size: var(--large-font);
   font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   line-height: 1;
@@ -79,12 +79,12 @@
 .closeBtn {
   background: none;
   border: none;
-  font-size: 1.3rem;
+  font-size: var(--small-font);
   color: var(--clr-text-muted);
   cursor: pointer;
   padding: 0.25em;
   line-height: 1;
-  transition: color 0.15s;
+  transition: var(--transition);
   display: flex;
   align-items: center;
   justify-content: center;

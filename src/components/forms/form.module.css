@@ -52,7 +52,7 @@
 
 .submitBtn {
   background-color: var(--clr-accent-primary);
-  color: white;
+  color: var(--clr-white);
 }
 
 .submitBtn:hover {
@@ -60,49 +60,12 @@
 }
 
 .cancelBtn {
-  background-color: var(--bg-tertiary);
+  background-color: var(--clr-bg-tertiary);
   color: var(--clr-text-primary);
 }
 
 .cancelBtn:hover {
   background-color: var(--clr-bg-hover);
-}
-
-/* Additional styles for groups section in edit form */
-.groupsSection {
-  margin-top: 1rem;
-}
-
-.groupsTitle {
-  color: var(--clr-text-primary);
-  font-size: var(--basic-font);
-  margin-bottom: 0.5rem;
-}
-
-.groupsList {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.groupItem {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  background-color: var(--bg-tertiary);
-  border-radius: 4px;
-  font-size: var(--very-small-font);
-}
-
-.groupItem input[type="checkbox"] {
-  width: auto;
-  margin: 0;
-}
-
-.groupItem label {
-  color: var(--clr-text-primary);
-  cursor: pointer;
 }
 
 .select {
@@ -121,7 +84,7 @@
 }
 
 .select option:checked {
-  background-color: var(--bg-tertiary);
+  background-color: var(--clr-bg-tertiary);
   color: var(--clr-text-primary);
 }
 
@@ -142,7 +105,7 @@
   width: auto !important;
   margin-right: 0.5rem !important;
   cursor: pointer;
-  accent-color: #e53935;
+  accent-color: var(--clr-danger-600);
 }
 
 .favoriteText {
@@ -152,7 +115,7 @@
 }
 
 .favoriteLabel:hover .favoriteText {
-  color: #e53935;
+  color: var(--clr-danger-600);
 }
 
 .textarea {
@@ -175,8 +138,8 @@
 .importBtn {
   width: 100%;
   padding: 0.75rem 1rem;
-  background-color: #4caf50;
-  color: white;
+  background-color: var(--clr-success-500);
+  color: var(--clr-white);
   border: none;
   border-radius: 4px;
   font-size: var(--basic-font);
@@ -185,7 +148,7 @@
 }
 
 .importBtn:hover {
-  background-color: #45a049;
+  background-color: var(--clr-success-600);
 }
 
 .urlImportSection {
@@ -193,7 +156,7 @@
   flex-direction: column;
   gap: 0.75rem;
   padding: 1rem;
-  background-color: var(--bg-tertiary);
+  background-color: var(--clr-bg-tertiary);
   border-radius: 4px;
   border: 1px solid var(--clr-border-light);
 }
@@ -208,7 +171,7 @@
 
 .urlInput:focus {
   outline: none;
-  border-color: #4caf50;
+  border-color: var(--clr-success-500);
   box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
 }
 
@@ -220,8 +183,8 @@
 .importSubmitBtn {
   flex: 1;
   padding: 0.5rem 1rem;
-  background-color: #4caf50;
-  color: white;
+  background-color: var(--clr-success-500);
+  color: var(--clr-white);
   border: none;
   border-radius: 4px;
   font-size: var(--very-small-font);
@@ -230,7 +193,7 @@
 }
 
 .importSubmitBtn:hover:not(:disabled) {
-  background-color: #45a049;
+  background-color: var(--clr-success-600);
 }
 
 .importSubmitBtn:disabled {
@@ -241,7 +204,7 @@
 .importCancelBtn {
   flex: 1;
   padding: 0.5rem 1rem;
-  background-color: var(--bg-tertiary);
+  background-color: var(--clr-bg-tertiary);
   color: var(--clr-text-primary);
   border: none;
   border-radius: 4px;
@@ -255,13 +218,13 @@
 }
 
 .errorMessage {
-  color: #f44336;
+  color: var(--clr-danger-500);
   font-size: 0.875rem;
   margin: 0;
   padding: 0.5rem;
-  background-color: #ffebee;
+  background-color: var(--clr-danger-100);
   border-radius: 4px;
-  border-left: 3px solid #f44336;
+  border-left: 3px solid var(--clr-danger-500);
 }
 
 .divider {
@@ -283,23 +246,23 @@
 
 .pasteTextarea:focus {
   outline: none;
-  border-color: #4caf50;
+  border-color: var(--clr-success-500);
   box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.25);
 }
 
 .helpText {
-  background-color: #e8f5e9;
+  background-color: var(--clr-success-100);
   padding: 1rem;
   border-radius: 4px;
-  border-left: 3px solid #4caf50;
+  border-left: 3px solid var(--clr-success-500);
   font-size: var(--very-small-font);
-  color: #2e7d32;
+  color: var(--clr-success-700);
 }
 
 .helpText strong {
   display: block;
   margin-bottom: 0.5rem;
-  color: #1b5e20;
+  color: var(--clr-success-900);
 }
 
 .helpText ol {
@@ -314,7 +277,7 @@
 .helpText p {
   margin: 0.5rem 0 0 0;
   font-style: italic;
-  color: #558b2f;
+  color: var(--clr-success-700);
 }
 
 .importTabs {
@@ -340,19 +303,19 @@
 }
 
 .tabActive {
-  background-color: #4caf50;
-  color: white;
-  border-color: #4caf50;
+  background-color: var(--clr-success-500);
+  color: var(--clr-white);
+  border-color: var(--clr-success-500);
 }
 
 .tabActive:hover {
-  background-color: #45a049;
+  background-color: var(--clr-success-600);
 }
 
 .listSection {
   margin: 1.5rem 0;
   padding: 1rem;
-  background-color: var(--bg-tertiary);
+  background-color: var(--clr-bg-tertiary);
   border-radius: 8px;
   border: 1px solid var(--clr-border-light);
 }
@@ -387,7 +350,7 @@
 
 .itemRow.dragging {
   opacity: 0.5;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border-radius: 4px;
 }
 
@@ -442,30 +405,6 @@
   box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.25);
 }
 
-.imageSection {
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
-  margin: 1rem 0;
-}
-
-.imageLabel {
-  font-size: var(--basic-font);
-  font-weight: 600;
-  color: var(--clr-text-primary);
-}
-
-.imagePreview {
-  width: 100%;
-  max-width: 300px;
-  height: auto;
-  max-height: 200px;
-  object-fit: cover;
-  border-radius: 8px;
-  border: 2px solid var(--clr-border-light);
-  margin-top: 0.5rem;
-}
-
 .difficultySection {
   display: flex;
   flex-direction: column;
@@ -475,7 +414,7 @@
 
 .difficultyLabel {
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
 }
 
@@ -488,7 +427,7 @@
 
 .fieldLabel {
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
 }
 
@@ -505,14 +444,14 @@
 
 .difficultySelect:focus {
   outline: none;
-  border-color: #4a90e2;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  border-color: var(--clr-secondary-500);
+  box-shadow: 0 0 0 3px rgba(138, 154, 91, 0.1);
 }
 
 .nutritionSection {
   margin: 1rem 0;
   padding: 1rem;
-  background-color: var(--bg-tertiary);
+  background-color: var(--clr-bg-tertiary);
   border-radius: 8px;
   border: 1px solid var(--clr-border-light);
 }
@@ -540,7 +479,7 @@
   padding: 0.5rem 0.75rem;
   border: 1px solid var(--clr-border-light);
   border-radius: 4px;
-  font-size: var(--mall-font);
+  font-size: var(--small-font);
   direction: rtl;
 }
 
@@ -577,7 +516,7 @@
 
 .colorLabel {
   display: block;
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   margin-bottom: 0.75rem;
   color: var(--clr-text-primary);
   font-size: var(--basic-font);

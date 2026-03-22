@@ -66,7 +66,7 @@
   padding: 0.7em 1.8em;
   font-size: 1.1rem;
   border-radius: 8px;
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
 }
 
@@ -79,7 +79,7 @@
   font-weight: 500;
   color: var(--clr-text-primary);
   background: transparent;
-  border: 1.5px solid var(---border-accent-primary);
+  border: 1.5px solid var(--clr-border-accent-primary);
   border-radius: 8px;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -151,7 +151,7 @@
 
 .featureTitle {
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-grey-1);
   margin: 0 0 0.5rem;
 }

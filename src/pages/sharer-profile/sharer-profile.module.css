@@ -36,17 +36,17 @@
   border-radius: 15px;
   background: var(--clr-accent-primary);
   /* background: var(--clr-bubble-avatar-bg); */
-  color: #fff;
+  color: var(--clr-white);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: var(--huge-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
 }
 
 .profileName {
   font-size: var(--huge-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0;
 }
@@ -66,7 +66,7 @@
   background: var(--clr-btn-outline-bg);
   color: var(--clr-btn-outline-text);
   font-size: var(--basic-font);
-  /* font-weight: 600; */
+  /* font-weight: var(--font-weight-heading); */
   cursor: pointer;
   transition: var(--transition);
 }

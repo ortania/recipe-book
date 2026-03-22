@@ -16,7 +16,7 @@
 }
 
 .voiceChatIcon.speaking {
-  color: green;
+  color: var(--clr-success-500);
 }
 
 .statusArea {
@@ -25,7 +25,7 @@
   left: 50%;
   transform: translateX(-50%);
   background: rgba(0, 0, 0, 0.85);
-  color: white;
+  color: var(--clr-white);
   border-radius: 12px;
   padding: 0.6rem 1rem;
   min-width: 200px;
@@ -37,13 +37,13 @@
 
 .statusText {
   font-size: var(--large-font);
-  color: #d1d5db;
+  color: var(--clr-neutral-300);
   margin-bottom: 0.3rem;
 }
 
 .responseText {
   font-size: var(--large-font);
-  color: #ffffff;
+  color: var(--clr-white);
   line-height: 1.4;
   direction: rtl;
 }
@@ -58,7 +58,7 @@
 .dot {
   width: 6px;
   height: 6px;
-  background: #a5b4fc;
+  background: var(--clr-brown-300);
   border-radius: 50%;
   animation: bounce 1.4s ease-in-out infinite;
 }

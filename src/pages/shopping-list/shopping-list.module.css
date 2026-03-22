@@ -16,7 +16,7 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border: 1px solid var(--clr-border-light);
   border-radius: 12px;
   padding: 1.4rem 1.8rem;
@@ -195,7 +195,7 @@
 .backBtn {
   background: none;
   border: none;
-  color: #2196f3;
+  color: var(--clr-secondary-500);
   font-size: var(--small-font);
   cursor: pointer;
   padding: 0.3em 0;
@@ -211,7 +211,7 @@
   left: 50%;
   transform: translateX(-50%);
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   pointer-events: none;
   white-space: nowrap;
@@ -268,7 +268,7 @@
 }
 
 .recipeItemSelected {
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border-radius: 12px;
 }
 
@@ -277,7 +277,7 @@
   height: 40px;
   border-radius: 8px;
   object-fit: cover;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   flex-shrink: 0;
 }
 
@@ -285,7 +285,7 @@
   width: 40px;
   height: 40px;
   border-radius: 8px;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -310,7 +310,7 @@
   text-align: center;
   font-size: var(--small-font);
   color: var(--clr-success-bg);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   margin-bottom: 0.5rem;
 }
 
@@ -340,7 +340,7 @@
 }
 
 .listItemChecked {
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
 }
 
 .listItemChecked .listItemText {
@@ -351,7 +351,7 @@
 .checkbox {
   width: 18px;
   height: 18px;
-  accent-color: #10b981;
+  accent-color: var(--clr-success-500);
   flex-shrink: 0;
 }
 
@@ -425,7 +425,7 @@
   border-radius: 50%;
   border: none;
   background: var(--clr-success-bg);
-  color: #fff;
+  color: var(--clr-white);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -483,9 +483,9 @@
   margin-top: 0.75rem;
   padding: 1em 3em;
   font-size: var(--basic-font);
-  font-weight: 600;
-  color: #ffffff;
-  background: #222222;
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-white);
+  background: var(--clr-brown-900);
   border: none;
   border-radius: 50px;
   cursor: pointer;
@@ -495,7 +495,7 @@
 }
 
 .emptyButton:hover {
-  background: #3a3a3a;
+  background: var(--clr-brown-800);
   transform: translateY(-1px);
 }
 

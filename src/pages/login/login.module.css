@@ -10,7 +10,7 @@
   background: linear-gradient(
     135deg,
     var(--clr-bg-primary) 0%,
-    var(--bg-tertiary) 100%
+    var(--clr-bg-tertiary) 100%
   );
   padding: 2rem;
   padding-bottom: calc(2rem + env(safe-area-inset-bottom, 0px));
@@ -207,7 +207,7 @@
 
 .landingLogoBook {
   color: var(--clr-text-primary);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
 }
 
 .landingSubtitle {
@@ -226,7 +226,7 @@
   background: var(--clr-btn-main-bg);
   color: var(--clr-btn-main-text);
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   transition: var(--transition);
   /* box-shadow: 0 4px 16px rgba(0, 102, 204, 0.3); */
@@ -306,11 +306,11 @@
 .backButton {
   border: none;
   border-radius: 12px;
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   color: var(--clr-text-primary);
   padding: 1rem 2rem;
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   cursor: pointer;
   transition: all 0.3s ease;
 }
@@ -345,7 +345,7 @@
 }
 
 .success {
-  background: #d4edda;
+  background: var(--clr-success-100);
   color: var(--clr-success-text);
   color: var(--success-color);
   padding: 1rem;
@@ -353,6 +353,6 @@
   font-size: var(--basic-font);
   text-align: center;
   margin: 0;
-  border: 1px solid #c3e6cb;
+  border: 1px solid var(--clr-success-200);
 }
 /* Note: .success keeps green tones as intentional success styling */

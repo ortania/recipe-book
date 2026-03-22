@@ -70,7 +70,7 @@
 
 .settingItemLabel {
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
 }
 
@@ -105,7 +105,7 @@
 
 .modalTitle {
   font-size: var(--large-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0;
   display: flex;
@@ -156,7 +156,7 @@
 .scaleValue {
   font-size: var(--basic-font);
   color: var(--clr-text-primary);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   text-align: center;
 }
 
@@ -177,7 +177,7 @@
   border-radius: 50%;
   background: var(--clr-accent-primary);
   cursor: pointer;
-  border: 2px solid #fff;
+  border: 2px solid var(--clr-white);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -187,12 +187,12 @@
   border-radius: 50%;
   background: var(--clr-accent-primary);
   cursor: pointer;
-  border: 2px solid #fff;
+  border: 2px solid var(--clr-white);
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
 }
 
 .previewBox {
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border: 1px solid var(--clr-border-light);
   border-radius: 8px;
   padding: 1rem;
@@ -237,7 +237,7 @@
 
 .languageButtonActive {
   border-color: var(--clr-border-accent-primary);
-  background: var(--bg-tertiary);
+  background: var(--clr-bg-tertiary);
 }
 
 .languageFlag {
@@ -292,7 +292,7 @@
 .themeBtnActive {
   border-color: var(--clr-border-accent-primary);
   background: var(--clr-accent-primary);
-  color: #fff;
+  color: var(--clr-white);
 }
 
 .privacyToggle {
@@ -317,7 +317,7 @@
 }
 .privacyLabel {
   font-size: var(--basic-font);
-  font-weight: 600;
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
 }
 .privacyDesc {

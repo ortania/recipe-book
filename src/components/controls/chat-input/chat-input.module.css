@@ -71,9 +71,9 @@
 }
 
 .sendBtn {
-  background: #1a1a1a;
+  background: var(--clr-brown-900);
   border: none;
-  color: #fff;
+  color: var(--clr-white);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -87,14 +87,14 @@
 }
 
 .sendBtn:hover:not(:disabled) {
-  background: #333;
-  color: #fff;
+  background: var(--clr-brown-800);
+  color: var(--clr-white);
 }
 
 .stopBtn {
-  background: #1a1a1a;
+  background: var(--clr-brown-900);
   border: none;
-  color: #fff;
+  color: var(--clr-white);
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -107,8 +107,8 @@
 }
 
 .stopBtn:hover {
-  background: #333;
-  color: #fff;
+  background: var(--clr-brown-800);
+  color: var(--clr-white);
 }
 
 .micBtn {
@@ -132,7 +132,7 @@
 }
 
 .micActive {
-  color: #e53e3e;
+  color: var(--clr-danger-500);
   animation: micPulse 1.2s ease-in-out infinite;
 }
 

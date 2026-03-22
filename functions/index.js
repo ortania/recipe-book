@@ -6,6 +6,17 @@ const { initializeApp } = require("firebase-admin/app");
 
 initializeApp();
 
+function setCors(req, res) {
+  res.set("Access-Control-Allow-Origin", "*");
+  res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+  res.set("Access-Control-Allow-Headers", "Content-Type");
+  if (req.method === "OPTIONS") {
+    res.status(204).send("");
+    return true;
+  }
+  return false;
+}
+
 function extractTextFromHtml(html) {
   let text = html
     .replace(/<script[\s\S]*?<\/script>/gi, " ")
@@ -59,6 +70,7 @@ function extractOgImage(html) {
 exports.fetchUrl = onRequest(
   { cors: true, region: "us-central1" },
   async (req, res) => {
+    if (setCors(req, res)) return;
     const url = req.query.url || req.body.url;
 
     if (!url) {
@@ -106,6 +118,7 @@ exports.fetchUrl = onRequest(
 exports.fetchUrlBrowser = onRequest(
   { cors: true, region: "us-central1", memory: "1GiB", timeoutSeconds: 60 },
   async (req, res) => {
+    if (setCors(req, res)) return;
     const url = req.query.url || req.body.url;
     if (!url) {
       res.status(400).json({ error: "Missing url parameter" });
@@ -241,6 +254,7 @@ exports.fetchUrlBrowser = onRequest(
 exports.ocrImage = onRequest(
   { cors: true, region: "us-central1", memory: "512MiB" },
   async (req, res) => {
+    if (setCors(req, res)) return;
     if (req.method !== "POST") {
       res.status(405).json({ error: "Method not allowed" });
       return;
@@ -279,6 +293,7 @@ exports.ocrImage = onRequest(
 exports.openaiChat = onRequest(
   { cors: true, region: "us-central1" },
   async (req, res) => {
+    if (setCors(req, res)) return;
     if (req.method !== "POST") {
       res.status(405).json({ error: "Method not allowed" });
       return;
@@ -321,6 +336,7 @@ exports.openaiChat = onRequest(
 exports.openaiTts = onRequest(
   { cors: true, region: "us-central1" },
   async (req, res) => {
+    if (setCors(req, res)) return;
     if (req.method !== "POST") {
       res.status(405).json({ error: "Method not allowed" });
       return;
@@ -363,6 +379,7 @@ exports.openaiTts = onRequest(
 exports.translate = onRequest(
   { cors: true, region: "us-central1" },
   async (req, res) => {
+    if (setCors(req, res)) return;
     const { client, sl, tl, dt, q } = req.query;
     if (!q || !tl) {
       res.status(400).json({ error: "Missing required parameters (tl, q)" });
@@ -395,6 +412,7 @@ exports.translate = onRequest(
 exports.searchCommunityRecipes = onRequest(
   { cors: true, region: "us-central1" },
   async (req, res) => {
+    if (setCors(req, res)) return;
     if (req.method !== "POST") {
       res.status(405).json({ error: "Method not allowed" });
       return;
