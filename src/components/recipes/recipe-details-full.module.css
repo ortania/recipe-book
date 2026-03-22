@@ -893,30 +893,15 @@
 }
 
 .sourceUrl {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-  padding: 0.75rem;
-  background: var(--bg-tertiary);
-  border-radius: 8px;
-  font-size: var(--basic-font);
+  composes: sourceUrl from '../../styles/shared/category-tags.module.css';
 }
 
 .sourceLabel {
-  font-weight: 600;
-  color: var(--clr-text-secondary);
-  margin-right: 0.5rem;
+  composes: sourceLabel from '../../styles/shared/category-tags.module.css';
 }
 
 .sourceLink {
-  color: #667eea;
-  text-decoration: none;
-  word-break: break-all;
-}
-
-.sourceLink:hover {
-  text-decoration: underline;
+  composes: sourceLink from '../../styles/shared/category-tags.module.css';
 }
 
 .notesSection {

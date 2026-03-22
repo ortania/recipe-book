@@ -20,16 +20,7 @@ import { Plus } from "lucide-react";
 import { IoLanguageOutline } from "react-icons/io5";
 import { useLanguage } from "../../context";
 import useSwipe from "../../hooks/useSwipe";
-import RecipeBookTourIcon from "../icons/RecipeBookIcon/RecipeBookTourIcon";
-import { SaveBookIcon } from "../icons/SaveBookIcon";
-import {
-  SearchIcon,
-  CookIcon,
-  ChatIcon,
-  NutritionIcon,
-  ShoppingIcon,
-  ShareIcon,
-} from "../../pages/onboarding/OnboardingIcons";
+import ONBOARDING_SCREENS from "../../pages/onboarding/onboardingScreens";
 import { CloseButton } from "../controls/close-button";
 import buttonClasses from "../controls/gen-button.module.css";
 import classes from "./productTour.module.css";
@@ -92,168 +83,34 @@ const FEATURES = [
   // },
 ];
 
-/* ============ Onboarding Scenes (shown first in the tour) ============ */
-const ONBOARDING_SCREENS = [
-  {
-    key: "welcome",
-    icon: <RecipeBookTourIcon />,
-    titleKey: "welcomeTitle",
-    subtitleKey: "welcomeSubtitle",
-  },
-  {
-    key: "save",
-    icon: <SaveBookIcon />,
-    titleKey: "saveTitle",
-    subtitleKey: "saveSubtitle",
-    tipLabel: "howToStart",
-    tipKey: "saveTip",
-  },
-  {
-    key: "search",
-    icon: <SearchIcon />,
-    titleKey: "searchTitle",
-    subtitleKey: "searchSubtitle",
-    tipLabel: "howToUse",
-    tipKey: "searchTip",
-  },
-  {
-    key: "cook",
-    icon: <CookIcon />,
-    titleKey: "cookTitle",
-    subtitleKey: "cookSubtitle",
-    tipLabel: "howToActivate",
-    tipKey: "cookTip",
-  },
-  {
-    key: "chat",
-    icon: <ChatIcon />,
-    titleKey: "chatTitle",
-    subtitleKey: "chatSubtitle",
-    tipLabel: "howToActivate",
-    tipKey: "chatTip",
-  },
-  {
-    key: "nutrition",
-    icon: <NutritionIcon />,
-    titleKey: "nutritionTitle",
-    subtitleKey: "nutritionSubtitle",
-    tipLabel: "howToActivate",
-    tipKey: "nutritionTip",
-  },
-  {
-    key: "plan",
-    icon: <ShoppingIcon />,
-    titleKey: "planTitle",
-    subtitleKey: "planSubtitle",
-    tipLabel: "howToActivate",
-    tipKey: "planTip",
-  },
-  {
-    key: "share",
-    icon: <ShareIcon />,
-    titleKey: "shareTitle",
-    subtitleKey: "shareSubtitle",
-    tipLabel: "howToActivate",
-    tipKey: "shareTip",
-  },
-];
-
 function OnboardingScene({ screenKey, t }) {
   const data = ONBOARDING_SCREENS.find((s) => s.key === screenKey);
   if (!data) return null;
 
-  const baseStyle = {
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
-    gap: "0.75rem",
-    padding: "1.5rem 1rem",
-    minHeight: 260,
-  };
-  const titleStyle = {
-    fontSize: "1.9rem",
-    fontWeight: 700,
-    color: "var(--clr-text-primary)",
-    margin: 0,
-    textAlign: "center",
-  };
-  const subtitleStyle = {
-    fontSize: "1.7rem",
-    color: "var(--clr-text-primary)",
-    margin: 0,
-    textAlign: "center",
-    maxWidth: 340,
-    lineHeight: 1.6,
-    whiteSpace: "pre-line",
-  };
-  const bulletStyle = {
-    fontSize: "1.7rem",
-    color: "var(--clr-text-primary)",
-    padding: "0.4rem 0.8rem",
-    background: "var(--clr-tip-bg)",
-    border: "1px solid var(--clr-tip-border)",
-    borderRadius: 8,
-    textAlign: "center",
-  };
-  const tipBoxStyle = {
-    color: "var(--clr-text-primary)",
-    marginTop: "1rem",
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: "0.2rem",
-    padding: "0.6rem 0.8rem",
-    // background: "rgba(0,102,204,0.08)",
-    background: "var(--clr-tip-bg)",
-    border: "1px solid var(--clr-tip-border)",
-    borderRadius: 10,
-    maxWidth: 340,
-    width: "100%",
-  };
-
   return (
-    <div style={baseStyle}>
+    <div className={classes.obContent}>
       <div className={classes.onboardingIcon}>{data.icon}</div>
-      <h2 style={titleStyle}>{t("onboarding", data.titleKey)}</h2>
+      <h2 className={classes.obTitle}>{t("onboarding", data.titleKey)}</h2>
       {data.subtitleKey && (
-        <p style={subtitleStyle}>{t("onboarding", data.subtitleKey)}</p>
+        <p className={classes.obSubtitle}>
+          {t("onboarding", data.subtitleKey)}
+        </p>
       )}
       {data.bullets && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "0.4rem",
-            width: "100%",
-            maxWidth: 280,
-          }}
-        >
+        <div className={classes.obBulletsContainer}>
           {data.bullets.map((bKey) => (
-            <div key={bKey} style={bulletStyle}>
+            <div key={bKey} className={classes.obBulletItem}>
               {t("onboarding", bKey)}
             </div>
           ))}
         </div>
       )}
       {data.tipKey && (
-        <div style={tipBoxStyle}>
-          <span
-            style={{
-              fontSize: "1.5rem",
-              fontWeight: "var(--font-weight-heading)",
-              color: "var(--clr-text-primary)",
-            }}
-          >
+        <div className={classes.obTip}>
+          <span className={classes.obTipLabel}>
             {t("onboarding", data.tipLabel)}
           </span>
-          <span
-            style={{
-              fontSize: "1.5rem",
-              color: "var(--clr-text-secondary)",
-              textAlign: "center",
-            }}
-          >
+          <span className={classes.obTipText}>
             {t("onboarding", data.tipKey)
               .split("{icon}")
               .map((part, i, arr) =>

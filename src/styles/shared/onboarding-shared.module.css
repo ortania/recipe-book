@@ -1,0 +1,37 @@
+/* Shared base styles between Onboarding page and ProductTour onboarding scenes */
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.title {
+  color: var(--clr-text-primary);
+  margin: 0;
+  text-align: center;
+}
+
+.subtitle {
+  margin: 0;
+  text-align: center;
+  max-width: 340px;
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.tip {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--clr-tip-bg);
+  border: 1px solid var(--clr-tip-border);
+  max-width: 340px;
+  width: 100%;
+}
+
+.tipText {
+  text-align: center;
+}

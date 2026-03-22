@@ -863,6 +863,64 @@
   line-height: 1;
 }
 
+/* ===== Onboarding Scene (extracted from inline styles) ===== */
+.obContent {
+  composes: content from '../../styles/shared/onboarding-shared.module.css';
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  min-height: 260px;
+}
+
+.obTitle {
+  composes: title from '../../styles/shared/onboarding-shared.module.css';
+  font-size: 1.9rem;
+  font-weight: var(--font-weight-heading);
+}
+
+.obSubtitle {
+  composes: subtitle from '../../styles/shared/onboarding-shared.module.css';
+  font-size: 1.7rem;
+  color: var(--clr-text-primary);
+}
+
+.obBulletsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 280px;
+}
+
+.obBulletItem {
+  font-size: 1.7rem;
+  color: var(--clr-text-primary);
+  padding: 0.4rem 0.8rem;
+  background: var(--clr-tip-bg);
+  border: 1px solid var(--clr-tip-border);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.obTip {
+  composes: tip from '../../styles/shared/onboarding-shared.module.css';
+  color: var(--clr-text-primary);
+  gap: 0.2rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+}
+
+.obTipLabel {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+}
+
+.obTipText {
+  composes: tipText from '../../styles/shared/onboarding-shared.module.css';
+  font-size: 1.5rem;
+  color: var(--clr-text-secondary);
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
   .sceneContainer {

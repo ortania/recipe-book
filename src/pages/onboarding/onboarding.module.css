@@ -54,11 +54,8 @@
 }
 
 .content {
+  composes: content from '../../styles/shared/onboarding-shared.module.css';
   flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
   gap: 1rem;
   padding: 2rem 0;
 }
@@ -75,21 +72,16 @@
 }
 
 .title {
+  composes: title from '../../styles/shared/onboarding-shared.module.css';
   font-size: var(--very-large-font);
   font-weight: var(--font-weight-heading);
-  color: var(--clr-text-primary);
-  margin: 0;
   line-height: 1.3;
 }
 
 .subtitle {
+  composes: subtitle from '../../styles/shared/onboarding-shared.module.css';
   font-size: var(--basic-font);
   color: var(--clr-text-secondary);
-  margin: 0;
-  line-height: 1.6;
-  max-width: 340px;
-  white-space: pre-line;
-  text-align: center;
 }
 
 .bullets {
@@ -114,17 +106,10 @@
 }
 
 .tip {
-  margin-top: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  composes: tip from '../../styles/shared/onboarding-shared.module.css';
   gap: 0.3rem;
   padding: 0.75rem 1rem;
-  background: var(--clr-tip-bg);
-  border: 1px solid var(--clr-tip-border);
   border-radius: var(--tip-border-radius);
-  max-width: 340px;
-  width: 100%;
 }
 
 .tipLabel {
@@ -134,9 +119,9 @@
 }
 
 .tipText {
+  composes: tipText from '../../styles/shared/onboarding-shared.module.css';
   font-size: var(--basic-font);
   color: var(--clt-tip);
-  text-align: center;
   line-height: 1.5;
 }
 

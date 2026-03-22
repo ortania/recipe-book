@@ -249,35 +249,16 @@
 
 /* ========== Form Elements ========== */
 .formGroup {
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+  composes: formGroup from '../../../styles/shared/form-shared.module.css';
   margin-bottom: 1.25rem;
 }
 
 .formLabel {
-  font-size: var(--basic-font);
-  font-weight: 600;
-  color: var(--clr-text-secondary);
-}
-
-.formLabel span {
-  font-size: 3rem;
-  padding: 0 0.5rem;
-  position: relative;
-  top: 0.3em;
+  composes: formLabel from '../../../styles/shared/form-shared.module.css';
 }
 
 .formInput {
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--clr-border-light);
-  border-radius: 12px;
-  font-size: var(--basic-font);
-  outline: none;
-  transition: border-color 0.2s;
-  width: 100%;
-  box-sizing: border-box;
-  background: var(--bg-tertiary);
+  composes: formInput from '../../../styles/shared/form-shared.module.css';
 }
 
 .formInput::placeholder {
@@ -285,22 +266,8 @@
   font-style: italic;
 }
 
-.formInput:focus {
-  border-color: var(--clr-success-border);
-}
-
 .formTextarea {
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--clr-border-light);
-  border-radius: 12px;
-  font-size: var(--basic-font);
-  outline: none;
-  resize: vertical;
-  font-family: inherit;
-  min-height: 80px;
-  width: 100%;
-  box-sizing: border-box;
-  background: var(--bg-tertiary);
+  composes: formTextarea from '../../../styles/shared/form-shared.module.css';
 }
 
 .formTextarea::placeholder {
@@ -308,26 +275,12 @@
   font-style: italic;
 }
 
-.formTextarea:focus {
-  border-color: var(--clr-success-border);
-}
-
 .formSelect {
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--clr-border-light);
-  border-radius: 12px;
-  font-size: var(--basic-font);
-  outline: none;
-  cursor: pointer;
-  width: 100%;
-  box-sizing: border-box;
-  background: var(--bg-tertiary);
+  composes: formSelect from '../../../styles/shared/form-shared.module.css';
 }
 
 .formRow {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1rem;
+  composes: formRow from '../../../styles/shared/form-shared.module.css';
   margin-bottom: 1.25rem;
 }
 
@@ -439,21 +392,9 @@
 }
 
 .inputBox {
-  flex: 1;
-  min-width: 0;
-  display: flex;
+  composes: inputBox from '../../../styles/shared/form-shared.module.css';
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.8rem 1rem;
-  border: 1px solid var(--clr-border-light);
-  border-radius: 12px;
-  background: var(--bg-tertiary);
-  transition: border-color 0.2s;
   position: relative;
-}
-
-.inputBox:focus-within {
-  border-color: var(--clr-success-border);
 }
 
 .dynamicItemInput {
