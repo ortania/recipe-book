@@ -93,6 +93,34 @@ export function expandGroupHeadersInIngredients(ingredientsArray) {
   return out;
 }
 
+// ---- Ingredient Scaling ----
+
+export function scaleIngredient(ingredient, servings, originalServings) {
+  if (servings === originalServings) return ingredient;
+
+  const ratio = servings / originalServings;
+  const numberRegex = /(\d+\/\d+|\d+\.?\d*|\d*\.\d+)/g;
+
+  return ingredient.replace(numberRegex, (match) => {
+    if (match.includes("/")) {
+      const [num, denom] = match.split("/").map(Number);
+      const scaled = (num / denom) * ratio;
+      if (scaled === 0.5) return "1/2";
+      if (scaled === 0.25) return "1/4";
+      if (scaled === 0.75) return "3/4";
+      if (scaled === 0.33 || scaled === 0.34) return "1/3";
+      if (scaled === 0.67 || scaled === 0.66) return "2/3";
+      return scaled % 1 === 0 ? scaled.toString() : scaled.toFixed(1);
+    }
+
+    const num = parseFloat(match);
+    const scaled = num * ratio;
+    return scaled % 1 === 0
+      ? scaled.toString()
+      : scaled.toFixed(1).replace(/\.0$/, "");
+  });
+}
+
 // ---- End Group Helpers ----
 
 const junkPatterns =

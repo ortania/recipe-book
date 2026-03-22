@@ -7,6 +7,7 @@ import classes from "./recipe-details.module.css";
 import { formatDifficulty } from "./utils";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
+import { scaleIngredient } from "../../utils/ingredientUtils";
 import useTranslatedRecipe from "../../hooks/useTranslatedRecipe";
 import useTranslatedList from "../../hooks/useTranslatedList";
 
@@ -110,38 +111,8 @@ function RecipeDetails({ recipe, onClose, onEdit, onDelete, groups = [] }) {
   };
 
   // Function to scale ingredient quantities
-  const scaleIngredient = (ingredient) => {
-    if (servings === originalServings) return ingredient;
-
-    const ratio = servings / originalServings;
-
-    // Regex to find numbers (including decimals and fractions)
-    const numberRegex = /(\d+\.?\d*|\d*\.\d+|\d+\/\d+)/g;
-
-    return ingredient.replace(numberRegex, (match) => {
-      // Handle fractions like 1/2, 3/4
-      if (match.includes("/")) {
-        const [num, denom] = match.split("/").map(Number);
-        const scaled = (num / denom) * ratio;
-        // Convert back to fraction if it makes sense
-        if (scaled === 0.5) return "1/2";
-        if (scaled === 0.25) return "1/4";
-        if (scaled === 0.75) return "3/4";
-        if (scaled === 0.33 || scaled === 0.34) return "1/3";
-        if (scaled === 0.67 || scaled === 0.66) return "2/3";
-        // Otherwise return decimal rounded to 1 decimal place
-        return scaled % 1 === 0 ? scaled.toString() : scaled.toFixed(1);
-      }
-
-      // Handle regular numbers
-      const num = parseFloat(match);
-      const scaled = num * ratio;
-      // Round to 1 decimal place and remove trailing zeros
-      return scaled % 1 === 0
-        ? scaled.toString()
-        : scaled.toFixed(1).replace(/\.0$/, "");
-    });
-  };
+  const scale = (ingredient) =>
+    scaleIngredient(ingredient, servings, originalServings);
 
   const toggleIngredient = (index) => {
     setCheckedIngredients((prev) => ({
