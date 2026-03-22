@@ -1,0 +1,117 @@
+.categoryChips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.categoryChip {
+  padding: 0.5em 1em;
+  border: 1px solid var(--clr-border-light);
+  border-radius: 20px;
+  background: var(--clr-bg-card);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  color: var(--clr-text-secondary);
+}
+
+.categoryChip:hover {
+  border-color: var(--clr-success-border);
+}
+
+@media (hover: none) {
+  .categoryChip:hover {
+    border-color: #e0e0e0;
+  }
+}
+
+.categoryChipActive {
+  background: var(--clr-bg-hover);
+  color: var(--clr-success-text);
+}
+
+.addCategoryChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.5em 1em;
+  border: 2px dashed var(--clr-border-light);
+  border-radius: 20px;
+  background: none;
+  font-size: var(--basic-font);
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.addCategoryChip:hover {
+  border-color: var(--clr-success-border);
+  color: var(--clr-success-text);
+}
+
+.newCategoryInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  border: 1px solid var(--clr-success-border);
+  border-radius: 20px;
+  padding: 0.25em 0.5em;
+  background: var(--clr-bg-card);
+}
+
+.newCategoryInput {
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: var(--basic-font);
+  font-family: inherit;
+  padding: 0.25em 0.4em;
+  width: 8rem;
+  color: var(--clr-text-primary);
+}
+
+.newCategoryInput::placeholder {
+  color: var(--clr-text-muted);
+  opacity: 0.6;
+}
+
+.newCategoryConfirmBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--clr-success-bg);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 2.2rem;
+  height: 2.2rem;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  flex-shrink: 0;
+}
+
+.newCategoryConfirmBtn svg {
+  stroke-width: 3;
+}
+
+.newCategoryConfirmBtn:disabled {
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+}
+
+.newCategoryCancelBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  color: var(--clr-text-muted);
+  border: none;
+  cursor: pointer;
+  padding: 0.15rem;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+
+.newCategoryCancelBtn:hover {
+  color: var(--clr-text-primary);
+}

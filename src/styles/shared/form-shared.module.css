@@ -1,0 +1,353 @@
+/* ========== Utility ========== */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.noPadModal {
+  padding: 0 !important;
+}
+
+/* ========== Dynamic Lists (Ingredients / Instructions) ========== */
+.dynamicList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  padding-bottom: 2rem;
+}
+
+.dynamicItemNumber {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  flex-shrink: 0;
+  line-height: 1.5;
+}
+
+.dynamicItemInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  font-size: var(--basic-font);
+  outline: none;
+  background: transparent;
+  box-sizing: border-box;
+  resize: none;
+  overflow: hidden;
+  font-family: inherit;
+  line-height: 1.5;
+}
+
+.dynamicItemTextarea {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  font-size: var(--basic-font);
+  line-height: 1.5;
+  outline: none;
+  resize: none;
+  font-family: inherit;
+  min-height: 1.5em;
+  box-sizing: border-box;
+  background: transparent;
+  overflow: hidden;
+}
+
+/* ========== Instruction Elements ========== */
+.instructionBox {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--clr-border-light);
+  border-radius: 12px;
+  background: var(--bg-tertiary);
+  transition: border-color 0.2s;
+}
+
+.instructionBox:focus-within {
+  border-color: var(--clr-success-border);
+}
+
+.instructionContent {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding-inline-end: 1.5rem;
+}
+
+.instructionRemoveBtn {
+  position: absolute;
+  top: 50%;
+  inset-inline-end: 0.4rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: gray;
+  cursor: pointer;
+  font-size: 1.5rem;
+  padding: 0.2rem;
+  transition: color 0.2s;
+  z-index: 1;
+}
+
+.instructionRemoveBtn:hover {
+  color: #e53935;
+}
+
+/* ========== Ingredient Group ========== */
+.groupInputBox {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 2px solid var(--clr-accent-secondary);
+  border-radius: 12px;
+  position: relative;
+}
+
+.groupInputBox:focus-within {
+  border-color: #7b0dc9;
+}
+
+.groupInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: none;
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-accent-secondary);
+  outline: none;
+  background: transparent;
+  font-family: inherit;
+}
+
+.groupInput::placeholder {
+  color: var(--clr-accent-secondary);
+  font-weight: 400;
+  font-style: italic;
+}
+
+/* ========== Action Buttons ========== */
+.addItemRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.addItemBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  border: 2px dashed var(--clr-border-light);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--clr-text-muted);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.addItemBtn:hover {
+  border-color: var(--clr-success-border);
+  color: var(--clr-success-text);
+}
+
+.addGroupBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.8rem;
+  border: 2px dashed var(--clr-border-light);
+  border-radius: 12px;
+  background: transparent;
+  color: var(--clr-text-muted);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+}
+
+.addGroupBtn:hover {
+  border-color: var(--clr-success-border);
+  color: var(--clr-success-text);
+}
+
+/* ========== Image Grid ========== */
+.imageGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.imageGridItem {
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  aspect-ratio: 1;
+  background: var(--bg-tertiary);
+}
+
+.imageGridPreview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.dropActive {
+  outline: 3px dashed var(--clr-success-border);
+  outline-offset: 4px;
+  background: rgba(46, 204, 113, 0.06);
+}
+
+/* ========== Category Cards Grid ========== */
+.categoryCardsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+@media (max-width: 480px) {
+  .categoryCardsGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ========== Drag & Drop ========== */
+.dragHandle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-text-muted);
+  cursor: grab;
+  padding: 0.2em;
+  flex-shrink: 0;
+  transition: color 0.15s ease;
+}
+
+.dragHandle:active {
+  cursor: grabbing;
+}
+
+.dragHandle:hover {
+  color: var(--clr-text-secondary);
+}
+
+.dragOverAbove {
+  box-shadow: 0 -3px 0 0 var(--clr-success-bg);
+}
+
+.dragOverBelow {
+  box-shadow: 0 3px 0 0 var(--clr-success-bg);
+}
+
+/* ========== Move Buttons (mobile touch reorder) ========== */
+.moveButtons {
+  display: none;
+  flex-direction: column;
+  gap: 0;
+  flex-shrink: 0;
+}
+
+.moveBtn {
+  background: none;
+  border: 1px solid var(--clr-border-light);
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  padding: 0.15em 0.3em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s;
+  border-radius: 4px;
+}
+
+.moveBtn:first-child {
+  border-radius: 6px 6px 0 0;
+}
+
+.moveBtn:last-child {
+  border-radius: 0 0 6px 6px;
+  border-top: none;
+}
+
+.moveBtn:not(:disabled):hover {
+  background: var(--clr-bg-hover);
+  color: var(--clr-text-primary);
+}
+
+.moveBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+/* ========== Nutrition ========== */
+.nutritionActions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.calculateNutritionBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6em 1.4em;
+  background: linear-gradient(135deg, #10b981, #059669);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-size: var(--basic-font);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+}
+
+.calculateNutritionBtn:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+}
+
+.calculateNutritionBtn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.calculateNutritionBtn:disabled {
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.calculateNutritionIcon {
+  font-size: 1.1em;
+}
+
+.nutritionMessage {
+  font-size: var(--basic-font);
+  text-align: center;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+  background: #f0fdf4;
+  color: #166534;
+}

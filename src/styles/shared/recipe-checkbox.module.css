@@ -1,0 +1,31 @@
+.checkboxLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxLabel span {
+  flex: 1;
+  line-height: 1.5;
+  color: var(--clr-text-primary);
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: 0.1rem;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  position: relative;
+}
+
+.checkedText {
+  text-decoration: line-through;
+  color: var(--clr-text-muted) !important;
+}

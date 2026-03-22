@@ -1,0 +1,16 @@
+.categoryTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.categoryTag {
+  padding: 0.4rem 0.8rem;
+  background: var(--bg-tertiary);
+  border-radius: 12px;
+  border: 1px solid var(--clr-border-light);
+  font-size: var(--basic-font);
+  color: var(--clr-text-secondary);
+  font-weight: 500;
+}
