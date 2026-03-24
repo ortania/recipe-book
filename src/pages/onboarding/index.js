@@ -1,1 +1,1 @@
-export { default as Onboarding } from "./Onboarding";
+// Onboarding is lazy-loaded directly in App.jsx

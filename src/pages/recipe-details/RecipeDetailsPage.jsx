@@ -126,7 +126,10 @@ function RecipeDetailsPage() {
   const [cookingMode, setCookingMode] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState(null);
   const [saveToastOpen, setSaveToastOpen] = useState(false);
-  const handleSaveToastClose = useCallback(() => setSaveToastOpen(false), []);
+  const handleSaveToastClose = useCallback(() => {
+    setSaveToastOpen(false);
+    setEditingRecipe(null);
+  }, []);
   const [detailActiveTab, setDetailActiveTab] = useState("ingredients");
   const [servings, setServings] = useState(recipe?.servings || 4);
 

@@ -34,7 +34,10 @@ function Categories() {
   const [addMethod, setAddMethod] = useState("method");
   const [showChat, setShowChat] = useState(false);
   const [saveToastOpen, setSaveToastOpen] = useState(false);
-  const handleSaveToastClose = useCallback(() => setSaveToastOpen(false), []);
+  const handleSaveToastClose = useCallback(() => {
+    setSaveToastOpen(false);
+    setShowAddRecipe(false);
+  }, []);
   const [showGreetingOnce, setShowGreetingOnce] = useState(() => {
     return sessionStorage.getItem("justLoggedIn") === "true";
   });

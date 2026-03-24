@@ -338,18 +338,20 @@
   right: 0.35rem;
 }
 
-.addMoreImages {
+/* ========== Image Action Row (shared by "has-images" + "no-images" states) ========== */
+.imageActionRow {
   display: flex;
   flex-wrap: wrap;
   gap: 0.5rem;
+  margin-top: 0.25rem;
 }
 
-.generateAiImageBtn {
+.imageActionBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  padding: 0.6em 1em;
+  gap: 0.45rem;
+  padding: 0.55em 0.9em;
   border-radius: 12px;
   border: 2px solid var(--clr-border-light);
   background: var(--clr-bg-tertiary);
@@ -357,23 +359,48 @@
   font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.2s ease;
-  flex: 1;
-  min-width: 8rem;
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: nowrap;
 }
 
-.generateAiImageBtn:hover:not(:disabled) {
+.imageActionBtn:hover:not(:disabled) {
   border-color: var(--clr-success-border);
   color: var(--clr-success-text);
 }
 
-.generateAiImageBtn:disabled {
+.imageActionBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.imageUploadButtons .generateAiImageBtn {
-  flex: 1 1 8rem;
+/* Card variant used in the "no images yet" state */
+.imageActionCard {
+  composes: imageActionBtn;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.5rem 1rem;
   min-height: 5.5rem;
+}
+
+.imageActionCard .imageOptionIcon {
+  font-size: 2rem;
+  color: var(--clr-text-muted);
+}
+
+@media (max-width: 500px) {
+  .imageActionRow {
+    gap: 0.4rem;
+  }
+  .imageActionBtn {
+    font-size: var(--small-font);
+    padding: 0.5em 0.6em;
+  }
+  .imageActionCard {
+    padding: 1rem 0.5rem;
+    min-height: 4rem;
+    font-size: var(--small-font);
+  }
 }
 
 /* ========== Responsive ========== */

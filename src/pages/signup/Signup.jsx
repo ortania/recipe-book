@@ -1,9 +1,9 @@
-import { useState } from "react";
+import { useState, lazy, Suspense } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { signupUser, signInWithGoogle } from "../../firebase/authService";
 import { useRecipeBook, useLanguage } from "../../context";
 import FormInput from "../login/FormInput";
-import { Onboarding } from "../onboarding";
+const Onboarding = lazy(() => import("../onboarding/Onboarding"));
 import { User, Mail, Lock, ShieldCheck, TriangleAlert } from "lucide-react";
 
 import buttonClasses from "../../styles/shared/buttons.module.css";
@@ -157,7 +157,7 @@ function Signup() {
   };
 
   if (!onboardingDone || showTourFromLogin) {
-    return <Onboarding onFinish={() => navigate("/login")} />;
+    return <Suspense fallback={null}><Onboarding onFinish={() => navigate("/login")} /></Suspense>;
   }
 
   return (

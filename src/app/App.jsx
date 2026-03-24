@@ -12,14 +12,13 @@ import "react-loading-skeleton/dist/skeleton.css";
 import classes from "./app.module.css";
 
 import { MainLayout, ProtectedLayout } from "./layout";
-import { Login, Categories } from "../pages";
+import { Login } from "../pages";
 import Signup from "../pages/signup";
 import {
   RecipeBookProvider,
   useRecipeBook,
   LanguageProvider,
 } from "../context";
-import { Onboarding } from "../pages/onboarding";
 import { ErrorBoundary } from "../components/error-boundary";
 
 const queryClient = new QueryClient({
@@ -33,6 +32,8 @@ const queryClient = new QueryClient({
   },
 });
 
+const Categories = React.lazy(() => import("../pages/categories/Categories"));
+const Onboarding = React.lazy(() => import("../pages/onboarding/Onboarding"));
 const RecipeDetailsPage = React.lazy(
   () => import("../pages/recipe-details/RecipeDetailsPage"),
 );
@@ -499,7 +500,15 @@ function AppContent() {
       {/* Onboarding (shown once before login) */}
       <Route
         path="/onboarding"
-        element={isLoggedIn ? <Navigate to="/categories" /> : <Onboarding />}
+        element={
+          isLoggedIn ? (
+            <Navigate to="/categories" />
+          ) : (
+            <Lazy>
+              <Onboarding />
+            </Lazy>
+          )
+        }
       />
 
       {/* Public Routes (Login Page - Has Header/Footer but No Navigation) */}
@@ -527,7 +536,14 @@ function AppContent() {
       {/* Protected Routes (With Navigation, Header, Footer) */}
       <Route element={<ProtectedLayout />}>
         <Route path="/home" element={<Navigate to="/categories" />} />
-        <Route path="/categories" element={<Categories />} />
+        <Route
+          path="/categories"
+          element={
+            <Lazy fallback={<RecipeGridSkeleton count={12} />}>
+              <Categories />
+            </Lazy>
+          }
+        />
         <Route
           path="/conversions"
           element={

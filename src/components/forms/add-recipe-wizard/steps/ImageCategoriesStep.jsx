@@ -1,6 +1,16 @@
-import React from "react";
-import { X, Camera, Upload, Loader2, Sparkles, Plus, Check } from "lucide-react";
+import React, { useRef } from "react";
+import { X, Camera, Upload, Loader2, Sparkles, Plus, Check, Clipboard } from "lucide-react";
 import { useWizard } from "../WizardContext";
+
+const hiddenPasteStyle = {
+  position: "fixed",
+  top: -9999,
+  left: -9999,
+  width: 1,
+  height: 1,
+  overflow: "hidden",
+  opacity: 0,
+};
 
 export default function ImageCategoriesStep() {
   const {
@@ -12,6 +22,7 @@ export default function ImageCategoriesStep() {
     handleImageUpload,
     handleRemoveImage,
     handleImageDrop,
+    handlePasteImage,
     handleGenerateAiImage,
     preventDragDefault,
     toggleCategory,
@@ -32,11 +43,33 @@ export default function ImageCategoriesStep() {
     t,
   } = useWizard();
 
+  const pasteAreaRef = useRef(null);
+
+  const handlePasteFromArea = (e) => {
+    const imageItem = Array.from(e.clipboardData?.items || []).find((item) =>
+      item.type.startsWith("image/"),
+    );
+    if (!imageItem) return;
+    e.preventDefault();
+    const file = imageItem.getAsFile();
+    if (file) handlePasteImage(file);
+  };
+
   return (
     <div className={classes.stepContent}>
       <h3 className={classes.stepSectionTitle}>
         {t("addWizard", "imageCategories")}
       </h3>
+
+      <div
+        ref={pasteAreaRef}
+        contentEditable
+        suppressContentEditableWarning
+        onPaste={handlePasteFromArea}
+        style={hiddenPasteStyle}
+        tabIndex={0}
+        aria-hidden
+      />
 
       {/* Image upload */}
       <div className={shared.formGroup}>
@@ -73,10 +106,10 @@ export default function ImageCategoriesStep() {
               ))}
             </div>
 
-            <div className={classes.addMoreImages}>
+            <div className={classes.imageActionRow}>
               {isMobileDevice && (
                 <div
-                  className={classes.addItemBtn}
+                  className={classes.imageActionBtn}
                   style={{ position: "relative", overflow: "hidden" }}
                 >
                   <input
@@ -100,12 +133,13 @@ export default function ImageCategoriesStep() {
                 </div>
               )}
               <div
-                className={classes.addItemBtn}
+                className={classes.imageActionBtn}
                 style={{ position: "relative", overflow: "hidden" }}
               >
                 <input
                   type="file"
                   accept="image/*,.jfif"
+                  {...(!isMobileDevice && { multiple: true })}
                   ref={fileInputRef}
                   onChange={handleImageUpload}
                   style={{
@@ -119,11 +153,22 @@ export default function ImageCategoriesStep() {
                     zIndex: 2,
                   }}
                 />
-                <Plus size={16} /> {t("addWizard", "addMoreImages")}
+                <Plus size={16} />{" "}
+                {isMobileDevice
+                  ? t("addWizard", "addImage")
+                  : t("addWizard", "addMoreImages")}
               </div>
               <button
                 type="button"
-                className={classes.generateAiImageBtn}
+                className={classes.imageActionBtn}
+                onClick={() => pasteAreaRef.current?.focus()}
+                disabled={uploadingImage || generatingAiImage}
+              >
+                <Clipboard size={16} /> {t("addWizard", "pasteImage")}
+              </button>
+              <button
+                type="button"
+                className={classes.imageActionBtn}
                 onClick={handleGenerateAiImage}
                 disabled={uploadingImage || generatingAiImage}
               >
@@ -148,16 +193,42 @@ export default function ImageCategoriesStep() {
             onDragLeave={() => setImageDragOver(false)}
             onDrop={handleImageDrop}
           >
-            {isMobileDevice && (
+            <div className={classes.imageActionRow}>
+              {isMobileDevice && (
+                <div
+                  className={classes.imageActionCard}
+                  style={{ position: "relative", overflow: "hidden" }}
+                >
+                  <input
+                    type="file"
+                    accept="image/*,.jfif"
+                    capture="environment"
+                    ref={cameraInputRef}
+                    onChange={handleImageUpload}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      opacity: 0,
+                      cursor: "pointer",
+                      zIndex: 2,
+                    }}
+                  />
+                  <Camera className={classes.imageOptionIcon} />
+                  <span>{t("addWizard", "takePhoto")}</span>
+                </div>
+              )}
               <div
-                className={classes.imageOptionBtn}
+                className={classes.imageActionCard}
                 style={{ position: "relative", overflow: "hidden" }}
               >
                 <input
                   type="file"
                   accept="image/*,.jfif"
-                  capture="environment"
-                  ref={cameraInputRef}
+                  {...(!isMobileDevice && { multiple: true })}
+                  ref={fileInputRef}
                   onChange={handleImageUpload}
                   style={{
                     position: "absolute",
@@ -170,48 +241,40 @@ export default function ImageCategoriesStep() {
                     zIndex: 2,
                   }}
                 />
-                <Camera className={classes.imageOptionIcon} />
-                <span>{t("addWizard", "takePhoto")}</span>
+                <Upload className={classes.imageOptionIcon} />
+                <span>{t("addWizard", "fromFile")}</span>
               </div>
-            )}
-            <div
-              className={classes.imageOptionBtn}
-              style={{ position: "relative", overflow: "hidden" }}
-            >
-              <input
-                type="file"
-                accept="image/*,.jfif"
-                ref={fileInputRef}
-                onChange={handleImageUpload}
+              <div
+                className={classes.imageActionCard}
+                onClick={() => pasteAreaRef.current?.focus()}
                 style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  opacity: 0,
-                  cursor: "pointer",
-                  zIndex: 2,
+                  cursor:
+                    uploadingImage || generatingAiImage
+                      ? "not-allowed"
+                      : "pointer",
                 }}
-              />
-              <Upload className={classes.imageOptionIcon} />
-              <span>{t("addWizard", "fromFile")}</span>
+              >
+                <Clipboard className={classes.imageOptionIcon} />
+                <span>{t("addWizard", "pasteImage")}</span>
+              </div>
+              <button
+                type="button"
+                className={classes.imageActionCard}
+                onClick={handleGenerateAiImage}
+                disabled={uploadingImage || generatingAiImage}
+              >
+                {generatingAiImage ? (
+                  <Loader2 className={classes.imageOptionIcon + " " + classes.spinning} />
+                ) : (
+                  <Sparkles className={classes.imageOptionIcon} />
+                )}
+                <span>
+                  {generatingAiImage
+                    ? t("addWizard", "generatingAiImage")
+                    : t("addWizard", "generateAiImage")}
+                </span>
+              </button>
             </div>
-            <button
-              type="button"
-              className={classes.generateAiImageBtn}
-              onClick={handleGenerateAiImage}
-              disabled={uploadingImage || generatingAiImage}
-            >
-              {generatingAiImage ? (
-                <Loader2 size={16} className={classes.spinning} />
-              ) : (
-                <Sparkles size={16} />
-              )}
-              {generatingAiImage
-                ? t("addWizard", "generatingAiImage")
-                : t("addWizard", "generateAiImage")}
-            </button>
             <p className={classes.imageHint}>
               {t("addWizard", "multipleImagesHint")}
             </p>

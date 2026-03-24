@@ -136,13 +136,15 @@ Variables
   --clr-success-text: var(--clr-success-700);
   --clr-success-border: var(--clr-success-300);
 
-  --clr-success-dark-bg: var(--clr-success-700);
+  --clr-success-dark-bg: var(--clr-success-500);
   --clr-success-dark-bg-hover: var(--clr-success-800);
   --clr-success-dark-bg-active: var(--clr-success-900);
 
   --clr-danger-bg: var(--clr-danger-100);
   --clr-danger-bg-hover: var(--clr-danger-200);
   --clr-danger-bg-active: var(--clr-danger-300);
+  --clr-danger-dark-bg: var(--clr-danger-600);
+  
 
   --clr-danger-text: var(-var(--clr-danger-600));
   --clr-danger-text-strong: var(--clr-danger-800);

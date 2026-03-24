@@ -383,34 +383,20 @@
   right: 0.35rem;
 }
 
-.addImageBtn {
+/* ========== Image Action Row (uniform upload / paste / AI buttons) ========== */
+.imageActionRow {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-wrap: wrap;
   gap: 0.5rem;
-  width: 100%;
-  padding: 0.8rem;
-  border: 2px dashed var(--clr-border-light);
-  border-radius: 12px;
-  background: transparent;
-  color: var(--clr-text-muted);
-  font-size: var(--basic-font);
-  cursor: pointer;
-  transition: all 0.2s ease;
+  margin-top: 0.75rem;
 }
 
-.addImageBtn:hover {
-  border-color: var(--clr-success-border);
-  color: var(--clr-success-text);
-}
-
-.generateAiImageBtn {
+.imageActionBtn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  margin-top: 1rem;
-  padding: 0.6em 1em;
+  gap: 0.45rem;
+  padding: 0.55em 0.9em;
   border-radius: 12px;
   border: 2px solid var(--clr-border-light);
   background: var(--clr-bg-tertiary);
@@ -418,25 +404,29 @@
   font-size: var(--basic-font);
   cursor: pointer;
   transition: all 0.2s ease;
-  width: 100%;
-  max-width: 20rem;
+  flex: 1 1 0;
+  min-width: 0;
+  white-space: nowrap;
 }
 
-.generateAiImageBtn:hover:not(:disabled) {
+.imageActionBtn:hover:not(:disabled) {
   border-color: var(--clr-success-border);
   color: var(--clr-success-text);
 }
 
-.generateAiImageBtn:disabled {
+.imageActionBtn:disabled {
   opacity: 0.6;
   cursor: not-allowed;
 }
 
-.generateAiImageWrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
+@media (max-width: 600px) {
+  .imageActionRow {
+    gap: 0.4rem;
+  }
+  .imageActionBtn {
+    font-size: var(--small-font);
+    padding: 0.5em 0.6em;
+  }
 }
 
 /* ========== Categories ========== */

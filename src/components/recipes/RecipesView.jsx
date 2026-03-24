@@ -134,7 +134,10 @@ function RecipesView({
   });
   const [editingRecipe, setEditingRecipe] = useState(null);
   const [saveToastOpen, setSaveToastOpen] = useState(false);
-  const handleSaveToastClose = useCallback(() => setSaveToastOpen(false), []);
+  const handleSaveToastClose = useCallback(() => {
+    setSaveToastOpen(false);
+    setEditingRecipe(null);
+  }, []);
   const [localRecipes, setLocalRecipes] = useState(recipesProp);
   const [isSimpleView, setIsSimpleView] = useState(() => {
     try {

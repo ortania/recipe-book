@@ -38,7 +38,10 @@ function GlobalRecipes() {
   const [showAddRecipe, setShowAddRecipe] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
   const [saveToastOpen, setSaveToastOpen] = useState(false);
-  const handleSaveToastClose = useCallback(() => setSaveToastOpen(false), []);
+  const handleSaveToastClose = useCallback(() => {
+    setSaveToastOpen(false);
+    setShowAddRecipe(false);
+  }, []);
   const [userRatings, setUserRatings] = useState({});
   const [selectedSharer, setSelectedSharer] = useState("all");
   const sentinelRef = useRef(null);

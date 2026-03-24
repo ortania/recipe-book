@@ -31,7 +31,10 @@ function Recipes() {
   const [addMethod, setAddMethod] = useState("method");
   const [showConfirmClear, setShowConfirmClear] = useState(false);
   const [saveToastOpen, setSaveToastOpen] = useState(false);
-  const handleSaveToastClose = useCallback(() => setSaveToastOpen(false), []);
+  const handleSaveToastClose = useCallback(() => {
+    setSaveToastOpen(false);
+    setShowAddRecipe(false);
+  }, []);
 
   const handleClearAllClick = () => {
     setShowConfirmClear(true);

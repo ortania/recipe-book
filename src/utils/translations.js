@@ -3976,6 +3976,20 @@ const translations = {
       de: "Bilder hinzufügen",
       mixed: "הוסף תמונות",
     },
+    addImage: {
+      he: "הוסף תמונה",
+      en: "Add Image",
+      ru: "Добавить фото",
+      de: "Bild hinzufügen",
+      mixed: "הוסף תמונה",
+    },
+    pasteImage: {
+      he: "הדבק תמונה",
+      en: "Paste Image",
+      ru: "Вставить фото",
+      de: "Bild einfügen",
+      mixed: "הדבק תמונה",
+    },
     generateAiImage: {
       he: "צור תמונה עם AI",
       en: "Generate image with AI",

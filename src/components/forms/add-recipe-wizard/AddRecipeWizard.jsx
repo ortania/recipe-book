@@ -32,6 +32,8 @@ import {
   expandGroupHeadersInIngredients,
   stripTrailingSectionHeaderFromName,
 } from "../../../utils/ingredientUtils";
+import { CircleCheck, AlertTriangle } from "lucide-react";
+import { Toast } from "../../controls";
 import { WizardContext } from "./WizardContext";
 import MethodSelectionScreen from "./screens/MethodSelectionScreen";
 import UrlScreen from "./screens/UrlScreen";
@@ -114,6 +116,7 @@ function AddRecipeWizard({
   const [stepError, setStepError] = useState("");
   const [visitedSteps, setVisitedSteps] = useState(new Set([0]));
   const [showPreview, setShowPreview] = useState(false);
+  const [imageToast, setImageToast] = useState({ open: false, message: null, variant: "success", duration: 4000 });
   const [imageDragOver, setImageDragOver] = useState(false);
   const [photoDragOver, setPhotoDragOver] = useState(false);
   const [importProgress, setImportProgress] = useState(0);
@@ -752,19 +755,51 @@ function AddRecipeWizard({
     handleImageUpload({ target: { files }, preventDefault: () => {} });
   };
 
+  const handlePasteImage = useCallback(async (file) => {
+    if (!file || uploadingImage || generatingAiImage) return;
+    setUploadingImage(true);
+    try {
+      const userId = currentUser?.uid;
+      if (!userId) throw new Error("Not logged in");
+      const url = await uploadRecipeImage(userId, `new_${Date.now()}_paste`, file);
+      setRecipe((prev) => {
+        const allImages = [...(prev.images || []), url];
+        return { ...prev, images: allImages, image_src: allImages[0] || "" };
+      });
+    } catch (err) {
+      console.error("Paste image failed:", err);
+    } finally {
+      setUploadingImage(false);
+    }
+  }, [currentUser, uploadingImage, generatingAiImage]);
+
+  useEffect(() => {
+    if (screen !== "manual" || manualStep !== 3) return;
+    const onPaste = (e) => {
+      const imageItem = Array.from(e.clipboardData?.items || []).find((item) =>
+        item.type.startsWith("image/"),
+      );
+      if (!imageItem) return;
+      e.preventDefault();
+      const file = imageItem.getAsFile();
+      if (file) handlePasteImage(file);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, [screen, manualStep, handlePasteImage]);
+
   const handleGenerateAiImage = async () => {
     if (!recipe.name?.trim()) {
-      setImportError(t("addWizard", "generateAiImageNeedName"));
+      setImageToast({ open: true, message: <><AlertTriangle size={18} /> {t("addWizard", "generateAiImageNeedName")}</>, variant: "error", duration: 4000 });
       return;
     }
     if (uploadingImage || generatingAiImage) return;
 
     setGeneratingAiImage(true);
-    setImportError("");
 
     const safetyTimer = setTimeout(() => {
       setGeneratingAiImage(false);
-      setImportError("Timeout - try again");
+      setImageToast({ open: true, message: <><AlertTriangle size={18} /> Timeout</>, variant: "error", duration: 5000 });
     }, 120000);
 
     try {
@@ -791,9 +826,10 @@ function AddRecipeWizard({
           image_src: allImages[0] || "",
         };
       });
+      setImageToast({ open: true, message: <><CircleCheck size={18} /> {t("addWizard", "generateAiImageDone")}</>, variant: "success", duration: 4000 });
     } catch (err) {
       console.error("AI image generation failed:", err);
-      setImportError(err.message || t("addWizard", "generateAiImageError"));
+      setImageToast({ open: true, message: <><AlertTriangle size={18} /> {err.message || t("addWizard", "generateAiImageError")}</>, variant: "error", duration: 5000 });
     } finally {
       clearTimeout(safetyTimer);
       setGeneratingAiImage(false);
@@ -1020,7 +1056,6 @@ function AddRecipeWizard({
       createdCategoriesRef.current = [];
       setSaving(false);
       onSaved?.();
-      onCancel();
     } catch (err) {
       console.error("🍎 NUTRITION - Failed to save recipe:", err);
       setSaving(false);
@@ -1177,6 +1212,7 @@ function AddRecipeWizard({
     handleImageUpload,
     handleRemoveImage,
     handleImageDrop,
+    handlePasteImage,
     handleGenerateAiImage,
     preventDragDefault,
     handleIngredientChange,
@@ -1227,6 +1263,7 @@ function AddRecipeWizard({
   };
 
   return (
+    <>
     <Modal
       onClose={handleClose}
       maxWidth="550px"
@@ -1240,6 +1277,15 @@ function AddRecipeWizard({
         {renderScreen()}
       </WizardContext.Provider>
     </Modal>
+    <Toast
+      open={imageToast.open}
+      onClose={() => setImageToast((prev) => ({ ...prev, open: false }))}
+      variant={imageToast.variant}
+      duration={imageToast.duration}
+    >
+      {imageToast.message}
+    </Toast>
+    </>
   );
 }
 

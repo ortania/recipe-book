@@ -21,7 +21,7 @@ import buttonClasses from "../../../styles/shared/buttons.module.css";
 import catShared from "../../../styles/shared/category-chips.module.css";
 import shared from "../../../styles/shared/form-shared.module.css";
 import classes from "./edit-recipe.module.css";
-import { CloseButton } from "../../controls";
+import { CloseButton, Toast } from "../../controls";
 import {
   calculateNutrition,
   generateRecipeImageDataUrl,
@@ -89,6 +89,7 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [savedMessage, setSavedMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [imageToast, setImageToast] = useState({ open: false, message: null, variant: "success", duration: 4000 });
   const [editImageDragOver, setEditImageDragOver] = useState(false);
 
   const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
@@ -317,34 +318,51 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
     handleImageUpload({ target: { files }, preventDefault: () => {} });
   };
 
+  const handlePasteImage = useCallback(async (file) => {
+    if (!file || uploadingImage || generatingAiImage) return;
+    setUploadingImage(true);
+    try {
+      const userId = currentUser?.uid;
+      if (!userId) throw new Error("Not logged in");
+      const url = await uploadRecipeImage(userId, `${recipe.id}_${Date.now()}_paste`, file);
+      setEditedRecipe((prev) => {
+        const allImages = [...(prev.images || []), url];
+        return { ...prev, images: allImages, image_src: allImages[0] || "" };
+      });
+    } catch (err) {
+      console.error("Paste image failed:", err);
+    } finally {
+      setUploadingImage(false);
+    }
+  }, [currentUser, recipe.id, uploadingImage, generatingAiImage]);
+
+  useEffect(() => {
+    if (activeTab !== "image") return;
+    const onPaste = (e) => {
+      const imageItem = Array.from(e.clipboardData?.items || []).find((item) =>
+        item.type.startsWith("image/"),
+      );
+      if (!imageItem) return;
+      e.preventDefault();
+      const file = imageItem.getAsFile();
+      if (file) handlePasteImage(file);
+    };
+    window.addEventListener("paste", onPaste);
+    return () => window.removeEventListener("paste", onPaste);
+  }, [activeTab, handlePasteImage]);
+
   const handleGenerateAiImage = async () => {
     if (!editedRecipe.name?.trim()) {
-      setSavedMessage(
-        <>
-          <AlertTriangle size={18} /> {t("addWizard", "generateAiImageNeedName")}
-        </>,
-      );
-      setTimeout(() => setSavedMessage(""), 4000);
+      setImageToast({ open: true, message: <><AlertTriangle size={18} /> {t("addWizard", "generateAiImageNeedName")}</>, variant: "error", duration: 4000 });
       return;
     }
     if (uploadingImage || generatingAiImage) return;
 
     setGeneratingAiImage(true);
-    setSavedMessage(
-      <>
-        <Loader size={18} className={classes.spinIcon} />{" "}
-        {t("addWizard", "generatingAiImage")}
-      </>,
-    );
 
     const safetyTimer = setTimeout(() => {
       setGeneratingAiImage(false);
-      setSavedMessage(
-        <>
-          <AlertTriangle size={18} /> Timeout
-        </>,
-      );
-      setTimeout(() => setSavedMessage(""), 4000);
+      setImageToast({ open: true, message: <><AlertTriangle size={18} /> Timeout</>, variant: "error", duration: 5000 });
     }, 120000);
 
     try {
@@ -367,21 +385,10 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
         const allImages = [...(prev.images || []), url];
         return { ...prev, images: allImages, image_src: allImages[0] || "" };
       });
-      setSavedMessage(
-        <>
-          <CircleCheck size={18} /> {t("addWizard", "generateAiImageDone")}
-        </>,
-      );
-      setTimeout(() => setSavedMessage(""), 3000);
+      setImageToast({ open: true, message: <><CircleCheck size={18} /> {t("addWizard", "generateAiImageDone")}</>, variant: "success", duration: 4000 });
     } catch (err) {
       console.error("AI image generation failed:", err);
-      setSavedMessage(
-        <>
-          <AlertTriangle size={18} />{" "}
-          {err.message || t("addWizard", "generateAiImageError")}
-        </>,
-      );
-      setTimeout(() => setSavedMessage(""), 5000);
+      setImageToast({ open: true, message: <><AlertTriangle size={18} /> {err.message || t("addWizard", "generateAiImageError")}</>, variant: "error", duration: 5000 });
     } finally {
       clearTimeout(safetyTimer);
       setGeneratingAiImage(false);
@@ -601,7 +608,6 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
     setSaving(false);
     setSavedMessage("");
     onSaved?.();
-    onCancel();
   };
 
   // ========== Add Category Inline ==========
@@ -685,6 +691,7 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
     handleRemoveImage,
     handleEditImageDrop,
     handleGenerateAiImage,
+    handlePasteImage,
     handleIngredientChange,
     addIngredient,
     addIngredientGroup,
@@ -728,6 +735,7 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
   };
 
   return (
+    <>
     <Modal
       onClose={handleCancel}
       className={`${shared.noPadModal} ${classes.noPadModal}`}
@@ -810,6 +818,15 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
         </div>
         </EditRecipeContext.Provider>
     </Modal>
+    <Toast
+      open={imageToast.open}
+      onClose={() => setImageToast((prev) => ({ ...prev, open: false }))}
+      variant={imageToast.variant}
+      duration={imageToast.duration}
+    >
+      {imageToast.message}
+    </Toast>
+    </>
   );
 }
 
