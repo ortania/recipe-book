@@ -8,11 +8,12 @@ export default function RecipesMainContent() {
   const {
     recentlyViewed, classes, t, navigate, linkState, recentlyViewedKey, trackRecentlyViewed,
     showCategories, isAllSelected, selectedCategoryObjects, toggleCategory, getTranslatedGroup,
-    clearCategorySelection, editingPerson, setEditingPerson, handleSaveEdit, groups,
-    loading, isSimpleView, filteredAndSortedPersons, showSavedOnly, showFavoritesOnly,
-    showAddAndFavorites, selectedGroup, onSelectGroup, onDeletePerson, onEditPerson,
+    clearCategorySelection, editingRecipe, setEditingRecipe, handleSaveEdit, groups,
+    loading, isSimpleView, filteredAndSortedRecipes, showSavedOnly, showFavoritesOnly,
+    showAddAndFavorites, selectedGroup, onSelectGroup, onDeleteRecipe, onEditRecipe,
     handleEditClick, handleToggleFavorite, hideRating, onCopyRecipe, onSaveRecipe, savedRecipes,
     onRate, userRatings, currentUser, followingList, hasMoreRecipes, loadMoreRecipes,
+    onSaved,
   } = useRecipesView();
 
   return (
@@ -26,27 +27,27 @@ export default function RecipesMainContent() {
             </h2>
           </div>
           <div className={classes.recentlyViewedScroll}>
-            {recentlyViewed.map((person) => (
+            {recentlyViewed.map((recipe) => (
               <div
-                key={person.id}
+                key={recipe.id}
                 className={classes.recentlyViewedCard}
                 onClick={() =>
                   recentlyViewedKey
-                    ? trackRecentlyViewed(person.id)
+                    ? trackRecentlyViewed(recipe.id)
                     : navigate(
-                        `/recipe/${person.id}`,
+                        `/recipe/${recipe.id}`,
                         linkState ? { state: linkState } : undefined,
                       )
                 }
               >
                 <div className={classes.recentlyViewedImageWrap}>
                   <div className={classes.recentlyViewedNoImage} />
-                  {person.image_src &&
-                    typeof person.image_src === "string" &&
-                    person.image_src.trim() !== "" && (
+                  {recipe.image_src &&
+                    typeof recipe.image_src === "string" &&
+                    recipe.image_src.trim() !== "" && (
                       <img
-                        src={person.image_src}
-                        alt={person.name}
+                        src={recipe.image_src}
+                        alt={recipe.name}
                         className={classes.recentlyViewedImage}
                         loading="lazy"
                         onError={(e) => {
@@ -56,7 +57,7 @@ export default function RecipesMainContent() {
                     )}
                 </div>
                 <span className={classes.recentlyViewedName}>
-                  {person.name}
+                  {recipe.name}
                 </span>
               </div>
             ))}
@@ -86,11 +87,12 @@ export default function RecipesMainContent() {
           </div>
         )}
 
-      {editingPerson && (
+      {editingRecipe && (
         <EditRecipe
-          person={editingPerson}
+          recipe={editingRecipe}
           onSave={handleSaveEdit}
-          onCancel={() => setEditingPerson(null)}
+          onCancel={() => setEditingRecipe(null)}
+          onSaved={onSaved}
           groups={groups}
         />
       )}
@@ -151,7 +153,7 @@ export default function RecipesMainContent() {
             ))}
           </div>
         )
-      ) : filteredAndSortedPersons.length === 0 ? (
+      ) : filteredAndSortedRecipes.length === 0 ? (
         <div className={classes.noResults}>
           {showSavedOnly
             ? t("globalRecipes", "noSavedRecipes")
@@ -164,9 +166,9 @@ export default function RecipesMainContent() {
           {groups
             .filter((group) => group.id !== "all" && group.id !== "general")
             .map((group) => {
-              const groupRecipes = filteredAndSortedPersons.filter(
-                (person) =>
-                  person.categories && person.categories.includes(group.id),
+              const groupRecipes = filteredAndSortedRecipes.filter(
+                (recipe) =>
+                  recipe.categories && recipe.categories.includes(group.id),
               );
               if (groupRecipes.length === 0) return null;
               const displayRecipes = groupRecipes.slice(0, 8);
@@ -189,22 +191,22 @@ export default function RecipesMainContent() {
                   </div>
                   {isSimpleView ? (
                     <div className={classes.compactList}>
-                      {displayRecipes.map((person) => (
+                      {displayRecipes.map((recipe) => (
                         <div
-                          key={person.id}
+                          key={recipe.id}
                           className={classes.compactItem}
                           onClick={() =>
                             navigate(
-                              `/recipe/${person.id}`,
+                              `/recipe/${recipe.id}`,
                               linkState ? { state: linkState } : undefined,
                             )
                           }
                         >
                           <span className={classes.compactThumbWrap}>
                             <UtensilsCrossed size={16} />
-                            {(person.image || person.image_src) && (
+                            {(recipe.image || recipe.image_src) && (
                               <img
-                                src={person.image || person.image_src}
+                                src={recipe.image || recipe.image_src}
                                 alt=""
                                 className={classes.compactThumb}
                                 onError={(e) => {
@@ -214,7 +216,7 @@ export default function RecipesMainContent() {
                             )}
                           </span>
                           <span className={classes.compactName}>
-                            {person.name}
+                            {recipe.name}
                           </span>
                           {showAddAndFavorites && (
                             <div className={classes.compactActions}>
@@ -222,7 +224,7 @@ export default function RecipesMainContent() {
                                 className={classes.compactActionBtn}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  handleEditClick(person);
+                                  handleEditClick(recipe);
                                 }}
                                 title="Edit"
                               >
@@ -232,7 +234,7 @@ export default function RecipesMainContent() {
                                 className={`${classes.compactActionBtn} ${classes.compactDanger}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  onDeletePerson(person.id);
+                                  onDeleteRecipe(recipe.id);
                                 }}
                                 title="Delete"
                               >
@@ -245,13 +247,13 @@ export default function RecipesMainContent() {
                     </div>
                   ) : (
                     <div className={classes.recipeGrid}>
-                      {displayRecipes.map((person) => (
+                      {displayRecipes.map((recipe) => (
                         <RecipeInfo
-                          key={person.id}
-                          person={person}
+                          key={recipe.id}
+                          recipe={recipe}
                           groups={groups}
                           onEdit={handleEditClick}
-                          onDelete={onDeletePerson}
+                          onDelete={onDeleteRecipe}
                           onToggleFavorite={handleToggleFavorite}
                           hideRating={hideRating}
                         />
@@ -262,9 +264,9 @@ export default function RecipesMainContent() {
               );
             })}
           {(() => {
-            const uncategorizedRecipes = filteredAndSortedPersons.filter(
-              (person) =>
-                !person.categories || person.categories.length === 0,
+            const uncategorizedRecipes = filteredAndSortedRecipes.filter(
+              (recipe) =>
+                !recipe.categories || recipe.categories.length === 0,
             );
             if (uncategorizedRecipes.length === 0) return null;
             const displayRecipes = uncategorizedRecipes.slice(0, 8);
@@ -282,22 +284,22 @@ export default function RecipesMainContent() {
                 </div>
                 {isSimpleView ? (
                   <div className={classes.compactList}>
-                    {displayRecipes.map((person) => (
+                    {displayRecipes.map((recipe) => (
                       <div
-                        key={person.id}
+                        key={recipe.id}
                         className={classes.compactItem}
                         onClick={() =>
                           navigate(
-                            `/recipe/${person.id}`,
+                            `/recipe/${recipe.id}`,
                             linkState ? { state: linkState } : undefined,
                           )
                         }
                       >
                         <span className={classes.compactThumbWrap}>
                           <UtensilsCrossed size={16} />
-                          {(person.image || person.image_src) && (
+                          {(recipe.image || recipe.image_src) && (
                             <img
-                              src={person.image || person.image_src}
+                              src={recipe.image || recipe.image_src}
                               alt=""
                               className={classes.compactThumb}
                               onError={(e) => {
@@ -307,7 +309,7 @@ export default function RecipesMainContent() {
                           )}
                         </span>
                         <span className={classes.compactName}>
-                          {person.name}
+                          {recipe.name}
                         </span>
                         {showAddAndFavorites && (
                           <div className={classes.compactActions}>
@@ -315,7 +317,7 @@ export default function RecipesMainContent() {
                               className={classes.compactActionBtn}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                handleEditClick(person);
+                                handleEditClick(recipe);
                               }}
                               title="Edit"
                             >
@@ -325,7 +327,7 @@ export default function RecipesMainContent() {
                               className={`${classes.compactActionBtn} ${classes.compactDanger}`}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                onDeletePerson(person.id);
+                                onDeleteRecipe(recipe.id);
                               }}
                               title="Delete"
                             >
@@ -338,13 +340,13 @@ export default function RecipesMainContent() {
                   </div>
                 ) : (
                   <div className={classes.recipeGrid}>
-                    {displayRecipes.map((person) => (
+                    {displayRecipes.map((recipe) => (
                       <RecipeInfo
-                        key={person.id}
-                        person={person}
+                        key={recipe.id}
+                        recipe={recipe}
                         groups={groups}
                         onEdit={handleEditClick}
-                        onDelete={onDeletePerson}
+                        onDelete={onDeleteRecipe}
                         onToggleFavorite={handleToggleFavorite}
                         hideRating={hideRating}
                       />
@@ -357,24 +359,24 @@ export default function RecipesMainContent() {
         </div>
       ) : isSimpleView ? (
         <div className={classes.compactList}>
-          {filteredAndSortedPersons.map((person) => (
+          {filteredAndSortedRecipes.map((recipe) => (
             <div
-              key={person.id}
+              key={recipe.id}
               className={classes.compactItem}
               onClick={() =>
                 recentlyViewedKey
-                  ? trackRecentlyViewed(person.id)
+                  ? trackRecentlyViewed(recipe.id)
                   : navigate(
-                      `/recipe/${person.id}`,
+                      `/recipe/${recipe.id}`,
                       linkState ? { state: linkState } : undefined,
                     )
               }
             >
               <span className={classes.compactThumbWrap}>
                 <UtensilsCrossed size={16} />
-                {(person.image || person.image_src) && (
+                {(recipe.image || recipe.image_src) && (
                   <img
-                    src={person.image || person.image_src}
+                    src={recipe.image || recipe.image_src}
                     alt=""
                     className={classes.compactThumb}
                     onError={(e) => {
@@ -383,17 +385,17 @@ export default function RecipesMainContent() {
                   />
                 )}
               </span>
-              <span className={classes.compactName}>{person.name}</span>
-              {person.sharerName &&
-                person.sharerUserId !== currentUser?.uid && (
+              <span className={classes.compactName}>{recipe.name}</span>
+              {recipe.sharerName &&
+                recipe.sharerUserId !== currentUser?.uid && (
                   <span
                     className={classes.compactSharer}
                     onClick={(e) => {
                       e.stopPropagation();
-                      navigate(`/sharer/${person.sharerUserId}`);
+                      navigate(`/sharer/${recipe.sharerUserId}`);
                     }}
                   >
-                    {followingList.includes(person.sharerUserId) && (
+                    {followingList.includes(recipe.sharerUserId) && (
                       <UserCheck
                         size={14}
                         style={{
@@ -402,7 +404,7 @@ export default function RecipesMainContent() {
                         }}
                       />
                     )}
-                    {person.sharerName}
+                    {recipe.sharerName}
                   </span>
                 )}
               {showAddAndFavorites && (
@@ -411,7 +413,7 @@ export default function RecipesMainContent() {
                     className={classes.compactActionBtn}
                     onClick={(e) => {
                       e.stopPropagation();
-                      handleEditClick(person);
+                      handleEditClick(recipe);
                     }}
                     title="Edit"
                   >
@@ -421,7 +423,7 @@ export default function RecipesMainContent() {
                     className={`${classes.compactActionBtn} ${classes.compactDanger}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDeletePerson(person.id);
+                      onDeleteRecipe(recipe.id);
                     }}
                     title="Delete"
                   >
@@ -435,7 +437,7 @@ export default function RecipesMainContent() {
                     className={classes.compactActionBtn}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onCopyRecipe(person.id);
+                      onCopyRecipe(recipe.id);
                     }}
                     title={t("globalRecipes", "copyToMyRecipes")}
                   >
@@ -448,19 +450,19 @@ export default function RecipesMainContent() {
                   className={classes.compactActionBtn}
                   onClick={(e) => {
                     e.stopPropagation();
-                    onSaveRecipe(person.id);
+                    onSaveRecipe(recipe.id);
                   }}
                   title={t("globalRecipes", "savedRecipes")}
                 >
                   <Bookmark
                     size={16}
                     fill={
-                      savedRecipes.includes(person.id)
+                      savedRecipes.includes(recipe.id)
                         ? "var(--clr-primary-700)"
                         : "none"
                     }
                     stroke={
-                      savedRecipes.includes(person.id)
+                      savedRecipes.includes(recipe.id)
                         ? "var(--clr-primary-700)"
                         : "currentColor"
                     }
@@ -472,21 +474,21 @@ export default function RecipesMainContent() {
         </div>
       ) : (
         <div className={classes.recipeGrid}>
-          {filteredAndSortedPersons.map((person) => (
+          {filteredAndSortedRecipes.map((recipe) => (
             <RecipeInfo
-              key={person.id}
-              person={person}
+              key={recipe.id}
+              recipe={recipe}
               groups={groups}
-              onEdit={onEditPerson ? handleEditClick : undefined}
-              onDelete={onDeletePerson}
+              onEdit={onEditRecipe ? handleEditClick : undefined}
+              onDelete={onDeleteRecipe}
               onToggleFavorite={
                 showAddAndFavorites ? handleToggleFavorite : undefined
               }
               onCopyRecipe={onCopyRecipe}
               onSaveRecipe={onSaveRecipe}
-              isSaved={savedRecipes.includes(person.id)}
+              isSaved={savedRecipes.includes(recipe.id)}
               onRate={onRate}
-              userRating={userRatings[person.id] || 0}
+              userRating={userRatings[recipe.id] || 0}
               onCardClick={
                 recentlyViewedKey ? trackRecentlyViewed : undefined
               }

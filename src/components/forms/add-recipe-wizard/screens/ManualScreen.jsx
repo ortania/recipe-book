@@ -29,7 +29,7 @@ export default function ManualScreen() {
     stepError,
     canProceed,
     saving,
-    savedMessage,
+    saveToastOpen,
     uploadingImage,
     generatingAiImage,
     handlePrev,
@@ -100,7 +100,6 @@ export default function ManualScreen() {
         </button>
         <CloseButton
           onClick={cameFromRecording ? handleManualBack : handleClose}
-          size={25}
         />
       </div>
 
@@ -128,9 +127,6 @@ export default function ManualScreen() {
               {t("addWizard", "previous")}
             </button>
           )}
-          {savedMessage && (
-            <span className={classes.savedMessage}>{savedMessage}</span>
-          )}
           <button
             type="button"
             className={classes.nextBtn}
@@ -138,7 +134,7 @@ export default function ManualScreen() {
             disabled={
               !canProceed() ||
               saving ||
-              savedMessage ||
+              saveToastOpen ||
               uploadingImage ||
               generatingAiImage
             }

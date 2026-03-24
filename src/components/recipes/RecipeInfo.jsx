@@ -19,7 +19,7 @@ import { useLanguage, useRecipeBook } from "../../context";
 import useTranslatedText from "../../hooks/useTranslatedText";
 
 function RecipeInfo({
-  person,
+  recipe,
   groups,
   onEdit,
   onDelete,
@@ -37,8 +37,8 @@ function RecipeInfo({
   const { t } = useLanguage();
   const { currentUser } = useRecipeBook();
   const navigate = useNavigate();
-  const translatedName = useTranslatedText(person.name);
-  const [isFavorite, setIsFavorite] = useState(person.isFavorite || false);
+  const translatedName = useTranslatedText(recipe.name);
+  const [isFavorite, setIsFavorite] = useState(recipe.isFavorite || false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [deleteError, setDeleteError] = useState(false);
@@ -55,14 +55,14 @@ function RecipeInfo({
   const MOVE_CANCEL_PX = 12;
 
   const hasImage =
-    person.image_src &&
-    typeof person.image_src === "string" &&
-    person.image_src.trim() !== "";
+    recipe.image_src &&
+    typeof recipe.image_src === "string" &&
+    recipe.image_src.trim() !== "";
 
-  // Update local state when person prop changes
+  // Update local state when recipe prop changes
   useEffect(() => {
-    setIsFavorite(person.isFavorite || false);
-  }, [person]);
+    setIsFavorite(recipe.isFavorite || false);
+  }, [recipe]);
 
   const showOwnerActionButtons =
     !onSaveRecipe && !onCopyRecipe && (onEdit || onDelete);
@@ -131,18 +131,18 @@ function RecipeInfo({
       setTouchActionsVisible(false);
     }
     if (onCardClick) {
-      onCardClick(person.id);
+      onCardClick(recipe.id);
     } else {
       navigate(
-        `/recipe/${person.id}`,
+        `/recipe/${recipe.id}`,
         linkState ? { state: linkState } : undefined,
       );
     }
   };
 
-  const personGroups =
-    person.categories && groups
-      ? person.categories
+  const recipeGroups =
+    recipe.categories && groups
+      ? recipe.categories
           .map((groupId) => groups.find((g) => g.id === groupId))
           .filter(Boolean)
       : [];
@@ -151,7 +151,7 @@ function RecipeInfo({
     const newFavoriteStatus = !isFavorite;
     setIsFavorite(newFavoriteStatus);
     if (onToggleFavorite) {
-      onToggleFavorite(person.id, newFavoriteStatus);
+      onToggleFavorite(recipe.id, newFavoriteStatus);
     }
   };
 
@@ -163,7 +163,7 @@ function RecipeInfo({
   const handleConfirmDelete = async () => {
     setShowDeleteConfirm(false);
     try {
-      await onDelete(person.id);
+      await onDelete(recipe.id);
       setShowSuccessMessage(true);
       setTimeout(() => {
         setShowSuccessMessage(false);
@@ -183,7 +183,7 @@ function RecipeInfo({
     e.stopPropagation();
     setTouchActionsVisible(false);
     if (onEdit) {
-      onEdit(person);
+      onEdit(recipe);
     }
   };
 
@@ -192,7 +192,7 @@ function RecipeInfo({
     if (isCopying || !onCopyRecipe) return;
     setIsCopying(true);
     try {
-      await onCopyRecipe(person.id);
+      await onCopyRecipe(recipe.id);
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 3000);
     } catch (error) {
@@ -221,8 +221,8 @@ function RecipeInfo({
           </div>
           {hasImage && (
             <img
-              src={person.image_src}
-              alt={person.name}
+              src={recipe.image_src}
+              alt={recipe.name}
               className={classes.recipeImage}
               loading="lazy"
               onError={(e) => {
@@ -235,7 +235,7 @@ function RecipeInfo({
               className={`${classes.favoriteButton} ${isSaved ? classes.active : ""}`}
               onClick={(e) => {
                 e.stopPropagation();
-                onSaveRecipe(person.id);
+                onSaveRecipe(recipe.id);
               }}
               aria-label={isSaved ? "Unsave" : "Save"}
             >
@@ -319,38 +319,38 @@ function RecipeInfo({
 
         <div className={classes.recipeInfo}>
           <h3 className={classes.recipeName}>{translatedName}</h3>
-          {person.sharerName && person.sharerUserId !== currentUser?.uid && (
+          {recipe.sharerName && recipe.sharerUserId !== currentUser?.uid && (
             <div
               className={classes.sharerName}
               onClick={(e) => {
                 e.stopPropagation();
-                navigate(`/sharer/${person.sharerUserId}`);
+                navigate(`/sharer/${recipe.sharerUserId}`);
               }}
               onTouchStart={(e) => e.stopPropagation()}
             >
-              {followingList.includes(person.sharerUserId) && (
+              {followingList.includes(recipe.sharerUserId) && (
                 <UserCheck
                   size={14}
                   style={{ marginInlineEnd: "0.2rem", verticalAlign: "middle" }}
                 />
               )}
-              {person.copiedFrom
+              {recipe.copiedFrom
                 ? t("recipes", "copiedFrom")
                 : t("recipes", "sharedBy")}{" "}
-              {person.sharerName}
+              {recipe.sharerName}
             </div>
           )}
           <div className={classes.recipeMetadata}>
-            {person.prepTime && (
+            {recipe.prepTime && (
               <p className={classes.recipeTime}>
                 {t("recipes", "prepTime")}:{" "}
-                {formatTime(person.prepTime, t("recipes", "minutes"))}
+                {formatTime(recipe.prepTime, t("recipes", "minutes"))}
               </p>
             )}
-            {person.difficulty && person.difficulty !== "Unknown" && (
+            {recipe.difficulty && recipe.difficulty !== "Unknown" && (
               <span className={classes.recipeDifficulty}>
-                {person.prepTime && "• "}
-                {t("difficulty", person.difficulty)}
+                {recipe.prepTime && "• "}
+                {t("difficulty", recipe.difficulty)}
               </span>
             )}
           </div>
@@ -382,7 +382,7 @@ function RecipeInfo({
                           onMouseLeave={() => setHoverStar(0)}
                           onClick={(e) => {
                             e.stopPropagation();
-                            onRate(person.id, star);
+                            onRate(recipe.id, star);
                           }}
                         >
                           ★
@@ -390,7 +390,7 @@ function RecipeInfo({
                       ))}
                     </div>
                   </div>
-                  {!person.copiedFrom && person.avgRating > 0 && (
+                  {!recipe.copiedFrom && recipe.avgRating > 0 && (
                     <div className={classes.ratingAvgBlock}>
                       <div className={classes.ratingRow}>
                         <span className={classes.ratingLabel}>
@@ -398,19 +398,19 @@ function RecipeInfo({
                         </span>
                       </div>
                       <span className={classes.ratingMeta}>
-                        {Number(person.avgRating).toFixed(1)} ({" "}
-                        {person.ratingCount})
+                        {Number(recipe.avgRating).toFixed(1)} ({" "}
+                        {recipe.ratingCount})
                       </span>
                     </div>
                   )}
                 </div>
               ) : (
                 (() => {
-                  const effectiveRating = person.copiedFrom
-                    ? person.rating
-                    : person.avgRating || person.rating;
-                  const showAvg = !person.copiedFrom && person.avgRating > 0;
-                  return effectiveRating > 0 || person.rating > 0 ? (
+                  const effectiveRating = recipe.copiedFrom
+                    ? recipe.rating
+                    : recipe.avgRating || recipe.rating;
+                  const showAvg = !recipe.copiedFrom && recipe.avgRating > 0;
+                  return effectiveRating > 0 || recipe.rating > 0 ? (
                     <div
                       className={classes.starsRow}
                       style={{ margin: "0.3rem 0" }}
@@ -431,8 +431,8 @@ function RecipeInfo({
                       ))}
                       {showAvg && (
                         <span className={classes.ratingMeta}>
-                          ({Number(person.avgRating).toFixed(1)} ·{" "}
-                          {person.ratingCount})
+                          ({Number(recipe.avgRating).toFixed(1)} ·{" "}
+                          {recipe.ratingCount})
                         </span>
                       )}
                     </div>
@@ -446,7 +446,7 @@ function RecipeInfo({
         {showDeleteConfirm && (
           <ConfirmDialog
             title={t("confirm", "deleteRecipe")}
-            message={`${t("confirm", "deleteRecipeMsg")} "${person.name}"? ${t("confirm", "cannotUndo")}.`}
+            message={`${t("confirm", "deleteRecipeMsg")} "${recipe.name}"? ${t("confirm", "cannotUndo")}.`}
             onConfirm={handleConfirmDelete}
             onCancel={handleCancelDelete}
             confirmText={t("confirm", "yesDelete")}
@@ -476,7 +476,7 @@ function RecipeInfo({
 
 const MemoizedRecipeInfo = React.memo(RecipeInfo, (prev, next) => {
   return (
-    prev.person === next.person &&
+    prev.recipe === next.recipe &&
     prev.groups === next.groups &&
     prev.onEdit === next.onEdit &&
     prev.onDelete === next.onDelete &&

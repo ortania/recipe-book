@@ -1,4 +1,6 @@
 import { useState, useCallback, useRef, useEffect, useMemo } from "react";
+import { CircleCheck } from "lucide-react";
+import { Toast } from "../../components/controls";
 import { PiArrowFatLineUp } from "react-icons/pi";
 import { IoCopyOutline, IoSearchOutline } from "react-icons/io5";
 import { IoMdStarOutline } from "react-icons/io";
@@ -33,8 +35,10 @@ function GlobalRecipes() {
       return [];
     }
   });
-  const [showAddPerson, setShowAddPerson] = useState(false);
+  const [showAddRecipe, setShowAddRecipe] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
+  const [saveToastOpen, setSaveToastOpen] = useState(false);
+  const handleSaveToastClose = useCallback(() => setSaveToastOpen(false), []);
   const [userRatings, setUserRatings] = useState({});
   const [selectedSharer, setSelectedSharer] = useState("all");
   const sentinelRef = useRef(null);
@@ -121,28 +125,29 @@ function GlobalRecipes() {
 
   return (
     <div>
-      {showAddPerson && (
+      {showAddRecipe && (
         <AddRecipeWizard
-          onAddPerson={addRecipe}
+          onAddRecipe={addRecipe}
           onCancel={(lastScreen) => {
-            setShowAddPerson(false);
+            setShowAddRecipe(false);
             if (lastScreen) setAddMethod(lastScreen);
           }}
+          onSaved={() => setSaveToastOpen(true)}
           groups={categories}
           initialScreen={addMethod}
         />
       )}
 
       <RecipesView
-        onAddPerson={(method) => {
+        onAddRecipe={(method) => {
           setAddMethod(method || "method");
-          setShowAddPerson(true);
+          setShowAddRecipe(true);
         }}
         sharerOptions={sharerOptions}
         selectedSharer={selectedSharer}
         onSelectSharer={setSelectedSharer}
         followingList={currentUser?.following || []}
-        persons={filteredRecipes}
+        recipes={filteredRecipes}
         groups={[]}
         readOnlyCategories={true}
         showAddAndFavorites={false}
@@ -197,6 +202,11 @@ function GlobalRecipes() {
       <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>
         <PiArrowFatLineUp />
       </UpButton>
+
+      <Toast open={saveToastOpen} onClose={handleSaveToastClose} variant="success">
+        <CircleCheck size={18} aria-hidden />
+        <span>{t("recipes", "saved")}</span>
+      </Toast>
     </div>
   );
 }

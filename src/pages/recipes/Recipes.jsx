@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { PiArrowFatLineUp } from "react-icons/pi";
+import { CircleCheck } from "lucide-react";
 import classes from "./recipes.module.css";
 import pageClasses from "../page.module.css";
 import {
@@ -10,6 +11,7 @@ import {
   AddRecipeDropdown,
   ConfirmDialog,
 } from "../../components";
+import { Toast } from "../../components/controls";
 import { useRecipeBook, useLanguage } from "../../context";
 
 import { scrollToTop } from "../utils";
@@ -25,9 +27,11 @@ function Recipes() {
   } = useRecipeBook();
   const { t } = useLanguage();
 
-  const [showAddPerson, setShowAddPerson] = useState(false);
+  const [showAddRecipe, setShowAddRecipe] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
   const [showConfirmClear, setShowConfirmClear] = useState(false);
+  const [saveToastOpen, setSaveToastOpen] = useState(false);
+  const handleSaveToastClose = useCallback(() => setSaveToastOpen(false), []);
 
   const handleClearAllClick = () => {
     setShowConfirmClear(true);
@@ -63,18 +67,19 @@ function Recipes() {
         <AddRecipeDropdown
           onSelect={(method) => {
             setAddMethod(method || "method");
-            setShowAddPerson(true);
+            setShowAddRecipe(true);
           }}
         />
       </div>
 
-      {showAddPerson && (
+      {showAddRecipe && (
         <AddRecipeWizard
-          onAddPerson={addRecipe}
+          onAddRecipe={addRecipe}
           onCancel={(lastScreen) => {
-            setShowAddPerson(false);
+            setShowAddRecipe(false);
             if (lastScreen) setAddMethod(lastScreen);
           }}
+          onSaved={() => setSaveToastOpen(true)}
           groups={categories}
           initialScreen={addMethod}
         />
@@ -92,10 +97,10 @@ function Recipes() {
       )}
 
       <RecipesView
-        persons={recipes}
+        recipes={recipes}
         groups={categories}
-        onEditPerson={editRecipe}
-        onDeletePerson={deleteRecipe}
+        onEditRecipe={editRecipe}
+        onDeleteRecipe={deleteRecipe}
         sortStorageKey="myRecipesSortPreference"
         hideRating
       />
@@ -103,6 +108,11 @@ function Recipes() {
       <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>
         <PiArrowFatLineUp />
       </UpButton>
+
+      <Toast open={saveToastOpen} onClose={handleSaveToastClose} variant="success">
+        <CircleCheck size={18} aria-hidden />
+        <span>{t("recipes", "saved")}</span>
+      </Toast>
     </div>
   );
 }

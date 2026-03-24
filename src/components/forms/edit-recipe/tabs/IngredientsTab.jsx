@@ -9,7 +9,7 @@ import {
 
 export default function IngredientsTab() {
   const {
-    editedPerson,
+    editedRecipe,
     dragIndex,
     dragField,
     dragOverIndex,
@@ -34,7 +34,7 @@ export default function IngredientsTab() {
     <>
       <h3 className={classes.sectionTitle}>{t("recipes", "ingredients")}</h3>
       <div className={shared.dynamicList} ref={ingredientsListRef}>
-        {editedPerson.ingredients.map((ing, i) => {
+        {editedRecipe.ingredients.map((ing, i) => {
           const isGroup = isGroupHeader(ing);
           if (!isGroup) ingredientCounter++;
           return (
@@ -100,7 +100,7 @@ export default function IngredientsTab() {
                       }
                     }}
                   />
-                  {editedPerson.ingredients.length > 1 && (
+                  {editedRecipe.ingredients.length > 1 && (
                     <button
                       type="button"
                       className={`${shared.removeItemBtn} ${classes.removeItemBtn}`}

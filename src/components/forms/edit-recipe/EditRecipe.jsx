@@ -69,7 +69,7 @@ const TABS = [
   },
 ];
 
-function EditRecipe({ person, onSave, onCancel, groups = [] }) {
+function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
   const { t } = useLanguage();
   const { currentUser, addCategory, deleteCategory } = useRecipeBook();
   const createdCategoriesRef = useRef([]);
@@ -92,7 +92,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const [editImageDragOver, setEditImageDragOver] = useState(false);
 
   const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
-    setEditedPerson((prev) => {
+    setEditedRecipe((prev) => {
       const items = [...prev[field]];
       const [moved] = items.splice(fromIndex, 1);
       items.splice(toIndex, 0, moved);
@@ -131,28 +131,28 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     };
   }, [handleTouchMove, handleTouchEnd]);
 
-  const [editedPerson, setEditedPerson] = useState({
-    name: person.name,
-    image_src: person.image_src || "",
-    images: person.images || (person.image_src ? [person.image_src] : []),
-    ingredients: Array.isArray(person.ingredients)
-      ? [...person.ingredients]
+  const [editedRecipe, setEditedRecipe] = useState({
+    name: recipe.name,
+    image_src: recipe.image_src || "",
+    images: recipe.images || (recipe.image_src ? [recipe.image_src] : []),
+    ingredients: Array.isArray(recipe.ingredients)
+      ? [...recipe.ingredients]
       : [],
-    instructions: Array.isArray(person.instructions)
-      ? [...person.instructions]
+    instructions: Array.isArray(recipe.instructions)
+      ? [...recipe.instructions]
       : [],
-    prepTime: person.prepTime || "",
-    cookTime: person.cookTime || "",
-    servings: person.servings || "",
-    difficulty: person.difficulty || "Unknown",
-    sourceUrl: person.sourceUrl || "",
-    videoUrl: person.videoUrl || "",
-    categories: person.categories || [],
-    isFavorite: person.isFavorite || false,
-    notes: person.notes || "",
-    rating: person.rating || 0,
-    shareToGlobal: person.shareToGlobal || false,
-    showMyName: person.showMyName || false,
+    prepTime: recipe.prepTime || "",
+    cookTime: recipe.cookTime || "",
+    servings: recipe.servings || "",
+    difficulty: recipe.difficulty || "Unknown",
+    sourceUrl: recipe.sourceUrl || "",
+    videoUrl: recipe.videoUrl || "",
+    categories: recipe.categories || [],
+    isFavorite: recipe.isFavorite || false,
+    notes: recipe.notes || "",
+    rating: recipe.rating || 0,
+    shareToGlobal: recipe.shareToGlobal || false,
+    showMyName: recipe.showMyName || false,
     nutrition: {
       calories: "",
       protein: "",
@@ -166,40 +166,40 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       cholesterol: "",
       saturatedFat: "",
       note: "",
-      ...person.nutrition,
+      ...recipe.nutrition,
     },
   });
 
   const handleServingsChange = (e) => {
     const newServings = e.target.value;
-    setEditedPerson((prev) => ({
+    setEditedRecipe((prev) => ({
       ...prev,
       servings: newServings,
     }));
   };
 
   useEffect(() => {
-    setEditedPerson({
-      name: person.name,
-      image_src: person.image_src || "",
-      images: person.images || (person.image_src ? [person.image_src] : []),
-      ingredients: Array.isArray(person.ingredients)
-        ? [...person.ingredients]
+    setEditedRecipe({
+      name: recipe.name,
+      image_src: recipe.image_src || "",
+      images: recipe.images || (recipe.image_src ? [recipe.image_src] : []),
+      ingredients: Array.isArray(recipe.ingredients)
+        ? [...recipe.ingredients]
         : [],
-      instructions: Array.isArray(person.instructions)
-        ? [...person.instructions]
+      instructions: Array.isArray(recipe.instructions)
+        ? [...recipe.instructions]
         : [],
-      prepTime: person.prepTime || "",
-      cookTime: person.cookTime || "",
-      servings: person.servings || "",
-      difficulty: person.difficulty || "Unknown",
-      sourceUrl: person.sourceUrl || "",
-      videoUrl: person.videoUrl || "",
-      categories: person.categories || [],
-      isFavorite: person.isFavorite || false,
-      notes: person.notes || "",
-      rating: person.rating || 0,
-      shareToGlobal: person.shareToGlobal || false,
+      prepTime: recipe.prepTime || "",
+      cookTime: recipe.cookTime || "",
+      servings: recipe.servings || "",
+      difficulty: recipe.difficulty || "Unknown",
+      sourceUrl: recipe.sourceUrl || "",
+      videoUrl: recipe.videoUrl || "",
+      categories: recipe.categories || [],
+      isFavorite: recipe.isFavorite || false,
+      notes: recipe.notes || "",
+      rating: recipe.rating || 0,
+      shareToGlobal: recipe.shareToGlobal || false,
       nutrition: {
         calories: "",
         protein: "",
@@ -213,15 +213,15 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         cholesterol: "",
         saturatedFat: "",
         note: "",
-        ...person.nutrition,
+        ...recipe.nutrition,
       },
     });
-  }, [person]);
+  }, [recipe]);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setEditedPerson({
-      ...editedPerson,
+    setEditedRecipe({
+      ...editedRecipe,
       [name]: type === "checkbox" ? checked : value,
     });
   };
@@ -270,12 +270,12 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         );
         const url = await uploadRecipeImage(
           userId,
-          `${person.id}_${Date.now()}_${i}`,
+          `${recipe.id}_${Date.now()}_${i}`,
           files[i],
         );
         urls.push(url);
       }
-      setEditedPerson((prev) => {
+      setEditedRecipe((prev) => {
         const allImages = [...(prev.images || []), ...urls];
         return { ...prev, images: allImages, image_src: allImages[0] || "" };
       });
@@ -301,7 +301,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   const handleRemoveImage = (index) => {
-    setEditedPerson((prev) => {
+    setEditedRecipe((prev) => {
       const updated = (prev.images || []).filter((_, i) => i !== index);
       return { ...prev, images: updated, image_src: updated[0] || "" };
     });
@@ -318,7 +318,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   const handleGenerateAiImage = async () => {
-    if (!editedPerson.name?.trim()) {
+    if (!editedRecipe.name?.trim()) {
       setSavedMessage(
         <>
           <AlertTriangle size={18} /> {t("addWizard", "generateAiImageNeedName")}
@@ -350,20 +350,20 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     try {
       const userId = currentUser?.uid;
       if (!userId) throw new Error("Not logged in");
-      const ingForPrompt = ingredientsOnly(editedPerson.ingredients || [])
+      const ingForPrompt = ingredientsOnly(editedRecipe.ingredients || [])
         .map((i) => i.trim())
         .filter(Boolean)
         .slice(0, 15);
       const dataUrl = await generateRecipeImageDataUrl({
-        recipeName: editedPerson.name.trim(),
+        recipeName: editedRecipe.name.trim(),
         ingredients: ingForPrompt,
       });
       const url = await uploadRecipeImage(
         userId,
-        `${person.id}_${Date.now()}_ai`,
+        `${recipe.id}_${Date.now()}_ai`,
         dataUrl,
       );
-      setEditedPerson((prev) => {
+      setEditedRecipe((prev) => {
         const allImages = [...(prev.images || []), url];
         return { ...prev, images: allImages, image_src: allImages[0] || "" };
       });
@@ -389,7 +389,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   const handleIngredientChange = (index, value) => {
-    setEditedPerson((prev) => {
+    setEditedRecipe((prev) => {
       const newIngredients = [...prev.ingredients];
       newIngredients[index] = value;
       return { ...prev, ingredients: newIngredients };
@@ -397,28 +397,28 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   const addIngredient = () => {
-    setEditedPerson((prev) => ({
+    setEditedRecipe((prev) => ({
       ...prev,
       ingredients: [...prev.ingredients, ""],
     }));
   };
 
   const addIngredientGroup = () => {
-    setEditedPerson((prev) => ({
+    setEditedRecipe((prev) => ({
       ...prev,
       ingredients: [...prev.ingredients, makeGroupHeader(""), ""],
     }));
   };
 
   const removeIngredient = (index) => {
-    setEditedPerson((prev) => ({
+    setEditedRecipe((prev) => ({
       ...prev,
       ingredients: prev.ingredients.filter((_, i) => i !== index),
     }));
   };
 
   const handleInstructionChange = (index, value) => {
-    setEditedPerson((prev) => {
+    setEditedRecipe((prev) => {
       const newInstructions = [...prev.instructions];
       newInstructions[index] = value;
       return { ...prev, instructions: newInstructions };
@@ -426,28 +426,28 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   const addInstruction = () => {
-    setEditedPerson((prev) => ({
+    setEditedRecipe((prev) => ({
       ...prev,
       instructions: [...prev.instructions, ""],
     }));
   };
 
   const removeInstruction = (index) => {
-    setEditedPerson((prev) => ({
+    setEditedRecipe((prev) => ({
       ...prev,
       instructions: prev.instructions.filter((_, i) => i !== index),
     }));
   };
 
   const toggleFavorite = () => {
-    setEditedPerson((prev) => ({
+    setEditedRecipe((prev) => ({
       ...prev,
       isFavorite: !prev.isFavorite,
     }));
   };
 
   const toggleCategory = (catId) => {
-    setEditedPerson((prev) => ({
+    setEditedRecipe((prev) => ({
       ...prev,
       categories: prev.categories.includes(catId)
         ? prev.categories.filter((c) => c !== catId)
@@ -473,7 +473,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     if (dragIndex === null || dragField !== field || dragIndex === dropIndex)
       return;
     if (touchDragJustFinishedRef.current) return;
-    setEditedPerson((prev) => {
+    setEditedRecipe((prev) => {
       const items = [...prev[field]];
       const draggedItem = items[dragIndex];
       items.splice(dragIndex, 1);
@@ -492,7 +492,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   };
 
   const handleMoveItem = (index, direction, field) => {
-    setEditedPerson((prev) => {
+    setEditedRecipe((prev) => {
       const items = [...prev[field]];
       const newIndex = index + direction;
       if (newIndex < 0 || newIndex >= items.length) return prev;
@@ -505,17 +505,17 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     if (saving) return;
     setSaving(true);
     const filledIngredients = ingredientsOnly(
-      editedPerson.ingredients.map((i) => i.trim()).filter((i) => i),
+      editedRecipe.ingredients.map((i) => i.trim()).filter((i) => i),
     );
-    const filledAll = editedPerson.ingredients
+    const filledAll = editedRecipe.ingredients
       .map((i) => i.trim())
       .filter((i) => i);
-    let nutrition = { ...editedPerson.nutrition };
+    let nutrition = { ...editedRecipe.nutrition };
 
-    const origIngredients = (person.ingredients || []).join("|");
+    const origIngredients = (recipe.ingredients || []).join("|");
     const newIngredients = filledAll.join("|");
-    const origServings = String(person.servings || "");
-    const newServings = String(editedPerson.servings || "");
+    const origServings = String(recipe.servings || "");
+    const newServings = String(editedRecipe.servings || "");
     const ingredientsChanged =
       origIngredients !== newIngredients || origServings !== newServings;
 
@@ -529,7 +529,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         );
         const result = await calculateNutrition(
           filledIngredients,
-          editedPerson.servings,
+          editedRecipe.servings,
         );
         if (result && !result.error) {
           for (const key of Object.keys(result)) {
@@ -558,42 +558,50 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
         await new Promise((r) => setTimeout(r, 3000));
       }
     }
-    const updatedPerson = {
-      ...person,
-      name: editedPerson.name,
-      image_src: editedPerson.images?.[0] || editedPerson.image_src,
-      images: editedPerson.images || [],
+    const updatedRecipe = {
+      ...recipe,
+      name: editedRecipe.name,
+      image_src: editedRecipe.images?.[0] || editedRecipe.image_src,
+      images: editedRecipe.images || [],
       ingredients: filledAll,
-      instructions: editedPerson.instructions
+      instructions: editedRecipe.instructions
         .map((i) => i.trim())
         .filter((i) => i),
-      prepTime: editedPerson.prepTime,
-      cookTime: editedPerson.cookTime,
-      servings: parseInt(editedPerson.servings) || 1,
-      difficulty: editedPerson.difficulty,
-      sourceUrl: editedPerson.sourceUrl,
-      videoUrl: editedPerson.videoUrl,
-      categories: editedPerson.categories,
-      isFavorite: editedPerson.isFavorite,
-      notes: editedPerson.notes,
-      rating: editedPerson.rating || 0,
-      shareToGlobal: editedPerson.shareToGlobal,
-      showMyName: editedPerson.shareToGlobal ? editedPerson.showMyName : false,
+      prepTime: editedRecipe.prepTime,
+      cookTime: editedRecipe.cookTime,
+      servings: parseInt(editedRecipe.servings) || 1,
+      difficulty: editedRecipe.difficulty,
+      sourceUrl: editedRecipe.sourceUrl,
+      videoUrl: editedRecipe.videoUrl,
+      categories: editedRecipe.categories,
+      isFavorite: editedRecipe.isFavorite,
+      notes: editedRecipe.notes,
+      rating: editedRecipe.rating || 0,
+      shareToGlobal: editedRecipe.shareToGlobal,
+      showMyName: editedRecipe.shareToGlobal ? editedRecipe.showMyName : false,
       nutrition,
     };
     console.log(
       "🍎 NUTRITION - Saving recipe with nutrition:",
-      updatedPerson.nutrition,
+      updatedRecipe.nutrition,
     );
-    await onSave(updatedPerson);
+    try {
+      await onSave(updatedRecipe);
+    } catch (err) {
+      console.error("Failed to save recipe:", err);
+      setSaving(false);
+      setSavedMessage(
+        <>
+          <AlertTriangle size={18} /> {t("recipes", "saveFailed")}
+        </>,
+      );
+      return;
+    }
     createdCategoriesRef.current = [];
     setSaving(false);
-    setSavedMessage(
-      <>
-        <CircleCheck size={18} /> <span>{t("recipes", "saved")}</span>
-      </>,
-    );
-    setTimeout(() => onCancel(), 3000);
+    setSavedMessage("");
+    onSaved?.();
+    onCancel();
   };
 
   // ========== Add Category Inline ==========
@@ -633,7 +641,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       });
       if (newCat) {
         createdCategoriesRef.current.push(newCat.id);
-        setEditedPerson((prev) => ({
+        setEditedRecipe((prev) => ({
           ...prev,
           categories: [...prev.categories, newCat.id],
         }));
@@ -647,9 +655,9 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
 
   // ========== Context value ==========
   const contextValue = {
-    editedPerson,
-    setEditedPerson,
-    person,
+    editedRecipe,
+    setEditedRecipe,
+    recipe,
     activeTab,
     setActiveTab,
     isMobile,
@@ -724,7 +732,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       onClose={handleCancel}
       className={`${shared.noPadModal} ${classes.noPadModal}`}
     >
-      <EditRecipeContext.Provider value={contextValue}>
+        <EditRecipeContext.Provider value={contextValue}>
         <div className={classes.editContainer}>
           <div
             style={{
@@ -739,11 +747,10 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
                 <CloseButton
                   className={classes.editCloseBtn}
                   onClick={handleCancel}
-                  size={25}
                 />
                 <div className={classes.editTitleGroup}>
                   <h2>{t("recipes", "editRecipe")}</h2>
-                  <p>{editedPerson.name}</p>
+                  <p>{editedRecipe.name}</p>
                 </div>
               </div>
               <div className={classes.editHeaderActions}>
@@ -801,7 +808,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
             </div>
           </div>
         </div>
-      </EditRecipeContext.Provider>
+        </EditRecipeContext.Provider>
     </Modal>
   );
 }

@@ -4,7 +4,7 @@ import { useEditRecipe } from "../EditRecipeContext";
 
 export default function CategoriesTab() {
   const {
-    editedPerson,
+    editedRecipe,
     toggleCategory,
     newCategoryName,
     setNewCategoryName,
@@ -29,7 +29,7 @@ export default function CategoriesTab() {
         <div className={`${catShared.categoryChips} ${classes.categoryChips}`}>
           {groups
             .filter(
-              (g) => g.id !== "all" && editedPerson.categories.includes(g.id),
+              (g) => g.id !== "all" && editedRecipe.categories.includes(g.id),
             )
             .map((group) => (
               <button
@@ -51,7 +51,7 @@ export default function CategoriesTab() {
         <div className={`${catShared.categoryChips} ${classes.categoryChips}`}>
           {groups
             .filter(
-              (g) => g.id !== "all" && !editedPerson.categories.includes(g.id),
+              (g) => g.id !== "all" && !editedRecipe.categories.includes(g.id),
             )
             .map((group) => (
               <button

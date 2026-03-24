@@ -10,7 +10,7 @@ import AddRecipeMenu from "./AddRecipeMenu";
 
 export default function RecipesSheets() {
   const {
-    onAddPerson, showChat, showSearch, t,
+    onAddRecipe, showChat, showSearch, t,
     isMobile, showCategoriesSheet, setShowCategoriesSheet,
     showManagement, setShowManagement, readOnlyCategories,
     categories, recipes, selectedCategories, toggleCategory, clearCategorySelection,
@@ -22,9 +22,9 @@ export default function RecipesSheets() {
 
   return (
     <>
-      {onAddPerson && !showChat && !showSearch && (
+      {onAddRecipe && !showChat && !showSearch && (
         <Fab label={t("recipesView", "addNewRecipe")}>
-          <AddRecipeMenu onSelect={onAddPerson} t={t} />
+          <AddRecipeMenu onSelect={onAddRecipe} t={t} />
         </Fab>
       )}
 
@@ -160,7 +160,6 @@ export default function RecipesSheets() {
                     <CloseButton
                       className={classes.categoriesPopupClose}
                       onClick={() => setShowSharerSheet(false)}
-                      size={25}
                     />
                   </div>
                   {sharerListContent}

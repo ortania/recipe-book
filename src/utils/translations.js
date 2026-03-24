@@ -811,6 +811,13 @@ const translations = {
       de: "Gespeichert!",
       mixed: "Saved!",
     },
+    saveFailed: {
+      he: "השמירה נכשלה",
+      en: "Could not save",
+      ru: "Не удалось сохранить",
+      de: "Speichern fehlgeschlagen",
+      mixed: "Could not save",
+    },
     cancel: {
       he: "ביטול",
       en: "Cancel",

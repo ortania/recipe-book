@@ -28,9 +28,9 @@ export function formatDifficulty(difficulty) {
 
 const heCollator = new Intl.Collator("he", { sensitivity: "base" });
 
-export function search(persons, searchTerm, sortField, sortDirection) {
-  return persons
-    .filter((person) => {
+export function search(recipes, searchTerm, sortField, sortDirection) {
+  return recipes
+    .filter((recipe) => {
       if (!searchTerm) return true;
 
       const term = searchTerm.trim();
@@ -38,11 +38,11 @@ export function search(persons, searchTerm, sortField, sortDirection) {
       // Exact phrase search: wrapped in quotes
       if (term.startsWith('"') && term.endsWith('"') && term.length > 2) {
         const phrase = term.slice(1, -1).toLowerCase();
-        const nameMatch = person.name?.toLowerCase().includes(phrase);
-        const ingredientsMatch = person.ingredients?.some((ing) =>
+        const nameMatch = recipe.name?.toLowerCase().includes(phrase);
+        const ingredientsMatch = recipe.ingredients?.some((ing) =>
           ing.toLowerCase().includes(phrase),
         );
-        const instructionsMatch = person.instructions?.some((inst) =>
+        const instructionsMatch = recipe.instructions?.some((inst) =>
           inst.toLowerCase().includes(phrase),
         );
         return nameMatch || ingredientsMatch || instructionsMatch;
@@ -52,11 +52,11 @@ export function search(persons, searchTerm, sortField, sortDirection) {
       const words = term.toLowerCase().split(/\s+/).filter(Boolean);
 
       return words.every((word) => {
-        const nameMatch = person.name?.toLowerCase().includes(word);
-        const ingredientsMatch = person.ingredients?.some((ing) =>
+        const nameMatch = recipe.name?.toLowerCase().includes(word);
+        const ingredientsMatch = recipe.ingredients?.some((ing) =>
           ing.toLowerCase().includes(word),
         );
-        const instructionsMatch = person.instructions?.some((inst) =>
+        const instructionsMatch = recipe.instructions?.some((inst) =>
           inst.toLowerCase().includes(word),
         );
         return nameMatch || ingredientsMatch || instructionsMatch;

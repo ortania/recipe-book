@@ -54,7 +54,6 @@ export default function SummaryStep() {
               type="button"
               className={classes.previewCloseBtn}
               onClick={() => setShowPreview(false)}
-              size={25}
             />
             {recipe.image_src ? (
               <img

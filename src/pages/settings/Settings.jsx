@@ -103,7 +103,6 @@ function Settings() {
         <CloseButton
           onClick={() => navigate(-1)}
           title={t("common", "close")}
-          size={25}
         />
       </div>
 

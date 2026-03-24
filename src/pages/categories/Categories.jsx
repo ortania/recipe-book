@@ -1,5 +1,7 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
+import { CircleCheck } from "lucide-react";
+import { Toast } from "../../components/controls";
 
 import {
   RecipesView,
@@ -28,9 +30,11 @@ function Categories() {
   } = useRecipeBook();
   const { t } = useLanguage();
 
-  const [showAddPerson, setShowAddPerson] = useState(false);
+  const [showAddRecipe, setShowAddRecipe] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
   const [showChat, setShowChat] = useState(false);
+  const [saveToastOpen, setSaveToastOpen] = useState(false);
+  const handleSaveToastClose = useCallback(() => setSaveToastOpen(false), []);
   const [showGreetingOnce, setShowGreetingOnce] = useState(() => {
     return sessionStorage.getItem("justLoggedIn") === "true";
   });
@@ -79,13 +83,14 @@ function Categories() {
         {showTour && <ProductTour onClose={handleCloseTour} />}
       </AnimatePresence>
 
-      {showAddPerson && (
+      {showAddRecipe && (
         <AddRecipeWizard
-          onAddPerson={addRecipe}
+          onAddRecipe={addRecipe}
           onCancel={(lastScreen) => {
-            setShowAddPerson(false);
+            setShowAddRecipe(false);
             if (lastScreen) setAddMethod(lastScreen);
           }}
+          onSaved={() => setSaveToastOpen(true)}
           defaultGroup={defaultGroup}
           groups={categories}
           initialScreen={addMethod}
@@ -93,13 +98,13 @@ function Categories() {
       )}
 
       <RecipesView
-        persons={filteredRecipes}
+        recipes={filteredRecipes}
         groups={categories}
-        onEditPerson={editRecipe}
-        onDeletePerson={deleteRecipe}
-        onAddPerson={(method) => {
+        onEditRecipe={editRecipe}
+        onDeleteRecipe={deleteRecipe}
+        onAddRecipe={(method) => {
           setAddMethod(method || "method");
-          setShowAddPerson(true);
+          setShowAddRecipe(true);
         }}
         selectedGroup={isAllSelected ? "all" : selectedCategories}
         showGreeting={showGreetingOnce}
@@ -114,6 +119,11 @@ function Categories() {
       <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>
         <PiArrowFatLineUp />
       </UpButton>
+
+      <Toast open={saveToastOpen} onClose={handleSaveToastClose} variant="success">
+        <CircleCheck size={18} aria-hidden />
+        <span>{t("recipes", "saved")}</span>
+      </Toast>
     </div>
   );
 }

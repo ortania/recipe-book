@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import btnClasses from "../../../styles/shared/buttons.module.css";
 
 export const CLOSE_DESKTOP_SIZE = 25;
-export const CLOSE_MOBILE_SIZE = 25;
+export const CLOSE_MOBILE_SIZE = 20;
 
 const MOBILE_BREAKPOINT = 768;
 
@@ -12,7 +12,7 @@ const CloseButton = ({
   type = "plain",
   className,
   title,
-  size = 20,
+  size = null,
 }) => {
   const [isMobile, setIsMobile] = useState(
     () => window.innerWidth < MOBILE_BREAKPOINT

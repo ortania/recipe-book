@@ -15,7 +15,6 @@ import {
   parseFreeSpeechRecipe,
   generateRecipeImageDataUrl,
 } from "../../../services/openai";
-import { CircleCheck } from "lucide-react";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
 import buttonClasses from "../../../styles/shared/buttons.module.css";
@@ -76,8 +75,9 @@ const INITIAL_RECIPE = {
 };
 
 function AddRecipeWizard({
-  onAddPerson,
+  onAddRecipe,
   onCancel,
+  onSaved,
   groups = [],
   defaultGroup = null,
   initialScreen = "method",
@@ -954,7 +954,6 @@ function AddRecipeWizard({
 
   // ========== Submit ==========
   const [saving, setSaving] = useState(false);
-  const [savedMessage, setSavedMessage] = useState("");
   const handleSubmit = async () => {
     if (saving) return;
     setSaving(true);
@@ -1017,18 +1016,15 @@ function AddRecipeWizard({
       newRecipe.nutrition,
     );
     try {
-      await onAddPerson(newRecipe);
+      await onAddRecipe(newRecipe);
       createdCategoriesRef.current = [];
+      setSaving(false);
+      onSaved?.();
+      onCancel();
     } catch (err) {
       console.error("🍎 NUTRITION - Failed to save recipe:", err);
+      setSaving(false);
     }
-    setSaving(false);
-    setSavedMessage(
-      <>
-        <CircleCheck size={18} /> <span>{t("recipes", "saved")}</span>
-      </>,
-    );
-    setTimeout(() => onCancel(), 10000);
   };
 
   // ========== Step navigation ==========
@@ -1148,7 +1144,6 @@ function AddRecipeWizard({
     importProgress,
     cameFromRecording,
     saving,
-    savedMessage,
     newCategoryName,
     setNewCategoryName,
     showNewCategoryInput,
@@ -1235,7 +1230,11 @@ function AddRecipeWizard({
     <Modal
       onClose={handleClose}
       maxWidth="550px"
-      className={screen === "manual" ? `$shared.noPadModal} ${classes.noPadModal}` : undefined}
+      className={
+        screen === "manual"
+          ? `${shared.noPadModal} ${classes.noPadModal}`
+          : undefined
+      }
     >
       <WizardContext.Provider value={contextValue}>
         {renderScreen()}

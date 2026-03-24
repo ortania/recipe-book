@@ -4,9 +4,9 @@ import { useEditRecipe } from "../EditRecipeContext";
 
 export default function BasicTab() {
   const {
-    editedPerson,
-    setEditedPerson,
-    person,
+    editedRecipe,
+    setEditedRecipe,
+    recipe,
     handleChange,
     handleServingsChange,
     toggleFavorite,
@@ -29,10 +29,10 @@ export default function BasicTab() {
       >
         <button
           type="button"
-          className={`${classes.favoriteBtn} ${editedPerson.isFavorite ? classes.favoriteBtnActive : ""}`}
+          className={`${classes.favoriteBtn} ${editedRecipe.isFavorite ? classes.favoriteBtnActive : ""}`}
           onClick={toggleFavorite}
         >
-          {editedPerson.isFavorite ? (
+          {editedRecipe.isFavorite ? (
             <Heart size={22} fill="red" stroke="red" />
           ) : (
             <Heart size={22} />
@@ -40,7 +40,7 @@ export default function BasicTab() {
           <span>
             {t(
               "recipes",
-              editedPerson.isFavorite
+              editedRecipe.isFavorite
                 ? "removeFromFavorites"
                 : "addToFavorites",
             )}
@@ -56,9 +56,9 @@ export default function BasicTab() {
         <input
           type="text"
           className={shared.formInput}
-          value={editedPerson.name}
+          value={editedRecipe.name}
           onChange={(e) =>
-            setEditedPerson((prev) => ({ ...prev, name: e.target.value }))
+            setEditedRecipe((prev) => ({ ...prev, name: e.target.value }))
           }
         />
       </div>
@@ -73,9 +73,9 @@ export default function BasicTab() {
               <button
                 key={star}
                 type="button"
-                className={`${classes.starBtn} ${star <= (editedPerson.rating || 0) ? classes.starBtnActive : ""}`}
+                className={`${classes.starBtn} ${star <= (editedRecipe.rating || 0) ? classes.starBtnActive : ""}`}
                 onClick={() =>
-                  setEditedPerson((prev) => ({
+                  setEditedRecipe((prev) => ({
                     ...prev,
                     rating: star === prev.rating ? 0 : star,
                   }))
@@ -83,7 +83,7 @@ export default function BasicTab() {
               >
                 <Star
                   size={20}
-                  fill={star <= (editedPerson.rating || 0) ? "#ffc107" : "none"}
+                  fill={star <= (editedRecipe.rating || 0) ? "#ffc107" : "none"}
                 />
               </button>
             ))}
@@ -96,7 +96,7 @@ export default function BasicTab() {
           <input
             type="number"
             className={shared.formInput}
-            value={editedPerson.servings}
+            value={editedRecipe.servings}
             onChange={handleServingsChange}
             min="1"
           />
@@ -107,9 +107,9 @@ export default function BasicTab() {
           </label>
           <select
             className={shared.formSelect}
-            value={editedPerson.difficulty}
+            value={editedRecipe.difficulty}
             onChange={(e) =>
-              setEditedPerson((prev) => ({
+              setEditedRecipe((prev) => ({
                 ...prev,
                 difficulty: e.target.value,
               }))
@@ -134,9 +134,9 @@ export default function BasicTab() {
             inputMode="numeric"
             min="0"
             className={shared.formInput}
-            value={editedPerson.cookTime}
+            value={editedRecipe.cookTime}
             onChange={(e) =>
-              setEditedPerson((prev) => ({
+              setEditedRecipe((prev) => ({
                 ...prev,
                 cookTime: e.target.value.replace(/[^0-9]/g, ""),
               }))
@@ -152,9 +152,9 @@ export default function BasicTab() {
             inputMode="numeric"
             min="0"
             className={shared.formInput}
-            value={editedPerson.prepTime}
+            value={editedRecipe.prepTime}
             onChange={(e) =>
-              setEditedPerson((prev) => ({
+              setEditedRecipe((prev) => ({
                 ...prev,
                 prepTime: e.target.value.replace(/[^0-9]/g, ""),
               }))
@@ -169,9 +169,9 @@ export default function BasicTab() {
         </label>
         <textarea
           className={shared.formTextarea}
-          value={editedPerson.notes}
+          value={editedRecipe.notes}
           onChange={(e) =>
-            setEditedPerson((prev) => ({ ...prev, notes: e.target.value }))
+            setEditedRecipe((prev) => ({ ...prev, notes: e.target.value }))
           }
         />
       </div>
@@ -184,9 +184,9 @@ export default function BasicTab() {
           type="url"
           className={shared.formInput}
           placeholder="https://..."
-          value={editedPerson.sourceUrl}
+          value={editedRecipe.sourceUrl}
           onChange={(e) =>
-            setEditedPerson((prev) => ({
+            setEditedRecipe((prev) => ({
               ...prev,
               sourceUrl: e.target.value,
             }))
@@ -194,18 +194,18 @@ export default function BasicTab() {
         />
       </div>
 
-      {!person.copiedFrom && (
+      {!recipe.copiedFrom && (
         <div className={shared.formGroup}>
           <label className={classes.checkboxLabel}>
             <input
               type="checkbox"
               name="shareToGlobal"
               className={buttonClasses.checkBox}
-              checked={editedPerson.shareToGlobal}
+              checked={editedRecipe.shareToGlobal}
               onChange={(e) => {
                 handleChange(e);
                 if (!e.target.checked) {
-                  setEditedPerson((prev) => ({ ...prev, showMyName: false }));
+                  setEditedRecipe((prev) => ({ ...prev, showMyName: false }));
                 }
               }}
             />

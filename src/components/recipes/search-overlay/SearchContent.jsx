@@ -7,7 +7,7 @@ export default function SearchContent() {
     showCategories, isAllSelected, selectedCategoryObjects,
     toggleCategory, clearCategorySelection, getTranslatedGroup,
     showResults, filteredResults, isSimpleView, handleRecipeClick,
-    groups, onEditPerson, onDeletePerson, onToggleFavorite,
+    groups, onEditRecipe, onDeleteRecipe, onToggleFavorite,
     onCopyRecipe, userRatings, onRate, hideRating,
     lastFoundData, recentSearches, parentClasses, classes, t,
   } = useSearchOverlay();
@@ -55,30 +55,30 @@ export default function SearchContent() {
               </div>
             ) : isSimpleView ? (
               <div className={parentClasses.compactList}>
-                {filteredResults.map((person) => (
+                {filteredResults.map((recipe) => (
                   <div
-                    key={person.id}
+                    key={recipe.id}
                     className={parentClasses.compactItem}
-                    onClick={() => handleRecipeClick(person.id)}
+                    onClick={() => handleRecipeClick(recipe.id)}
                   >
                     <span className={parentClasses.compactName}>
-                      {person.name}
+                      {recipe.name}
                     </span>
                   </div>
                 ))}
               </div>
             ) : (
               <div className={parentClasses.recipeGrid}>
-                {filteredResults.map((person) => (
+                {filteredResults.map((recipe) => (
                   <RecipeInfo
-                    key={person.id}
-                    person={person}
+                    key={recipe.id}
+                    recipe={recipe}
                     groups={groups}
-                    onEdit={onEditPerson}
-                    onDelete={onDeletePerson}
+                    onEdit={onEditRecipe}
+                    onDelete={onDeleteRecipe}
                     onToggleFavorite={onToggleFavorite}
                     onCopyRecipe={onCopyRecipe}
-                    userRating={userRatings[person.id] || 0}
+                    userRating={userRatings[recipe.id] || 0}
                     onRate={onRate}
                     onCardClick={handleRecipeClick}
                     hideRating={hideRating}
@@ -104,22 +104,22 @@ export default function SearchContent() {
                   </h2>
                 </div>
                 <div className={parentClasses.recentlyViewedScroll}>
-                  {lastFoundData.recipes.map((person) => (
+                  {lastFoundData.recipes.map((recipe) => (
                     <div
-                      key={person.id}
+                      key={recipe.id}
                       className={parentClasses.recentlyViewedCard}
-                      onClick={() => handleRecipeClick(person.id)}
+                      onClick={() => handleRecipeClick(recipe.id)}
                     >
-                      {person.image_src && (
+                      {recipe.image_src && (
                         <img
-                          src={person.image_src}
-                          alt={person.name}
+                          src={recipe.image_src}
+                          alt={recipe.name}
                           className={parentClasses.recentlyViewedImage}
                           loading="lazy"
                         />
                       )}
                       <span className={parentClasses.recentlyViewedName}>
-                        {person.name}
+                        {recipe.name}
                       </span>
                     </div>
                   ))}

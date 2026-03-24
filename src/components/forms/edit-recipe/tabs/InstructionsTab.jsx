@@ -4,8 +4,8 @@ import { useEditRecipe } from "../EditRecipeContext";
 
 export default function InstructionsTab() {
   const {
-    editedPerson,
-    setEditedPerson,
+    editedRecipe,
+    setEditedRecipe,
     dragIndex,
     dragField,
     dragOverIndex,
@@ -27,7 +27,7 @@ export default function InstructionsTab() {
     <>
       <h3 className={classes.sectionTitle}>{t("recipes", "instructions")}</h3>
       <div className={shared.dynamicList} ref={instructionsListRef}>
-        {editedPerson.instructions.map((inst, i) => (
+        {editedRecipe.instructions.map((inst, i) => (
           <div
             key={i}
             data-drag-item
@@ -47,7 +47,7 @@ export default function InstructionsTab() {
               <GripVertical size={16} />
             </span>
             <div className={`${shared.instructionBox} ${classes.instructionBox}`}>
-              {editedPerson.instructions.length > 1 && (
+              {editedRecipe.instructions.length > 1 && (
                 <button
                   type="button"
                   className={`${shared.instructionRemoveBtn} ${classes.instructionRemoveBtn}`}
@@ -95,9 +95,9 @@ export default function InstructionsTab() {
           type="url"
           className={shared.formInput}
           placeholder="https://youtube.com/..."
-          value={editedPerson.videoUrl}
+          value={editedRecipe.videoUrl}
           onChange={(e) =>
-            setEditedPerson((prev) => ({
+            setEditedRecipe((prev) => ({
               ...prev,
               videoUrl: e.target.value,
             }))

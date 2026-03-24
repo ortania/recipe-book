@@ -5,38 +5,38 @@ import classes from "./simple-recipe-info.module.css";
 import { Button } from "../controls/button";
 
 function SimpleRecipeInfo({
-  person,
+  recipe,
   groups,
   onEdit,
   onDelete,
   onToggleFavorite,
 }) {
   const navigate = useNavigate();
-  const [isFavorite, setIsFavorite] = useState(person.isFavorite || false);
+  const [isFavorite, setIsFavorite] = useState(recipe.isFavorite || false);
 
-  // Update local state when person prop changes
+  // Update local state when recipe prop changes
   useEffect(() => {
-    setIsFavorite(person.isFavorite || false);
-  }, [person]);
+    setIsFavorite(recipe.isFavorite || false);
+  }, [recipe]);
 
   const handleFavoriteClick = () => {
     const newFavoriteStatus = !isFavorite;
     setIsFavorite(newFavoriteStatus);
     if (onToggleFavorite) {
-      onToggleFavorite(person.id, newFavoriteStatus);
+      onToggleFavorite(recipe.id, newFavoriteStatus);
     }
   };
 
   const handleDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete "${person.name}"?`)) {
-      await onDelete(person.id);
+    if (window.confirm(`Are you sure you want to delete "${recipe.name}"?`)) {
+      await onDelete(recipe.id);
     }
   };
 
   return (
     <>
       <div className={classes.simpleCard}>
-        <div className={classes.personInfo}>
+        <div className={classes.recipeInfo}>
           <Button
             onClick={handleFavoriteClick}
             aria-label={
@@ -47,27 +47,27 @@ function SimpleRecipeInfo({
           >
             {isFavorite ? "★" : "☆"}
           </Button>
-          {(person.image || person.image_src) ? (
-            <img src={person.image || person.image_src} alt="" className={classes.thumb} />
+          {(recipe.image || recipe.image_src) ? (
+            <img src={recipe.image || recipe.image_src} alt="" className={classes.thumb} />
           ) : (
             <span className={classes.thumbPlaceholder}>
               <UtensilsCrossed size={16} />
             </span>
           )}
-          <span className={classes.name}>{person.name}</span>
+          <span className={classes.name}>{recipe.name}</span>
           <span className={classes.phone}>
-            {person.servings ? `${person.servings} servings` : ""}
+            {recipe.servings ? `${recipe.servings} servings` : ""}
           </span>
         </div>
 
         <div className={classes.actions}>
           <Button
-            onClick={() => navigate(`/recipe/${person.id}`)}
+            onClick={() => navigate(`/recipe/${recipe.id}`)}
             title="View recipe details"
           >
             View
           </Button>
-          <Button onClick={() => onEdit(person)} title="Edit recipe">
+          <Button onClick={() => onEdit(recipe)} title="Edit recipe">
             Edit
           </Button>
           <Button
@@ -86,7 +86,7 @@ function SimpleRecipeInfo({
 
 const MemoizedSimpleRecipeInfo = React.memo(SimpleRecipeInfo, (prev, next) => {
   return (
-    prev.person === next.person &&
+    prev.recipe === next.recipe &&
     prev.groups === next.groups &&
     prev.onEdit === next.onEdit &&
     prev.onDelete === next.onDelete &&

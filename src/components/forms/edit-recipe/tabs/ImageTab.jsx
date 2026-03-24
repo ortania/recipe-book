@@ -15,7 +15,7 @@ const fileOverlayStyle = {
 
 export default function ImageTab() {
   const {
-    editedPerson,
+    editedRecipe,
     uploadingImage,
     generatingAiImage,
     editImageDragOver,
@@ -33,7 +33,7 @@ export default function ImageTab() {
   return (
     <>
       <h3 className={classes.sectionTitle}>{t("addWizard", "recipeImage")}</h3>
-      {editedPerson.images?.length > 0 ? (
+      {editedRecipe.images?.length > 0 ? (
         <>
           <div
             className={`${shared.imageGrid}${editImageDragOver ? ` ${shared.dropActive}` : ""}`}
@@ -44,7 +44,7 @@ export default function ImageTab() {
             onDragLeave={() => setEditImageDragOver(false)}
             onDrop={handleEditImageDrop}
           >
-            {editedPerson.images.map((url, i) => (
+            {editedRecipe.images.map((url, i) => (
               <div key={i} className={shared.imageGridItem}>
                 <img
                   src={url}

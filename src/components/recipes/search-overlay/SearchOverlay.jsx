@@ -31,10 +31,10 @@ function saveRecentSearch(term) {
 
 function SearchOverlay({
   open,
-  persons,
+  recipes,
   groups,
-  onEditPerson,
-  onDeletePerson,
+  onEditRecipe,
+  onDeleteRecipe,
   onCopyRecipe,
   onRate,
   userRatings = {},
@@ -119,15 +119,15 @@ function SearchOverlay({
   const searchRecentlyViewed = useMemo(() => {
     if (searchViewedIds.length === 0) return [];
     return searchViewedIds
-      .map((id) => (persons || []).find((p) => p.id === id))
+      .map((id) => (recipes || []).find((p) => p.id === id))
       .filter(Boolean);
-  }, [searchViewedIds, persons]);
+  }, [searchViewedIds, recipes]);
 
   const handleRecipeClick = useCallback(
-    (personId) => {
+    (recipeId) => {
       const newViewedIds = [
-        personId,
-        ...searchViewedIds.filter((id) => id !== personId),
+        recipeId,
+        ...searchViewedIds.filter((id) => id !== recipeId),
       ].slice(0, 8);
       setSearchViewedIds(newViewedIds);
       sessionStorage.setItem(
@@ -141,9 +141,9 @@ function SearchOverlay({
       );
       if (searchTerm.trim()) saveRecentSearch(searchTerm);
       if (onRecipeNavigate) {
-        onRecipeNavigate(personId);
+        onRecipeNavigate(recipeId);
       } else {
-        navigate(`/recipe/${personId}`);
+        navigate(`/recipe/${recipeId}`);
       }
     },
     [searchTerm, sortField, sortDirection, searchViewedIds, navigate, onRecipeNavigate],
@@ -279,7 +279,7 @@ function SearchOverlay({
   };
 
   const filteredResults = useMemo(() => {
-    let filtered = persons || [];
+    let filtered = recipes || [];
 
     if (selectedRating !== "all") {
       const minRating = parseFloat(selectedRating);
@@ -340,7 +340,7 @@ function SearchOverlay({
 
     return search(filtered, debouncedSearch, sortField, sortDirection);
   }, [
-    persons, debouncedSearch, sortField, sortDirection,
+    recipes, debouncedSearch, sortField, sortDirection,
     selectedRating, selectedPrepTime, selectedDifficulty,
     selectedIngredientCount, selectedStepCount, filterIngredients,
   ]);
@@ -374,19 +374,19 @@ function SearchOverlay({
       return {
         term,
         recipes: ids
-          .map((id) => (persons || []).find((p) => p.id === id))
+          .map((id) => (recipes || []).find((p) => p.id === id))
           .filter(Boolean),
       };
     } catch {
       return { term: "", recipes: [] };
     }
-  }, [persons]);
+  }, [recipes]);
 
   const showResults = debouncedSearch || hasActiveFilters;
 
   const contextValue = {
     // props
-    persons, groups, onEditPerson, onDeletePerson, onCopyRecipe, onRate,
+    recipes, groups, onEditRecipe, onDeleteRecipe, onCopyRecipe, onRate,
     userRatings, onToggleFavorite, isSimpleView, onToggleView, onClose,
     onRecipeNavigate, showCategories, selectedCategories, toggleCategory,
     clearCategorySelection, getTranslatedGroup, selectedCategoryObjects,

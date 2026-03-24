@@ -209,7 +209,7 @@ function SharerProfile() {
 
       {isPublic && (
         <RecipesView
-          persons={recipesWithoutSharer}
+          recipes={recipesWithoutSharer}
           groups={sharerCategories}
           showAddAndFavorites={false}
           showCategories

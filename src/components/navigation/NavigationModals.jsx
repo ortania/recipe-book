@@ -153,7 +153,6 @@ export default function NavigationModals() {
                 <CloseButton
                   className={classes.catPopupClose}
                   onClick={() => setShowChatHistory(false)}
-                  size={25}
                 />
               </div>
               {chatHistory.length === 0 ? (

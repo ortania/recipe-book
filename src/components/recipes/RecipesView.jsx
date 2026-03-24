@@ -28,6 +28,7 @@ import {
   Users,
   UserCheck,
   Bookmark,
+  CircleCheck,
 } from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import RecipeBookIcon from "../icons/RecipeBookIcon/RecipeBookIcon";
@@ -45,7 +46,7 @@ import ChatWindow from "../chat/ChatWindow";
 
 import { Greeting } from "../greeting";
 import { search } from "./utils";
-import { AddRecipeDropdown } from "../controls";
+import { AddRecipeDropdown, Toast } from "../controls";
 import { Fab } from "../controls/fab";
 import fabClasses from "../controls/fab/fab.module.css";
 import { BottomSheet } from "../controls/bottom-sheet";
@@ -68,11 +69,11 @@ import RecipesSheets from "./recipes-view/RecipesSheets";
 const MOBILE_BREAKPOINT = 768;
 
 function RecipesView({
-  persons,
-  onAddPerson,
+  recipes: recipesProp,
+  onAddRecipe,
   groups = [],
-  onEditPerson,
-  onDeletePerson,
+  onEditRecipe,
+  onDeleteRecipe,
   selectedGroup,
   onSelectGroup,
   showGreeting = false,
@@ -131,8 +132,10 @@ function RecipesView({
     }
     return defaultSortDirection;
   });
-  const [editingPerson, setEditingPerson] = useState(null);
-  const [localPersons, setLocalPersons] = useState(persons);
+  const [editingRecipe, setEditingRecipe] = useState(null);
+  const [saveToastOpen, setSaveToastOpen] = useState(false);
+  const handleSaveToastClose = useCallback(() => setSaveToastOpen(false), []);
+  const [localRecipes, setLocalRecipes] = useState(recipesProp);
   const [isSimpleView, setIsSimpleView] = useState(() => {
     try {
       return localStorage.getItem("recipesSimpleView") === "true";
@@ -213,7 +216,7 @@ function RecipesView({
     ? localClearCategorySelection
     : ctxClearCategorySelection;
   const categories = readOnlyCategories ? groups : ctxCategories;
-  const recipes = readOnlyCategories ? persons : ctxRecipes;
+  const recipes = readOnlyCategories ? recipesProp : ctxRecipes;
 
   const hasMoreRecipes = hasMoreRecipesProp ?? hasMoreRecipesCtx;
   const loadMoreRecipes = onLoadMore || loadMoreRecipesCtx;
@@ -270,14 +273,14 @@ function RecipesView({
     }
   }, [sortField, sortDirection, sortStorageKey]);
 
-  // Filtered persons based on favorites/saved toggle
-  const displayPersons = useMemo(() => {
-    let result = localPersons;
+  // Filtered recipes based on favorites/saved toggle
+  const displayRecipes = useMemo(() => {
+    let result = localRecipes;
     if (showFavoritesOnly) result = result.filter((p) => p.isFavorite);
     if (showSavedOnly)
       result = result.filter((p) => savedRecipes.includes(p.id));
     return result;
-  }, [localPersons, showFavoritesOnly, showSavedOnly, savedRecipes]);
+  }, [localRecipes, showFavoritesOnly, showSavedOnly, savedRecipes]);
 
   const rvKey = recentlyViewedKey || "recentlyViewedRecipes";
 
@@ -288,7 +291,7 @@ function RecipesView({
     } catch {
       return [];
     }
-  }, [localPersons, rvKey]);
+  }, [localRecipes, rvKey]);
 
   const trackRecentlyViewed = useCallback(
     (recipeId) => {
@@ -329,10 +332,10 @@ function RecipesView({
     return () => document.body.classList.remove("chat-open");
   }, [showChat]);
 
-  // Update local persons when the prop changes
+  // Update local recipes when the prop changes
   useEffect(() => {
-    setLocalPersons(persons);
-  }, [persons]);
+    setLocalRecipes(recipes);
+  }, [recipes]);
 
   const calcDropdownPos = (ref) => {
     if (!ref.current) return {};
@@ -403,22 +406,22 @@ function RecipesView({
   }, []);
 
   // search, filter and sort
-  const filteredAndSortedPersons = useMemo(() => {
-    let filtered = displayPersons;
+  const filteredAndSortedRecipes = useMemo(() => {
+    let filtered = displayRecipes;
 
     // Filter by rating
     if (selectedRating !== "all") {
       const minRating = parseFloat(selectedRating);
-      filtered = filtered.filter((person) => {
-        const rating = parseFloat(person.rating) || 0;
+      filtered = filtered.filter((recipe) => {
+        const rating = parseFloat(recipe.rating) || 0;
         return rating >= minRating;
       });
     }
 
     // Filter by prep time
     if (selectedPrepTime !== "all") {
-      filtered = filtered.filter((person) => {
-        const prepTimeMatch = person.prepTime?.match(/\d+/);
+      filtered = filtered.filter((recipe) => {
+        const prepTimeMatch = recipe.prepTime?.match(/\d+/);
         const prepTime = prepTimeMatch ? parseInt(prepTimeMatch[0]) : 0;
         switch (selectedPrepTime) {
           case "quick":
@@ -435,19 +438,19 @@ function RecipesView({
 
     // Filter by difficulty
     if (selectedDifficulty !== "all") {
-      filtered = filtered.filter((person) => {
-        if (!person.difficulty) return false;
+      filtered = filtered.filter((recipe) => {
+        if (!recipe.difficulty) return false;
         return (
-          person.difficulty.toLowerCase() === selectedDifficulty.toLowerCase()
+          recipe.difficulty.toLowerCase() === selectedDifficulty.toLowerCase()
         );
       });
     }
 
     // Filter by ingredient count
     if (selectedIngredientCount !== "all") {
-      filtered = filtered.filter((person) => {
-        const count = Array.isArray(person.ingredients)
-          ? person.ingredients.filter(Boolean).length
+      filtered = filtered.filter((recipe) => {
+        const count = Array.isArray(recipe.ingredients)
+          ? recipe.ingredients.filter(Boolean).length
           : 0;
         switch (selectedIngredientCount) {
           case "few":
@@ -464,9 +467,9 @@ function RecipesView({
 
     // Filter by step count
     if (selectedStepCount !== "all") {
-      filtered = filtered.filter((person) => {
-        const count = Array.isArray(person.instructions)
-          ? person.instructions.filter(Boolean).length
+      filtered = filtered.filter((recipe) => {
+        const count = Array.isArray(recipe.instructions)
+          ? recipe.instructions.filter(Boolean).length
           : 0;
         switch (selectedStepCount) {
           case "few":
@@ -483,9 +486,9 @@ function RecipesView({
 
     // Filter by ingredients
     if (filterIngredients.length > 0) {
-      filtered = filtered.filter((person) => {
-        if (!Array.isArray(person.ingredients)) return false;
-        const recipeIngs = person.ingredients
+      filtered = filtered.filter((recipe) => {
+        if (!Array.isArray(recipe.ingredients)) return false;
+        const recipeIngs = recipe.ingredients
           .filter(Boolean)
           .map((i) => (typeof i === "string" ? i : i.name || "").toLowerCase());
         return filterIngredients.every((fi) =>
@@ -497,15 +500,15 @@ function RecipesView({
     // Filter by selected categories (for flat list views like sharer profile)
     if (!selectedCategories.includes("all") && selectedCategories.length > 0) {
       filtered = filtered.filter(
-        (person) =>
-          person.categories &&
-          person.categories.some((c) => selectedCategories.includes(c)),
+        (recipe) =>
+          recipe.categories &&
+          recipe.categories.some((c) => selectedCategories.includes(c)),
       );
     }
 
     return search(filtered, debouncedSearch, sortField, sortDirection);
   }, [
-    displayPersons,
+    displayRecipes,
     debouncedSearch,
     sortField,
     sortDirection,
@@ -520,13 +523,13 @@ function RecipesView({
   ]);
 
   const recentlyViewed = useMemo(() => {
-    const filteredIds = new Set(filteredAndSortedPersons.map((p) => p.id));
+    const filteredIds = new Set(filteredAndSortedRecipes.map((p) => p.id));
     return recentlyViewedStoredIds
       .filter((id) => filteredIds.has(id))
-      .map((id) => filteredAndSortedPersons.find((p) => p.id === id))
+      .map((id) => filteredAndSortedRecipes.find((p) => p.id === id))
       .filter(Boolean)
       .slice(0, 6);
-  }, [filteredAndSortedPersons, recentlyViewedStoredIds]);
+  }, [filteredAndSortedRecipes, recentlyViewedStoredIds]);
 
   const handleSort = (field) => {
     if (field === sortField) {
@@ -567,35 +570,35 @@ function RecipesView({
     setFilterIngredients((prev) => prev.filter((i) => i !== ing));
   };
 
-  const handleSaveEdit = async (updatedPerson) => {
-    setLocalPersons((prev) =>
-      prev.map((person) =>
-        person.id === updatedPerson.id ? updatedPerson : person,
+  const handleSaveEdit = async (updatedRecipe) => {
+    setLocalRecipes((prev) =>
+      prev.map((recipe) =>
+        recipe.id === updatedRecipe.id ? updatedRecipe : recipe,
       ),
     );
-    setEditingPerson(updatedPerson);
+    setEditingRecipe(updatedRecipe);
     try {
-      await onEditPerson(updatedPerson);
+      await onEditRecipe(updatedRecipe);
     } catch (error) {
       console.error("Save failed:", error);
     }
   };
 
   const handleToggleFavorite = useCallback(
-    (personId, isFavorite) => {
-      setLocalPersons((prev) => {
-        const personToUpdate = prev.find((p) => p.id === personId);
-        if (!personToUpdate) return prev;
-        const updatedPerson = { ...personToUpdate, isFavorite };
-        onEditPerson(updatedPerson);
-        return prev.map((p) => (p.id === personId ? updatedPerson : p));
+    (recipeId, isFavorite) => {
+      setLocalRecipes((prev) => {
+        const recipeToUpdate = prev.find((p) => p.id === recipeId);
+        if (!recipeToUpdate) return prev;
+        const updatedRecipe = { ...recipeToUpdate, isFavorite };
+        onEditRecipe(updatedRecipe);
+        return prev.map((p) => (p.id === recipeId ? updatedRecipe : p));
       });
     },
-    [onEditPerson],
+    [onEditRecipe],
   );
 
-  const handleEditClick = useCallback((person) => {
-    setEditingPerson(person);
+  const handleEditClick = useCallback((recipe) => {
+    setEditingRecipe(recipe);
   }, []);
 
   const toggleView = () => {
@@ -754,7 +757,7 @@ function RecipesView({
 
   const contextValue = {
     // props
-    persons, localPersons, onAddPerson, groups, onEditPerson, onDeletePerson,
+    localRecipes, onAddRecipe, groups, onEditRecipe, onDeleteRecipe,
     selectedGroup, onSelectGroup, showGreeting, showAddAndFavorites, showCategories,
     emptyTitle, onCopyRecipe, onSaveRecipe, savedRecipes, onRate, userRatings,
     loading, backAction, showTabs, headerAction, sharerOptions, selectedSharer,
@@ -762,7 +765,7 @@ function RecipesView({
     linkState, hideRating, readOnlyCategories, recipesTabLabel,
     // state
     searchTerm, setSearchTerm, sortField, setSortField, sortDirection, setSortDirection,
-    editingPerson, setEditingPerson, isSimpleView, showFilterMenu, setShowFilterMenu,
+    editingRecipe, setEditingRecipe, isSimpleView, showFilterMenu, setShowFilterMenu,
     selectedRating, setSelectedRating, selectedPrepTime, setSelectedPrepTime,
     selectedDifficulty, setSelectedDifficulty, selectedIngredientCount, setSelectedIngredientCount,
     selectedStepCount, setSelectedStepCount, filterIngredients, ingredientInput, setIngredientInput,
@@ -774,7 +777,7 @@ function RecipesView({
     // computed
     selectedCategories, toggleCategory, clearCategorySelection, categories, recipes,
     hasMoreRecipes, loadMoreRecipes,
-    filteredAndSortedPersons, recentlyViewed, hasActiveFilters,
+    filteredAndSortedRecipes, recentlyViewed, hasActiveFilters,
     isAllSelected, selectedCount, selectedCategoryObjects, hasSelectedCategories,
     currentUser, getGroupContacts, getTranslatedGroup,
     recipeSortOptions,
@@ -784,14 +787,19 @@ function RecipesView({
     navigate, closeSearch, handleViewChange, handleSort, clearAllFilters,
     addFilterIngredient, removeFilterIngredient, handleSaveEdit, handleToggleFavorite,
     handleEditClick, toggleView, handleRecipeSortChange, trackRecentlyViewed,
+    onSaved: () => setSaveToastOpen(true),
     // css
     classes, fabClasses, t,
   };
 
-  if (!persons || (persons.length === 0 && !hasSelectedCategories)) {
+  if (!recipes || (recipes.length === 0 && !hasSelectedCategories)) {
     return (
       <RecipesViewContext.Provider value={contextValue}>
         <RecipesEmptyState />
+        <Toast open={saveToastOpen} onClose={handleSaveToastClose} variant="success">
+          <CircleCheck size={18} aria-hidden />
+          <span>{t("recipes", "saved")}</span>
+        </Toast>
       </RecipesViewContext.Provider>
     );
   }
@@ -813,13 +821,13 @@ function RecipesView({
         {showSearch ? (
           <SearchOverlay
             open={showSearch}
-            persons={localPersons}
+            recipes={localRecipes}
             groups={groups}
-            onEditPerson={(person) => {
+            onEditRecipe={(recipe) => {
               closeSearch();
-              setEditingPerson(person);
+              setEditingRecipe(recipe);
             }}
-            onDeletePerson={onDeletePerson}
+            onDeleteRecipe={onDeleteRecipe}
             onCopyRecipe={onCopyRecipe}
             onRate={onRate}
             userRatings={userRatings}
@@ -845,6 +853,10 @@ function RecipesView({
 
         <RecipesSheets />
       </div>
+      <Toast open={saveToastOpen} onClose={handleSaveToastClose} variant="success">
+        <CircleCheck size={18} aria-hidden />
+        <span>{t("recipes", "saved")}</span>
+      </Toast>
     </RecipesViewContext.Provider>
   );
 }

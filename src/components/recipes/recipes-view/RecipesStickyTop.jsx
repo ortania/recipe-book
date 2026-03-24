@@ -10,14 +10,14 @@ import { Greeting } from "../../greeting";
 export default function RecipesStickyTop() {
   const {
     showSearch, showTabs, mobileTabsEl,
-    headerAction, backAction, onAddPerson,
+    headerAction, backAction, onAddRecipe,
     activeView, handleViewChange, recipesTabLabel,
     classes, searchPlaceholder, t,
     setShowSearch, sortField, sortDirection, handleRecipeSortChange, recipeSortOptions,
     sharerOptions, onSelectSharer, setShowSharerSheet,
     toggleView, isSimpleView,
     showGreeting, showChat,
-    persons, hasSelectedCategories, isMobile,
+    recipes, hasSelectedCategories, isMobile,
     showAddAndFavorites, showFavoritesOnly, setShowFavoritesOnly,
     onSaveRecipe, showSavedOnly, setShowSavedOnly,
   } = useRecipesView();
@@ -40,7 +40,7 @@ export default function RecipesStickyTop() {
           <span className={classes.desktopOnly}>{headerAction}</span>
         ) : showTabs ? (
           <span className={classes.desktopOnly}>
-            <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
+            <AddRecipeDropdown onSelect={(method) => onAddRecipe(method)} />
           </span>
         ) : backAction ? (
           <span className={classes.desktopOnly}>
@@ -119,7 +119,7 @@ export default function RecipesStickyTop() {
 
       {showTabs &&
         !showChat &&
-        (persons.length > 0 || hasSelectedCategories) && (
+        (recipes.length > 0 || hasSelectedCategories) && (
           <div
             className={classes.searchHeader}
             style={{ display: showSearch ? "none" : undefined }}

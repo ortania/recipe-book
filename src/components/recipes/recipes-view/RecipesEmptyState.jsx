@@ -14,7 +14,7 @@ export default function RecipesEmptyState() {
     backAction, mobileActionsEl, showChat, showGreeting,
     headerAction, selectedCategoryObjects, getTranslatedGroup,
     loading, isSimpleView, emptyTitle, showAddAndFavorites,
-    isMobile, showEmptyAddSheet, setShowEmptyAddSheet, onAddPerson,
+    isMobile, showEmptyAddSheet, setShowEmptyAddSheet, onAddRecipe,
     classes, t,
   } = useRecipesView();
 
@@ -136,12 +136,12 @@ export default function RecipesEmptyState() {
                     title={t("recipesView", "addNewRecipe")}
                   >
                     <div onClick={() => setShowEmptyAddSheet(false)}>
-                      <AddRecipeMenu onSelect={onAddPerson} t={t} />
+                      <AddRecipeMenu onSelect={onAddRecipe} t={t} />
                     </div>
                   </BottomSheet>
                 </>
               ) : (
-                <AddRecipeDropdown onSelect={(method) => onAddPerson(method)}>
+                <AddRecipeDropdown onSelect={(method) => onAddRecipe(method)}>
                   <span className={classes.emptyButton}>
                     {t("recipesView", "addNewRecipe")}
                   </span>

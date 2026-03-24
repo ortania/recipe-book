@@ -11,7 +11,6 @@ export default function MethodSelectionScreen() {
       <CloseButton
         className={classes.methodCloseBtn}
         onClick={handleClose}
-        size={25}
       />
 
       <h1 className={classes.methodTitle}>{t("addWizard", "title")}</h1>

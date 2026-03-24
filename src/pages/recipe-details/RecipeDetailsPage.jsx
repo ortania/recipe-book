@@ -1,9 +1,11 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import RecipeDetailsFull from "../../components/recipes/RecipeDetailsFull";
 import RecipeDetailsCookingMode from "../../components/recipes/RecipeDetailsCookingMode";
 import { EditRecipe } from "../../components/forms/edit-recipe";
 import { BackButton } from "../../components/controls/back-button";
+import { Toast } from "../../components/controls";
+import { CircleCheck } from "lucide-react";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
 import { getRecipeById } from "../../firebase/recipeService";
@@ -123,6 +125,8 @@ function RecipeDetailsPage() {
 
   const [cookingMode, setCookingMode] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState(null);
+  const [saveToastOpen, setSaveToastOpen] = useState(false);
+  const handleSaveToastClose = useCallback(() => setSaveToastOpen(false), []);
   const [detailActiveTab, setDetailActiveTab] = useState("ingredients");
   const [servings, setServings] = useState(recipe?.servings || 4);
 
@@ -218,11 +222,11 @@ function RecipeDetailsPage() {
     await deleteRecipe(recipeId);
   };
 
-  const handleSaveEdit = async (updatedPerson) => {
+  const handleSaveEdit = async (updatedRecipe) => {
     // Set local override immediately so view updates right away
-    setLocalRecipe({ ...updatedPerson });
+    setLocalRecipe({ ...updatedRecipe });
     try {
-      await editRecipe(updatedPerson);
+      await editRecipe(updatedRecipe);
     } catch (err) {
       console.error("Failed to save recipe:", err);
     }
@@ -350,12 +354,18 @@ function RecipeDetailsPage() {
 
       {editingRecipe && (
         <EditRecipe
-          person={editingRecipe}
+          recipe={editingRecipe}
           onSave={handleSaveEdit}
           onCancel={() => setEditingRecipe(null)}
+          onSaved={() => setSaveToastOpen(true)}
           groups={categories}
         />
       )}
+
+      <Toast open={saveToastOpen} onClose={handleSaveToastClose} variant="success">
+        <CircleCheck size={18} aria-hidden />
+        <span>{t("recipes", "saved")}</span>
+      </Toast>
     </div>
   );
 }
