@@ -20,7 +20,6 @@ const AddButton = ({
     <button
       className={[
         btnClasses.btnBase,
-        btnClasses.closeBtn,
         typeClass,
         typeof children === "string" ? btnClasses.withText : "",
         className || "",

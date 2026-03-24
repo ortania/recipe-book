@@ -1,22 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Modal } from "../../modal";
 import {
-  X,
-  Star,
-  Camera,
-  GripVertical,
   Save,
   Trash2,
-  Globe,
-  UserCircle,
-  Heart,
   FileText,
   List,
   ListOrdered,
   Image,
   Tags,
-  Plus,
-  Check,
   Loader,
   CircleCheck,
   AlertTriangle,
@@ -35,12 +26,15 @@ import {
   calculateNutrition,
   generateRecipeImageDataUrl,
 } from "../../../services/openai";
-import {
-  isGroupHeader,
-  getGroupName,
-  makeGroupHeader,
-  ingredientsOnly,
-} from "../../../utils/ingredientUtils";
+import { ingredientsOnly } from "../../../utils/ingredientUtils";
+import { makeGroupHeader } from "../../../utils/ingredientUtils";
+import { EditRecipeContext } from "./EditRecipeContext";
+import BasicTab from "./tabs/BasicTab";
+import IngredientsTab from "./tabs/IngredientsTab";
+import InstructionsTab from "./tabs/InstructionsTab";
+import ImageTab from "./tabs/ImageTab";
+import CategoriesTab from "./tabs/CategoriesTab";
+import DeleteTab from "./tabs/DeleteTab";
 
 const TABS = [
   {
@@ -95,6 +89,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [savedMessage, setSavedMessage] = useState("");
   const [saving, setSaving] = useState(false);
+  const [editImageDragOver, setEditImageDragOver] = useState(false);
 
   const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
     setEditedPerson((prev) => {
@@ -135,6 +130,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       document.removeEventListener("touchend", onEnd);
     };
   }, [handleTouchMove, handleTouchEnd]);
+
   const [editedPerson, setEditedPerson] = useState({
     name: person.name,
     image_src: person.image_src || "",
@@ -310,8 +306,6 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       return { ...prev, images: updated, image_src: updated[0] || "" };
     });
   };
-
-  const [editImageDragOver, setEditImageDragOver] = useState(false);
 
   const handleEditImageDrop = (e) => {
     e.preventDefault();
@@ -517,7 +511,6 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       .map((i) => i.trim())
       .filter((i) => i);
     let nutrition = { ...editedPerson.nutrition };
-    let nutritionCalculated = false;
 
     const origIngredients = (person.ingredients || []).join("|");
     const newIngredients = filledAll.join("|");
@@ -542,7 +535,6 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
           for (const key of Object.keys(result)) {
             nutrition[key] = result[key];
           }
-          nutritionCalculated = true;
         } else {
           console.warn("Nutrition calculation returned error:", result?.error);
           const msg =
@@ -615,6 +607,7 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     createdCategoriesRef.current = [];
     onCancel();
   }, [onCancel, deleteCategory]);
+
   const handleAddNewCategory = async () => {
     const name = newCategoryName.trim();
     if (!name) return;
@@ -652,649 +645,77 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
     setShowNewCategoryInput(false);
   };
 
-  const renderBasicTab = () => (
-    <>
-      <h3 className={classes.sectionTitle}>{t("addWizard", "basicInfo")}</h3>
-
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "flex-end",
-          marginBottom: "1rem",
-        }}
-      >
-        <button
-          type="button"
-          className={`${classes.favoriteBtn} ${editedPerson.isFavorite ? classes.favoriteBtnActive : ""}`}
-          onClick={toggleFavorite}
-        >
-          {editedPerson.isFavorite ? (
-            <Heart size={22} fill="red" stroke="red" />
-          ) : (
-            <Heart size={22} />
-          )}
-          {/* // <Star
-          //   size={22}
-          //   fill={editedPerson.isFavorite ? "#e53935" : "none"}
-          // />{" "} */}
-          <span>
-            {t(
-              "recipes",
-              editedPerson.isFavorite
-                ? "removeFromFavorites"
-                : "addToFavorites",
-            )}
-          </span>
-        </button>
-      </div>
-
-      <div className={shared.formGroup}>
-        <label className={shared.formLabel}>
-          {t("recipes", "recipeName")}
-          <span>*</span>
-        </label>
-        <input
-          type="text"
-          className={shared.formInput}
-          value={editedPerson.name}
-          onChange={(e) =>
-            setEditedPerson((prev) => ({ ...prev, name: e.target.value }))
-          }
-        />
-      </div>
-
-      <div className={classes.formRowThree}>
-        <div className={shared.formGroup}>
-          <label className={shared.formLabel}>
-            {t("recipes", "rating")}
-          </label>
-          <div className={classes.starRating}>
-            {[1, 2, 3, 4, 5].map((star) => (
-              <button
-                key={star}
-                type="button"
-                className={`${classes.starBtn} ${star <= (editedPerson.rating || 0) ? classes.starBtnActive : ""}`}
-                onClick={() =>
-                  setEditedPerson((prev) => ({
-                    ...prev,
-                    rating: star === prev.rating ? 0 : star,
-                  }))
-                }
-              >
-                <Star
-                  size={20}
-                  fill={star <= (editedPerson.rating || 0) ? "#ffc107" : "none"}
-                />
-              </button>
-            ))}
-          </div>
-        </div>
-        <div className={shared.formGroup}>
-          <label className={shared.formLabel}>
-            {t("recipes", "servings")}
-          </label>
-          <input
-            type="number"
-            className={shared.formInput}
-            value={editedPerson.servings}
-            onChange={handleServingsChange}
-            min="1"
-          />
-        </div>
-        <div className={shared.formGroup}>
-          <label className={shared.formLabel}>
-            {t("recipes", "difficulty")}
-          </label>
-          <select
-            className={shared.formSelect}
-            value={editedPerson.difficulty}
-            onChange={(e) =>
-              setEditedPerson((prev) => ({
-                ...prev,
-                difficulty: e.target.value,
-              }))
-            }
-          >
-            <option value="Unknown">{t("difficulty", "Unknown")}</option>
-            <option value="VeryEasy">{t("difficulty", "VeryEasy")}</option>
-            <option value="Easy">{t("difficulty", "Easy")}</option>
-            <option value="Medium">{t("difficulty", "Medium")}</option>
-            <option value="Hard">{t("difficulty", "Hard")}</option>
-          </select>
-        </div>
-      </div>
-
-      <div className={shared.formRow}>
-        <div className={shared.formGroup}>
-          <label className={shared.formLabel}>
-            {t("recipes", "cookTime")} ({t("addWizard", "min")})
-          </label>
-          <input
-            type="number"
-            inputMode="numeric"
-            min="0"
-            className={shared.formInput}
-            value={editedPerson.cookTime}
-            onChange={(e) =>
-              setEditedPerson((prev) => ({
-                ...prev,
-                cookTime: e.target.value.replace(/[^0-9]/g, ""),
-              }))
-            }
-          />
-        </div>
-        <div className={shared.formGroup}>
-          <label className={shared.formLabel}>
-            {t("recipes", "prepTime")} ({t("addWizard", "min")})
-          </label>
-          <input
-            type="number"
-            inputMode="numeric"
-            min="0"
-            className={shared.formInput}
-            value={editedPerson.prepTime}
-            onChange={(e) =>
-              setEditedPerson((prev) => ({
-                ...prev,
-                prepTime: e.target.value.replace(/[^0-9]/g, ""),
-              }))
-            }
-          />
-        </div>
-      </div>
-
-      <div className={shared.formGroup}>
-        <label className={shared.formLabel}>
-          {t("recipes", "notes")}
-        </label>
-        <textarea
-          className={shared.formTextarea}
-          value={editedPerson.notes}
-          onChange={(e) =>
-            setEditedPerson((prev) => ({ ...prev, notes: e.target.value }))
-          }
-        />
-      </div>
-
-      <div className={shared.formGroup}>
-        <label className={shared.formLabel}>
-          {t("recipes", "sourceUrl")}
-        </label>
-        <input
-          type="url"
-          className={shared.formInput}
-          placeholder="https://..."
-          value={editedPerson.sourceUrl}
-          onChange={(e) =>
-            setEditedPerson((prev) => ({
-              ...prev,
-              sourceUrl: e.target.value,
-            }))
-          }
-        />
-      </div>
-
-      {!person.copiedFrom && (
-        <div className={shared.formGroup}>
-          <label className={classes.checkboxLabel}>
-            <input
-              type="checkbox"
-              name="shareToGlobal"
-              className={buttonClasses.checkBox}
-              checked={editedPerson.shareToGlobal}
-              onChange={(e) => {
-                handleChange(e);
-                if (!e.target.checked) {
-                  setEditedPerson((prev) => ({ ...prev, showMyName: false }));
-                }
-              }}
-            />
-            <Globe size={16} />
-            <span>{t("recipes", "shareToGlobal")}</span>
-          </label>
-        </div>
-      )}
-    </>
-  );
-
-  const renderIngredientsTab = () => {
-    let ingredientCounter = 0;
-    return (
-      <>
-        <h3 className={classes.sectionTitle}>{t("recipes", "ingredients")}</h3>
-        <div className={shared.dynamicList} ref={ingredientsListRef}>
-          {editedPerson.ingredients.map((ing, i) => {
-            const isGroup = isGroupHeader(ing);
-            if (!isGroup) ingredientCounter++;
-            return (
-              <div
-                key={i}
-                data-drag-item
-                className={`${isGroup ? shared.groupItem : classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "ingredients" && dragIndex !== i ? (dragIndex > i ? `${shared.dragOverAbove} ${classes.dragOverAbove}` : `${shared.dragOverBelow} ${classes.dragOverBelow}`) : ""}`}
-                draggable
-                onDragStart={(e) => handleDragStart(e, i, "ingredients")}
-                onDragOver={(e) => handleDragOver(e, i)}
-                onDrop={() => handleDrop(i, "ingredients")}
-                onDragEnd={handleDragEnd}
-              >
-                <span
-                  className={`${shared.dragHandle} ${classes.dragHandle}`}
-                  onTouchStart={(e) =>
-                    handleTouchStart(e, i, "ingredients", ingredientsListRef)
-                  }
-                >
-                  <GripVertical size={16} />
-                </span>
-                {isGroup ? (
-                  <div
-                    className={`${shared.groupInputBox} ${classes.groupInputBox}`}
-                  >
-                    <input
-                      className={`${shared.groupInput} ${classes.groupInput}`}
-                      placeholder={t("addWizard", "groupPlaceholder")}
-                      value={getGroupName(ing)}
-                      onChange={(e) =>
-                        handleIngredientChange(
-                          i,
-                          makeGroupHeader(e.target.value),
-                        )
-                      }
-                    />
-                    <button
-                      type="button"
-                      className={`${shared.removeItemBtn} ${classes.removeItemBtn}`}
-                      onClick={() => removeIngredient(i)}
-                    >
-                      <X />
-                    </button>
-                  </div>
-                ) : (
-                  <div className={shared.inputBox}>
-                    <textarea
-                      className={`${shared.dynamicItemInput} ${classes.dynamicItemInput}`}
-                      placeholder={`${t("addWizard", "ingredient")} ${ingredientCounter}`}
-                      value={ing}
-                      rows={1}
-                      onChange={(e) =>
-                        handleIngredientChange(i, e.target.value)
-                      }
-                      onInput={(e) => {
-                        e.target.style.height = "auto";
-                        e.target.style.height = e.target.scrollHeight + "px";
-                      }}
-                      ref={(el) => {
-                        if (el) {
-                          el.style.height = "auto";
-                          el.style.height = el.scrollHeight + "px";
-                        }
-                      }}
-                    />
-                    {editedPerson.ingredients.length > 1 && (
-                      <button
-                        type="button"
-                        className={`${shared.removeItemBtn} ${classes.removeItemBtn}`}
-                        onClick={() => removeIngredient(i)}
-                      >
-                        <X size={16} />
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
-            );
-          })}
-          <div className={`${shared.addItemRow} ${classes.addItemRow}`}>
-            <button
-              type="button"
-              className={`${shared.addItemBtn} ${classes.addItemBtn}`}
-              onClick={addIngredient}
-            >
-              + {t("addWizard", "addIngredient")}
-            </button>
-            <button
-              type="button"
-              className={`${shared.addGroupBtn} ${classes.addGroupBtn}`}
-              onClick={addIngredientGroup}
-            >
-              + {t("addWizard", "addGroup")}
-            </button>
-          </div>
-        </div>
-      </>
-    );
+  // ========== Context value ==========
+  const contextValue = {
+    editedPerson,
+    setEditedPerson,
+    person,
+    activeTab,
+    setActiveTab,
+    isMobile,
+    uploadingImage,
+    generatingAiImage,
+    dragIndex,
+    dragField,
+    dragOverIndex,
+    savedMessage,
+    saving,
+    editImageDragOver,
+    setEditImageDragOver,
+    newCategoryName,
+    setNewCategoryName,
+    showNewCategoryInput,
+    setShowNewCategoryInput,
+    fileInputRef,
+    ingredientsListRef,
+    instructionsListRef,
+    groups,
+    getTranslatedGroup,
+    handleChange,
+    handleServingsChange,
+    handleImageUpload,
+    handleRemoveImage,
+    handleEditImageDrop,
+    handleGenerateAiImage,
+    handleIngredientChange,
+    addIngredient,
+    addIngredientGroup,
+    removeIngredient,
+    handleInstructionChange,
+    addInstruction,
+    removeInstruction,
+    toggleFavorite,
+    toggleCategory,
+    handleDragStart,
+    handleDragOver,
+    handleDrop,
+    handleDragEnd,
+    handleMoveItem,
+    handleTouchStart,
+    handleAddNewCategory,
+    classes,
+    shared,
+    catShared,
+    buttonClasses,
+    t,
   };
-
-  const renderInstructionsTab = () => (
-    <>
-      <h3 className={classes.sectionTitle}>{t("recipes", "instructions")}</h3>
-      <div className={shared.dynamicList} ref={instructionsListRef}>
-        {editedPerson.instructions.map((inst, i) => (
-          <div
-            key={i}
-            data-drag-item
-            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "instructions" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "instructions" && dragIndex !== i ? (dragIndex > i ? `${shared.dragOverAbove} ${classes.dragOverAbove}` : `${shared.dragOverBelow} ${classes.dragOverBelow}`) : ""}`}
-            draggable
-            onDragStart={(e) => handleDragStart(e, i, "instructions")}
-            onDragOver={(e) => handleDragOver(e, i)}
-            onDrop={() => handleDrop(i, "instructions")}
-            onDragEnd={handleDragEnd}
-          >
-            <span
-              className={`${shared.dragHandle} ${classes.dragHandle}`}
-              onTouchStart={(e) =>
-                handleTouchStart(e, i, "instructions", instructionsListRef)
-              }
-            >
-              <GripVertical size={16} />
-            </span>
-            <div className={`${shared.instructionBox} ${classes.instructionBox}`}>
-              {editedPerson.instructions.length > 1 && (
-                <button
-                  type="button"
-                  className={`${shared.instructionRemoveBtn} ${classes.instructionRemoveBtn}`}
-                  onClick={() => removeInstruction(i)}
-                >
-                  <X />
-                </button>
-              )}
-              <div className={`${shared.instructionContent} ${classes.instructionContent}`}>
-                <span className={`${shared.dynamicItemNumber} ${classes.dynamicItemNumber}`}>{i + 1}.</span>
-                <textarea
-                  className={`${shared.dynamicItemTextarea} ${classes.dynamicItemTextarea}`}
-                  placeholder={`${t("addWizard", "step")} ${i + 1}...`}
-                  value={inst}
-                  onChange={(e) => handleInstructionChange(i, e.target.value)}
-                  onInput={(e) => {
-                    e.target.style.height = "auto";
-                    e.target.style.height = e.target.scrollHeight + "px";
-                  }}
-                  ref={(el) => {
-                    if (el) {
-                      el.style.height = "auto";
-                      el.style.height = el.scrollHeight + "px";
-                    }
-                  }}
-                />
-              </div>
-            </div>
-          </div>
-        ))}
-        <button
-          type="button"
-          className={`${shared.addItemBtn} ${classes.addItemBtn}`}
-          onClick={addInstruction}
-        >
-          + {t("addWizard", "addStep")}
-        </button>
-      </div>
-
-      <div className={shared.formGroup}>
-        <label className={shared.formLabel}>
-          {t("recipes", "videoUrl")}
-        </label>
-        <input
-          type="url"
-          className={shared.formInput}
-          placeholder="https://youtube.com/..."
-          value={editedPerson.videoUrl}
-          onChange={(e) =>
-            setEditedPerson((prev) => ({
-              ...prev,
-              videoUrl: e.target.value,
-            }))
-          }
-        />
-      </div>
-    </>
-  );
-
-  const fileOverlayStyle = {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "100%",
-    height: "100%",
-    opacity: 0,
-    cursor: "pointer",
-    zIndex: 2,
-  };
-
-  const renderImageTab = () => (
-    <>
-      <h3 className={classes.sectionTitle}>{t("addWizard", "recipeImage")}</h3>
-      {editedPerson.images?.length > 0 ? (
-        <>
-          <div
-            className={`${shared.imageGrid}${editImageDragOver ? ` ${shared.dropActive}` : ""}`}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setEditImageDragOver(true);
-            }}
-            onDragLeave={() => setEditImageDragOver(false)}
-            onDrop={handleEditImageDrop}
-          >
-            {editedPerson.images.map((url, i) => (
-              <div
-                key={i}
-                className={shared.imageGridItem}
-              >
-                <img
-                  src={url}
-                  alt={`${i + 1}`}
-                  className={shared.imageGridPreview}
-                />
-                <button
-                  type="button"
-                  className={classes.imageRemoveBtn}
-                  onClick={() => handleRemoveImage(i)}
-                >
-                  <X size={14} />
-                </button>
-              </div>
-            ))}
-          </div>
-          <div
-            className={classes.addImageBtn}
-            style={{ position: "relative", overflow: "hidden" }}
-          >
-            <input
-              type="file"
-              accept="image/*,.jfif"
-              ref={fileInputRef}
-              onChange={handleImageUpload}
-              style={fileOverlayStyle}
-            />
-            <Plus size={16} /> {t("addWizard", "addMoreImages")}
-          </div>
-          <div className={classes.generateAiImageWrap}>
-            <button
-              type="button"
-              className={classes.generateAiImageBtn}
-              onClick={handleGenerateAiImage}
-              disabled={uploadingImage || generatingAiImage}
-            >
-              {generatingAiImage ? (
-                <Loader size={18} className={classes.spinIcon} />
-              ) : (
-                <Sparkles size={18} />
-              )}
-              {generatingAiImage
-                ? t("addWizard", "generatingAiImage")
-                : t("addWizard", "generateAiImage")}
-            </button>
-          </div>
-        </>
-      ) : (
-        <div className={classes.generateAiImageWrap}>
-          <div
-            className={`${classes.imageUploadArea} ${editImageDragOver ? shared.dropActive : ""}`}
-            style={{ position: "relative", overflow: "hidden" }}
-            onDragOver={(e) => {
-              e.preventDefault();
-              setEditImageDragOver(true);
-            }}
-            onDragLeave={() => setEditImageDragOver(false)}
-            onDrop={handleEditImageDrop}
-          >
-            <input
-              type="file"
-              accept="image/*,.jfif"
-              ref={fileInputRef}
-              onChange={handleImageUpload}
-              style={fileOverlayStyle}
-            />
-            <Camera className={classes.imageUploadIcon} />
-            <span className={classes.imageUploadText}>
-              {uploadingImage || generatingAiImage
-                ? uploadingImage
-                  ? t("recipes", "uploading")
-                  : t("addWizard", "generatingAiImage")
-                : t("addWizard", "uploadImage")}
-            </span>
-          </div>
-          <button
-            type="button"
-            className={classes.generateAiImageBtn}
-            onClick={handleGenerateAiImage}
-            disabled={uploadingImage || generatingAiImage}
-          >
-            {generatingAiImage ? (
-              <Loader size={18} className={classes.spinIcon} />
-            ) : (
-              <Sparkles size={18} />
-            )}
-            {generatingAiImage
-              ? t("addWizard", "generatingAiImage")
-              : t("addWizard", "generateAiImage")}
-          </button>
-        </div>
-      )}
-    </>
-  );
-
-  const renderCategoriesTab = () => (
-    <>
-      <h3 className={classes.sectionTitle}>{t("addWizard", "categories")}</h3>
-
-      <div className={classes.categorySection}>
-        <p className={classes.categorySubtitle}>
-          {t("addWizard", "selectedCategories")}
-        </p>
-        <div className={`${catShared.categoryChips} ${classes.categoryChips}`}>
-          {groups
-            .filter(
-              (g) => g.id !== "all" && editedPerson.categories.includes(g.id),
-            )
-            .map((group) => (
-              <button
-                key={group.id}
-                type="button"
-                className={`${catShared.categoryChip} ${classes.categoryChip} ${catShared.categoryChipActive} ${classes.categoryChipActive} `}
-                onClick={() => toggleCategory(group.id)}
-              >
-                ✕ {getTranslatedGroup(group)}
-              </button>
-            ))}
-        </div>
-      </div>
-
-      <div className={classes.categorySection}>
-        <p className={classes.categorySubtitle}>
-          {t("addWizard", "availableCategories")}
-        </p>
-        <div className={`${catShared.categoryChips} ${classes.categoryChips}`}>
-          {groups
-            .filter(
-              (g) => g.id !== "all" && !editedPerson.categories.includes(g.id),
-            )
-            .map((group) => (
-              <button
-                key={group.id}
-                type="button"
-                className={`${classes.categoryChip} ${catShared.categoryChip}`}
-                onClick={() => toggleCategory(group.id)}
-              >
-                + {getTranslatedGroup(group)}
-              </button>
-            ))}
-          {showNewCategoryInput ? (
-            <div className={`${catShared.newCategoryInline} ${classes.newCategoryInline}`}>
-              <input
-                type="text"
-                className={`${catShared.newCategoryInput} ${classes.newCategoryInput}`}
-                placeholder={t("categories", "categoryName")}
-                value={newCategoryName}
-                onChange={(e) => setNewCategoryName(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleAddNewCategory();
-                  }
-                  if (e.key === "Escape") {
-                    setShowNewCategoryInput(false);
-                    setNewCategoryName("");
-                  }
-                }}
-                autoFocus
-              />
-              <button
-                type="button"
-                className={`${catShared.newCategoryConfirmBtn} ${classes.newCategoryConfirmBtn}`}
-                onClick={handleAddNewCategory}
-                disabled={!newCategoryName.trim()}
-              >
-                <Check size={18} />
-              </button>
-              <button
-                type="button"
-                className={`${catShared.newCategoryCancelBtn} ${classes.newCategoryCancelBtn}`}
-                onClick={() => {
-                  setShowNewCategoryInput(false);
-                  setNewCategoryName("");
-                }}
-              >
-                <X size={14} />
-              </button>
-            </div>
-          ) : (
-            <button
-              type="button"
-              className={`${catShared.addCategoryChip} ${classes.addCategoryChip}`}
-              onClick={() => setShowNewCategoryInput(true)}
-            >
-              <Plus size={14} /> {t("categories", "addCategory")}
-            </button>
-          )}
-        </div>
-      </div>
-    </>
-  );
-
-  const renderDeleteTab = () => (
-    <div className={classes.deleteSection}>
-      <h3 className={classes.sectionTitle}>{t("confirm", "deleteRecipe")}</h3>
-      <p style={{ color: "#888", marginBottom: "1.5rem" }}>
-        {t("confirm", "deleteRecipeMsg")} {t("confirm", "cannotUndo")}
-      </p>
-    </div>
-  );
 
   const renderActiveTab = () => {
     switch (activeTab) {
       case "basic":
-        return renderBasicTab();
+        return <BasicTab />;
       case "ingredients":
-        return renderIngredientsTab();
+        return <IngredientsTab />;
       case "instructions":
-        return renderInstructionsTab();
+        return <InstructionsTab />;
       case "image":
-        return renderImageTab();
+        return <ImageTab />;
       case "categories":
-        return renderCategoriesTab();
+        return <CategoriesTab />;
       case "delete":
-        return renderDeleteTab();
+        return <DeleteTab />;
       default:
-        return renderBasicTab();
+        return <BasicTab />;
     }
   };
 
@@ -1303,83 +724,84 @@ function EditRecipe({ person, onSave, onCancel, groups = [] }) {
       onClose={handleCancel}
       className={`${shared.noPadModal} ${classes.noPadModal}`}
     >
-      <div className={classes.editContainer}>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            flex: 1,
-            minHeight: 0,
-          }}
-        >
-          <div className={classes.editHeader}>
-            <div className={classes.editHeaderInfo}>
-              <CloseButton
-                // type="button"
-                className={classes.editCloseBtn}
-                onClick={handleCancel}
-                size={25}
-              />
-              <div className={classes.editTitleGroup}>
-                <h2>{t("recipes", "editRecipe")}</h2>
-                <p>{editedPerson.name}</p>
+      <EditRecipeContext.Provider value={contextValue}>
+        <div className={classes.editContainer}>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              flex: 1,
+              minHeight: 0,
+            }}
+          >
+            <div className={classes.editHeader}>
+              <div className={classes.editHeaderInfo}>
+                <CloseButton
+                  className={classes.editCloseBtn}
+                  onClick={handleCancel}
+                  size={25}
+                />
+                <div className={classes.editTitleGroup}>
+                  <h2>{t("recipes", "editRecipe")}</h2>
+                  <p>{editedPerson.name}</p>
+                </div>
+              </div>
+              <div className={classes.editHeaderActions}>
+                {savedMessage && (
+                  <span className={classes.savedMessage}>{savedMessage}</span>
+                )}
+                <button
+                  type="button"
+                  className={classes.saveBtn}
+                  onClick={handleSubmit}
+                  disabled={saving}
+                >
+                  <Save size={16} />{" "}
+                  {saving ? t("common", "loading") : t("recipes", "saveChanges")}
+                </button>
               </div>
             </div>
-            <div className={classes.editHeaderActions}>
-              {savedMessage && (
-                <span className={classes.savedMessage}>{savedMessage}</span>
-              )}
-              <button
-                type="button"
-                className={classes.saveBtn}
-                onClick={handleSubmit}
-                disabled={saving}
-              >
-                <Save size={16} />{" "}
-                {saving ? t("common", "loading") : t("recipes", "saveChanges")}
-              </button>
-            </div>
-          </div>
 
-          <div className={classes.editBody}>
-            <div className={classes.sidebar}>
-              {TABS.map((tab) => {
-                const Icon = tab.icon;
-                return (
-                  <button
-                    key={tab.id}
-                    type="button"
-                    className={`${classes.sidebarTab} ${activeTab === tab.id ? classes.sidebarTabActive : ""}`}
-                    onClick={() => setActiveTab(tab.id)}
-                  >
-                    <span className={classes.sidebarTabIcon}>
-                      <Icon />
-                    </span>
-                    {t(
-                      "addWizard",
-                      isMobile ? tab.shortLabelKey : tab.labelKey,
-                    )}
-                  </button>
-                );
-              })}
-              <button
-                type="button"
-                className={`${classes.sidebarTab} ${classes.sidebarTabDelete} ${activeTab === "delete" ? classes.sidebarTabActive : ""}`}
-                onClick={() => setActiveTab("delete")}
-              >
-                <span className={classes.sidebarTabIcon}>
-                  <Trash2 />
-                </span>
-                {isMobile
-                  ? t("confirm", "deleteRecipeShort")
-                  : t("confirm", "deleteRecipe")}
-              </button>
-            </div>
+            <div className={classes.editBody}>
+              <div className={classes.sidebar}>
+                {TABS.map((tab) => {
+                  const Icon = tab.icon;
+                  return (
+                    <button
+                      key={tab.id}
+                      type="button"
+                      className={`${classes.sidebarTab} ${activeTab === tab.id ? classes.sidebarTabActive : ""}`}
+                      onClick={() => setActiveTab(tab.id)}
+                    >
+                      <span className={classes.sidebarTabIcon}>
+                        <Icon />
+                      </span>
+                      {t(
+                        "addWizard",
+                        isMobile ? tab.shortLabelKey : tab.labelKey,
+                      )}
+                    </button>
+                  );
+                })}
+                <button
+                  type="button"
+                  className={`${classes.sidebarTab} ${classes.sidebarTabDelete} ${activeTab === "delete" ? classes.sidebarTabActive : ""}`}
+                  onClick={() => setActiveTab("delete")}
+                >
+                  <span className={classes.sidebarTabIcon}>
+                    <Trash2 />
+                  </span>
+                  {isMobile
+                    ? t("confirm", "deleteRecipeShort")
+                    : t("confirm", "deleteRecipe")}
+                </button>
+              </div>
 
-            <div className={classes.contentArea}>{renderActiveTab()}</div>
+              <div className={classes.contentArea}>{renderActiveTab()}</div>
+            </div>
           </div>
         </div>
-      </div>
+      </EditRecipeContext.Provider>
     </Modal>
   );
 }

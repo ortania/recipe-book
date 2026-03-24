@@ -59,6 +59,12 @@ import { Modal } from "../modal";
 import { getCategoryIcon } from "../../utils/categoryIcons";
 import { CategoriesSheetContent } from "../categories-sheet-content";
 
+import { RecipesViewContext } from "./RecipesViewContext";
+import RecipesEmptyState from "./recipes-view/RecipesEmptyState";
+import RecipesStickyTop from "./recipes-view/RecipesStickyTop";
+import RecipesMainContent from "./recipes-view/RecipesMainContent";
+import RecipesSheets from "./recipes-view/RecipesSheets";
+
 const MOBILE_BREAKPOINT = 768;
 
 function RecipesView({
@@ -365,8 +371,6 @@ function RecipesView({
   };
 
   // Lock body scroll only on desktop when dropdown is open.
-  // On mobile we rely on the bottom-sheet styles and let the page scroll normally
-  // so that the filter window itself יהיה ניתן לגלילה.
   useEffect(() => {
     const isDesktop = window.innerWidth > 700;
 
@@ -414,7 +418,6 @@ function RecipesView({
     // Filter by prep time
     if (selectedPrepTime !== "all") {
       filtered = filtered.filter((person) => {
-        // Extract number from text like "15 min" or "15 דקות"
         const prepTimeMatch = person.prepTime?.match(/\d+/);
         const prepTime = prepTimeMatch ? parseInt(prepTimeMatch[0]) : 0;
         switch (selectedPrepTime) {
@@ -565,16 +568,12 @@ function RecipesView({
   };
 
   const handleSaveEdit = async (updatedPerson) => {
-    // Also update the local state to reflect changes immediately
     setLocalPersons((prev) =>
       prev.map((person) =>
         person.id === updatedPerson.id ? updatedPerson : person,
       ),
     );
-
-    // Update editingPerson with saved data so further edits start from saved state
     setEditingPerson(updatedPerson);
-
     try {
       await onEditPerson(updatedPerson);
     } catch (error) {
@@ -613,200 +612,6 @@ function RecipesView({
     groups,
     "name",
   );
-  /* ── Shared filter/sort content for dropdown (desktop) + BottomSheet (mobile) ── */
-  const filterContent = (
-    <div className={classes.dropdownScrollable}>
-      {hasActiveFilters && isMobile && (
-        <>
-          <div className={classes.filterSection}>
-            <button
-              className={classes.clearFiltersBtn}
-              onClick={clearAllFilters}
-            >
-              {t("recipesView", "clearFilters")}
-            </button>
-          </div>
-          <div className={classes.filterDivider} />
-        </>
-      )}
-      <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>
-          {t("recipesView", "sortByRating")}:
-        </label>
-        <div className={classes.filterSectionButtons}>
-          {["all", "3", "4", "5"].map((v) => (
-            <button
-              key={v}
-              className={selectedRating === v ? classes.active : ""}
-              onClick={() => setSelectedRating(v)}
-            >
-              {v === "all"
-                ? t("categories", "all")
-                : `★${v}${v !== "5" ? "+" : ""}`}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className={classes.filterDivider} />
-      <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>
-          {t("recipes", "prepTime")}:
-        </label>
-        <div className={classes.filterSectionButtons}>
-          <button
-            className={selectedPrepTime === "all" ? classes.active : ""}
-            onClick={() => setSelectedPrepTime("all")}
-          >
-            {t("categories", "all")}
-          </button>
-          <button
-            className={selectedPrepTime === "quick" ? classes.active : ""}
-            onClick={() => setSelectedPrepTime("quick")}
-          >
-            ≤15 {t("recipes", "minutes")}
-          </button>
-          <button
-            className={selectedPrepTime === "medium" ? classes.active : ""}
-            onClick={() => setSelectedPrepTime("medium")}
-          >
-            15-30 {t("recipes", "minutes")}
-          </button>
-          <button
-            className={selectedPrepTime === "long" ? classes.active : ""}
-            onClick={() => setSelectedPrepTime("long")}
-          >
-            30+ {t("recipes", "minutes")}
-          </button>
-        </div>
-      </div>
-      <div className={classes.filterDivider} />
-      <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>
-          {t("recipes", "difficulty")}:
-        </label>
-        <div className={classes.filterSectionButtons}>
-          {["all", "VeryEasy", "Easy", "Medium", "Hard"].map((v) => (
-            <button
-              key={v}
-              className={selectedDifficulty === v ? classes.active : ""}
-              onClick={() => setSelectedDifficulty(v)}
-            >
-              {v === "all" ? t("categories", "all") : t("difficulty", v)}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div className={classes.filterDivider} />
-      <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>
-          {t("recipesView", "ingredientCount")}:
-        </label>
-        <div className={classes.filterSectionButtons}>
-          <button
-            className={selectedIngredientCount === "all" ? classes.active : ""}
-            onClick={() => setSelectedIngredientCount("all")}
-          >
-            {t("categories", "all")}
-          </button>
-          <button
-            className={selectedIngredientCount === "few" ? classes.active : ""}
-            onClick={() => setSelectedIngredientCount("few")}
-          >
-            ≤5
-          </button>
-          <button
-            className={
-              selectedIngredientCount === "medium" ? classes.active : ""
-            }
-            onClick={() => setSelectedIngredientCount("medium")}
-          >
-            6-10
-          </button>
-          <button
-            className={selectedIngredientCount === "many" ? classes.active : ""}
-            onClick={() => setSelectedIngredientCount("many")}
-          >
-            10+
-          </button>
-        </div>
-      </div>
-      <div className={classes.filterDivider} />
-      <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>
-          {t("recipesView", "stepCount")}:
-        </label>
-        <div className={classes.filterSectionButtons}>
-          <button
-            className={selectedStepCount === "all" ? classes.active : ""}
-            onClick={() => setSelectedStepCount("all")}
-          >
-            {t("categories", "all")}
-          </button>
-          <button
-            className={selectedStepCount === "few" ? classes.active : ""}
-            onClick={() => setSelectedStepCount("few")}
-          >
-            ≤3
-          </button>
-          <button
-            className={selectedStepCount === "medium" ? classes.active : ""}
-            onClick={() => setSelectedStepCount("medium")}
-          >
-            4-7
-          </button>
-          <button
-            className={selectedStepCount === "many" ? classes.active : ""}
-            onClick={() => setSelectedStepCount("many")}
-          >
-            7+
-          </button>
-        </div>
-      </div>
-      <div className={classes.filterDivider} />
-      <div className={classes.filterSection}>
-        <label className={classes.filterLabel}>
-          {t("recipesView", "byIngredients")}:
-        </label>
-        <div className={classes.ingredientInputRow}>
-          <input
-            type="text"
-            className={classes.ingredientInput}
-            value={ingredientInput}
-            onChange={(e) => setIngredientInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                addFilterIngredient();
-              }
-            }}
-            placeholder={t("recipesView", "addIngredient")}
-          />
-          <button
-            className={classes.ingredientAddBtn}
-            onClick={addFilterIngredient}
-            type="button"
-          >
-            +
-          </button>
-        </div>
-        {filterIngredients.length > 0 && (
-          <div className={classes.ingredientChips}>
-            {filterIngredients.map((ing) => (
-              <span key={ing} className={classes.ingredientChip}>
-                {ing}
-                <button
-                  className={classes.ingredientChipRemove}
-                  onClick={() => removeFilterIngredient(ing)}
-                >
-                  ✕
-                </button>
-              </span>
-            ))}
-          </div>
-        )}
-      </div>
-    </div>
-  );
 
   const recipeSortOptions = onSaveRecipe
     ? [
@@ -839,14 +644,6 @@ function RecipesView({
     setSortDirection(direction);
   };
 
-  const viewToggleElement = (
-    <ViewToggle
-      activeView={activeView}
-      onViewChange={handleViewChange}
-      recipesLabel={recipesTabLabel}
-    />
-  );
-
   const isAllSelected = selectedCategories.includes("all");
   const selectedCount = isAllSelected ? 0 : selectedCategories.length;
 
@@ -862,15 +659,6 @@ function RecipesView({
 
   const mobileHeaderActions = showTabs ? (
     <>
-      {/* {showCategories && (
-        <button
-          className={classes.mobileHeaderBtn}
-          onClick={() => setShowCategoriesSheet(true)}
-          title={t("nav", "categories")}
-        >
-          <Tags size={20} />
-        </button>
-      )} */}
       {sharerOptions.length > 0 && onSelectSharer && (
         <button
           className={classes.mobileHeaderBtn}
@@ -902,6 +690,14 @@ function RecipesView({
       <CloseButton onClick={backAction} size={22} type="plain" />
     )
   ) : null;
+
+  const viewToggleElement = (
+    <ViewToggle
+      activeView={activeView}
+      onViewChange={handleViewChange}
+      recipesLabel={recipesTabLabel}
+    />
+  );
 
   const mobileTabsContent = showTabs ? (
     viewToggleElement
@@ -956,1051 +752,100 @@ function RecipesView({
 
   const hasSelectedCategories = !isAllSelected && selectedCategories.length > 0;
 
+  const contextValue = {
+    // props
+    persons, localPersons, onAddPerson, groups, onEditPerson, onDeletePerson,
+    selectedGroup, onSelectGroup, showGreeting, showAddAndFavorites, showCategories,
+    emptyTitle, onCopyRecipe, onSaveRecipe, savedRecipes, onRate, userRatings,
+    loading, backAction, showTabs, headerAction, sharerOptions, selectedSharer,
+    onSelectSharer, followingList, searchPlaceholder, hasContentAbove, backLabel,
+    linkState, hideRating, readOnlyCategories, recipesTabLabel,
+    // state
+    searchTerm, setSearchTerm, sortField, setSortField, sortDirection, setSortDirection,
+    editingPerson, setEditingPerson, isSimpleView, showFilterMenu, setShowFilterMenu,
+    selectedRating, setSelectedRating, selectedPrepTime, setSelectedPrepTime,
+    selectedDifficulty, setSelectedDifficulty, selectedIngredientCount, setSelectedIngredientCount,
+    selectedStepCount, setSelectedStepCount, filterIngredients, ingredientInput, setIngredientInput,
+    activeView, showChat, showFavoritesOnly, setShowFavoritesOnly,
+    showSavedOnly, setShowSavedOnly, showSearch, setShowSearch, isMobile,
+    mobileTabsEl, mobileActionsEl, showCategoriesSheet, setShowCategoriesSheet,
+    showEmptyAddSheet, setShowEmptyAddSheet, showSharerSheet, setShowSharerSheet,
+    showManagement, setShowManagement, filterRef, filterMenuStyle,
+    // computed
+    selectedCategories, toggleCategory, clearCategorySelection, categories, recipes,
+    hasMoreRecipes, loadMoreRecipes,
+    filteredAndSortedPersons, recentlyViewed, hasActiveFilters,
+    isAllSelected, selectedCount, selectedCategoryObjects, hasSelectedCategories,
+    currentUser, getGroupContacts, getTranslatedGroup,
+    recipeSortOptions,
+    // from useRecipeBook
+    addCategory, editCategory, deleteCategory, reorderCategories, sortCategoriesAlphabetically,
+    // handlers
+    navigate, closeSearch, handleViewChange, handleSort, clearAllFilters,
+    addFilterIngredient, removeFilterIngredient, handleSaveEdit, handleToggleFavorite,
+    handleEditClick, toggleView, handleRecipeSortChange, trackRecentlyViewed,
+    // css
+    classes, fabClasses, t,
+  };
+
   if (!persons || (persons.length === 0 && !hasSelectedCategories)) {
     return (
-      <div
-        className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""}`}
-      >
-        {backAction &&
-          mobileActionsEl &&
-          createPortal(
-            <CloseButton onClick={backAction} size={22} type="plain" />,
-            mobileActionsEl,
-          )}
-        <div className={classes.viewToggleWrapper}>
-          {headerAction ? (
-            <span className={classes.desktopOnly}>{headerAction}</span>
-          ) : backAction ? (
-            <span className={classes.desktopOnly}>
-              <CloseButton onClick={backAction} />
-            </span>
-          ) : null}
-        </div>
-
-        <div style={{ display: showChat ? "block" : "none" }}>
-          <ChatWindow showImageButton showGreeting={showGreeting} />
-        </div>
-
-        <div style={{ display: showChat ? "none" : "block" }}>
-          {showGreeting && (
-            <div className={classes.headerTitle}>
-              <Greeting />
-            </div>
-          )}
-
-          {selectedCategoryObjects.length > 0 && (
-            <div className={classes.selectedCategoriesList}>
-              {selectedCategoryObjects.map((cat) => (
-                <span key={cat.id} className={classes.selectedCategoryTag}>
-                  {getTranslatedGroup(cat)}
-                </span>
-              ))}
-            </div>
-          )}
-
-          {loading ? (
-            isSimpleView ? (
-              <div>
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1rem",
-                      padding: "0.75rem 1rem",
-                      marginBottom: "0.5rem",
-                      background: "var(--clr-bg-card)",
-                      borderRadius: 4,
-                      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                    }}
-                  >
-                    <Skeleton width={32} height={32} borderRadius={6} />
-                    <div style={{ flex: 1 }}>
-                      <Skeleton width="60%" height="0.9rem" borderRadius={6} />
-                    </div>
-                    <Skeleton width={50} height="0.7rem" borderRadius={6} />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={classes.recipeGrid}>
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i}>
-                    <Skeleton
-                      height={0}
-                      style={{ paddingBottom: "100%" }}
-                      borderRadius={25}
-                    />
-                    <div style={{ padding: "0.75rem" }}>
-                      <Skeleton
-                        width="75%"
-                        height="1.2rem"
-                        borderRadius={6}
-                        style={{ marginBottom: "0.3rem" }}
-                      />
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.5rem",
-                        }}
-                      >
-                        <Skeleton
-                          width="30%"
-                          height="0.9rem"
-                          borderRadius={6}
-                        />
-                        <Skeleton
-                          width="25%"
-                          height="0.9rem"
-                          borderRadius={6}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )
-          ) : (
-            <div className={classes.emptyState}>
-              <RecipeBookIcon width={72} height={72} />
-              <p className={classes.emptyText}>
-                {emptyTitle || t("recipesView", "emptyTitle")}
-              </p>
-              {showAddAndFavorites &&
-                (isMobile ? (
-                  <>
-                    <button
-                      className={classes.emptyButton}
-                      onClick={() => setShowEmptyAddSheet(true)}
-                    >
-                      {t("recipesView", "addNewRecipe")}
-                    </button>
-                    <BottomSheet
-                      open={showEmptyAddSheet}
-                      onClose={() => setShowEmptyAddSheet(false)}
-                      title={t("recipesView", "addNewRecipe")}
-                    >
-                      <div onClick={() => setShowEmptyAddSheet(false)}>
-                        <AddRecipeMenu onSelect={onAddPerson} t={t} />
-                      </div>
-                    </BottomSheet>
-                  </>
-                ) : (
-                  <AddRecipeDropdown onSelect={(method) => onAddPerson(method)}>
-                    <span className={classes.emptyButton}>
-                      {t("recipesView", "addNewRecipe")}
-                    </span>
-                  </AddRecipeDropdown>
-                ))}
-            </div>
-          )}
-        </div>
-      </div>
+      <RecipesViewContext.Provider value={contextValue}>
+        <RecipesEmptyState />
+      </RecipesViewContext.Provider>
     );
   }
 
   return (
-    <div
-      className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""} ${!showTabs && !hasContentAbove ? classes.noTabsContainer : ""}`}
-    >
-      {showTabs &&
-        mobileTabsEl &&
-        createPortal(mobileTabsContent, mobileTabsEl)}
-      {mobileActionsEl &&
-        mobileHeaderActions &&
-        createPortal(mobileHeaderActions, mobileActionsEl)}
-
+    <RecipesViewContext.Provider value={contextValue}>
       <div
-        className={`${classes.stickyTop} ${!showTabs ? classes.noTabsMode : ""}`}
-        style={showSearch ? { display: "none" } : undefined}
+        className={`${classes.recipesContainer} ${showChat ? classes.chatMode : ""} ${!showTabs && !hasContentAbove ? classes.noTabsContainer : ""}`}
       >
-        <div className={classes.viewToggleWrapper}>
-          {headerAction ? (
-            <span className={classes.desktopOnly}>{headerAction}</span>
-          ) : showTabs ? (
-            <span className={classes.desktopOnly}>
-              <AddRecipeDropdown onSelect={(method) => onAddPerson(method)} />
-            </span>
-          ) : backAction ? (
-            <span className={classes.desktopOnly}>
-              <CloseButton onClick={backAction} />
-            </span>
-          ) : null}
-          {showTabs && !mobileTabsEl && (
-            <div className={classes.viewToggle}>{viewToggleElement}</div>
-          )}
-          {!showTabs && !showSearch && (
-            <div className={classes.desktopSearchSort}>
-              <div className={classes.searchBoxWrapper}>
-                <SearchBox
-                  searchTerm=""
-                  onSearchChange={() => setShowSearch(true)}
-                  onFocus={() => setShowSearch(true)}
-                  placeholder={searchPlaceholder || t("common", "search")}
-                  examples={[
-                    t("recipesView", "searchExample1"),
-                    t("recipesView", "searchExample2"),
-                    t("recipesView", "searchExample3"),
-                    t("recipesView", "searchExample4"),
-                  ]}
-                  size="large"
-                />
-              </div>
-              <SortButton
-                sortField={sortField}
-                sortDirection={sortDirection}
-                onSortChange={handleRecipeSortChange}
-                options={recipeSortOptions}
-              />
-            </div>
-          )}
-          <div className={classes.desktopHeaderActions}>
-            {/* {showCategories && (
-              <button
-                className={classes.desktopHeaderBtn}
-                onClick={() => setShowCategoriesSheet(true)}
-                title={t("nav", "categories")}
-              >
-                <Tags size={28} />
-              </button>
-            )} */}
-            {sharerOptions.length > 0 && onSelectSharer && (
-              <button
-                className={classes.desktopHeaderBtn}
-                onClick={() => setShowSharerSheet(true)}
-                title={t("globalRecipes", "filterBySharer")}
-              >
-                <Users size={28} />
-              </button>
-            )}
-            <button
-              className={classes.desktopHeaderBtn}
-              onClick={toggleView}
-              title={
-                isSimpleView
-                  ? t("recipesView", "gridView")
-                  : t("recipesView", "listView")
-              }
-            >
-              {isSimpleView ? <LayoutGrid size={28} /> : <Rows4 size={28} />}
-            </button>
-          </div>
-        </div>
+        {showTabs &&
+          mobileTabsEl &&
+          createPortal(mobileTabsContent, mobileTabsEl)}
+        {mobileActionsEl &&
+          mobileHeaderActions &&
+          createPortal(mobileHeaderActions, mobileActionsEl)}
 
-        {showGreeting && !showSearch && (
-          <div
-            className={classes.headerTitle}
-            style={{ display: showChat ? "none" : undefined }}
-          >
-            <Greeting />
-          </div>
+        <RecipesStickyTop />
+
+        {showSearch ? (
+          <SearchOverlay
+            open={showSearch}
+            persons={localPersons}
+            groups={groups}
+            onEditPerson={(person) => {
+              closeSearch();
+              setEditingPerson(person);
+            }}
+            onDeletePerson={onDeletePerson}
+            onCopyRecipe={onCopyRecipe}
+            onRate={onRate}
+            userRatings={userRatings}
+            onToggleFavorite={handleToggleFavorite}
+            hideRating={hideRating}
+            isSimpleView={isSimpleView}
+            onToggleView={!showTabs ? toggleView : undefined}
+            onClose={closeSearch}
+            showCategories={showCategories}
+            selectedCategories={selectedCategories}
+            toggleCategory={toggleCategory}
+            clearCategorySelection={clearCategorySelection}
+            getTranslatedGroup={getTranslatedGroup}
+            selectedCategoryObjects={selectedCategoryObjects}
+            isAllSelected={isAllSelected}
+            onRecipeNavigate={recentlyViewedKey ? trackRecentlyViewed : undefined}
+          />
+        ) : showChat ? (
+          <ChatWindow showImageButton showGreeting={showGreeting} />
+        ) : (
+          <RecipesMainContent />
         )}
 
-        {showTabs &&
-          !showChat &&
-          (persons.length > 0 || hasSelectedCategories) && (
-            <div
-              className={classes.searchHeader}
-              style={{ display: showSearch ? "none" : undefined }}
-            >
-              {backAction && !isMobile && <BackButton onClick={backAction} />}
-              {showAddAndFavorites && (
-                <button
-                  onClick={() => setShowFavoritesOnly((prev) => !prev)}
-                  title={t("recipes", "favorite")}
-                  className={`${classes.favoritesBtn} ${showFavoritesOnly ? classes.favoritesActive : ""}`}
-                >
-                  {showFavoritesOnly ? (
-                    <Heart
-                      size={isMobile ? 24 : 30}
-                      strokeWidth={1.5}
-                      fill="var(--clr-favorite)"
-                      stroke="var(--clr-favorite)"
-                    />
-                  ) : (
-                    <Heart size={isMobile ? 24 : 30} strokeWidth={1.5} />
-                  )}
-                </button>
-              )}
-              {onSaveRecipe && (
-                <button
-                  onClick={() => setShowSavedOnly((prev) => !prev)}
-                  title={t("globalRecipes", "savedRecipes")}
-                  className={`${classes.favoritesBtn} ${showSavedOnly ? classes.favoritesActive : ""}`}
-                >
-                  {showSavedOnly ? (
-                    <Bookmark
-                      size={isMobile ? 24 : 30}
-                      strokeWidth={1.5}
-                      fill="var(--clr-primary-700)"
-                      stroke="var(--clr-primary-700)"
-                    />
-                  ) : (
-                    <Bookmark size={isMobile ? 24 : 30} strokeWidth={1.5} />
-                  )}
-                </button>
-              )}
-              <div className={classes.searchBoxWrapper}>
-                <SearchBox
-                  searchTerm=""
-                  onSearchChange={() => setShowSearch(true)}
-                  onFocus={() => setShowSearch(true)}
-                  placeholder={searchPlaceholder || t("common", "search")}
-                  examples={[
-                    t("recipesView", "searchExample1"),
-                    t("recipesView", "searchExample2"),
-                    t("recipesView", "searchExample3"),
-                    t("recipesView", "searchExample4"),
-                  ]}
-                  size="large"
-                />
-              </div>
-              <div className={classes.headerControls}>
-                <SortButton
-                  sortField={sortField}
-                  sortDirection={sortDirection}
-                  onSortChange={handleRecipeSortChange}
-                  options={recipeSortOptions}
-                />
-              </div>
-            </div>
-          )}
+        <RecipesSheets />
       </div>
-
-      {showSearch ? (
-        <SearchOverlay
-          open={showSearch}
-          persons={localPersons}
-          groups={groups}
-          onEditPerson={(person) => {
-            closeSearch();
-            setEditingPerson(person);
-          }}
-          onDeletePerson={onDeletePerson}
-          onCopyRecipe={onCopyRecipe}
-          onRate={onRate}
-          userRatings={userRatings}
-          onToggleFavorite={handleToggleFavorite}
-          hideRating={hideRating}
-          isSimpleView={isSimpleView}
-          onToggleView={!showTabs ? toggleView : undefined}
-          onClose={closeSearch}
-          showCategories={showCategories}
-          selectedCategories={selectedCategories}
-          toggleCategory={toggleCategory}
-          clearCategorySelection={clearCategorySelection}
-          getTranslatedGroup={getTranslatedGroup}
-          selectedCategoryObjects={selectedCategoryObjects}
-          isAllSelected={isAllSelected}
-          onRecipeNavigate={recentlyViewedKey ? trackRecentlyViewed : undefined}
-        />
-      ) : showChat ? (
-        <ChatWindow showImageButton showGreeting={showGreeting} />
-      ) : (
-        <div>
-          {recentlyViewed.length > 0 && (
-            <div className={classes.recentlyViewedSection}>
-              <div className={classes.sectionHeader}>
-                <h2 className={classes.sectionTitle}>
-                  <History size={16} style={{ marginInlineEnd: "0.4rem" }} />
-                  {t("recipesView", "recentlyViewed")}
-                </h2>
-              </div>
-              <div className={classes.recentlyViewedScroll}>
-                {recentlyViewed.map((person) => (
-                  <div
-                    key={person.id}
-                    className={classes.recentlyViewedCard}
-                    onClick={() =>
-                      recentlyViewedKey
-                        ? trackRecentlyViewed(person.id)
-                        : navigate(
-                            `/recipe/${person.id}`,
-                            linkState ? { state: linkState } : undefined,
-                          )
-                    }
-                  >
-                    <div className={classes.recentlyViewedImageWrap}>
-                      <div className={classes.recentlyViewedNoImage} />
-                      {person.image_src &&
-                        typeof person.image_src === "string" &&
-                        person.image_src.trim() !== "" && (
-                          <img
-                            src={person.image_src}
-                            alt={person.name}
-                            className={classes.recentlyViewedImage}
-                            loading="lazy"
-                            onError={(e) => {
-                              e.target.style.display = "none";
-                            }}
-                          />
-                        )}
-                    </div>
-                    <span className={classes.recentlyViewedName}>
-                      {person.name}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {showCategories &&
-            !isAllSelected &&
-            selectedCategoryObjects.length > 0 && (
-              <div className={classes.filterChips}>
-                {selectedCategoryObjects.map((cat) => (
-                  <button
-                    key={cat.id}
-                    className={classes.filterChip}
-                    onClick={() => toggleCategory(cat.id)}
-                  >
-                    {getTranslatedGroup(cat)} ✕
-                  </button>
-                ))}
-                <button
-                  className={classes.clearChips}
-                  onClick={clearCategorySelection}
-                >
-                  {t("categories", "clearAllFilters")}
-                </button>
-              </div>
-            )}
-
-          {editingPerson && (
-            <EditRecipe
-              person={editingPerson}
-              onSave={handleSaveEdit}
-              onCancel={() => setEditingPerson(null)}
-              groups={groups}
-            />
-          )}
-
-          {loading ? (
-            isSimpleView ? (
-              <div>
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "1rem",
-                      padding: "0.75rem 1rem",
-                      marginBottom: "0.5rem",
-                      background: "var(--clr-bg-card)",
-                      borderRadius: 4,
-                      boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-                    }}
-                  >
-                    <Skeleton width={32} height={32} borderRadius={6} />
-                    <div style={{ flex: 1 }}>
-                      <Skeleton width="60%" height="0.9rem" borderRadius={6} />
-                    </div>
-                    <Skeleton width={50} height="0.7rem" borderRadius={6} />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className={classes.recipeGrid}>
-                {Array.from({ length: 6 }).map((_, i) => (
-                  <div key={i}>
-                    <Skeleton
-                      height={0}
-                      style={{ paddingBottom: "100%" }}
-                      borderRadius={25}
-                    />
-                    <div style={{ padding: "0.75rem" }}>
-                      <Skeleton
-                        width="75%"
-                        height="1.2rem"
-                        borderRadius={6}
-                        style={{ marginBottom: "0.3rem" }}
-                      />
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "0.5rem",
-                        }}
-                      >
-                        <Skeleton
-                          width="30%"
-                          height="0.9rem"
-                          borderRadius={6}
-                        />
-                        <Skeleton
-                          width="25%"
-                          height="0.9rem"
-                          borderRadius={6}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )
-          ) : filteredAndSortedPersons.length === 0 ? (
-            <div className={classes.noResults}>
-              {showSavedOnly
-                ? t("globalRecipes", "noSavedRecipes")
-                : showFavoritesOnly
-                  ? t("favorites", "noFavorites")
-                  : t("recipesView", "noResults")}
-            </div>
-          ) : showCategories && selectedGroup === "all" ? (
-            <div>
-              {groups
-                .filter((group) => group.id !== "all" && group.id !== "general")
-                .map((group) => {
-                  const groupRecipes = filteredAndSortedPersons.filter(
-                    (person) =>
-                      person.categories && person.categories.includes(group.id),
-                  );
-                  if (groupRecipes.length === 0) return null;
-                  const displayRecipes = groupRecipes.slice(0, 8);
-                  return (
-                    <div key={group.id} className={classes.categorySection}>
-                      <div className={classes.sectionHeader}>
-                        <h2 className={classes.sectionTitle}>
-                          {getTranslatedGroup(group)}
-                        </h2>
-                        {groupRecipes.length > 8 && (
-                          <button
-                            className={classes.seeMore}
-                            onClick={() =>
-                              onSelectGroup && onSelectGroup(group.id)
-                            }
-                          >
-                            {t("categories", "seeMore")}
-                          </button>
-                        )}
-                      </div>
-                      {isSimpleView ? (
-                        <div className={classes.compactList}>
-                          {displayRecipes.map((person) => (
-                            <div
-                              key={person.id}
-                              className={classes.compactItem}
-                              onClick={() =>
-                                navigate(
-                                  `/recipe/${person.id}`,
-                                  linkState ? { state: linkState } : undefined,
-                                )
-                              }
-                            >
-                              <span className={classes.compactThumbWrap}>
-                                <UtensilsCrossed size={16} />
-                                {(person.image || person.image_src) && (
-                                  <img
-                                    src={person.image || person.image_src}
-                                    alt=""
-                                    className={classes.compactThumb}
-                                    onError={(e) => {
-                                      e.target.style.display = "none";
-                                    }}
-                                  />
-                                )}
-                              </span>
-                              <span className={classes.compactName}>
-                                {person.name}
-                              </span>
-                              {showAddAndFavorites && (
-                                <div className={classes.compactActions}>
-                                  <button
-                                    className={classes.compactActionBtn}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleEditClick(person);
-                                    }}
-                                    title="Edit"
-                                  >
-                                    <FilePenLine size={16} />
-                                  </button>
-                                  <button
-                                    className={`${classes.compactActionBtn} ${classes.compactDanger}`}
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      onDeletePerson(person.id);
-                                    }}
-                                    title="Delete"
-                                  >
-                                    <Trash2 size={16} />
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-                          ))}
-                        </div>
-                      ) : (
-                        <div className={classes.recipeGrid}>
-                          {displayRecipes.map((person) => (
-                            <RecipeInfo
-                              key={person.id}
-                              person={person}
-                              groups={groups}
-                              onEdit={handleEditClick}
-                              onDelete={onDeletePerson}
-                              onToggleFavorite={handleToggleFavorite}
-                              hideRating={hideRating}
-                            />
-                          ))}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              {(() => {
-                const uncategorizedRecipes = filteredAndSortedPersons.filter(
-                  (person) =>
-                    !person.categories || person.categories.length === 0,
-                );
-                if (uncategorizedRecipes.length === 0) return null;
-                const displayRecipes = uncategorizedRecipes.slice(0, 8);
-                return (
-                  <div key="general" className={classes.categorySection}>
-                    <div className={classes.sectionHeader}>
-                      <h2 className={classes.sectionTitle}>
-                        {t("categories", "general")}
-                      </h2>
-                      {uncategorizedRecipes.length > 8 && (
-                        <span className={classes.recipeCount}>
-                          {uncategorizedRecipes.length} recipes
-                        </span>
-                      )}
-                    </div>
-                    {isSimpleView ? (
-                      <div className={classes.compactList}>
-                        {displayRecipes.map((person) => (
-                          <div
-                            key={person.id}
-                            className={classes.compactItem}
-                            onClick={() =>
-                              navigate(
-                                `/recipe/${person.id}`,
-                                linkState ? { state: linkState } : undefined,
-                              )
-                            }
-                          >
-                            <span className={classes.compactThumbWrap}>
-                              <UtensilsCrossed size={16} />
-                              {(person.image || person.image_src) && (
-                                <img
-                                  src={person.image || person.image_src}
-                                  alt=""
-                                  className={classes.compactThumb}
-                                  onError={(e) => {
-                                    e.target.style.display = "none";
-                                  }}
-                                />
-                              )}
-                            </span>
-                            <span className={classes.compactName}>
-                              {person.name}
-                            </span>
-                            {showAddAndFavorites && (
-                              <div className={classes.compactActions}>
-                                <button
-                                  className={classes.compactActionBtn}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleEditClick(person);
-                                  }}
-                                  title="Edit"
-                                >
-                                  <FilePenLine size={16} />
-                                </button>
-                                <button
-                                  className={`${classes.compactActionBtn} ${classes.compactDanger}`}
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    onDeletePerson(person.id);
-                                  }}
-                                  title="Delete"
-                                >
-                                  <Trash2 size={16} />
-                                </button>
-                              </div>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className={classes.recipeGrid}>
-                        {displayRecipes.map((person) => (
-                          <RecipeInfo
-                            key={person.id}
-                            person={person}
-                            groups={groups}
-                            onEdit={handleEditClick}
-                            onDelete={onDeletePerson}
-                            onToggleFavorite={handleToggleFavorite}
-                            hideRating={hideRating}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                );
-              })()}
-            </div>
-          ) : isSimpleView ? (
-            <div className={classes.compactList}>
-              {filteredAndSortedPersons.map((person) => (
-                <div
-                  key={person.id}
-                  className={classes.compactItem}
-                  onClick={() =>
-                    recentlyViewedKey
-                      ? trackRecentlyViewed(person.id)
-                      : navigate(
-                          `/recipe/${person.id}`,
-                          linkState ? { state: linkState } : undefined,
-                        )
-                  }
-                >
-                  <span className={classes.compactThumbWrap}>
-                    <UtensilsCrossed size={16} />
-                    {(person.image || person.image_src) && (
-                      <img
-                        src={person.image || person.image_src}
-                        alt=""
-                        className={classes.compactThumb}
-                        onError={(e) => {
-                          e.target.style.display = "none";
-                        }}
-                      />
-                    )}
-                  </span>
-                  <span className={classes.compactName}>{person.name}</span>
-                  {person.sharerName &&
-                    person.sharerUserId !== currentUser?.uid && (
-                      <span
-                        className={classes.compactSharer}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          navigate(`/sharer/${person.sharerUserId}`);
-                        }}
-                      >
-                        {followingList.includes(person.sharerUserId) && (
-                          <UserCheck
-                            size={14}
-                            style={{
-                              marginInlineEnd: "0.2rem",
-                              verticalAlign: "middle",
-                            }}
-                          />
-                        )}
-                        {person.sharerName}
-                      </span>
-                    )}
-                  {showAddAndFavorites && (
-                    <div className={classes.compactActions}>
-                      <button
-                        className={classes.compactActionBtn}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleEditClick(person);
-                        }}
-                        title="Edit"
-                      >
-                        <FilePenLine size={16} />
-                      </button>
-                      <button
-                        className={`${classes.compactActionBtn} ${classes.compactDanger}`}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onDeletePerson(person.id);
-                        }}
-                        title="Delete"
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </div>
-                  )}
-                  {onCopyRecipe && (
-                    <div className={classes.compactActions}>
-                      <button
-                        className={classes.compactActionBtn}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          onCopyRecipe(person.id);
-                        }}
-                        title={t("globalRecipes", "copyToMyRecipes")}
-                      >
-                        <Copy size={16} />
-                      </button>
-                    </div>
-                  )}
-                  {onSaveRecipe && (
-                    <button
-                      className={classes.compactActionBtn}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onSaveRecipe(person.id);
-                      }}
-                      title={t("globalRecipes", "savedRecipes")}
-                    >
-                      <Bookmark
-                        size={16}
-                        fill={
-                          savedRecipes.includes(person.id)
-                            ? "var(--clr-primary-700)"
-                            : "none"
-                        }
-                        stroke={
-                          savedRecipes.includes(person.id)
-                            ? "var(--clr-primary-700)"
-                            : "currentColor"
-                        }
-                      />
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <div className={classes.recipeGrid}>
-              {filteredAndSortedPersons.map((person) => (
-                <RecipeInfo
-                  key={person.id}
-                  person={person}
-                  groups={groups}
-                  onEdit={onEditPerson ? handleEditClick : undefined}
-                  onDelete={onDeletePerson}
-                  onToggleFavorite={
-                    showAddAndFavorites ? handleToggleFavorite : undefined
-                  }
-                  onCopyRecipe={onCopyRecipe}
-                  onSaveRecipe={onSaveRecipe}
-                  isSaved={savedRecipes.includes(person.id)}
-                  onRate={onRate}
-                  userRating={userRatings[person.id] || 0}
-                  onCardClick={
-                    recentlyViewedKey ? trackRecentlyViewed : undefined
-                  }
-                  followingList={followingList}
-                  linkState={linkState}
-                  hideRating={hideRating}
-                />
-              ))}
-            </div>
-          )}
-
-          {hasMoreRecipes && (
-            <div className={classes.loadMoreContainer}>
-              <button
-                className={classes.loadMoreButton}
-                onClick={loadMoreRecipes}
-              >
-                {t("recipesView", "loadMore")}
-              </button>
-            </div>
-          )}
-        </div>
-      )}
-
-      {onAddPerson && !showChat && !showSearch && (
-        <Fab label={t("recipesView", "addNewRecipe")}>
-          <AddRecipeMenu onSelect={onAddPerson} t={t} />
-        </Fab>
-      )}
-
-      {isMobile
-        ? showCategoriesSheet && (
-            <Modal
-              onClose={() => setShowCategoriesSheet(false)}
-              maxWidth="480px"
-            >
-              <CategoriesSheetContent
-                onClose={() => setShowCategoriesSheet(false)}
-                onManage={() => {
-                  setShowCategoriesSheet(false);
-                  setShowManagement(true);
-                }}
-                hideManage={readOnlyCategories}
-                categoriesOverride={readOnlyCategories ? categories : undefined}
-                recipesOverride={readOnlyCategories ? recipes : undefined}
-                selectedCategoriesOverride={
-                  readOnlyCategories ? selectedCategories : undefined
-                }
-                toggleCategoryOverride={
-                  readOnlyCategories ? toggleCategory : undefined
-                }
-                clearCategorySelectionOverride={
-                  readOnlyCategories ? clearCategorySelection : undefined
-                }
-              />
-            </Modal>
-          )
-        : showCategoriesSheet && (
-            <>
-              <div
-                className={classes.categoriesPopupOverlay}
-                onClick={() => setShowCategoriesSheet(false)}
-              />
-              <div className={classes.categoriesPopup}>
-                <CategoriesSheetContent
-                  onClose={() => setShowCategoriesSheet(false)}
-                  onManage={() => {
-                    setShowCategoriesSheet(false);
-                    setShowManagement(true);
-                  }}
-                  hideManage={readOnlyCategories}
-                  categoriesOverride={
-                    readOnlyCategories ? categories : undefined
-                  }
-                  recipesOverride={readOnlyCategories ? recipes : undefined}
-                  selectedCategoriesOverride={
-                    readOnlyCategories ? selectedCategories : undefined
-                  }
-                  toggleCategoryOverride={
-                    readOnlyCategories ? toggleCategory : undefined
-                  }
-                  clearCategorySelectionOverride={
-                    readOnlyCategories ? clearCategorySelection : undefined
-                  }
-                />
-              </div>
-            </>
-          )}
-
-      {showManagement && !readOnlyCategories && (
-        <CategoriesManagement
-          categories={categories}
-          onClose={() => {
-            setShowManagement(false);
-            setShowCategoriesSheet(true);
-          }}
-          onAddCategory={addCategory}
-          onEditCategory={editCategory}
-          onDeleteCategory={deleteCategory}
-          onReorderCategories={reorderCategories}
-          onSortAlphabetically={sortCategoriesAlphabetically}
-          getGroupContacts={getGroupContacts}
-        />
-      )}
-
-      {sharerOptions.length > 0 &&
-        onSelectSharer &&
-        (() => {
-          const sorted = [...sharerOptions].sort((a, b) => {
-            const aF = followingList.includes(a.id) ? 0 : 1;
-            const bF = followingList.includes(b.id) ? 0 : 1;
-            return aF - bF;
-          });
-          const sharerListContent = (
-            <div className={classes.sharerList}>
-              <button
-                className={`${classes.sharerItem} ${selectedSharer === "all" ? classes.sharerItemActive : ""}`}
-                onClick={() => {
-                  onSelectSharer("all");
-                  setShowSharerSheet(false);
-                }}
-              >
-                {t("globalRecipes", "allSharers")}
-              </button>
-              {sorted.map((s) => (
-                <button
-                  key={s.id}
-                  className={`${classes.sharerItem} ${selectedSharer === s.id ? classes.sharerItemActive : ""}`}
-                  onClick={() => {
-                    onSelectSharer(s.id);
-                    setShowSharerSheet(false);
-                  }}
-                >
-                  {followingList.includes(s.id) && <UserCheck size={16} />}
-                  {s.name}
-                </button>
-              ))}
-            </div>
-          );
-          return isMobile ? (
-            <BottomSheet
-              open={showSharerSheet}
-              onClose={() => setShowSharerSheet(false)}
-              title={t("globalRecipes", "filterBySharer")}
-            >
-              {sharerListContent}
-            </BottomSheet>
-          ) : (
-            showSharerSheet && (
-              <>
-                <div
-                  className={classes.categoriesPopupOverlay}
-                  onClick={() => setShowSharerSheet(false)}
-                />
-                <div className={classes.categoriesPopup}>
-                  <div className={classes.categoriesPopupHeader}>
-                    <span className={classes.categoriesPopupTitle}>
-                      {t("globalRecipes", "filterBySharer")}
-                    </span>
-                    <CloseButton
-                      className={classes.categoriesPopupClose}
-                      onClick={() => setShowSharerSheet(false)}
-                      size={25}
-                    />
-                  </div>
-                  {sharerListContent}
-                </div>
-              </>
-            )
-          );
-        })()}
-    </div>
-  );
-}
-
-function AddRecipeMenu({ onSelect, t }) {
-  return (
-    <div className={fabClasses.menu}>
-      <button className={fabClasses.menuItem} onClick={() => onSelect("photo")}>
-        <span className={fabClasses.menuLabel}>
-          {t("addWizard", "fromPhoto")}
-        </span>
-        <span className={fabClasses.menuIcon}>
-          <ImagePlus size={20} />
-        </span>
-      </button>
-      <button className={fabClasses.menuItem} onClick={() => onSelect("url")}>
-        <span className={fabClasses.menuLabel}>
-          {t("addWizard", "fromUrl")}
-        </span>
-        <span className={fabClasses.menuIcon}>
-          <Link size={20} />
-        </span>
-      </button>
-      <button className={fabClasses.menuItem} onClick={() => onSelect("text")}>
-        <span className={fabClasses.menuLabel}>
-          {t("addWizard", "fromText")}
-        </span>
-        <span className={fabClasses.menuIcon}>
-          <ClipboardList size={20} />
-        </span>
-      </button>
-      <button
-        className={fabClasses.menuItem}
-        onClick={() => onSelect("recording")}
-      >
-        <span className={fabClasses.menuLabel}>
-          {t("addWizard", "fromRecording")}
-        </span>
-        <span className={fabClasses.menuIcon}>
-          <Mic size={20} />
-        </span>
-      </button>
-      <button
-        className={fabClasses.menuItem}
-        onClick={() => onSelect("manual")}
-      >
-        <span className={fabClasses.menuLabel}>{t("addWizard", "manual")}</span>
-        <span className={fabClasses.menuIcon}>
-          <FilePenLine size={20} />
-        </span>
-      </button>
-    </div>
+    </RecipesViewContext.Provider>
   );
 }
 
