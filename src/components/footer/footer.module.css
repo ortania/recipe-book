@@ -1,0 +1,100 @@
+.footer {
+  margin: 0;
+  display: none;
+}
+
+.footerNav {
+  /* display: flex;
+  justify-content: space-around;
+  align-items: center; */
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+
+  /* from Chat GPT */
+  padding-block-end: calc(0.5rem + env(safe-area-inset-bottom));
+  /* ----------------------- */
+}
+
+.footerLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+
+  padding: 0.375em 0.75em;
+  text-decoration: none;
+
+  color: var(--clr-btn-icon-text);
+  border-radius: 8px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+  transition: var(--transition);
+}
+
+.footerLink.active {
+  background-color: var(--clr-footer-bg);
+  border-radius: 50px;
+}
+
+.footerLink .footerIcon {
+  stroke-width: 2;
+}
+
+/* .footerIcon {
+  font-size: 2rem;
+} */
+
+.footerLabel {
+  font-size: var(--small-font);
+  white-space: nowrap;
+}
+
+@media (max-width: 768px) {
+  .footer {
+    border-radius: 16px 16px 0 0;
+    margin-inline-start: 0;
+    padding: 0.4rem 1rem;
+    padding-bottom: calc(0.4rem + env(safe-area-inset-bottom, 0px));
+    display: block;
+
+    background: var(--clr-bg-footer);
+    position: fixed;
+    /* bottom: 0;
+    left: 0;
+    right: 0; */
+    inset-inline: 0;
+    inset-block-end: 0;
+
+    z-index: 999;
+    /* gradient abouve footer */
+    box-shadow:
+      0 -2rem 2rem rgba(0, 0, 0, 0.05),
+      0 -7rem 9rem rgba(0, 0, 0, 0.08);
+    /* box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.08); */
+  }
+
+  /*
+  .footer::before {
+    content: "";
+    position: absolute;
+
+    
+
+     background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      var(--clr-bg-primary) 100%
+    ); 
+
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgb(0 0 0 / 0.07) 100%
+    );
+
+    pointer-events: none;
+  }
+    */
+}

@@ -1,0 +1,130 @@
+/* ── Floating Action Button (mobile only) ──────────── */
+.fab {
+  position: fixed;
+  inset-inline-end: 2rem;
+  bottom: calc(7rem + env(safe-area-inset-bottom, 0));
+  height: 5.6rem;
+  width: 5.6rem; /* changed for + to be square */
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 0 2rem;
+  background: var(--clr-btn-main-bg);
+  color: var(--clr-btn-main-text);
+  border: none;
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  cursor: pointer;
+  z-index: 1000;
+  transition:
+    height 220ms ease-out,
+    padding 220ms ease-out,
+    border-radius 220ms ease-out,
+    box-shadow 220ms ease-out,
+    gap 220ms ease-out;
+  /* box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18); */
+  white-space: nowrap;
+  overflow: hidden;
+  touch-action: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.fab:active {
+  transform: scale(0.96);
+}
+
+.dragging,
+.dragging:active {
+  transform: none;
+  transition: none;
+  opacity: 0.85;
+}
+
+/* Collapsed state (scroll down → icon only) */
+.collapsed {
+  /* height: 4.4rem;
+  padding: 0 1rem;
+  border-radius: 12px;
+  gap: 0; */
+}
+
+.fabIcon {
+  font-size: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.fabLabel {
+  display: none;
+  max-width: 20rem;
+  overflow: hidden;
+  opacity: 1;
+  transition:
+    max-width 220ms ease-out,
+    opacity 180ms ease-out,
+    margin 220ms ease-out;
+  margin-inline-start: 0.2rem;
+}
+
+.collapsed .fabLabel {
+  max-width: 0;
+  opacity: 0;
+  margin-inline-start: 0;
+}
+
+/* ── Bottom-sheet menu items ───────────────────────── */
+.menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.2rem;
+}
+
+.menuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border: none;
+  background: var(--clr-bg-tertiary);
+  border-radius: var(--input-border-radius);
+  width: 100%;
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  cursor: pointer;
+  transition: var(--transition);
+  white-space: nowrap;
+  text-align: start;
+}
+
+.menuItem:hover {
+  background: var(--clr-bg-hover);
+}
+
+.menuLabel {
+  flex: 1;
+  font-weight: var(--font-weight-secondary);
+}
+
+.menuIcon {
+  font-size: 2rem;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+:global(body.hide-footer) .fab {
+  bottom: calc(2.5rem + env(safe-area-inset-bottom, 0px));
+}
+
+/* Desktop → hide FAB */
+@media (min-width: 769px) {
+  .fab {
+    display: none;
+  }
+}

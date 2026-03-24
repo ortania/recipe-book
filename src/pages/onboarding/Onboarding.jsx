@@ -1,0 +1,134 @@
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Plus } from "lucide-react";
+import { useLanguage } from "../../context";
+import useSwipe from "../../hooks/useSwipe";
+import ONBOARDING_SCREENS from "./onboardingScreens";
+import buttonClasses from "../../styles/shared/buttons.module.css";
+import classes from "./onboarding.module.css";
+
+function Onboarding({ onFinish }) {
+  const [current, setCurrent] = useState(0);
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+
+  const isLast = current === ONBOARDING_SCREENS.length - 1;
+
+  const handleNext = () => {
+    if (isLast) {
+      finishOnboarding();
+    } else {
+      setCurrent((prev) => prev + 1);
+    }
+  };
+
+  const handleSkip = () => {
+    finishOnboarding();
+  };
+
+  const handleSkipToLogin = () => {
+    localStorage.setItem("onboardingDone", "true");
+    navigate("/login");
+  };
+
+  const finishOnboarding = () => {
+    localStorage.setItem("onboardingDone", "true");
+    if (onFinish) {
+      onFinish();
+    } else {
+      navigate("/login");
+    }
+  };
+
+  const screen = ONBOARDING_SCREENS[current];
+
+  const swipeHandlers = useSwipe(
+    () => setCurrent((prev) => Math.max(prev - 1, 0)),
+    () => setCurrent((prev) => Math.min(prev + 1, ONBOARDING_SCREENS.length - 1)),
+  );
+
+  return (
+    <div className={classes.container}>
+      <div className={classes.card} {...swipeHandlers}>
+        <button className={classes.skipBtn} onClick={handleSkip}>
+          {t("onboarding", "skip")}
+        </button>
+
+        <div className={classes.content}>
+          <div className={classes.emoji}>{screen.icon}</div>
+          <h1 className={classes.title}>{t("onboarding", screen.titleKey)}</h1>
+
+          {screen.subtitleKey && (
+            <p className={classes.subtitle}>
+              {t("onboarding", screen.subtitleKey)}
+            </p>
+          )}
+
+          {screen.bullets && (
+            <ul className={classes.bullets}>
+              {screen.bullets.map((bKey) => (
+                <li key={bKey} className={classes.bulletItem}>
+                  {t("onboarding", bKey)}
+                </li>
+              ))}
+            </ul>
+          )}
+
+          {screen.tipKey && (
+            <div className={classes.tip}>
+              <span className={classes.tipLabel}>
+                {t("onboarding", screen.tipLabel)}
+              </span>
+              <span className={classes.tipText}>
+                {t("onboarding", screen.tipKey)
+                  .split("{icon}")
+                  .map((part, i, arr) =>
+                    i < arr.length - 1 ? (
+                      <span key={i}>
+                        {part}
+                        <Plus
+                          size={22}
+                          style={{ verticalAlign: "middle", display: "inline" }}
+                        />
+                      </span>
+                    ) : (
+                      part
+                    ),
+                  )}
+              </span>
+            </div>
+          )}
+        </div>
+
+        <div className={classes.footer}>
+          <div className={classes.dots}>
+            {ONBOARDING_SCREENS.map((_, i) => (
+              <span
+                key={i}
+                className={`${classes.dot} ${i === current ? classes.dotActive : ""}`}
+              />
+            ))}
+          </div>
+
+          <button
+            className={classes.nextBtn + " " + buttonClasses.genButton}
+            onClick={handleNext}
+          >
+            {isLast ? t("onboarding", "getStarted") : t("onboarding", "next")}
+          </button>
+
+          {current === 0 && (
+            <button
+              className={classes.skipToLoginBtn}
+              onClick={handleSkipToLogin}
+            >
+              {t("onboarding", "skipToLogin")}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default Onboarding;

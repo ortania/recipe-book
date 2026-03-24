@@ -1,0 +1,338 @@
+/* ===== Overlay ===== */
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  direction: rtl;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right)
+    env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+/* ===== Scene Container ===== */
+.sceneContainer {
+  position: relative;
+  width: 94%;
+  max-width: 700px;
+  max-height: 92vh;
+  background: var(--clr-bg-card);
+  border-radius: 20px;
+  box-shadow: 0 25px 80px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  font-size: var(--basic-font);
+}
+
+/* ===== Scene Header ===== */
+/* ===== Stepper Progress Bar ===== */
+.stepperBar {
+  padding: 0.8rem 1.2rem 0;
+  background: var(--clr-bg-card);
+}
+
+.stepperHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.stepperCount {
+  font-size: var(--basic-font);
+  color: var(--clr-text-muted);
+}
+
+.segmentedBar {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 0;
+}
+
+.segment {
+  flex: 1;
+  height: 4px;
+  background: var(--clr-border-light);
+  border-radius: 3px;
+  transition: var(--transition);
+}
+
+.segmentActive {
+  background: var(--clr-accent-primary);
+}
+
+.segmentCurrent {
+  background: var(--clr-accent-primary);
+}
+
+.sceneHeader {
+  padding: 0.8rem 1.5rem 0.6rem;
+  text-align: center;
+  background: var(--clr-bg-card);
+}
+
+.sceneTitle {
+  font-size: 22px;
+  color: var(--clr-text-primary);
+  font-weight: var(--font-weight-heading);
+  margin: 0 0 0.3rem;
+  line-height: 1.3;
+}
+
+.sceneDescription {
+  font-size: 14px;
+  color: var(--clr-text-muted);
+  line-height: 1.6;
+  margin: 0 auto;
+  max-width: 440px;
+}
+
+/* ===== Scene Body ===== */
+.sceneBody {
+  flex: 1;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: var(--clr-bg-tertiary);
+}
+
+.sceneInner {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* ===== Virtual Cursor ===== */
+.virtualCursor {
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  z-index: 10;
+  pointer-events: none;
+  margin-left: -7px;
+  margin-top: -7px;
+}
+
+.cursorDot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  border: 2px solid var(--clr-text-primary);
+  box-shadow: 0 0 8px rgba(0, 102, 204, 0.6);
+}
+
+/* ===== Ripple ===== */
+.ripple {
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid var(--clr-text-primary);
+  pointer-events: none;
+  z-index: 9;
+  transform: translate(-50%, -50%);
+}
+
+/* ===== Pulse ===== */
+.pulseTarget {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  margin-left: -16px;
+  margin-top: -16px;
+  border-radius: 50%;
+  border: 2px solid var(--clr-text-primary);
+  animation: pulseAnim 1.5s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 8;
+}
+
+@keyframes pulseAnim {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.4);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.8;
+  }
+}
+
+/* ===== Tooltip ===== */
+.tooltip {
+  position: absolute;
+  background: rgba(0, 102, 204, 0.92);
+  border-radius: 8px;
+  padding: 0.45rem 0.8rem;
+  color: var(--clr-white);
+  font-size: 14px;
+  max-width: 220px;
+  z-index: 11;
+  line-height: 1.4;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  white-space: nowrap;
+}
+
+/* ===== Navigation Buttons ===== */
+.navButtons {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.8rem 1.2rem 1rem;
+  gap: 0.5rem;
+  background: var(--clr-bg-card);
+  border-top: 1px solid var(--clr-border-light);
+}
+
+.navBtnSecondary {
+  background: var(--clr-btn-outline-bg);
+  color: var(--clr-btn-outline-text);
+  border: 1px solid var(--clr-btn-outline-border);
+  transition: var(--transition);
+}
+
+.navBtnSecondary:hover {
+  background: var(--clr-btn-outline-bg-hover) !important;
+  color: var(--clr-btn-outline-text) !important;
+  border-color: var(--clr-btn-outline-border-hover) !important;
+}
+
+.skipBtn {
+  color: var(--clr-text-primary);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  padding: 0.5em;
+  line-height: 1;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: var(--transition);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+}
+
+.skipBtn:hover {
+  transform: scale(var(--scale));
+}
+
+.onboardingIcon {
+  font-size: 4rem;
+  line-height: 1;
+}
+
+/* ===== Onboarding Scene (extracted from inline styles) ===== */
+.obContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  padding: 1.5rem 1rem;
+  min-height: 260px;
+}
+
+.obTitle {
+  color: var(--clr-text-primary);
+  margin: 0;
+  text-align: center;
+  font-size: 1.9rem;
+  font-weight: var(--font-weight-heading);
+}
+
+.obSubtitle {
+  margin: 0;
+  text-align: center;
+  max-width: 340px;
+  line-height: 1.6;
+  white-space: pre-line;
+  font-size: 1.7rem;
+  color: var(--clr-text-primary);
+}
+
+.obBulletsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  width: 100%;
+  max-width: 280px;
+}
+
+.obBulletItem {
+  font-size: 1.7rem;
+  color: var(--clr-text-primary);
+  padding: 0.4rem 0.8rem;
+  background: var(--clr-tip-bg);
+  border: 1px solid var(--clr-tip-border);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.obTip {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: var(--clr-tip-bg);
+  border: 1px solid var(--clr-tip-border);
+  max-width: 340px;
+  width: 100%;
+  color: var(--clr-text-primary);
+  gap: 0.2rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+}
+
+.obTipLabel {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+}
+
+.obTipText {
+  text-align: center;
+  font-size: 1.5rem;
+  color: var(--clr-text-secondary);
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 600px) {
+  .sceneContainer {
+    width: 98%;
+    max-height: 85vh;
+    border-radius: 16px;
+  }
+
+  .sceneHeader {
+    padding: 0.6rem 1rem 0.4rem;
+  }
+
+  .sceneTitle {
+    font-size: 19px;
+  }
+
+  .sceneDescription {
+    font-size: 13px;
+  }
+
+  .tooltip {
+    font-size: 12px;
+    max-width: 180px;
+  }
+
+  .onboardingIcon img {
+    max-width: 140px;
+    height: auto;
+  }
+}

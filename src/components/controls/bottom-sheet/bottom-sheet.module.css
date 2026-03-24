@@ -1,0 +1,114 @@
+/* ── Root container ──────────────────────────────────── */
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 10199;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+/* ── Dark overlay ────────────────────────────────────── */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: var(--clr-overlay);
+}
+
+/* ── Sheet panel ─────────────────────────────────────── */
+.sheet {
+  position: relative;
+  z-index: 1;
+  background: var(--clr-bg-primary);
+  border-radius: 16px 16px 0 0;
+
+  max-block-size: 88dvh;
+  display: flex;
+  flex-direction: column;
+  /* padding-bottom: env(safe-area-inset-bottom, 0); */
+  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px));
+
+  box-shadow: 0 -4px 24px rgba(0, 0, 0, 0.18);
+  will-change: transform;
+  direction: rtl;
+  text-align: right;
+}
+
+/* ── Drag handle ─────────────────────────────────────── */
+.handleArea {
+  display: flex;
+  justify-content: center;
+  padding: 0.65rem 0 0.2rem;
+  touch-action: none;
+  user-select: none;
+  flex-shrink: 0;
+  cursor: grab;
+}
+
+.handleArea:active {
+  cursor: grabbing;
+}
+
+.handle {
+  width: 2.25rem;
+  height: 0.25rem;
+  background: var(--clr-text-muted, #aaa);
+  border-radius: 9999px;
+  opacity: 0.45;
+}
+
+/* ── Header (title + close) ──────────────────────────── */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.2rem 2rem 0.5rem;
+  flex-shrink: 0;
+  min-height: 2.5rem;
+}
+
+.title {
+  font-size: var(--large-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  line-height: 1;
+  display: flex;
+  align-items: center;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  padding: 0.25em;
+  line-height: 1;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 2rem;
+  width: 2rem;
+}
+
+.closeBtn:hover {
+  color: var(--clr-text-primary);
+}
+
+.fullHeight {
+  max-height: 100dvh;
+  border-radius: 0;
+}
+
+/* ── Scrollable content ──────────────────────────────── */
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  padding: 0 1.25rem 1.2rem;
+  display: flex;
+  flex-direction: column;
+}

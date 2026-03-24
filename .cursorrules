@@ -1,0 +1,96 @@
+PROJECT RULES – Recipe Book App
+
+TECH STACK
+- Programming language: React with JavaScript.
+- Backend: Firebase (Auth, Firestore, Storage).
+- Maintain compatibility with existing project structure.
+
+COMPONENT STRUCTURE
+- Place each component in a separate folder under the "components" directory.
+- Organize components into distinct folders whenever possible.
+- Keep components as small as possible.
+- Reuse components whenever possible.
+- Use a "controls" folder specifically for control components.
+- Use index.js as the entry file in each component folder.
+- Split components that grow too large.
+
+RESPONSIVENESS
+- All UI must be responsive and work well on mobile, tablet, and desktop.
+- Mobile layout must be supported by default.
+
+STYLING RULES
+- Define styles for each component using CSS Modules.
+- Ensure consistent styling across the application.
+- Use em units for button paddings.
+- Use rem units for font sizes.
+- Define global styles in index.css.
+- Store shared page styles in page.module.css.
+- Avoid inline styles unless absolutely necessary.
+- Maintain consistent spacing and layout across pages.
+
+FIREBASE RULES
+- Never expose secret keys in client code.
+- Access Firestore and Storage through service files when possible.
+- Keep data user-scoped using Firebase Auth uid.
+- Maintain consistent collection/document naming.
+
+RECIPE APP FEATURES AWARENESS
+- Support recipe creation, editing, search, favorites, and cooking mode.
+- Maintain compatibility with cooking mode, chat assistance, and nutritional calculations.
+- Do not break recipe data structure without updating all usages.
+
+CODE QUALITY
+- Avoid duplicating logic; extract shared logic into reusable components or utilities.
+- Prefer readable and simple components.
+- Each component should have a single responsibility.
+- Avoid unnecessary re-renders where possible.
+- Keep logic separated from UI when possible.
+
+GENERAL GUIDELINES
+- Do not modify working logic unless explicitly requested.
+- Preserve existing functionality.
+- Keep naming consistent across project.
+- Produce clean, maintainable code.
+- List modified files after major changes.
+
+
+CURSOR – SAFE CHANGE RULES (for large refactors)
+
+GOAL
+- Make changes safely without breaking an existing working app.
+
+WORKFLOW
+- Make changes in small steps (one feature/one screen at a time).
+- After each step, ensure the app still runs and the main flow is not broken.
+- Prefer incremental refactors over rewriting whole files.
+
+DO NOT DO
+- Do not rewrite the entire project.
+- Do not change file/folder structure unless explicitly requested.
+- Do not remove code unless it is unused AND you confirm all references are removed.
+- Do not change existing props/state API without updating all usages.
+
+WHEN ADDING A FEATURE
+- First: identify where it belongs (page vs component vs control vs service).
+- Second: create or update a service layer (Firebase/API) if needed.
+- Third: connect UI to the service.
+- Fourth: keep UI components dumb; move logic into hooks/services.
+
+FIREBASE SAFETY
+- Do not loosen Security Rules.
+- Keep user data scoped by uid.
+- Never put secrets (OpenAI key / private keys) in client code.
+- If an external API key is required, use a server/Cloud Function proxy.
+
+STYLING SAFETY
+- No inline styles.
+- Use CSS Modules per component folder.
+- Use index.css for global styles and page.module.css for shared page styles.
+- Use rem for font sizes and em for button paddings.
+- Ensure responsive layout on mobile.
+
+DELIVERABLE
+- After a major change, provide:
+  1) A short summary of what changed
+  2) A list of modified/created files
+  3) Any manual testing steps to verify

@@ -1,0 +1,719 @@
+@import url("https://fonts.googleapis.com/css2?family=Paytone+One&family=Raleway:wght@400;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wdth,wght@75,400;75,500;75,600;75,700;75,800&display=swap");
+
+/* #region variables */
+/*
+=============== 
+Variables
+===============
+*/
+
+:root {
+  font-size: 62.5%;
+
+  /* brown */
+  /* ------------------------------- */
+  /* Dark (headings / emphasis) */
+  --clr-brown-900: #2f2626;
+  --clr-brown-800: #463737;
+  --clr-brown-700: #635555; /* base שלך */
+
+  /* Medium */
+  --clr-brown-600: #7a6a6a;
+  --clr-brown-500: #948585;
+
+  /* Light */
+  --clr-brown-400: #b1a3a3;
+  --clr-brown-300: #cec2c2;
+
+  /* Backgrounds */
+  --clr-brown-200: #e5dddd;
+  --clr-brown-100: #f2eded;
+  --clr-brown-50: #faf7f7;
+
+  /* =========================
+     PRIMARY (Terracotta)
+     Base: #E2725B
+  ========================= */
+  --clr-primary-900: #5a1f14;
+  --clr-primary-800: #7a2c1e;
+  --clr-primary-700: #9e3e2b;
+  --clr-primary-600: #c5563f;
+  --clr-primary-500: #e2725b; /* base */
+  --clr-primary-400: #ea8b78;
+  --clr-primary-300: #f1a79a;
+  --clr-primary-200: #f6c8c1;
+  --clr-primary-100: #fbe6e2;
+
+  /* =========================
+     SECONDARY (Olive Green)
+     Base: #8A9A5B
+  ========================= */
+  --clr-secondary-900: #2c3317;
+  --clr-secondary-800: #3f4a23;
+  --clr-secondary-700: #566433;
+  --clr-secondary-600: #6f7f46;
+  --clr-secondary-500: #8a9a5b; /* base */
+  --clr-secondary-400: #a0ae73;
+  --clr-secondary-300: #b7c58f;
+  --clr-secondary-200: #d1dbb7;
+  --clr-secondary-100: #e8eedc;
+
+  /* =========================
+   TERTIARY (Warm Neutral / Off White)
+========================= */
+  --clr-tertiary-900: #3f3a36;
+  --clr-tertiary-800: #57514c;
+  --clr-tertiary-700: #726b65;
+  --clr-tertiary-600: #8f8881;
+  --clr-tertiary-500: #aca59e;
+  --clr-tertiary-400: #c9c3bd;
+  --clr-tertiary-300: #e3dfdb;
+  --clr-tertiary-200: #f2efec; /* base חדש */
+  --clr-tertiary-100: #f8f6f4;
+
+  /* =========================
+     NEUTRAL (Warm Gray)
+     Base: #4A453E
+  ========================= */
+  --clr-neutral-900: #1f1d1a;
+  --clr-neutral-800: #2f2b27;
+  --clr-neutral-700: #4a453e; /* base */
+  --clr-neutral-600: #625c55;
+  --clr-neutral-500: #7d776f;
+  --clr-neutral-400: #9c968f;
+  --clr-neutral-300: #bdb8b1;
+  --clr-neutral-200: #ddd9d4;
+  --clr-neutral-100: #f0edea;
+
+  /* =========================
+     DANGER (Warm Red)
+  ========================= */
+  --clr-danger-900: #7f1d1d;
+  --clr-danger-800: #991b1b;
+  --clr-danger-700: #b91c1c;
+  --clr-danger-600: #dc2626;
+  --clr-danger-500: #ef4444; /* base */
+  --clr-danger-400: #f87171;
+  --clr-danger-300: #fca5a5;
+  --clr-danger-200: #fecaca;
+  --clr-danger-100: #fee2e2;
+  /* =========================
+     SUCCESS (Green)
+  ========================= */
+  --clr-success-900: #14532d;
+  --clr-success-800: #166534;
+  --clr-success-700: #15803d;
+  --clr-success-600: #16a34a;
+  --clr-success-500: #22c55e;
+  --clr-success-400: #4ade80;
+  --clr-success-300: #86efac;
+  --clr-success-200: #bbf7d0;
+  --clr-success-100: #dcfce7;
+
+  /* =========================
+     TEXT
+  ========================= */
+  --clr-text-primary: var(--clr-neutral-700);
+  --clr-text-primary-hover: var(--clr-neutral-900);
+  --clr-text-secondary: var(--clr-neutral-600);
+  --clr-text-secondary-hover: var(--clr-neutral-800);
+  --clr-text-muted: var(--clr-neutral-500);
+
+  --clr-text-heading: var(--clr-brown-800);
+  --clr-text-heading-strong: var(--clr-brown-900);
+
+  --clr-text-on-dark: #ffffff;
+  --clr-text-on-light: var(--clr-neutral-700);
+
+  /* =========================
+     STATES (Success / Danger)
+  ========================= */
+  --clr-success-bg: var(--clr-success-100);
+  --clr-success-bg-hover: var(--clr-success-200);
+  --clr-success-bg-active: var(--clr-success-300);
+
+  --clr-success-text: var(--clr-success-700);
+  --clr-success-border: var(--clr-success-300);
+
+  --clr-success-dark-bg: var(--clr-success-700);
+  --clr-success-dark-bg-hover: var(--clr-success-800);
+  --clr-success-dark-bg-active: var(--clr-success-900);
+
+  --clr-danger-bg: var(--clr-danger-100);
+  --clr-danger-bg-hover: var(--clr-danger-200);
+  --clr-danger-bg-active: var(--clr-danger-300);
+
+  --clr-danger-text: var(-var(--clr-danger-600));
+  --clr-danger-text-strong: var(--clr-danger-800);
+  --clr-danger-bg-active-strong: var(--clr-danger-500);
+
+  --clr-danger-border: var(--clr-danger-500);
+
+  --clr-clear-text-danger-hover: var(--clr-danger-700);
+  --clr-bg-danger-hover: var(--clr-danger-100);
+  --clr-error-message: var(--clr-primary-700);
+
+  --danger-text-font-weight: 600;
+
+
+  /* =========================
+     GLOBAL INTERACTIONS
+  ========================= */
+  --clr-bg-hover: var(--clr-tertiary-200);
+  --clr-bg-active: var(--clr-tertiary-300);
+
+  --clr-border-hover: var(--clr-neutral-400);
+  --clr-border-active: var(--clr-neutral-500);
+
+  --clr-text-hover: var(--clr-neutral-800);
+  --clr-text-active: var(--clr-neutral-900);
+
+  --clr-bg-chip-hover: var(--clr-tertiary-200);
+
+  /* =========================
+     BUTTONS - MAIN (Brown)
+  ========================= */
+  --clr-btn-main-bg: var(--clr-brown-700);
+  --clr-btn-main-bg-hover: var(--clr-brown-800);
+  --clr-btn-main-bg-active: var(--clr-brown-900);
+
+  --clr-btn-main-text: var(--clr-white);
+
+  --clr-btn-main-font-weight: 600;
+
+  --clr-btn-main-border: var(--clr-brown-700);
+  --clr-btn-main-border-hover: var(--clr-brown-800);
+  --clr-btn-main-border-active: var(--clr-brown-900);
+
+  /* =========================
+     BUTTONS - SECONDARY (Green)
+  ========================= */
+  --clr-btn-secondary-bg: var(--clr-secondary-500);
+  --clr-btn-secondary-bg-hover: var(--clr-secondary-600);
+  --clr-btn-secondary-bg-active: var(--clr-secondary-700);
+
+  --clr-btn-secondary-text: var(--clr-white);
+
+  --clr-btn-secondary-border: var(--clr-secondary-200);
+  --clr-btn-secondary-border-hover: var(--clr-secondary-600);
+  --clr-btn-secondary-border-active: var(--clr-secondary-700);
+
+  /* =========================
+     BUTTONS - SOFT (Beige)
+  ========================= */
+  --clr-btn-soft-bg: var(--clr-tertiary-200);
+  --clr-btn-soft-bg-hover: var(--clr-tertiary-300);
+  --clr-btn-soft-bg-active: var(--clr-tertiary-400);
+
+  --clr-btn-soft-text: var(--clr-neutral-700);
+
+  --clr-btn-soft-border: var(--clr-neutral-200);
+  --clr-btn-soft-border-hover: var(--clr-neutral-300);
+  --clr-btn-soft-border-active: var(--clr-neutral-400);
+
+  /* =========================
+     BUTTONS - OUTLINE
+  ========================= */
+  --clr-btn-outline-bg: transparent;
+  --clr-btn-outline-bg-hover: var(--clr-tertiary-100);
+  --clr-btn-outline-bg-hover-2: var(--clr-tertiary-200);
+
+  --clr-btn-outline-text: var(--clr-neutral-700);
+
+  --clr-btn-outline-border: var(--clr-neutral-400);
+  --clr-btn-outline-border-hover: var(--clr-neutral-500);
+  /* --clr-btn-outline-border-active: var(--clr-neutral-600); */
+
+  --clr-btn-outline-bg-active: var(--clr-secondary-200);
+  --clr-btn-outline-border-active: var(--clr-secondary-500);
+  --clr-btn-outline-text-active: var(--clr-secondary-800);
+
+  /* =========================
+     BUTTONS - ICON
+  ========================= */
+  --clr-icon-default: var(--clr-neutral-600);
+  --clr-icon-hover: var(--clr-neutral-800);
+  --clr-icon-active: var(--clr-neutral-900);
+  --clr-icon-muted: var(--clr-neutral-500);
+
+  --clr-btn-icon-bg: var(--clr-secondary-200);
+  --clr-btn-icon-bg-hover: var(--clr-secondary-300);
+  --clr-btn-icon-bg-active: var(--clr-secondary-400);
+
+  --clr-btn-icon-text: var(--clr-neutral-700);
+  --clr-btn-icon-text-hover: var(--clr-primary-700);
+  --clr-btn-icon-text-active: var(--clr-neutral-900);
+
+  --clr-btn-icon-border: var(--clr-secondary-300);
+  --clr-btn-icon-border-hover: var(--clr-secondary-400);
+  --clr-btn-icon-border-active: var(--clr-secondary-500);
+
+  /* =========================
+     INPUT / SEARCH
+  ========================= */
+  --clr-input-bg: var(--clr-bg-card);
+  --clr-input-bg-hover: var(--clr-tertiary-200);
+  --clr-input-bg-focus: var(--clr-white);
+
+  --clr-input-text: var(--clr-text-primary);
+  --clr-input-placeholder: var(--clr-text-muted);
+  --input-placeholder-font-size: var(--basic-font);
+
+  --clr-input-border: var(--clr-neutral-200);
+  --clr-input-border-hover: var(--clr-neutral-300);
+  --clr-input-border-focus: var(--clr-secondary-500);
+
+  /* Search ספציפי */
+  --clr-search-bg: var(--clr-tertiary-200);
+  --clr-search-bg-hover: var(--clr-tertiary-300);
+  --clr-search-border: var(--clr-neutral-200);
+  --clr-search-border-focus: var(--clr-secondary-400);
+  --clr-search-icon: var(--clr-icon-muted);
+  --clr-search-icon-focus: var(--clr-icon-active);
+
+  --input-border-radius: 12px;
+
+  /* =========================
+     BACKGROUNDS
+  ========================= */
+
+  --clr-bg-page: var(--clr-tertiary-100);
+  --clr-bg-card: var(--clr-white);
+  --clr-bg-soft: var(--clr-tertiary-200);
+  --clr-bg-footer: var(--clr-bg-card);
+  --clr-bg-sidebar: var(--clr-bg-card);
+  --clr-bg-chip: var(--clr-bg-card);
+
+  --clr-bg-primary: var(--clr-tertiary-100);
+  --clr-bg-secondary: var(--clr-bg-card);
+  --clr-bg-tertiary: var(--clr-tertiary-200);
+
+
+  /* =========================
+     BORDERS
+  ========================= */
+  --clr-border-light: var(--clr-neutral-200);
+  --clr-border-medium: var(--clr-neutral-300);
+  --clr-border-strong: var(--clr-neutral-400);
+  --clr-border-accent-primary: var(--clr-brown-700);
+
+  /* =========================
+     LINK
+  ========================= */
+  --clr-link: var(--clr-primary-700);
+  --clr-link-hover: var(--clr-primary-800);
+  --link-transform-hover: translateY(-0.1em);
+  --link-font-weight: 500;
+
+  /* =========================
+     TIP
+  ========================= */
+
+  --clr-tip-bg: #f5f1ec;
+
+  --clr-tip-border: var(--clr-brown-200);
+  --clr-tip: var(--clr-brown-800);
+  --tip-border-radius: 12px;
+  --tip-label-font-weight: 500;
+  --icon-border-radius: 8px;
+  --form-border-radius: 12px;
+
+  /* =========================
+     SHADOWS
+  ========================= */
+  --light-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  --dark-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+  --wide-shadow: 5px 0px 15px rgba(0, 0, 0, 0.2);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
+
+  /* Overlay / dimmer backgrounds */
+  --clr-overlay-subtle: rgba(0, 0, 0, 0.3);   /* light touch overlays */
+  --clr-overlay-light:  rgba(0, 0, 0, 0.4);   /* popup overlays */
+  --clr-overlay:        rgba(0, 0, 0, 0.5);   /* sidebar, sheet, picker overlays */
+  --clr-overlay-dark:   rgba(0, 0, 0, 0.6);   /* heavy modal overlays */
+  --clr-overlay-strong: rgba(0, 0, 0, 0.7);   /* full modal overlays */
+
+  /* =========================
+     GENERAL
+  ========================= */
+
+  /* fonts variables */
+  --huge-font: 2.2rem;
+  --very-large-font: 2rem;
+  --large-font: 1.8rem;
+  --basic-font: 1.6rem;
+  --input-font: 1.6rem;
+  --small-font: 1.4rem;
+  --very-small-font: 1.2rem;
+
+  --font-primary: "Noto Sans Hebrew", sans-serif;
+  --font-heading: var(--font-primary);
+  --font-heading-size: var(--very-large-font);
+  --font-weight-heading: 600;
+  --font-weight-primary: 400;
+  --font-weight-secondary: 500;
+
+  /* =====button sizing and more (mobile-first) ===== */
+
+  /* button font */
+  --btn-circle-primary: 2.75rem;
+  --btn-circle: 3rem;
+  --btn-icon: 1.5rem;
+
+  /* button other */
+  --btn-border-radius: 2rem;
+  --btn-small-border-radius: 12px;
+  --btn-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+
+  /* skeleton */
+  --skeleton-bg: var(--clr-neutral-300);
+  --skeleton-highlight: var(--clr-neutral-100);
+  --skeleton-border-radius: 0.5rem;
+
+  /* chat */
+  --clr-bubble-user: var(--clr-tertiary-200);
+  --clr-bubble-assistant-bg: var(--clr-bg-card);
+
+  --clr-bubble-user-text: var(--clr-text-primary);
+  --clr-bubble-assistant-text: var(--clr-brown-700);
+
+  --clr-bubble-avatar-bg: var(--clr-neutral-600);
+
+  /* general */
+  --transition: all 0.2s ease;
+  --scale: 1.07;
+  --spacing: 0;
+  --max-width: 900px;
+  --divider: var(--clr-neutral-200);
+
+  --clr-white: #fff;
+  --clr-accent-primary: var(--clr-brown-700);
+  --clr-accent-secondary: var(--clr-neutral-600);
+  --clr-accent-tertiary: var(--clr-primary-700);
+  --clr-accent-tertiary-hover: var(--clr-primary-900);
+  --clr-accent-quaternary: var(--clr-success-800);
+
+  --disabled-opacity: 0.4;
+
+  --clr-footer-bg: var(--clr-secondary-200);
+
+  --clr-favorite: var(--clr-danger-500);
+
+  /* =========================
+     STAR / RATING
+  ========================= */
+  --clr-star: #f5a623;
+  --clr-star-hover: #e09520;
+
+  /* =========================
+     WARNING
+  ========================= */
+  --clr-warning: #f39c12;
+  --clr-warning-hover: #e67e22;
+  --clr-warning-bg: #fff9f0;
+  --clr-warning-bg-hover: #fff3e0;
+
+  /* =========================
+     ORANGE
+  ========================= */
+  --clr-orange: #ff9800;
+  --clr-orange-hover: #f57c00;
+
+  /* =========================
+     TEAL
+  ========================= */
+  /* migration color */
+  --clr-teal: #4ecdc4;
+}
+
+/*
+[data-theme="dark"] {
+  --bg-primary: #1a1a2e;
+  --bg-secondary: #16213e;
+  --bg-tertiary: #1e2a45;
+  --bg-input: #1e2a45;
+  --bg-card: #16213e;
+  --bg-sidebar: #0f1729;
+  --bg-hover: #253352;
+  --bg-chip: #1e2a45;
+  --bg-chip-hover: #2d1b4e;
+
+
+
+  --text-primary: #e8e8e8;
+  --clr-text-secondary: #b0b8c8;
+  --text-muted: #7a8599;
+  --text-on-primary: #ffffff;
+
+  --border-color: #2a3550;
+  --border-light: #222d42;
+
+  --divider: #2a3550;
+
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.4);
+
+  --accent-color: #000000;
+
+  --active-color: #2e7d32;
+
+  --bubble-user: #2a3550;
+  --bubble-assistant: #1e2a45;
+  --bubble-user-text: #e0e0e0;
+  --bubble-assistant-text: #d0d8e8;
+
+}
+  */
+
+@media (min-width: 769px) {
+  :root {
+    --btn-circle-primary: 4.5rem;
+    --btn-icon-primary: 2.5rem;
+    --btn-circle: 2.25rem;
+    --btn-icon: 1.15rem;
+  }
+}
+
+/* #endregion variables */
+
+html,
+body,
+#root {
+  min-block-size: 100%;
+  font-weight: var(--font-weight-primary);
+}
+
+.app {
+  min-block-size: 100dvh;
+}
+
+/* Hide hamburger menu when modal is open */
+body.modal-open button[class*="hamburger"] {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* #region global */
+/*
+=============== 
+Global Styles
+===============
+*/
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100dvh;
+  font-family: var(--font-heading);
+  font-stretch: condensed;
+
+  background-color: var(--clr-bg-primary);
+  color: var(--clr-text-primary);
+  line-height: 1.5;
+  font-size: 1.2rem;
+  overscroll-behavior: none;
+  -webkit-tap-highlight-color: transparent;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+a,
+button,
+[role="button"],
+label,
+select,
+summary,
+[tabindex] {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+button {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+img {
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+input,
+textarea,
+select {
+  /* font-size: max(1rem, inherit); */
+  /* for safari  so it will not make zoom out*/
+  font-size: var(--input-font) !important;
+}
+ul {
+  list-style-type: none;
+}
+a {
+  text-decoration: none;
+}
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-heading);
+  font-stretch: condensed;
+  color: var(--clr-text-heading);
+  letter-spacing: var(--spacing);
+  text-transform: capitalize;
+}
+h1 {
+  font-size: var(--very-large-font);
+  text-align: center;
+}
+
+h2 {
+  font-size: var(--very-large-font);
+}
+
+h3 {
+  font-size: var(--large-font);
+}
+
+p {
+  margin-bottom: 1.3rem;
+  color: var(--clr-text-primary);
+  font-size: var(--basic-font);
+}
+
+img {
+  max-width: 100%;
+  display: block;
+  height: auto;
+}
+
+strong {
+  font-weight: var(--font-weight-heading);
+}
+
+@media (min-width: 80rem) {
+  h1 {
+    font-size: 4rem;
+  }
+  h2 {
+    font-size: 3rem;
+  }
+  h3 {
+    font-size: 2rem;
+  }
+
+  body {
+    font-size: var(--basic-font);
+  }
+
+  p {
+    font-size: var(--basic-font);
+  }
+}
+
+/* #endregion global */
+
+/* Always show scrollbar to prevent layout shifts */
+html {
+  min-height: 100%;
+  overflow-y: scroll;
+  overscroll-behavior-y: none;
+}
+
+@media (max-width: 768px) {
+  html {
+    overflow-y: auto;
+  }
+
+  * {
+    scrollbar-width: none !important;
+    -ms-overflow-style: none !important;
+  }
+
+  h1 {
+    font-size: var(--large-font);
+    text-align: center;
+  }
+
+  *::-webkit-scrollbar {
+    display: none !important;
+    width: 0 !important;
+    height: 0 !important;
+    background: transparent !important;
+  }
+
+  body:not(.modal-open):not(.sidebar-open)::after {
+    display: none;
+  }
+
+  body.chat-open {
+    overflow: hidden !important;
+    position: fixed !important;
+    width: 100%;
+    height: 100%;
+  }
+
+  body.chat-open main {
+    overflow: hidden !important;
+  }
+
+  body.chat-open footer {
+    box-shadow: none !important;
+  }
+
+  body.hide-footer footer {
+    display: none !important;
+  }
+
+  body.hide-footer:not(.modal-open):not(.sidebar-open)::after {
+    display: none;
+  }
+}
+
+/* Override react-loading-skeleton: gentle color pulse, no gradient sweep */
+.react-loading-skeleton::after {
+  display: none !important;
+}
+
+.react-loading-skeleton {
+  background-color: #ececec !important;
+  animation: skeletonPulse 2s ease-in-out infinite !important;
+}
+
+@keyframes skeletonPulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+[data-theme="dark"] .react-loading-skeleton {
+  background-color: #2a2a3e !important;
+}
+
+/* Sharer profile mobile: swap back arrow and hamburger positions */
+body.sharer-profile-mobile #mobile-top-bar > button:first-child {
+  order: 10;
+}
+body.sharer-profile-mobile #mobile-top-bar > #mobile-header-actions-portal {
+  order: -1;
+}

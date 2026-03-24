@@ -1,0 +1,126 @@
+.container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  background: var(--clr-bg-card);
+  border: 2px solid var(--clr-teal);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-width: 25rem;
+  z-index: 1000;
+}
+
+.container h3 {
+  margin: 0 0 1rem 0;
+  color: var(--clr-text-primary);
+  font-size: 1.125rem;
+}
+
+.buttons {
+  display: flex;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.checkBtn,
+.migrateBtn,
+.cleanupBtn,
+.initBtn,
+.deleteBtn {
+  flex: 1;
+  padding: 0.625em 1em;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.checkBtn {
+  background: var(--clr-secondary-500);
+  color: white;
+}
+
+.checkBtn:hover {
+  background: var(--clr-secondary-600);
+}
+
+.migrateBtn {
+  background: var(--clr-success-500);
+  color: var(--clr-white);
+}
+
+.migrateBtn:hover {
+  background: var(--clr-success-600);
+}
+
+.cleanupBtn {
+  background: var(--clr-danger-500);
+  color: var(--clr-white);
+}
+
+.cleanupBtn:hover {
+  background: var(--clr-danger-700);
+}
+
+.initBtn {
+  background: var(--clr-brown-600);
+  color: var(--clr-white);
+}
+
+.initBtn:hover {
+  background: var(--clr-brown-700);
+}
+
+.deleteBtn {
+  background: var(--clr-danger-700);
+  color: var(--clr-white);
+  font-weight: var(--font-weight-heading);
+}
+
+.deleteBtn:hover {
+  background: var(--clr-danger-900);
+}
+
+.status {
+  margin: 0.75rem 0;
+  padding: 0.625rem;
+  background: var(--clr-bg-tertiary);
+  border-radius: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--clr-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.categoriesList {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--clr-border-light);
+}
+
+.categoriesList h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 1rem;
+  color: var(--clr-text-secondary);
+}
+
+.categoriesList ul {
+  margin: 0;
+  padding-left: 1.25rem;
+  max-height: 12.5rem;
+  overflow-y: auto;
+}
+
+.categoriesList li {
+  margin-bottom: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--clr-text-secondary);
+}
+
+.categoriesList li strong {
+  color: var(--clr-text-primary);
+}

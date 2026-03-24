@@ -1,0 +1,161 @@
+.container {
+  position: relative;
+}
+
+.trigger {
+  padding: 0.5em 0.75em;
+  background: var(--clr-btn-outline-bg);
+  border: 1px solid var(--clr-btn-outline-border);
+  border-radius: var(--btn-border-radius);
+  border-radius: 20px;
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-primary);
+  color: var(--clr-btn-outline-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: var(--transition);
+  /* height: 32px; */
+  box-sizing: border-box;
+  white-space: nowrap;
+}
+
+.trigger:hover {
+  background: var(--clr-bg-hover);
+}
+
+.hideOnMobile {
+  display: inline;
+}
+
+.arrow {
+  display: inline-flex;
+  transition: transform 0.25s ease;
+}
+
+.arrowOpen {
+  transform: rotate(180deg);
+}
+
+.dropdownOverlay {
+  display: none;
+}
+
+.dropdownMenu {
+  position: fixed;
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
+  border-radius: 8px;
+  box-shadow: var(--shadow-md);
+  min-width: 200px;
+  max-height: 70vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 9999;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+  padding-bottom: 0.5rem;
+}
+
+.dropdownClose {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4rem 0.6rem 0;
+  background: none;
+}
+
+.dropdownMenu button {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: none;
+  background: var(--clr-bg-card);
+  color: var(--clr-text-primary);
+  text-align: start;
+  cursor: pointer;
+  font-size: var(--small-font);
+  transition: background 0.2s ease;
+  border-bottom: 1px solid var(--clr-border-light);
+}
+
+.dropdownMenu .dropdownClose button {
+  background: none;
+  border: none;
+  width: auto;
+  border-bottom: none;
+  padding: 0;
+  font-size: 1.6rem;
+}
+
+.dropdownMenu button:last-child {
+  border-bottom: none;
+}
+
+.dropdownMenu button:hover {
+  background: var(--clr-bg-hover);
+}
+
+@media (max-width: 768px) {
+  .hideOnMobile {
+    display: none !important;
+  }
+
+  .arrow {
+    display: none !important;
+  }
+
+  .dropdownOverlay {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--clr-overlay-subtle);
+    z-index: 9998;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: auto;
+  }
+
+  .dropdownMenu {
+    position: fixed !important;
+    top: auto !important;
+    bottom: 3.8rem !important;
+    left: 0.5rem !important;
+    right: 0.5rem !important;
+    max-height: 55vh !important;
+    border-radius: 16px 16px 0 0 !important;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15) !important;
+    z-index: 9999 !important;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    padding-bottom: calc(env(safe-area-inset-bottom, 0) + 0.5rem);
+  }
+
+  .dropdownMenu::before {
+    content: "";
+    display: block;
+    width: 36px;
+    height: 4px;
+    background: var(--clr-border-light);
+    border-radius: 2px;
+    margin: 0.5rem auto 0.25rem;
+    flex-shrink: 0;
+  }
+
+  .dropdownClose {
+    flex-shrink: 0;
+    background: var(--clr-bg-card);
+    padding: 0.4rem 0.8rem 0.2rem;
+  }
+
+  .trigger {
+    padding: 0.3em 0.75em;
+  }
+}

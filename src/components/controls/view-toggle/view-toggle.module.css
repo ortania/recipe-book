@@ -1,0 +1,54 @@
+.toggleContainer {
+  display: inline-flex;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--clr-tertiary-200);
+  border-radius: 24px;
+  padding: 4px;
+  z-index: 10001;
+}
+
+.indicator {
+  position: absolute;
+  top: 4px;
+  height: calc(100% - 8px);
+  background: var(--clr-bg-card);
+  border-radius: 20px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  transition:
+    left 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.toggleButton {
+  position: relative;
+  z-index: 1;
+  padding: 8px 24px;
+  border: none;
+  background: transparent;
+  border-radius: 20px;
+  font-size: var(--basic-font);
+  font-weight: 500;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  transition: color 0.25s ease;
+  white-space: nowrap;
+}
+
+.toggleButton:hover {
+  color: var(--clr-text-primary);
+}
+
+.toggleButton.active {
+  color: var(--clr-text-primary);
+}
+
+@media (max-width: 768px) {
+  .toggleButton {
+    padding: 6px 16px;
+    font-size: var(--basic-font);
+  }
+}

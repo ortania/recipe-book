@@ -1,0 +1,24 @@
+.sortControls {
+  display: flex;
+  gap: 0.7rem;
+}
+
+.sortButton {
+  padding: 0.7rem 1.4rem;
+  border: 1px solid var(--clr-border-light);
+  border-radius: 6px;
+  background: var(--clr-bg-card);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 1.2rem;
+}
+
+.sortButton:hover {
+  background: var(--clr-bg-hover);
+}
+
+.sortButton.active {
+  background: var(--clr-secondary-500);
+  color: var(--clr-white);
+  border-color: var(--clr-secondary-700);
+}

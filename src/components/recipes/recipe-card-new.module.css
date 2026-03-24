@@ -1,0 +1,349 @@
+/* Recipe Card - Clean Design with Info Below Image */
+
+.recipeCard {
+  position: relative;
+  cursor: pointer;
+  transition: box-shadow 0.3s ease;
+  touch-action: manipulation;
+  -webkit-touch-callout: none;
+}
+
+/* .recipeCard:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+} */
+
+.imageContainer {
+  width: 100%;
+  padding-bottom: 100%;
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.recipeImage {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 25px;
+  transition: transform 0.3s ease;
+}
+
+.noImagePlaceholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--clr-bg-card, #fff);
+  color: var(--clr-text-muted, #999);
+  font-size: var(--basic-font);
+  font-style: italic;
+  border-radius: 25px;
+  border: 2px dashed var(--clr-text-muted, #ccc);
+  opacity: 0.8;
+}
+
+.recipeImage:hover {
+  transform: scale(1.1);
+}
+
+.recipeInfo {
+  padding: 0.75rem;
+}
+
+.recipeName {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  margin: 0 0 0.25rem 0;
+  line-height: 1.3;
+  letter-spacing: 0;
+  text-align: start;
+}
+
+.sharerName {
+  font-size: var(--basic-font);
+  color: var(--clr-link);
+  font-weight: var(--link-font-weight);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+  cursor: pointer;
+  margin-bottom: 0.25rem;
+  text-align: start;
+}
+
+.sharerName:hover {
+  transform: var(--link-transform-hover);
+}
+
+.recipeMetadata {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 0.5rem;
+}
+
+.recipeTime {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+  margin: 0;
+}
+
+.recipeDifficulty {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+  font-weight: 500;
+}
+
+.favoriteButton {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  z-index: 2;
+  color: var(--clr-text-primary);
+  -webkit-appearance: none;
+  appearance: none;
+  overflow: visible;
+  line-height: 0;
+}
+
+.favoriteButton:hover {
+  background: var(--clr-bg-card);
+  transform: scale(1.1);
+}
+
+.favoriteButton.active {
+  /* background: #ff6b6b; */
+  color: var(--clr-white);
+}
+
+.actionButtons {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  gap: 0.5rem;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 2;
+}
+
+/* Mouse / trackpad only — iPhone first-tap was triggering sticky :hover instead of opening recipe */
+@media (hover: hover) and (pointer: fine) {
+  .recipeCard:hover .actionButtons {
+    opacity: 1;
+    pointer-events: auto;
+  }
+}
+
+.recipeCard.touchActionsVisible .actionButtons {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.actionButton {
+  background: rgba(255, 255, 255, 0.9);
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem;
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-text-primary);
+}
+
+.actionButton:hover {
+  background: var(--clr-bg-card);
+  transform: scale(1.05);
+}
+
+.actionButton.danger {
+  /* background: rgba(244, 67, 54, 0.9); */
+  color: var(--clr-white);
+}
+
+.actionButton.danger:hover {
+  /* background: #f44336; */
+  transform: scale(1.05);
+}
+
+.copyButton {
+  position: absolute;
+  bottom: 0.6rem;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(255, 255, 255, 0.92);
+  border: none;
+  border-radius: 20px;
+  padding: 0.45em 1em;
+  font-size: var(--small-font);
+  font-weight: 500;
+
+  color: var(--clr-text-primary);
+  font-weight: var(--font-weight-heading);
+  cursor: pointer;
+  transition: var(--transition);
+  z-index: 2;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.copyButton:hover {
+  background: var(--clr-text-primary);
+  color: var(--clr-white);
+  transform: translateX(-50%) scale(var(--scale));
+}
+
+.copyButton:disabled {
+  cursor: default;
+}
+
+.copyButton.copied {
+  background: var(--clr-success-500);
+  color: var(--clr-white);
+}
+
+.recipeCard:hover .reorderActions {
+  opacity: 1;
+}
+
+.successNotification {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, var(--clr-success-500) 0%, var(--clr-success-600) 100%);
+  color: var(--clr-white);
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+  font-size: var(--basic-font);
+  font-weight: 500;
+  z-index: 10000;
+  animation:
+    slideInRight 0.3s ease,
+    fadeOut 0.3s ease 2.7s;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.errorNotification {
+  position: fixed;
+  top: 2rem;
+  right: 2rem;
+  background: linear-gradient(135deg, var(--clr-danger-600) 0%, var(--clr-danger-800) 100%);
+  color: var(--clr-white);
+  padding: 1em 1.5em;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(229, 57, 53, 0.3);
+  font-size: var(--basic-font);
+  font-weight: 500;
+  z-index: 10000;
+  animation:
+    slideInRight 0.3s ease,
+    fadeOut 0.3s ease 3.7s;
+}
+
+/* ── Rating section ── */
+.ratingSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  margin: 0.3rem 0;
+}
+
+.ratingRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.ratingLabel {
+  font-size: var(--very-small-font);
+  color: var(--clr-text-secondary);
+  min-width: 3.5rem;
+}
+
+.starsRow {
+  display: flex;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.ratingAvgBlock {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.star {
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.starClickable {
+  font-size: 1.7rem;
+  line-height: 1;
+  cursor: pointer;
+  transition: transform 0.15s;
+}
+
+.starClickable:hover {
+  transform: scale(1.25);
+}
+
+.ratingMeta {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+}
+
+@media (max-width: 600px) {
+  .ratingAvgBlock {
+    /* flex-direction: column; */
+    align-items: flex-start;
+    gap: 0.1rem;
+  }
+}

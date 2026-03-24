@@ -1,0 +1,12 @@
+.title {
+  font-size: 1.6rem;
+  color: var(--clr-text-primary);
+  font-weight: var(--font-weight-heading);
+}
+
+.actions {
+  position: fixed;
+  bottom: 2rem;
+  inset-inline-start: 2rem;
+  z-index: 10;
+}

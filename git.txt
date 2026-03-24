@@ -1,0 +1,50 @@
+
+
+https://recipe-book-82d57.web.app/
+
+https://github.com/ortania/
+
+
+Add changes to git from VSCode:
+------------------------------
+
+git add .
+git commit -m "describe changes separated by -
+git push
+
+
+
+deployment
+--------------------------------
+
+npm run build
+firebase deploy --only hosting
+
+
+firebase
+--------------------------------
+
+https://console.firebase.google.com/u/0/project/recipe-book-82d57/firestore/databases/-default-/data/~2Fcategories~2F1770109139001
+
+
+OpenAI
+--------------------------------
+
+key:
+https://platform.openai.com/api-keys
+
+
+credits:
+https://platform.openai.com/settings/organization/billing/overview
+
+LanbdaTest
+-----------
+
+https://www.testmuai.com/test-on-iphone/?utm_source=chatgpt.com
+
+
+Capacitor
+-----------
+
+Prompt To Cursor:
+"Wrap the app with Capacitor for iOS and Android. Handle: Wake Lock, Google Sign-In, voice/speech features, and share. Keep image upload as-is (or upgrade to native camera). Make sure safe areas and status bar work correctly."

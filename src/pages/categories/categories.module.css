@@ -1,0 +1,77 @@
+.groupContent {
+  flex: 1;
+  padding: 0;
+  overflow: visible;
+  box-sizing: border-box;
+}
+
+.headerContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  /* margin-bottom: 1rem; */
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+.headerContainer p {
+  color: inherit;
+  font-weight: var(--font-weight-heading);
+}
+
+.headerButtons {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.disabledButton {
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  padding: 0.25rem;
+  cursor: pointer;
+  color: var(--clr-text-secondary);
+  transition: color 0.2s;
+}
+
+.deleteButton:hover {
+  color: var(--clr-danger-500);
+}
+
+.groups {
+  display: flex;
+  height: 100%;
+}
+
+@media (max-width: 700px) {
+  .groupContent {
+    padding: 0;
+  }
+}
+
+.searchInput {
+  flex: 1;
+  border: 1px solid var(--clr-border-light);
+  background: var(--clr-bg-card);
+  font-size: var(--basic-font);
+  outline: none;
+  color: var(--clr-text-primary);
+  padding: 0 0.75rem;
+  border-radius: 6px;
+  height: 36px;
+  box-sizing: border-box;
+  line-height: 36px;
+}
+
+.searchInput::placeholder {
+  color: var(--clr-text-muted);
+}
+
+.searchInput:focus {
+  border-color: var(--clr-border-light);
+}
+

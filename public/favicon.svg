@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background circle -->
+  <circle cx="50" cy="50" r="48" fill="#8B5CF6"/>
+  
+  <!-- Book -->
+  <rect x="30" y="25" width="40" height="50" rx="2" fill="#ffffff"/>
+  
+  <!-- Book spine -->
+  <rect x="48" y="25" width="4" height="50" fill="#E9D5FF"/>
+  
+  <!-- Chef hat icon on book -->
+  <g transform="translate(50, 50)">
+    <!-- Hat base -->
+    <ellipse cx="0" cy="8" rx="12" ry="3" fill="#8B5CF6"/>
+    <!-- Hat top -->
+    <path d="M -10 8 Q -10 -5, -5 -8 Q 0 -10, 5 -8 Q 10 -5, 10 8 Z" fill="#8B5CF6"/>
+    <!-- Hat details -->
+    <circle cx="-6" cy="0" r="2" fill="#A78BFA"/>
+    <circle cx="0" cy="-3" r="2" fill="#A78BFA"/>
+    <circle cx="6" cy="0" r="2" fill="#A78BFA"/>
+  </g>
+</svg>

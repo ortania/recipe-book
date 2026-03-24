@@ -1,0 +1,263 @@
+/* Recipe Details - Modern Design */
+
+.recipeModal {
+  padding: 0 !important;
+  border-radius: 20px;
+}
+
+.recipeCard {
+  background: var(--clr-bg-card);
+  border-radius: 20px;
+  max-width: 500px;
+  width: 100%;
+  position: relative;
+}
+
+.recipeCardCooking {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 100%;
+  max-height: 100%;
+  overflow-y: auto;
+  padding-top: 1rem;
+  width: 100%;
+  max-width: 900px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-right: auto;
+}
+
+.headerButtons {
+  position: absolute;
+  top: 0;
+  right: 0;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  z-index: 10;
+}
+
+.imageContainer {
+  width: 100%;
+  height: 200px;
+  /* background: #f0f0f0; */
+  background: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.recipeImage {
+  max-width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.recipeContent {
+  padding: 1.5rem;
+}
+
+.recipeName {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  margin: 0 0 0.5rem 0;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.recipeInfo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--clr-text-secondary);
+  font-size: var(--basic-font);
+}
+
+.infoItem {
+  color: var(--clr-text-secondary);
+}
+
+.infoDot {
+  color: var(--clr-text-muted);
+  font-weight: var(--font-weight-heading);
+}
+
+.categoryTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.categoryTag {
+  padding: 0.4rem 0.8rem;
+  background: var(--clr-bg-tertiary);
+  border-radius: 12px;
+  border: 1px solid var(--clr-border-light);
+  font-size: var(--basic-font);
+  color: var(--clr-text-secondary);
+  font-weight: 500;
+}
+
+.notesText {
+  font-size: var(--basic-font);
+  color: var(--clr-text-secondary);
+  line-height: 1.6;
+  margin: 0;
+  white-space: pre-wrap;
+}
+
+.servingSelector {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: var(--clr-bg-tertiary);
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+}
+
+.servingLabel {
+  font-size: var(--basic-font);
+  font-weight: 400;
+  color: var(--clr-text-primary);
+}
+
+.servingControls {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.servingControls span {
+  font-size: var(--basic-font);
+  text-align: center;
+}
+
+.servingButton {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 1px solid var(--clr-border-light);
+  background: var(--clr-bg-card);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  transition: all 0.2s ease;
+  font-weight: var(--font-weight-heading);
+}
+
+.servingButton:hover,
+
+.tabs,
+
+.tab {
+  flex: 1;
+  padding: 0.75rem 1rem;
+  background: none;
+  border: none;
+  border-bottom: 3px solid transparent;
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: -2px;
+}
+
+.tab:hover {
+  color: var(--clr-text-secondary);
+}
+
+.activeTab {
+  border-bottom-color: var(--clr-text-primary);
+  background: var(--clr-text-primary);
+  color: var(--clr-bg-primary);
+}
+
+.tabContent {
+  min-height: 200px;
+}
+
+.ingredientsList,
+.instructionsList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.ingredientItem,
+.instructionItem {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--clr-border-light);
+  font-size: var(--basic-font);
+}
+
+.ingredientItem *,
+.instructionItem * {
+  font-size: var(--basic-font);
+}
+
+.ingredientItem:last-child,
+.instructionItem:last-child {
+  border-bottom: none;
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkboxLabel span {
+  flex: 1;
+  line-height: 1.5;
+  color: var(--clr-text-primary);
+}
+
+.checkbox {
+  width: 20px;
+  height: 20px;
+  min-width: 20px;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: 0.1rem;
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  border: 2px solid var(--clr-border-light);
+  transition: all 0.2s ease;
+}
+
+.checkbox:checked {
+  background: var(--clr-success-500);
+  border-color: var(--clr-success-500);
+}
+
+.checkbox:checked::after {
+  content: "✓";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: var(--clr-white);
+  font-size: 0.8rem;
+  font-weight: var(--font-weight-heading);
+}
+
+.checkedText {
+  text-decoration: line-through;
+  color: var(--clr-text-muted) !important;
+}

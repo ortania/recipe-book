@@ -1,0 +1,213 @@
+.dialog {
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.dialog h3 {
+  margin-top: 0;
+  color: var(--clr-text-primary);
+  font-size: var(--large-font);
+  margin-bottom: 0.5rem;
+  font-weight: var(--font-weight-heading);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.recipeName {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  margin-bottom: 1.5rem;
+  margin-top: 0;
+  font-style: italic;
+}
+
+/* Email input section */
+.inputSection {
+  margin-bottom: 1rem;
+  text-align: right;
+}
+
+.inputLabel {
+  display: block;
+  font-size: var(--basic-font);
+
+  color: var(--clr-text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.inputRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.emailInput {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  border: 1.5px solid var(--clr-border-light);
+  border-radius: 8px;
+  font-size: var(--basic-font);
+  direction: ltr;
+  text-align: left;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.emailInput:focus {
+  border: 1px solid var(--clr-text-primary);
+}
+
+.addButton {
+  padding: 0.6em 1.2em;
+  border: none;
+  border-radius: 8px;
+  background: var(--clr-accent-primary);
+  color: var(--clr-bg-primary);
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.addButton:hover:not(:disabled) {
+  background: var(--clr-text-secondary);
+  transform: translateY(-1px);
+}
+
+.addButton:disabled {
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+}
+
+.errorText {
+  color: var(--clr-danger-600);
+  font-size: var(--basic-font);
+  margin: 0.4rem 0 0;
+  text-align: right;
+}
+
+/* Recipient chips */
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 1.25rem;
+  justify-content: center;
+}
+
+.chip {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.3rem 0.5rem 0.3rem 0.75rem;
+  background: var(--clr-bg-tertiary);
+  border: 1px solid var(--clr-border-light);
+  border-radius: 20px;
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  font-weight: 500;
+}
+
+.chipName {
+  white-space: nowrap;
+}
+
+.chipRemove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--clr-text-primary);
+  font-size: var(--basic-font);
+  padding: 0;
+  border-radius: 50%;
+  transition: all 0.15s;
+  width: 20px;
+  height: 20px;
+  font-weight: var(--font-weight-heading);
+}
+
+.chipRemove:hover {
+  /* background: rgba(21, 101, 192, 0.15);
+  color: #0d47a1; */
+  opacity: 0.9;
+  transform: translateY(-1px);
+}
+
+/* Buttons */
+.buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+
+.buttons button {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  cursor: pointer;
+}
+
+.buttons button:first-of-type {
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
+}
+
+.buttons button:first-of-type:hover {
+  background: var(--clr-bg-hover);
+}
+
+.buttons button:last-of-type {
+  background: var(--clr-text-primary);
+  color: var(--clr-bg-primary);
+}
+.buttons button:last-of-type:hover {
+  background: var(--clr-text-secondary);
+}
+
+/* Results */
+.resultSection {
+  padding: 1rem 0;
+}
+
+.successMessage {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 0;
+}
+
+.successIcon {
+  font-size: var(--basic-font);
+}
+
+.successMessage p {
+  font-size: var(--large-font);
+  color: var(--clr-success-700);
+  font-weight: var(--font-weight-heading);
+}
+
+.errorMessage p {
+  font-size: var(--basic-font);
+  color: var(--clr-error-message);
+  font-weight: 500;
+}
+
+@media (max-width: 768px) {
+  .dialog {
+    padding: 2rem 1.5rem;
+  }
+
+  .inputRow {
+    flex-direction: column;
+  }
+
+  .addButton {
+    width: 100%;
+  }
+}

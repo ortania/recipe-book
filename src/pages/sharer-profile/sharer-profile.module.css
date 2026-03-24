@@ -1,0 +1,104 @@
+.page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+.profileSection {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.5rem 1.5rem;
+}
+
+.inlineBackBtn {
+  flex-shrink: 0;
+  order: -1;
+}
+
+.desktopBackBtn {
+  flex-shrink: 0;
+  order: -1;
+}
+
+.profileHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.75rem;
+}
+
+.avatar {
+  width: 66px;
+  height: 66px;
+  min-width: 66px;
+  border-radius: 15px;
+  background: var(--clr-accent-primary);
+  /* background: var(--clr-bubble-avatar-bg); */
+  color: var(--clr-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--huge-font);
+  font-weight: var(--font-weight-heading);
+}
+
+.profileName {
+  font-size: var(--huge-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  margin: 0;
+}
+
+.recipeCount {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+}
+
+.followBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5em 1.2em;
+  border-radius: var(--btn-border-radius);
+  border: 1.5px solid var(--clr-btn-outline-border);
+  background: var(--clr-btn-outline-bg);
+  color: var(--clr-btn-outline-text);
+  font-size: var(--basic-font);
+  /* font-weight: var(--font-weight-heading); */
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.followBtn:hover {
+  background: var(--clr-btn-outline-bg-hover);
+}
+.followBtnActive {
+  background: var(--clr-btn-outline-bg-active);
+  border-color: var(--clr-btn-outline-border-active);
+  color: var(--clr-btn-outline-text-active);
+}
+
+.followBtnActive:hover {
+  /* background: var(--clr-success-bg-hover);
+  color: var(--clr-btn-main-text); */
+}
+
+.privateNote {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  font-style: italic;
+  margin-top: 0.25rem;
+}
+
+@media (max-width: 768px) {
+  .page {
+    padding: 0 0.5rem;
+  }
+
+  .profileSection {
+    padding: 0.25rem 0 0;
+    gap: 1rem;
+  }
+}

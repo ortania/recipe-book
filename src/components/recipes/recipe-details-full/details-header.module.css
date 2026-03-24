@@ -1,0 +1,326 @@
+/* Recipe Details — Header, ActionBar, MoreMenu, Toasts, WakeLock */
+
+.actionBarSentinel {
+  height: 0;
+  line-height: 0;
+  font-size: 0;
+}
+
+/* Action toolbar below image */
+.actionBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--clr-border-light);
+  background: var(--clr-bg-primary);
+  position: sticky;
+  top: 4.5rem;
+  z-index: 40;
+}
+
+.actionBarStart {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-inline-start: -0.4em;
+}
+
+.actionBarEnd {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.wakeLockBtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  /* border: 1px solid var(--clr-border-light); */
+  border: none;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  padding: 0.35em;
+  border-radius: 8px;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.wakeLockBtn:hover {
+  background: var(--clr-bg-hover);
+}
+
+.wakeLockBtnActive {
+  color: var(--clr-star);
+  border-color: var(--clr-star);
+  background: rgba(245, 158, 11, 0.08);
+}
+
+.actionIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--clr-text-secondary);
+  cursor: pointer;
+  padding: 0.4em;
+  border-radius: 8px;
+  transition:
+    color 0.15s ease,
+    background 0.15s ease;
+  font-size: 1.25rem;
+}
+
+.actionIcon:hover {
+  /* color: var(--clr-text-primary); */
+  background: var(--clr-bg-hover);
+}
+
+.actionIconActive {
+  color: var(--clr-danger-600);
+}
+
+.cookingBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5em 1.2em;
+  border: none;
+  border-radius: 20px;
+  background: var(--clr-text-primary);
+  color: var(--clr-bg-primary);
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.cookingBtn:hover {
+  opacity: 0.85;
+  transform: translateY(-1px);
+}
+
+/* More menu popup (matches AddRecipeDropdown) */
+.moreMenuWrapper {
+  position: relative;
+}
+
+.moreMenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  inset-inline-start: 0;
+  background: var(--clr-bg-card);
+  border-radius: 18px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.14);
+  z-index: 1100;
+  min-width: 260px;
+  overflow: hidden;
+  animation: moreMenuFadeIn 0.15s ease;
+  padding: 0.6rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+@keyframes moreMenuFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.moreMenuItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.85rem 1rem;
+  border: none;
+  background: var(--clr-bg-tertiary);
+  border-radius: 12px;
+  width: 100%;
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  cursor: pointer;
+  transition: background 0.15s;
+  white-space: nowrap;
+  text-align: start;
+}
+
+.moreMenuItem:hover {
+  background: var(--clr-bg-hover);
+}
+
+.moreMenuItemDanger {
+  color: var(--clr-danger-text);
+  font-weight: var(--danger-text-font-weight);
+}
+
+.moreMenuItemDanger .moreMenuIcon {
+  color: var(--clr-danger-text);
+  font-weight: var(--danger-text-font-weight);
+}
+
+.moreMenuLabel {
+  flex: 1;
+  font-weight: 500;
+}
+
+.moreMenuIcon {
+  font-size: 1.7rem;
+  color: var(--clr-text-muted);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+}
+
+.stickyHeader {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  background: var(--clr-bg-primary);
+  border-bottom: 1px solid var(--clr-border-light);
+  gap: 0.5rem;
+  isolation: isolate;
+}
+
+.stickyHeader > :first-child {
+  margin-inline-start: -0.4rem;
+  z-index: 1;
+}
+
+.stickyHeader > :last-child {
+  margin-inline-end: -0.4rem;
+}
+
+.headerHamburger {
+  display: none;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--clr-text-primary);
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.headerTitle {
+  position: absolute;
+  left: 3rem;
+  right: 3rem;
+  font-size: var(--huge-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  margin: 0;
+  line-height: 1.3;
+  text-align: center;
+  pointer-events: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.wakeLockToast {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  inset-inline-start: 0;
+  background: var(--clr-bg-card);
+  color: var(--clr-text-muted);
+  padding: 0.5rem 0.9rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  font-size: var(--basic-font);
+  font-weight: 500;
+  z-index: 1100;
+  white-space: nowrap;
+  animation: copyToastIn 0.25s ease;
+}
+
+.copyToast {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  inset-inline-start: 0;
+  background: var(--clr-bg-card);
+  color: var(--clr-success-500);
+  padding: 0.7rem 1.2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  font-size: var(--small-font);
+  font-weight: var(--font-weight-heading);
+  z-index: 1100;
+  white-space: nowrap;
+  animation: copyToastIn 0.25s ease;
+  pointer-events: none;
+}
+
+@keyframes copyToastIn {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ===== Mobile Responsive ===== */
+@media (max-width: 768px) {
+  .stickyHeader {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    padding-inline: 1rem;
+  }
+
+  .actionBarSentinel {
+    height: 0;
+    margin: 0;
+    padding: 0;
+  }
+
+  .headerHamburger {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .headerTitle {
+    font-size: var(--large-font);
+  }
+}
+
+@media (max-width: 600px) {
+  .actionBar {
+    position: static;
+    z-index: auto;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+  }
+
+  .cookingBtn {
+    display: flex;
+  }
+
+  .wakeLockBtn {
+    display: flex;
+  }
+
+  .moreMenu {
+    min-width: 220px;
+  }
+}

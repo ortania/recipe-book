@@ -1,0 +1,94 @@
+.voiceChatIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: none;
+  color: var(--clr-text-primary);
+  font-size: 2.2rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+
+.voiceChatIcon.active {
+  /* color: green; */
+}
+
+.voiceChatIcon.speaking {
+  color: var(--clr-success-500);
+}
+
+.statusArea {
+  position: fixed;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: var(--clr-white);
+  border-radius: 12px;
+  padding: 0.6rem 1rem;
+  min-width: 200px;
+  max-width: 500px;
+  text-align: center;
+  z-index: 10010;
+  backdrop-filter: blur(8px);
+}
+
+.statusText {
+  font-size: var(--large-font);
+  color: var(--clr-neutral-300);
+  margin-bottom: 0.3rem;
+}
+
+.responseText {
+  font-size: var(--large-font);
+  color: var(--clr-white);
+  line-height: 1.4;
+  direction: rtl;
+}
+
+.processingIndicator {
+  display: flex;
+  justify-content: center;
+  gap: 0.3rem;
+  margin-bottom: 0.3rem;
+}
+
+.dot {
+  width: 6px;
+  height: 6px;
+  background: var(--clr-brown-300);
+  border-radius: 50%;
+  animation: bounce 1.4s ease-in-out infinite;
+}
+
+.dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+@keyframes bounce {
+  0%,
+  80%,
+  100% {
+    transform: scale(0.6);
+    opacity: 0.5;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 480px) {
+  .statusArea {
+    min-width: 160px;
+    max-width: 80vw;
+    padding: 0.5rem 0.8rem;
+    bottom: 1rem;
+  }
+}

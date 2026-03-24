@@ -1,0 +1,375 @@
+/* =============================================================
+   buttons.module.css  —  shared button styles
+   Usage:
+     import btnClasses from '@/styles/shared/buttons.module.css';
+     className={`${btnClasses.btnBase} ${btnClasses.primary}`}
+   ============================================================= */
+
+/* ── Base ──────────────────────────────────────────────────── */
+.btnBase {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.5em 1em;
+  border: none;
+  border-radius: var(--btn-border-radius);
+  cursor: pointer;
+  font-size: var(--basic-font);
+  font-family: inherit;
+  font-weight: var(--font-weight-secondary);
+  line-height: 1;
+  transition: var(--transition);
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btnBase:focus,
+.btnBase:focus-visible {
+  outline: none;
+}
+
+/* ── Disabled (applies on top of any variant) ──────────────── */
+.disabled,
+.btnBase:disabled {
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed !important;
+  transform: none !important;
+  pointer-events: none;
+}
+
+/* ── Filled variants ───────────────────────────────────────── */
+
+/* Main / Brown */
+.main {
+  background: var(--clr-btn-main-bg);
+  color: var(--clr-btn-main-text);
+  border: 1px solid var(--clr-btn-main-border);
+  font-weight: var(--clr-btn-main-font-weight, 600);
+}
+.main:hover {
+  background: var(--clr-btn-main-bg-hover);
+  border-color: var(--clr-btn-main-border-hover);
+}
+.main:active {
+  background: var(--clr-btn-main-bg-active);
+  border-color: var(--clr-btn-main-border-active);
+}
+
+/* Primary / Green (secondary palette) */
+.primary {
+  background: var(--clr-btn-secondary-bg);
+  color: var(--clr-btn-secondary-text);
+  border: 1px solid var(--clr-btn-secondary-border);
+}
+.primary:hover {
+  background: var(--clr-btn-secondary-bg-hover);
+  border-color: var(--clr-btn-secondary-border-hover);
+}
+.primary:active {
+  background: var(--clr-btn-secondary-bg-active);
+}
+
+/* Soft / Beige */
+.soft {
+  background: var(--clr-btn-soft-bg);
+  color: var(--clr-btn-soft-text);
+  border: 1px solid var(--clr-btn-soft-border);
+}
+.soft:hover {
+  background: var(--clr-btn-soft-bg-hover);
+  border-color: var(--clr-btn-soft-border-hover);
+}
+.soft:active {
+  background: var(--clr-btn-soft-bg-active);
+}
+
+/* Danger */
+.danger {
+  background: var(--clr-danger-bg);
+  color: var(--clr-danger-text);
+  border: 1px solid var(--clr-danger-border);
+}
+.danger:hover {
+  background: var(--clr-danger-bg-hover);
+}
+.danger:active {
+  background: var(--clr-danger-bg-active);
+}
+
+/* Danger — strong (filled red) */
+.dangerStrong {
+  background: var(--clr-danger-500);
+  color: var(--clr-white);
+  border: none;
+}
+.dangerStrong:hover {
+  background: var(--clr-danger-700);
+}
+
+/* Success */
+.success {
+  background: var(--clr-success-bg);
+  color: var(--clr-success-text);
+  border: 1px solid var(--clr-success-border);
+}
+.success:hover {
+  background: var(--clr-success-bg-hover);
+}
+.success:active {
+  background: var(--clr-success-bg-active);
+}
+
+/* Success — strong (filled green) */
+.successStrong {
+  background: var(--clr-success-500);
+  color: var(--clr-white);
+  border: none;
+}
+.successStrong:hover {
+  background: var(--clr-success-700);
+}
+
+/* Warning */
+.warning {
+  background: var(--clr-orange);
+  color: var(--clr-white);
+  border: none;
+}
+.warning:hover {
+  background: var(--clr-orange-hover);
+}
+
+/* Favorite */
+.favorite {
+  background: var(--clr-bg-card);
+  color: var(--clr-text-primary);
+  border: 1px solid var(--clr-star);
+}
+.favorite:hover {
+  background: var(--clr-bg-hover);
+  border-color: var(--clr-star-hover);
+}
+
+/* ── Outline variant ───────────────────────────────────────── */
+.outline {
+  background: var(--clr-btn-outline-bg);
+  color: var(--clr-btn-outline-text);
+  border: 1px solid var(--clr-btn-outline-border);
+}
+.outline:hover {
+  background: var(--clr-btn-outline-bg-hover);
+  border-color: var(--clr-btn-outline-border-hover);
+}
+.outline:active,
+.outlineActive {
+  background: var(--clr-btn-outline-bg-active);
+  border-color: var(--clr-btn-outline-border-active);
+  color: var(--clr-btn-outline-text-active);
+}
+
+/* ── Ghost / transparent variant ──────────────────────────── */
+.ghost {
+  background: none;
+  color: var(--clr-text-primary);
+  border: none;
+  padding: 0.4rem;
+}
+.ghost:hover {
+  background: var(--clr-bg-hover);
+}
+.ghost:active {
+  background: var(--clr-bg-active);
+}
+
+/* ── Icon-circle button ────────────────────────────────────── */
+/* Plain circle (border only) */
+.iconCircle {
+  background: none;
+  color: var(--clr-text-primary);
+  border: 1.5px solid var(--clr-text-primary);
+  border-radius: 50%;
+  width: var(--btn-circle);
+  height: var(--btn-circle);
+  font-size: var(--btn-icon);
+  padding: 0;
+}
+.iconCircle:hover {
+  transform: scale(var(--scale));
+}
+
+/* Primary filled circle (+ add action) */
+.iconCirclePrimary {
+  background: var(--clr-btn-main-bg);
+  color: var(--clr-btn-main-text);
+  border: 1.5px solid var(--clr-btn-main-border);
+  border-radius: var(--btn-small-border-radius);
+  width: var(--btn-circle-primary);
+  height: var(--btn-circle-primary);
+  font-size: var(--basic-font);
+  padding: 0;
+}
+.iconCirclePrimary:hover {
+  background: var(--clr-btn-main-bg-hover);
+  transform: scale(var(--scale));
+}
+
+/* Icon with green tinted bg */
+.iconTinted {
+  background: var(--clr-btn-icon-bg);
+  color: var(--clr-btn-icon-text);
+  border: 1px solid var(--clr-btn-icon-border);
+  border-radius: 50%;
+  width: var(--btn-circle);
+  height: var(--btn-circle);
+  padding: 0;
+}
+.iconTinted:hover {
+  background: var(--clr-btn-icon-bg-hover);
+  border-color: var(--clr-btn-icon-border-hover);
+  color: var(--clr-btn-icon-text-hover);
+}
+.iconTinted:active {
+  background: var(--clr-btn-icon-bg-active);
+}
+
+/* ── Close button ──────────────────────────────────────────── */
+.closeBtn {
+  background: none;
+  color: var(--clr-text-primary);
+  border: none;
+  padding: 0;
+  line-height: 1;
+}
+.closeBtn svg {
+  display: block;
+  stroke: currentColor;
+  fill: none;
+}
+.closeBtn:hover {
+  color: var(--clr-text-primary);
+  transform: scale(var(--scale));
+}
+
+.closeBtnCircle {
+  background: var(--clr-bg-tertiary);
+  border: 1px solid var(--clr-border-light);
+  border-radius: 50%;
+  width: 3rem;
+  height: 3rem;
+  color: var(--clr-text-secondary);
+}
+
+/* ── Back button ───────────────────────────────────────────── */
+.backBtn {
+  background: none;
+  color: var(--clr-text-primary);
+  border: none;
+  padding: 0.4rem;
+  flex-shrink: 0;
+}
+.backBtn svg {
+  stroke-width: 1.5;
+}
+.backBtn:hover {
+  transform: scale(var(--scale));
+}
+
+/* ── Size modifiers ────────────────────────────────────────── */
+.sm {
+  padding: 0.4em 0.8em;
+  font-size: var(--small-font);
+  border-radius: var(--btn-small-border-radius);
+}
+
+.lg {
+  padding: 0.75em 1.5em;
+  font-size: var(--large-font);
+}
+
+/* ── Scale-on-hover utility (opt-in) ───────────────────────── */
+.hoverScale:hover {
+  transform: scale(var(--scale));
+}
+
+/* ── Responsive ────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .btnBase {
+    padding: 0.4em 0.8em;
+  }
+}
+
+/* ── General action button (genButton) ─────────────────────── */
+/* שימוש: className={btnClasses.genButton}                      */
+.genButton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: none;
+  border-radius: var(--btn-border-radius);
+  color: var(--clr-btn-main-text);
+  background: var(--clr-btn-main-bg);
+  font-size: var(--basic-font);
+  font-weight: var(--clr-btn-main-font-weight);
+  cursor: pointer;
+  transition: var(--transition);
+  padding: 0.8em 1.5em;
+}
+
+.genButton svg {
+  display: block;
+  align-self: center;
+}
+
+.genButton:hover:not(:disabled) {
+  background: var(--clr-btn-main-bg-hover);
+}
+
+.genButton:disabled {
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+}
+
+/* ── Checkbox ──────────────────────────────────────────────── */
+/* שימוש: className={btnClasses.checkBox}                       */
+.checkBox {
+  -webkit-appearance: none;
+  appearance: none;
+  padding: 0.2rem;
+  width: 2rem;
+  height: 2rem;
+  min-width: 2rem;
+  min-height: 2rem;
+  border: 0.15rem solid var(--clr-btn-main-bg);
+  border-radius: 0.3rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-sizing: border-box;
+  flex-shrink: 0;
+}
+
+.checkBox:checked {
+  background-color: var(--clr-btn-main-bg);
+}
+
+.checkBox:checked::after {
+  content: "";
+  width: 0.6rem;
+  height: 1rem;
+  border: solid white;
+  border-width: 0 0.2rem 0.2rem 0;
+  transform: rotate(45deg);
+}
+
+/* ── Button with text label ───────────────────────────────── */
+/* Used when an icon button also has a visible text child      */
+.withText {
+  gap: 0.5rem;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  border: 1px solid var(--clr-border-light);
+  background: var(--clr-bg-tertiary);
+  font-size: var(--basic-font);
+}

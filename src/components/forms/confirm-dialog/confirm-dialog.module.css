@@ -1,0 +1,62 @@
+.dialog {
+  padding: 2.5rem 2rem;
+  text-align: center;
+}
+
+.dialog h3 {
+  margin: 0 0 0.75rem;
+  color: var(--clr-text-primary);
+  font-size: var(--large-font);
+  font-weight: var(--font-weight-heading);
+}
+
+.dialog p {
+  margin: 0 0 2rem;
+  font-size: var(--basic-font);
+  line-height: 1.6;
+  color: var(--clr-text-secondary);
+}
+
+.buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.buttons button {
+  width: 100%;
+  padding: 0.75em 1em;
+  border-radius: 50px;
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.confirmButton {
+  background: var(--clr-text-primary);
+  color: var(--clr-bg-primary);
+  border: none;
+  transition: var(--transition);
+}
+
+.confirmButton:hover {
+  background: var(--clr-text-secondary);
+}
+
+.cancelButton {
+  background: var(--clr-bg-card);
+  color: var(--clr-text-primary);
+  border: 1px solid var(--clr-border-light);
+  transition: var(--transition);
+}
+
+.cancelButton:hover {
+  background: var(--clr-bg-hover);
+}
+
+@media (max-width: 768px) {
+  .dialog {
+    padding: 2rem 1.5rem;
+  }
+}

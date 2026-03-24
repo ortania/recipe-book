@@ -1,0 +1,149 @@
+.inputWrapper {
+  position: relative;
+  width: 100%;
+}
+
+.inputWrapper input {
+  width: 100%;
+  padding: 1rem 1.2rem;
+  border: 2px solid var(--clr-input-border);
+  border-radius: var(--input-border-radius);
+  font-size: var(--basic-font);
+  transition: var(--transition);
+  background: var(--clr-input-bg);
+}
+
+.inputWrapper input::-webkit-contacts-auto-fill-button,
+.inputWrapper input::-webkit-credentials-auto-fill-button {
+  visibility: hidden;
+  display: none !important;
+  pointer-events: none;
+  position: absolute;
+}
+
+.inputWrapper input:focus {
+  outline: none;
+  border-color: var(--clr-input-border-focus);
+  background: var(--clr-input-bg-focus);
+  /* box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1); */
+}
+
+.inputWrapper input:disabled {
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+}
+
+.inputWrapper.hasIcon input {
+  padding-inline-start: 3rem !important;
+}
+
+.inputIcon {
+  position: absolute;
+  inset-inline-start: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-text-muted);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.passwordInput {
+  position: relative;
+  width: 100%;
+}
+
+.passwordInput input {
+  width: 100%;
+  padding-inline-end: 3.5rem;
+}
+
+.passwordInput.hasIcon input {
+  padding-inline-start: 3rem !important;
+}
+
+.eyeButton {
+  position: absolute;
+  inset-inline-end: 0.8rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: var(--clr-btn-icon-text);
+
+  border-radius: var(--icon-border-radius);
+}
+
+.eyeButton svg {
+  stroke: currentColor;
+  fill: none;
+  width: 1.8rem;
+  height: 1.8rem;
+}
+
+.eyeButton:hover svg {
+  stroke: var(--clr-btn-icon-text-hover);
+}
+
+.eyeButton:disabled {
+  opacity: var(--disabled-opacity);
+  cursor: not-allowed;
+}
+
+.fieldWrapper {
+  width: 100%;
+}
+
+.fieldError {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  color: var(--clr-danger-text);
+  font-weight: var(--danger-text-font-weight);
+  font-size: var(--basic-font);
+  margin-top: 0.3rem;
+  padding-inline-start: 0.3rem;
+}
+
+.inputError input {
+  border-color: var(--clr-danger-border) !important;
+}
+
+.hasClear input {
+  padding-inline-end: 3rem !important;
+}
+
+.clearButton {
+  position: absolute;
+  inset-inline-end: 0.6rem;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-text-primary);
+  border-radius: 50%;
+  transition: all 0.2s;
+}
+
+.closeButton svg {
+  display: block;
+  stroke: currentColor;
+  fill: none;
+}
+
+.clearButton:hover svg {
+  stroke: var(--clr-primary-700);
+}

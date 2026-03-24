@@ -1,0 +1,2688 @@
+import React, { useState, useRef, useEffect, useCallback } from "react";
+import { Modal } from "../../modal";
+import { useLanguage, useRecipeBook } from "../../../context";
+import {
+  uploadRecipeImage,
+  normalizeImageDataUrl,
+} from "../../../firebase/imageService";
+import {
+  parseRecipeFromUrl,
+  parseRecipeFromText,
+} from "../../../app/recipeParser";
+import {
+  extractRecipeFromImage,
+  calculateNutrition,
+  parseFreeSpeechRecipe,
+  generateRecipeImageDataUrl,
+} from "../../../services/openai";
+import {
+  Link,
+  ChevronLeft,
+  ChevronRight,
+  Check,
+  Camera,
+  Upload,
+  X,
+  Star,
+  GripVertical,
+  ChevronUp,
+  ChevronDown,
+  Globe,
+  UserCircle,
+  HelpCircle,
+  Mic,
+  Heart,
+  Pencil,
+  FilePenLine,
+  ClipboardList,
+  Eye,
+  Clock,
+  Flame,
+  Utensils,
+  Lightbulb,
+  Info,
+  Loader2,
+  Plus,
+  Sparkles,
+  MessageCircle,
+  CircleCheck,
+} from "lucide-react";
+import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
+import useTranslatedList from "../../../hooks/useTranslatedList";
+import buttonClasses from "../../../styles/shared/buttons.module.css";
+import catShared from "../../../styles/shared/category-chips.module.css";
+import shared from "../../../styles/shared/form-shared.module.css";
+import _screensClasses from "./add-recipe-wizard/wizard-screens.module.css";
+import _formClasses from "./add-recipe-wizard/wizard-form.module.css";
+import _summaryClasses from "./add-recipe-wizard/wizard-summary.module.css";
+const classes = Object.assign({}, _screensClasses, _formClasses, _summaryClasses);
+import { CloseButton } from "../../controls";
+import { formatTime } from "../../recipes/utils";
+import { translateRecipeContent } from "../../../utils/translateContent";
+import {
+  isGroupHeader,
+  getGroupName,
+  makeGroupHeader,
+  ingredientsOnly,
+  parseIngredients,
+  expandGroupHeadersInIngredients,
+  stripTrailingSectionHeaderFromName,
+} from "../../../utils/ingredientUtils";
+
+const INITIAL_RECIPE = {
+  name: "",
+  ingredients: ["", "", ""],
+  instructions: ["", "", ""],
+  prepTime: "",
+  cookTime: "",
+  servings: "",
+  difficulty: "Unknown",
+  sourceUrl: "",
+  videoUrl: "",
+  image_src: "",
+  images: [],
+  categories: [],
+  isFavorite: false,
+  notes: "",
+  rating: 0,
+  shareToGlobal: false,
+  showMyName: false,
+  nutrition: {
+    calories: "",
+    protein: "",
+    carbs: "",
+    fat: "",
+    fiber: "",
+    sugars: "",
+    sodium: "",
+    calcium: "",
+    iron: "",
+    cholesterol: "",
+    saturatedFat: "",
+    note: "",
+  },
+};
+
+const STEP_LABELS = [
+  "basicInfo",
+  "ingredients",
+  "instructions",
+  "imageCategories",
+  "summary",
+];
+
+function AddRecipeWizard({
+  onAddPerson,
+  onCancel,
+  groups = [],
+  defaultGroup = null,
+  initialScreen = "method",
+}) {
+  const { language, t } = useLanguage();
+  const { currentUser, addCategory, deleteCategory } = useRecipeBook();
+  const createdCategoriesRef = useRef([]);
+  const { getTranslated: getTranslatedGroup } = useTranslatedList(
+    groups,
+    "name",
+  );
+  const [screen, setScreen] = useState(initialScreen); // method | url | text | photo | manual | recording
+  const [cameFromRecording, setCameFromRecording] = useState(false);
+  const [manualStep, setManualStep] = useState(0);
+  const [recipe, setRecipe] = useState({
+    ...INITIAL_RECIPE,
+    categories: defaultGroup ? [defaultGroup] : [],
+  });
+  const [recipeUrl, setRecipeUrl] = useState("");
+  const [recipeText, setRecipeText] = useState("");
+  const [isImporting, setIsImporting] = useState(false);
+  const [importError, setImportError] = useState("");
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [generatingAiImage, setGeneratingAiImage] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordingText, setRecordingText] = useState("");
+  const recognitionRef = useRef(null);
+  const isRecordingRef = useRef(false);
+  const accumulatedTextRef = useRef("");
+  const recordingTextRef = useRef("");
+  const [dragIndex, setDragIndex] = useState(null);
+  const [dragField, setDragField] = useState(null);
+  const [dragOverIndex, setDragOverIndex] = useState(null);
+  const [stepError, setStepError] = useState("");
+  const [visitedSteps, setVisitedSteps] = useState(new Set([0]));
+  const [showPreview, setShowPreview] = useState(false);
+  const [imageDragOver, setImageDragOver] = useState(false);
+  const [photoDragOver, setPhotoDragOver] = useState(false);
+  const [importProgress, setImportProgress] = useState(0);
+  const progressRef = useRef(null);
+  const fileInputRef = useRef(null);
+  const cameraInputRef = useRef(null);
+  const photoInputRef = useRef(null);
+  const photoFileInputRef = useRef(null);
+  const ingredientsListRef = useRef(null);
+  const instructionsListRef = useRef(null);
+
+  const handleClose = useCallback(() => {
+    // Delete any categories created during this session
+    for (const catId of createdCategoriesRef.current) {
+      deleteCategory(catId).catch(() => {});
+    }
+    createdCategoriesRef.current = [];
+    onCancel(
+      screen === "recording" || cameFromRecording ? "recording" : undefined,
+    );
+  }, [onCancel, screen, cameFromRecording, deleteCategory]);
+
+  const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
+    setRecipe((prev) => {
+      const items = [...prev[field]];
+      const [moved] = items.splice(fromIndex, 1);
+      items.splice(toIndex, 0, moved);
+      return { ...prev, [field]: items };
+    });
+  }, []);
+
+  const {
+    handleTouchStart,
+    handleTouchMove,
+    handleTouchEnd,
+    isActive: isTouchDragActive,
+  } = useTouchDragDrop(handleTouchReorder);
+  const touchDragJustFinishedRef = useRef(false);
+
+  useEffect(() => {
+    const onMove = (e) => handleTouchMove(e);
+    const onEnd = (e) => {
+      handleTouchEnd(e);
+      touchDragJustFinishedRef.current = true;
+      setTimeout(() => {
+        touchDragJustFinishedRef.current = false;
+      }, 300);
+    };
+    document.addEventListener("touchmove", onMove, { passive: false });
+    document.addEventListener("touchend", onEnd);
+    return () => {
+      document.removeEventListener("touchmove", onMove);
+      document.removeEventListener("touchend", onEnd);
+    };
+  }, [handleTouchMove, handleTouchEnd]);
+
+  const updateRecipe = (field, value) => {
+    setRecipe((prev) => ({ ...prev, [field]: value }));
+    if (stepError) setStepError("");
+  };
+
+  const needsTranslationRef = useRef(false);
+
+  useEffect(() => {
+    if (screen !== "manual" || !needsTranslationRef.current) return;
+    needsTranslationRef.current = false;
+    if (!language || language === "mixed") return;
+    translateRecipeContent(recipe, language)
+      .then((translated) => setRecipe(translated))
+      .catch(() => {});
+  }, [screen]);
+
+  // ========== Import handlers ==========
+  const handleImportFromUrl = async () => {
+    if (!recipeUrl.trim()) {
+      setImportError(t("addWizard", "enterUrl"));
+      return;
+    }
+    setIsImporting(true);
+    setImportError("");
+    setImportProgress(0);
+    progressRef.current = setInterval(() => {
+      setImportProgress((prev) => {
+        if (prev >= 90) {
+          clearInterval(progressRef.current);
+          return 90;
+        }
+        return prev + Math.random() * 15;
+      });
+    }, 400);
+    try {
+      const parsed = await parseRecipeFromUrl(recipeUrl);
+      setRecipe((prev) => ({
+        ...prev,
+        name: parsed.name || prev.name,
+        ingredients: parsed.ingredients
+          ? parsed.ingredients
+              .split("\n")
+              .map((i) => i.trim())
+              .filter(Boolean)
+          : prev.ingredients,
+        instructions: parsed.instructions
+          ? parsed.instructions
+              .split("\n")
+              .map((i) => i.trim())
+              .filter(Boolean)
+          : prev.instructions,
+        prepTime: parsed.prepTime || prev.prepTime,
+        cookTime: parsed.cookTime || prev.cookTime,
+        servings: parsed.servings || prev.servings,
+        image_src: parsed.image_src || prev.image_src,
+        images: parsed.image_src ? [parsed.image_src] : prev.images,
+        sourceUrl: recipeUrl,
+      }));
+      setImportProgress(100);
+      clearInterval(progressRef.current);
+      needsTranslationRef.current = true;
+      setScreen("manual");
+      setManualStep(0);
+    } catch (err) {
+      console.error("[ImportURL]", err);
+      if (err.message && err.message.startsWith("BLOCKED:")) {
+        setImportError(t("addWizard", "importBlocked"));
+      } else {
+        const detail = err.message || String(err);
+        setImportError(`${t("addWizard", "importFailed")} (${detail})`);
+      }
+    } finally {
+      clearInterval(progressRef.current);
+      setIsImporting(false);
+      setImportProgress(0);
+    }
+  };
+
+  const killRecognition = () => {
+    if (recognitionRef.current) {
+      try {
+        recognitionRef.current.onend = null;
+        recognitionRef.current.onresult = null;
+        recognitionRef.current.onerror = null;
+        recognitionRef.current.stop();
+      } catch (e) {
+        /* already stopped */
+      }
+      recognitionRef.current = null;
+    }
+  };
+
+  const startRecognitionSession = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) return;
+
+    killRecognition();
+
+    const recognition = new SR();
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    recognition.continuous = !isMobile;
+    recognition.interimResults = true;
+    recognition.lang = "he-IL";
+    recognition.maxAlternatives = 1;
+
+    let sessionFinal = "";
+
+    recognition.onresult = (event) => {
+      let finalText = "";
+      let interimText = "";
+      for (let i = 0; i < event.results.length; i++) {
+        if (event.results[i].isFinal) {
+          finalText += event.results[i][0].transcript + " ";
+        } else {
+          interimText += event.results[i][0].transcript;
+        }
+      }
+      sessionFinal = finalText;
+      const displayed = accumulatedTextRef.current + finalText + interimText;
+      recordingTextRef.current = displayed;
+      setRecordingText(displayed);
+    };
+
+    recognition.onend = () => {
+      if (sessionFinal) {
+        accumulatedTextRef.current += sessionFinal;
+        sessionFinal = "";
+      }
+      if (isRecordingRef.current) {
+        setTimeout(
+          () => {
+            if (isRecordingRef.current) {
+              startRecognitionSession();
+            }
+          },
+          isMobile ? 300 : 100,
+        );
+      }
+    };
+
+    recognition.onerror = (event) => {
+      console.error("Recording error:", event.error);
+      if (event.error === "not-allowed") {
+        isRecordingRef.current = false;
+        setIsRecording(false);
+        setImportError(t("addWizard", "noSpeechSupport"));
+        return;
+      }
+      if (event.error === "no-speech" || event.error === "aborted") return;
+    };
+
+    recognitionRef.current = recognition;
+    try {
+      recognition.start();
+    } catch (e) {
+      console.error("Failed to start recognition:", e);
+      recognitionRef.current = null;
+      setTimeout(() => {
+        if (isRecordingRef.current) {
+          startRecognitionSession();
+        }
+      }, 500);
+    }
+  };
+
+  const handleStartRecording = () => {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) {
+      setImportError(t("addWizard", "noSpeechSupport"));
+      return;
+    }
+    accumulatedTextRef.current = accumulatedTextRef.current || "";
+    recordingTextRef.current = accumulatedTextRef.current;
+    isRecordingRef.current = true;
+    setIsRecording(true);
+    setImportError("");
+    startRecognitionSession();
+  };
+
+  const handleStopRecording = () => {
+    isRecordingRef.current = false;
+    killRecognition();
+    setIsRecording(false);
+    const text =
+      recordingTextRef.current?.trim() || accumulatedTextRef.current?.trim();
+    if (text) {
+      setRecipeText(text);
+      setRecordingText(text);
+      recordingTextRef.current = text;
+      accumulatedTextRef.current = text;
+    }
+  };
+
+  const matchDifficulty = (spoken) => {
+    if (!spoken) return null;
+    const low = spoken.trim().toLowerCase();
+    const map = {
+      "קל מאוד": "VeryEasy",
+      "very easy": "VeryEasy",
+      veryeasy: "VeryEasy",
+      קל: "Easy",
+      easy: "Easy",
+      בינוני: "Medium",
+      medium: "Medium",
+      קשה: "Hard",
+      hard: "Hard",
+    };
+    for (const [key, val] of Object.entries(map)) {
+      if (low.includes(key)) return val;
+    }
+    return null;
+  };
+
+  const matchCategories = (spoken) => {
+    if (!spoken || groups.length === 0) return [];
+    const low = spoken.trim().toLowerCase();
+    const matched = [];
+    for (const g of groups) {
+      if (g.id === "all") continue;
+      const gName = (g.name || "").toLowerCase();
+      if (gName && low.includes(gName)) matched.push(g.id);
+    }
+    return matched;
+  };
+
+  const doImportFromRecording = () => {
+    const text =
+      recordingText.trim() ||
+      recordingTextRef.current?.trim() ||
+      accumulatedTextRef.current?.trim();
+    if (!text) {
+      setImportError(t("addWizard", "noRecordingText"));
+      return;
+    }
+    setRecipeText(text);
+    setRecordingText(text);
+    setIsImporting(true);
+    setImportError("");
+    try {
+      const parsed = parseRecipeFromText(text);
+      const diff = matchDifficulty(parsed.difficulty);
+      const cats = matchCategories(parsed.category);
+      const rawIngredients =
+        Array.isArray(parsed.ingredients) && parsed.ingredients.length > 0
+          ? parsed.ingredients
+          : typeof parsed.ingredients === "string" && parsed.ingredients
+            ? parsed.ingredients
+                .split(",")
+                .map((i) => i.trim())
+                .filter(Boolean)
+            : null;
+      const { name: nameAfterStrip, header: firstGroupHeader } =
+        stripTrailingSectionHeaderFromName(parsed.name || "");
+      const ingredientsToExpand =
+        rawIngredients !== null && rawIngredients.length > 0
+          ? firstGroupHeader
+            ? [makeGroupHeader(firstGroupHeader), ...rawIngredients]
+            : rawIngredients
+          : null;
+      setRecipe((prev) => ({
+        ...prev,
+        name: nameAfterStrip || parsed.name || prev.name,
+        ingredients:
+          ingredientsToExpand !== null && ingredientsToExpand.length > 0
+            ? expandGroupHeadersInIngredients(ingredientsToExpand)
+            : prev.ingredients,
+        instructions:
+          Array.isArray(parsed.instructions) && parsed.instructions.length > 0
+            ? parsed.instructions
+            : typeof parsed.instructions === "string" && parsed.instructions
+              ? parsed.instructions
+                  .split(".")
+                  .map((i) => i.trim())
+                  .filter(Boolean)
+              : prev.instructions,
+        prepTime: parsed.prepTime || prev.prepTime,
+        cookTime: parsed.cookTime || prev.cookTime,
+        servings: parsed.servings || prev.servings,
+        image_src: parsed.image_src || prev.image_src,
+        difficulty: diff || prev.difficulty,
+        categories:
+          cats.length > 0
+            ? [...new Set([...prev.categories, ...cats])]
+            : prev.categories,
+      }));
+      needsTranslationRef.current = true;
+      setCameFromRecording(true);
+      setScreen("manual");
+      setManualStep(0);
+    } catch (err) {
+      setImportError(t("addWizard", "parseFailed"));
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const doImportWithAI = async () => {
+    const text =
+      recordingText.trim() ||
+      recordingTextRef.current?.trim() ||
+      accumulatedTextRef.current?.trim();
+    if (!text) {
+      setImportError(t("addWizard", "noRecordingText"));
+      return;
+    }
+    setRecipeText(text);
+    setRecordingText(text);
+    setIsImporting(true);
+    setImportError("");
+    try {
+      const categoryNames = groups
+        .filter((g) => g.id !== "all")
+        .map((g) => g.name)
+        .filter(Boolean);
+      const parsed = await parseFreeSpeechRecipe(text, categoryNames);
+      if (parsed.error) {
+        setImportError(parsed.error);
+        return;
+      }
+      const diff = matchDifficulty(parsed.difficulty);
+      const cats = matchCategories(parsed.category);
+      const ingredientsFromParse = Array.isArray(parsed.ingredients)
+        ? parsed.ingredients
+        : typeof parsed.ingredients === "string" && parsed.ingredients.trim()
+          ? parsed.ingredients
+              .replace(/\r\n/g, "\n")
+              .split(/\n/)
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [];
+      const instructionsFromParse = Array.isArray(parsed.instructions)
+        ? parsed.instructions
+        : typeof parsed.instructions === "string" && parsed.instructions.trim()
+          ? parsed.instructions
+              .split(/[.\n]+/)
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [];
+      setRecipe((prev) => ({
+        ...prev,
+        name: parsed.name?.trim() || prev.name,
+        ingredients:
+          ingredientsFromParse.length > 0
+            ? ingredientsFromParse
+            : prev.ingredients,
+        instructions:
+          instructionsFromParse.length > 0
+            ? instructionsFromParse
+            : prev.instructions,
+        prepTime: parsed.prepTime ? `${parsed.prepTime}min` : prev.prepTime,
+        cookTime: parsed.cookTime ? `${parsed.cookTime}min` : prev.cookTime,
+        servings: parsed.servings || prev.servings,
+        image_src: parsed.image_src || prev.image_src,
+        difficulty: diff || prev.difficulty,
+        categories:
+          cats.length > 0
+            ? [...new Set([...prev.categories, ...cats])]
+            : prev.categories,
+      }));
+      needsTranslationRef.current = true;
+      setCameFromRecording(true);
+      setScreen("manual");
+      setManualStep(0);
+    } catch (err) {
+      setImportError(err.message || t("addWizard", "parseFailed"));
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleImportFromRecording = () => {
+    doImportFromRecording();
+  };
+
+  const handleImportFromText = () => {
+    if (!recipeText.trim()) {
+      setImportError(t("addWizard", "enterText"));
+      return;
+    }
+    setIsImporting(true);
+    setImportError("");
+    try {
+      const parsed = parseRecipeFromText(recipeText);
+      setRecipe((prev) => ({
+        ...prev,
+        name: parsed.name || prev.name,
+        ingredients:
+          Array.isArray(parsed.ingredients) && parsed.ingredients.length > 0
+            ? parsed.ingredients
+            : typeof parsed.ingredients === "string" && parsed.ingredients
+              ? parsed.ingredients
+                  .split(",")
+                  .map((i) => i.trim())
+                  .filter(Boolean)
+              : prev.ingredients,
+        instructions:
+          Array.isArray(parsed.instructions) && parsed.instructions.length > 0
+            ? parsed.instructions
+            : typeof parsed.instructions === "string" && parsed.instructions
+              ? parsed.instructions
+                  .split(".")
+                  .map((i) => i.trim())
+                  .filter(Boolean)
+              : prev.instructions,
+        prepTime: parsed.prepTime || prev.prepTime,
+        cookTime: parsed.cookTime || prev.cookTime,
+        servings: parsed.servings || prev.servings,
+        image_src: parsed.image_src || prev.image_src,
+      }));
+      needsTranslationRef.current = true;
+      setScreen("manual");
+      setManualStep(0);
+    } catch (err) {
+      setImportError(t("addWizard", "parseFailed"));
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  const handleImportFromPhoto = async (e) => {
+    const inputEl = e.target;
+    const files = Array.from(inputEl.files || []);
+    if (files.length === 0) return;
+
+    const resetPhotoInputs = () => {
+      try {
+        inputEl.value = "";
+      } catch {}
+      if (photoInputRef.current) photoInputRef.current.value = "";
+      if (photoFileInputRef.current) photoFileInputRef.current.value = "";
+    };
+
+    setIsImporting(true);
+    setImportError("");
+
+    const safetyTimer = setTimeout(() => {
+      setIsImporting(false);
+      setImportError("Timeout - try again");
+      resetPhotoInputs();
+    }, 90000);
+
+    try {
+      const resizeImage = (file, maxDim = 2048) =>
+        new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onerror = reject;
+          reader.onload = () => {
+            const normalized = normalizeImageDataUrl(reader.result);
+            const img = new Image();
+            img.onerror = reject;
+            img.onload = () => {
+              try {
+                const { width, height } = img;
+                if (width <= maxDim && height <= maxDim) {
+                  resolve(normalized);
+                  return;
+                }
+                const scale = maxDim / Math.max(width, height);
+                const canvas = document.createElement("canvas");
+                canvas.width = Math.round(width * scale);
+                canvas.height = Math.round(height * scale);
+                const ctx = canvas.getContext("2d");
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                resolve(canvas.toDataURL("image/jpeg", 0.92));
+              } catch (err) {
+                reject(err);
+              }
+            };
+            img.src = normalized;
+          };
+          reader.readAsDataURL(file);
+        });
+      const base64Images = await Promise.all(files.map((f) => resizeImage(f)));
+      const parsed = await extractRecipeFromImage(base64Images);
+      if (parsed.error) {
+        setImportError(parsed.error);
+        return;
+      }
+      setRecipe((prev) => ({
+        ...prev,
+        name: parsed.name || prev.name,
+        ingredients:
+          Array.isArray(parsed.ingredients) && parsed.ingredients.length > 0
+            ? parsed.ingredients
+            : prev.ingredients,
+        instructions:
+          Array.isArray(parsed.instructions) && parsed.instructions.length > 0
+            ? parsed.instructions
+            : prev.instructions,
+        prepTime: parsed.prepTime || prev.prepTime,
+        cookTime: parsed.cookTime || prev.cookTime,
+        servings: parsed.servings || prev.servings,
+        notes: parsed.notes || prev.notes,
+      }));
+      needsTranslationRef.current = true;
+      setScreen("manual");
+      setManualStep(0);
+    } catch (err) {
+      setImportError(t("addWizard", "photoFailed"));
+    } finally {
+      clearTimeout(safetyTimer);
+      setIsImporting(false);
+      resetPhotoInputs();
+    }
+  };
+
+  const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+  // ========== Image upload ==========
+  const handleImageUpload = async (e) => {
+    const inputEl = e.target;
+    const files = Array.from(inputEl.files || []);
+    if (files.length === 0) return;
+
+    setUploadingImage(true);
+    setImportError("");
+
+    const resetInput = () => {
+      try {
+        inputEl.value = "";
+      } catch {}
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      if (cameraInputRef.current) cameraInputRef.current.value = "";
+    };
+
+    const safetyTimer = setTimeout(() => {
+      setUploadingImage(false);
+      setImportError("Timeout - try again");
+      resetInput();
+    }, 60000);
+
+    try {
+      const userId = currentUser?.uid;
+      if (!userId) throw new Error("Not logged in");
+      const urls = [];
+      for (let i = 0; i < files.length; i++) {
+        const url = await uploadRecipeImage(
+          userId,
+          `new_${Date.now()}_${i}`,
+          files[i],
+        );
+        urls.push(url);
+      }
+      setRecipe((prev) => {
+        const allImages = [...(prev.images || []), ...urls];
+        return {
+          ...prev,
+          images: allImages,
+          image_src: allImages[0] || "",
+        };
+      });
+    } catch (err) {
+      console.error("Image upload failed:", err);
+      setImportError(err.message || "Upload failed");
+    } finally {
+      clearTimeout(safetyTimer);
+      setUploadingImage(false);
+      resetInput();
+    }
+  };
+
+  const handleRemoveImage = (index) => {
+    setRecipe((prev) => {
+      const updated = (prev.images || []).filter((_, i) => i !== index);
+      return {
+        ...prev,
+        images: updated,
+        image_src: updated[0] || "",
+      };
+    });
+  };
+
+  const handleImageDrop = (e) => {
+    e.preventDefault();
+    setImageDragOver(false);
+    const files = Array.from(e.dataTransfer.files).filter(
+      (f) => f.type.startsWith("image/") || /\.jfif$/i.test(f.name),
+    );
+    if (files.length === 0) return;
+    handleImageUpload({ target: { files }, preventDefault: () => {} });
+  };
+
+  const handleGenerateAiImage = async () => {
+    if (!recipe.name?.trim()) {
+      setImportError(t("addWizard", "generateAiImageNeedName"));
+      return;
+    }
+    if (uploadingImage || generatingAiImage) return;
+
+    setGeneratingAiImage(true);
+    setImportError("");
+
+    const safetyTimer = setTimeout(() => {
+      setGeneratingAiImage(false);
+      setImportError("Timeout - try again");
+    }, 120000);
+
+    try {
+      const userId = currentUser?.uid;
+      if (!userId) throw new Error("Not logged in");
+      const ingForPrompt = ingredientsOnly(recipe.ingredients || [])
+        .map((i) => i.trim())
+        .filter(Boolean)
+        .slice(0, 15);
+      const dataUrl = await generateRecipeImageDataUrl({
+        recipeName: recipe.name.trim(),
+        ingredients: ingForPrompt,
+      });
+      const url = await uploadRecipeImage(
+        userId,
+        `new_${Date.now()}_ai`,
+        dataUrl,
+      );
+      setRecipe((prev) => {
+        const allImages = [...(prev.images || []), url];
+        return {
+          ...prev,
+          images: allImages,
+          image_src: allImages[0] || "",
+        };
+      });
+    } catch (err) {
+      console.error("AI image generation failed:", err);
+      setImportError(err.message || t("addWizard", "generateAiImageError"));
+    } finally {
+      clearTimeout(safetyTimer);
+      setGeneratingAiImage(false);
+    }
+  };
+
+  const handlePhotoDrop = (e) => {
+    e.preventDefault();
+    setPhotoDragOver(false);
+    const files = Array.from(e.dataTransfer.files).filter(
+      (f) => f.type.startsWith("image/") || /\.jfif$/i.test(f.name),
+    );
+    if (files.length === 0) return;
+    handleImportFromPhoto({ target: { files }, preventDefault: () => {} });
+  };
+
+  const preventDragDefault = (e) => e.preventDefault();
+
+  // ========== Ingredient/Instruction handlers ==========
+  const handleIngredientChange = (index, value) => {
+    const updated = [...recipe.ingredients];
+    updated[index] = value;
+    updateRecipe("ingredients", updated);
+  };
+
+  const handleAddIngredient = () => {
+    updateRecipe("ingredients", [...recipe.ingredients, ""]);
+  };
+
+  const handleAddIngredientGroup = () => {
+    updateRecipe("ingredients", [
+      ...recipe.ingredients,
+      makeGroupHeader(""),
+      "",
+    ]);
+  };
+
+  const handleRemoveIngredient = (index) => {
+    updateRecipe(
+      "ingredients",
+      recipe.ingredients.filter((_, i) => i !== index),
+    );
+  };
+
+  const handleInstructionChange = (index, value) => {
+    const updated = [...recipe.instructions];
+    updated[index] = value;
+    updateRecipe("instructions", updated);
+  };
+
+  const handleAddInstruction = () => {
+    updateRecipe("instructions", [...recipe.instructions, ""]);
+  };
+
+  const handleRemoveInstruction = (index) => {
+    updateRecipe(
+      "instructions",
+      recipe.instructions.filter((_, i) => i !== index),
+    );
+  };
+
+  const handleDragStart = (e, index, field) => {
+    if (isTouchDragActive()) {
+      e.preventDefault();
+      return;
+    }
+    setDragIndex(index);
+    setDragField(field);
+  };
+
+  const handleDragOver = (e, index) => {
+    e.preventDefault();
+    setDragOverIndex(index);
+  };
+
+  const handleDrop = (targetIndex, field) => {
+    if (dragIndex === null || dragField !== field) return;
+    if (touchDragJustFinishedRef.current) return;
+    const items = [...recipe[field]];
+    const [moved] = items.splice(dragIndex, 1);
+    items.splice(targetIndex, 0, moved);
+    updateRecipe(field, items);
+    setDragIndex(null);
+    setDragField(null);
+    setDragOverIndex(null);
+  };
+
+  const handleDragEnd = () => {
+    setDragIndex(null);
+    setDragField(null);
+    setDragOverIndex(null);
+  };
+
+  const handleMoveItem = (index, direction, field) => {
+    const items = [...recipe[field]];
+    const newIndex = index + direction;
+    if (newIndex < 0 || newIndex >= items.length) return;
+    [items[index], items[newIndex]] = [items[newIndex], items[index]];
+    updateRecipe(field, items);
+  };
+
+  const toggleCategory = (catId) => {
+    setRecipe((prev) => ({
+      ...prev,
+      categories: prev.categories.includes(catId)
+        ? prev.categories.filter((c) => c !== catId)
+        : [...prev.categories, catId],
+    }));
+  };
+
+  // ========== Add Category Inline ==========
+  const [newCategoryName, setNewCategoryName] = useState("");
+  const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
+  const handleAddNewCategory = async () => {
+    const name = newCategoryName.trim();
+    if (!name) return;
+    const COLORS = [
+      "#FF6B6B",
+      "#4ECDC4",
+      "#45B7D1",
+      "#96CEB4",
+      "#9B59B6",
+      "#3498DB",
+      "#F1C40F",
+      "#2ECC71",
+      "#E67E22",
+      "#1ABC9C",
+    ];
+    const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+    try {
+      const newCat = await addCategory({
+        id: Date.now().toString(),
+        name,
+        description: `${name}`,
+        color,
+      });
+      if (newCat) {
+        createdCategoriesRef.current.push(newCat.id);
+        setRecipe((prev) => ({
+          ...prev,
+          categories: [...prev.categories, newCat.id],
+        }));
+      }
+    } catch (err) {
+      console.error("Failed to add category:", err);
+    }
+    setNewCategoryName("");
+    setShowNewCategoryInput(false);
+  };
+
+  // ========== Submit ==========
+  const [saving, setSaving] = useState(false);
+  const [savedMessage, setSavedMessage] = useState("");
+  const handleSubmit = async () => {
+    if (saving) return;
+    setSaving(true);
+    const filledAll = recipe.ingredients.filter(Boolean);
+    const filledIngredients = ingredientsOnly(filledAll);
+    let nutrition = recipe.nutrition || {};
+    const hasNutrition =
+      nutrition.calories && String(nutrition.calories) !== "0";
+    if (filledIngredients.length > 0 && !hasNutrition) {
+      try {
+        const result = await calculateNutrition(
+          filledIngredients,
+          recipe.servings,
+        );
+        if (result && !result.error) {
+          nutrition = {
+            ...nutrition,
+            calories: result.calories ?? nutrition.calories,
+            protein: result.protein ?? nutrition.protein,
+            fat: result.fat ?? nutrition.fat,
+            carbs: result.carbs ?? nutrition.carbs,
+            sugars: result.sugars ?? nutrition.sugars,
+            fiber: result.fiber ?? nutrition.fiber,
+            sodium: result.sodium ?? nutrition.sodium,
+            calcium: result.calcium ?? nutrition.calcium,
+            iron: result.iron ?? nutrition.iron,
+            cholesterol: result.cholesterol ?? nutrition.cholesterol,
+            saturatedFat: result.saturatedFat ?? nutrition.saturatedFat,
+          };
+        } else {
+          console.warn("Nutrition calculation returned error:", result?.error);
+        }
+      } catch (err) {
+        console.error("Nutrition calculation failed:", err);
+      }
+    }
+    const images = recipe.images?.length > 0 ? recipe.images : [];
+    const newRecipe = {
+      name: recipe.name,
+      ingredients: filledAll,
+      instructions: recipe.instructions.filter(Boolean),
+      prepTime: recipe.prepTime,
+      cookTime: recipe.cookTime,
+      servings: recipe.servings ? parseInt(recipe.servings) : null,
+      difficulty: recipe.difficulty,
+      sourceUrl: recipe.sourceUrl,
+      videoUrl: recipe.videoUrl,
+      image_src: images[0] || recipe.image_src,
+      images,
+      categories: recipe.categories,
+      isFavorite: recipe.isFavorite,
+      notes: recipe.notes,
+      rating: recipe.rating || 0,
+      shareToGlobal: recipe.shareToGlobal,
+      showMyName: recipe.shareToGlobal ? recipe.showMyName : false,
+      nutrition,
+    };
+    console.log(
+      "🍎 NUTRITION - Saving new recipe with nutrition:",
+      newRecipe.nutrition,
+    );
+    try {
+      await onAddPerson(newRecipe);
+      createdCategoriesRef.current = [];
+    } catch (err) {
+      console.error("🍎 NUTRITION - Failed to save recipe:", err);
+    }
+    setSaving(false);
+    setSavedMessage(
+      <>
+        <CircleCheck size={18} /> <span>{t("recipes", "saved")}</span>
+      </>,
+    );
+    setTimeout(() => onCancel(), 10000);
+  };
+
+  // ========== Stepper ==========
+  const renderStepper = () => (
+    <div>
+      <div className={classes.stepperHeader}>
+        <h2 className={classes.stepperTitle}>{t("addWizard", "manualAdd")}</h2>
+        <span className={classes.stepperCount}>
+          {t("addWizard", "stepOf")
+            .replace("{current}", manualStep + 1)
+            .replace("{total}", 5)}
+        </span>
+      </div>
+      <div className={classes.segmentedBar}>
+        {STEP_LABELS.map((_, i) => {
+          const canClick =
+            i <= manualStep || visitedSteps.has(i) || canNavigateToStep(i);
+          return (
+            <div
+              key={i}
+              className={`${classes.segment} ${
+                i <= manualStep ? classes.segmentActive : ""
+              } ${i === manualStep ? classes.segmentCurrent : ""} ${
+                canClick ? classes.segmentClickable : ""
+              }`}
+              onClick={() => canClick && handleStepClick(i)}
+            />
+          );
+        })}
+      </div>
+    </div>
+  );
+
+  // ========== Step 1: Basic Info ==========
+  const renderBasicInfo = () => (
+    <div className={classes.stepContent}>
+      <h3 className={classes.stepSectionTitle}>
+        {t("addWizard", "basicInfo")}
+      </h3>
+
+      <div className={shared.formGroup}>
+        <label className={shared.formLabel}>
+          {t("recipes", "recipeName")}
+          <span>*</span>
+        </label>
+        <input
+          type="text"
+          className={shared.formInput}
+          placeholder={t("addWizard", "namePlaceholder")}
+          value={recipe.name}
+          onChange={(e) => updateRecipe("name", e.target.value)}
+        />
+      </div>
+
+      <div className={shared.formRow}>
+        <div className={shared.formGroup}>
+          <label className={shared.formLabel}>
+            {t("recipes", "servings")}
+          </label>
+          <input
+            type="number"
+            className={shared.formInput}
+            placeholder="4"
+            value={recipe.servings}
+            onChange={(e) => updateRecipe("servings", e.target.value)}
+            min="1"
+          />
+        </div>
+        <div className={shared.formGroup}>
+          <label className={shared.formLabel}>
+            {t("recipes", "difficulty")}
+          </label>
+          <select
+            className={shared.formSelect}
+            value={recipe.difficulty}
+            onChange={(e) => updateRecipe("difficulty", e.target.value)}
+          >
+            <option value="Unknown">{t("difficulty", "Unknown")}</option>
+            <option value="VeryEasy">{t("difficulty", "VeryEasy")}</option>
+            <option value="Easy">{t("difficulty", "Easy")}</option>
+            <option value="Medium">{t("difficulty", "Medium")}</option>
+            <option value="Hard">{t("difficulty", "Hard")}</option>
+          </select>
+        </div>
+      </div>
+
+      <div className={shared.formRow}>
+        <div className={shared.formGroup}>
+          <label className={shared.formLabel}>
+            {t("addWizard", "cookTimeMin")}
+          </label>
+          <input
+            type="number"
+            inputMode="numeric"
+            min="0"
+            className={shared.formInput}
+            placeholder="45"
+            value={recipe.cookTime}
+            onChange={(e) =>
+              updateRecipe("cookTime", e.target.value.replace(/[^0-9]/g, ""))
+            }
+          />
+        </div>
+        <div className={shared.formGroup}>
+          <label className={shared.formLabel}>
+            {t("addWizard", "prepTimeMin")}
+          </label>
+          <input
+            type="number"
+            inputMode="numeric"
+            min="0"
+            className={shared.formInput}
+            placeholder="30"
+            value={recipe.prepTime}
+            onChange={(e) =>
+              updateRecipe("prepTime", e.target.value.replace(/[^0-9]/g, ""))
+            }
+          />
+        </div>
+      </div>
+
+      <div className={shared.formGroup}>
+        <label className={shared.formLabel}>
+          {t("recipes", "notes")}
+        </label>
+        <textarea
+          className={shared.formTextarea}
+          placeholder={t("addWizard", "notesPlaceholder")}
+          value={recipe.notes}
+          onChange={(e) => updateRecipe("notes", e.target.value)}
+        />
+      </div>
+
+      <div className={shared.formGroup}>
+        <label className={shared.formLabel}>
+          {t("addWizard", "sourceUrl")}
+        </label>
+        <input
+          type="url"
+          className={shared.formInput}
+          placeholder="https://..."
+          value={recipe.sourceUrl}
+          onChange={(e) => updateRecipe("sourceUrl", e.target.value)}
+        />
+      </div>
+    </div>
+  );
+
+  // ========== Step 2: Ingredients ==========
+  // Parse ingredients box: APPEND only – do not replace existing ingredients (user request).
+  const [parseIngredientsPaste, setParseIngredientsPaste] = useState("");
+  const [parseIngredientsOpen, setParseIngredientsOpen] = useState(false);
+  const [parseIngredientsHelpOpen, setParseIngredientsHelpOpen] =
+    useState(false);
+  const applyParsedIngredients = () => {
+    const text = parseIngredientsPaste.trim();
+    if (!text) return;
+    const parsed = parseIngredients({ ingredients: text });
+    if (parsed.length > 0) {
+      const existing = recipe.ingredients.filter(Boolean);
+      updateRecipe("ingredients", [...existing, ...parsed]);
+      setParseIngredientsPaste("");
+    }
+  };
+
+  const renderIngredients = () => {
+    let ingredientCounter = 0;
+    return (
+      <div className={classes.stepContent}>
+        <h3 className={classes.stepSectionTitle}>
+          {t("recipes", "ingredients")}
+        </h3>
+        <p className={classes.stepSectionSubtitle}>
+          {t("addWizard", "ingredientsSubtitle")}
+        </p>
+
+        <div className={shared.dynamicList} ref={ingredientsListRef}>
+          {recipe.ingredients.map((ing, i) => {
+            const isGroup = isGroupHeader(ing);
+            if (!isGroup) ingredientCounter++;
+            return (
+              <div
+                key={i}
+                data-drag-item
+                className={`${isGroup ? shared.groupItem : classes.dynamicItem} ${dragIndex === i && dragField === "ingredients" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "ingredients" && dragIndex !== i ? (dragIndex > i ? shared.dragOverAbove : shared.dragOverBelow) : ""}`}
+                draggable
+                onDragStart={(e) => handleDragStart(e, i, "ingredients")}
+                onDragOver={(e) => handleDragOver(e, i)}
+                onDrop={() => handleDrop(i, "ingredients")}
+                onDragEnd={handleDragEnd}
+              >
+                <span
+                  className={shared.dragHandle}
+                  onTouchStart={(e) =>
+                    handleTouchStart(e, i, "ingredients", ingredientsListRef)
+                  }
+                >
+                  <GripVertical size={16} />
+                </span>
+                {isGroup ? (
+                  <div className={shared.groupInputBox}>
+                    <input
+                      className={shared.groupInput}
+                      placeholder={t("addWizard", "groupPlaceholder")}
+                      value={getGroupName(ing)}
+                      onChange={(e) =>
+                        handleIngredientChange(
+                          i,
+                          makeGroupHeader(e.target.value),
+                        )
+                      }
+                    />
+                    <button
+                      type="button"
+                      className={`${shared.removeItemBtn} ${classes.removeItemBtn}`}
+                      onClick={() => handleRemoveIngredient(i)}
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className={shared.inputBox}>
+                    <textarea
+                      className={`${shared.dynamicItemInput} ${classes.dynamicItemInput}`}
+                      placeholder={`${t("addWizard", "ingredient")} ${ingredientCounter}`}
+                      value={ing}
+                      rows={1}
+                      onChange={(e) =>
+                        handleIngredientChange(i, e.target.value)
+                      }
+                      onInput={(e) => {
+                        e.target.style.height = "auto";
+                        e.target.style.height = e.target.scrollHeight + "px";
+                      }}
+                      ref={(el) => {
+                        if (el) {
+                          el.style.height = "auto";
+                          el.style.height = el.scrollHeight + "px";
+                        }
+                      }}
+                    />
+                    {recipe.ingredients.length > 1 && (
+                      <button
+                        type="button"
+                        className={`${shared.removeItemBtn} ${classes.removeItemBtn}`}
+                        onClick={() => handleRemoveIngredient(i)}
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+          <div className={shared.addItemRow}>
+            <button
+              type="button"
+              className={shared.addItemBtn}
+              onClick={handleAddIngredient}
+            >
+              + {t("addWizard", "addIngredient")}
+            </button>
+            <button
+              type="button"
+              className={shared.addGroupBtn}
+              onClick={handleAddIngredientGroup}
+            >
+              + {t("addWizard", "addGroup")}
+            </button>
+          </div>
+
+          {/* Parse ingredients: collapsible; APPEND only. Help icon shows explanation. */}
+          <div className={classes.parseIngredientsBox}>
+            <div
+              className={classes.parseIngredientsHeader}
+              role="button"
+              tabIndex={0}
+              onClick={() => setParseIngredientsOpen((o) => !o)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault();
+                  setParseIngredientsOpen((o) => !o);
+                }
+              }}
+              aria-expanded={parseIngredientsOpen}
+            >
+              <span className={classes.parseIngredientsTitle}>
+                {t("addWizard", "parseIngredientsTitle")}
+              </span>
+              <span className={classes.parseIngredientsHeaderIcons}>
+                <button
+                  type="button"
+                  className={classes.parseIngredientsHelpBtn}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setParseIngredientsHelpOpen((h) => !h);
+                  }}
+                  title={t("addWizard", "parseIngredientsWhenToUse")}
+                  aria-label={t("addWizard", "parseIngredientsHelpLabel")}
+                >
+                  <HelpCircle size={18} />
+                </button>
+                {parseIngredientsOpen ? (
+                  <ChevronUp size={20} />
+                ) : (
+                  <ChevronDown size={20} />
+                )}
+              </span>
+            </div>
+            {parseIngredientsHelpOpen && (
+              <div
+                className={classes.parseIngredientsHelpPopover}
+                role="region"
+                aria-label={t("addWizard", "parseIngredientsHelpLabel")}
+              >
+                <button
+                  type="button"
+                  className={classes.parseIngredientsHelpClose}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setParseIngredientsHelpOpen(false);
+                  }}
+                  aria-label={t("common", "close")}
+                >
+                  <X size={18} />
+                </button>
+                <div className={classes.parseIngredientsHelpBody}>
+                  {t("addWizard", "parseIngredientsHelpText")
+                    .split("\n")
+                    .filter(Boolean)
+                    .map((line, i) => {
+                      const colon = line.indexOf(":");
+                      const label = colon >= 0 ? line.slice(0, colon + 1) : "";
+                      const rest =
+                        colon >= 0 ? line.slice(colon + 1).trim() : line;
+                      return (
+                        <div
+                          key={i}
+                          className={classes.parseIngredientsHelpBlock}
+                        >
+                          {label && (
+                            <span className={classes.parseIngredientsHelpLabel}>
+                              {label}
+                            </span>
+                          )}
+                          {(rest || !label) && (
+                            <span
+                              className={classes.parseIngredientsHelpContent}
+                            >
+                              {rest || line}
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                </div>
+              </div>
+            )}
+            {parseIngredientsOpen && (
+              <>
+                <label className={classes.parseIngredientsExampleLabel}>
+                  {t("addWizard", "parseIngredientsExampleLabel")}
+                </label>
+                <textarea
+                  className={classes.parseIngredientsTextarea}
+                  placeholder={t("addWizard", "parseIngredientsPlaceholder")}
+                  value={parseIngredientsPaste}
+                  onChange={(e) => setParseIngredientsPaste(e.target.value)}
+                  rows={5}
+                />
+                <div className={classes.parseIngredientsActions}>
+                  <button
+                    type="button"
+                    className={classes.parseIngredientsApplyBtn}
+                    onClick={applyParsedIngredients}
+                    disabled={!parseIngredientsPaste.trim()}
+                  >
+                    {t("addWizard", "parseIngredientsApply")}
+                  </button>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // ========== Step 3: Instructions ==========
+  const renderInstructions = () => (
+    <div className={classes.stepContent}>
+      <h3 className={classes.stepSectionTitle}>
+        {t("recipes", "instructions")}
+      </h3>
+      <p className={classes.stepSectionSubtitle}>
+        {t("addWizard", "instructionsSubtitle")}
+      </p>
+
+      <div className={shared.dynamicList} ref={instructionsListRef}>
+        {recipe.instructions.map((inst, i) => (
+          <div
+            key={i}
+            data-drag-item
+            className={`${classes.dynamicItem} ${dragIndex === i && dragField === "instructions" ? classes.dragging : ""} ${dragOverIndex === i && dragIndex !== null && dragField === "instructions" && dragIndex !== i ? (dragIndex > i ? shared.dragOverAbove : shared.dragOverBelow) : ""}`}
+            draggable
+            onDragStart={(e) => handleDragStart(e, i, "instructions")}
+            onDragOver={(e) => handleDragOver(e, i)}
+            onDrop={() => handleDrop(i, "instructions")}
+            onDragEnd={handleDragEnd}
+          >
+            <span
+              className={shared.dragHandle}
+              onTouchStart={(e) =>
+                handleTouchStart(e, i, "instructions", instructionsListRef)
+              }
+            >
+              <GripVertical size={16} />
+            </span>
+            <div className={`${shared.instructionBox} ${classes.instructionBox}`}>
+              {recipe.instructions.length > 1 && (
+                <button
+                  type="button"
+                  className={`${shared.instructionRemoveBtn} ${classes.instructionRemoveBtn}`}
+                  onClick={() => handleRemoveInstruction(i)}
+                >
+                  <X size={16} />
+                </button>
+              )}
+              <div className={`${shared.instructionContent} ${classes.instructionContent}`}>
+                <span className={`${shared.dynamicItemNumber} ${classes.dynamicItemNumber}`}>{i + 1}.</span>
+                <textarea
+                  className={`${shared.dynamicItemTextarea} ${classes.dynamicItemTextarea}`}
+                  placeholder={`${t("addWizard", "step")} ${i + 1}...`}
+                  value={inst}
+                  onChange={(e) => handleInstructionChange(i, e.target.value)}
+                  onInput={(e) => {
+                    e.target.style.height = "auto";
+                    e.target.style.height = e.target.scrollHeight + "px";
+                  }}
+                  ref={(el) => {
+                    if (el) {
+                      el.style.height = "auto";
+                      el.style.height = el.scrollHeight + "px";
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+        ))}
+        <button
+          type="button"
+          className={shared.addItemBtn}
+          onClick={handleAddInstruction}
+        >
+          + {t("addWizard", "addStep")}
+        </button>
+      </div>
+
+      <div className={shared.formGroup}>
+        <label className={shared.formLabel}>
+          {t("addWizard", "videoUrl")}
+        </label>
+        <input
+          type="url"
+          className={shared.formInput}
+          placeholder="https://youtube.com/..."
+          value={recipe.videoUrl}
+          onChange={(e) => updateRecipe("videoUrl", e.target.value)}
+        />
+      </div>
+    </div>
+  );
+
+  // ========== Step 4: Image & Categories ==========
+  const renderImageCategories = () => (
+    <div className={classes.stepContent}>
+      <h3 className={classes.stepSectionTitle}>
+        {t("addWizard", "imageCategories")}
+      </h3>
+
+      <div className={shared.formGroup}>
+        <label className={shared.formLabel}>
+          {t("addWizard", "recipeImage")}
+        </label>
+        {recipe.images?.length > 0 ? (
+          <>
+            <div
+              className={`${shared.imageGrid} ${imageDragOver ? shared.dropActive : ""}`}
+              onDragOver={(e) => {
+                preventDragDefault(e);
+                setImageDragOver(true);
+              }}
+              onDragLeave={() => setImageDragOver(false)}
+              onDrop={handleImageDrop}
+            >
+              {recipe.images.map((url, i) => (
+                <div key={i} className={shared.imageGridItem}>
+                  <img
+                    src={url}
+                    alt={`${i + 1}`}
+                    className={shared.imageGridPreview}
+                  />
+                  <button
+                    type="button"
+                    className={classes.imageRemoveBtn}
+                    onClick={() => handleRemoveImage(i)}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className={classes.addMoreImages}>
+              {isMobileDevice && (
+                <div
+                  className={classes.addItemBtn}
+                  style={{ position: "relative", overflow: "hidden" }}
+                >
+                  <input
+                    type="file"
+                    accept="image/*,.jfif"
+                    capture="environment"
+                    ref={cameraInputRef}
+                    onChange={handleImageUpload}
+                    style={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      opacity: 0,
+                      cursor: "pointer",
+                      zIndex: 2,
+                    }}
+                  />
+                  <Camera size={16} /> {t("addWizard", "takePhoto")}
+                </div>
+              )}
+              <div
+                className={classes.addItemBtn}
+                style={{ position: "relative", overflow: "hidden" }}
+              >
+                <input
+                  type="file"
+                  accept="image/*,.jfif"
+                  ref={fileInputRef}
+                  onChange={handleImageUpload}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    opacity: 0,
+                    cursor: "pointer",
+                    zIndex: 2,
+                  }}
+                />
+                <Plus size={16} /> {t("addWizard", "addMoreImages")}
+              </div>
+              <button
+                type="button"
+                className={classes.generateAiImageBtn}
+                onClick={handleGenerateAiImage}
+                disabled={uploadingImage || generatingAiImage}
+              >
+                {generatingAiImage ? (
+                  <Loader2 size={16} className={classes.spinning} />
+                ) : (
+                  <Sparkles size={16} />
+                )}
+                {generatingAiImage
+                  ? t("addWizard", "generatingAiImage")
+                  : t("addWizard", "generateAiImage")}
+              </button>
+            </div>
+          </>
+        ) : (
+          <div
+            className={`${classes.imageUploadButtons} ${imageDragOver ? shared.dropActive : ""}`}
+            onDragOver={(e) => {
+              preventDragDefault(e);
+              setImageDragOver(true);
+            }}
+            onDragLeave={() => setImageDragOver(false)}
+            onDrop={handleImageDrop}
+          >
+            {isMobileDevice && (
+              <div
+                className={classes.imageOptionBtn}
+                style={{ position: "relative", overflow: "hidden" }}
+              >
+                <input
+                  type="file"
+                  accept="image/*,.jfif"
+                  capture="environment"
+                  ref={cameraInputRef}
+                  onChange={handleImageUpload}
+                  style={{
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    width: "100%",
+                    height: "100%",
+                    opacity: 0,
+                    cursor: "pointer",
+                    zIndex: 2,
+                  }}
+                />
+                <Camera className={classes.imageOptionIcon} />
+                <span>{t("addWizard", "takePhoto")}</span>
+              </div>
+            )}
+            <div
+              className={classes.imageOptionBtn}
+              style={{ position: "relative", overflow: "hidden" }}
+            >
+              <input
+                type="file"
+                accept="image/*,.jfif"
+                ref={fileInputRef}
+                onChange={handleImageUpload}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  opacity: 0,
+                  cursor: "pointer",
+                  zIndex: 2,
+                }}
+              />
+              <Upload className={classes.imageOptionIcon} />
+              <span>{t("addWizard", "fromFile")}</span>
+            </div>
+            <button
+              type="button"
+              className={classes.generateAiImageBtn}
+              onClick={handleGenerateAiImage}
+              disabled={uploadingImage || generatingAiImage}
+            >
+              {generatingAiImage ? (
+                <Loader2 size={16} className={classes.spinning} />
+              ) : (
+                <Sparkles size={16} />
+              )}
+              {generatingAiImage
+                ? t("addWizard", "generatingAiImage")
+                : t("addWizard", "generateAiImage")}
+            </button>
+            <p className={classes.imageHint}>
+              {t("addWizard", "multipleImagesHint")}
+            </p>
+          </div>
+        )}
+        {(uploadingImage || generatingAiImage) && (
+          <p className={classes.imageHint}>
+            {uploadingImage
+              ? t("recipes", "uploading")
+              : t("addWizard", "generatingAiImage")}
+          </p>
+        )}
+        {importError && <p className={classes.errorText}>{importError}</p>}
+      </div>
+
+      <div className={shared.formGroup}>
+        <label className={shared.formLabel}>
+          {t("addWizard", "categories")}
+        </label>
+        <div className={catShared.categoryChips}>
+          {groups
+            .filter((g) => g.id !== "all")
+            .map((group) => (
+              <button
+                key={group.id}
+                type="button"
+                className={`${catShared.categoryChip} ${
+                  recipe.categories.includes(group.id)
+                    ? catShared.categoryChipActive
+                    : ""
+                }`}
+                onClick={() => toggleCategory(group.id)}
+              >
+                {getTranslatedGroup(group)}
+              </button>
+            ))}
+          {showNewCategoryInput ? (
+            <div className={catShared.newCategoryInline}>
+              <input
+                type="text"
+                className={catShared.newCategoryInput}
+                placeholder={t("categories", "categoryName")}
+                value={newCategoryName}
+                onChange={(e) => setNewCategoryName(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault();
+                    handleAddNewCategory();
+                  }
+                  if (e.key === "Escape") {
+                    setShowNewCategoryInput(false);
+                    setNewCategoryName("");
+                  }
+                }}
+                autoFocus
+              />
+              <button
+                type="button"
+                className={catShared.newCategoryConfirmBtn}
+                onClick={handleAddNewCategory}
+                disabled={!newCategoryName.trim()}
+              >
+                <Check size={18} />
+              </button>
+              <button
+                type="button"
+                className={catShared.newCategoryCancelBtn}
+                onClick={() => {
+                  setShowNewCategoryInput(false);
+                  setNewCategoryName("");
+                }}
+              >
+                <X size={14} />
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              className={catShared.addCategoryChip}
+              onClick={() => setShowNewCategoryInput(true)}
+            >
+              <Plus size={14} /> {t("categories", "addCategory")}
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  // ========== Step 5: Summary ==========
+  const renderPreview = () => {
+    const filledIngredients = recipe.ingredients.filter((i) => i.trim());
+    const filledInstructions = recipe.instructions.filter((i) => i.trim());
+    return (
+      <div className={classes.previewOverlay}>
+        <div className={classes.previewCard}>
+
+          <CloseButton
+            type="button"
+            className={classes.previewCloseBtn}
+            onClick={() => setShowPreview(false)}
+            size={25}
+          />
+
+          {recipe.image_src ? (
+            <img
+              src={recipe.image_src}
+              alt={recipe.name}
+              className={classes.previewImage}
+            />
+          ) : (
+            <div className={classes.previewNoImage}>
+              {t("recipes", "noImage")}
+            </div>
+          )}
+          <div className={classes.previewBody}>
+            <h3 className={classes.previewName}>{recipe.name || "—"}</h3>
+            {(recipe.prepTime || recipe.cookTime || recipe.servings) && (
+              <div className={classes.previewMeta}>
+                {recipe.prepTime && (
+                  <span>
+                    <Clock size={14} />{" "}
+                    {formatTime(recipe.prepTime, t("recipes", "minutes"))}
+                  </span>
+                )}
+                {recipe.cookTime && (
+                  <span>
+                    <Flame size={14} />{" "}
+                    {formatTime(recipe.cookTime, t("recipes", "minutes"))}
+                  </span>
+                )}
+                {recipe.servings && (
+                  <span>
+                    <Utensils size={14} /> {recipe.servings}{" "}
+                    {t("recipes", "servings")}
+                  </span>
+                )}
+              </div>
+            )}
+            {filledIngredients.length > 0 && (
+              <>
+                <h4 className={classes.previewSectionTitle}>
+                  {t("recipes", "ingredients")}
+                </h4>
+                <ul className={classes.previewList}>
+                  {filledIngredients.map((ing, i) =>
+                    isGroupHeader(ing) ? (
+                      <li key={i} className={classes.previewGroupHeader}>
+                        {getGroupName(ing)}
+                      </li>
+                    ) : (
+                      <li key={i}>{ing}</li>
+                    ),
+                  )}
+                </ul>
+              </>
+            )}
+            {filledInstructions.length > 0 && (
+              <>
+                <h4 className={classes.previewSectionTitle}>
+                  {t("recipes", "instructions")}
+                </h4>
+                <ol className={classes.previewList}>
+                  {filledInstructions.map((inst, i) => (
+                    <li key={i}>{inst}</li>
+                  ))}
+                </ol>
+              </>
+            )}
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  const renderSummary = () => (
+    <div className={classes.stepContent}>
+      <h3 className={classes.stepSectionTitle}>
+        {t("addWizard", "summaryTitle")}
+      </h3>
+      <p className={classes.stepSectionSubtitle}>
+        {t("addWizard", "summarySubtitle")}
+      </p>
+
+      <div className={classes.summaryBox}>
+        <div className={classes.summaryIcon}>
+          <Check size={48} />
+        </div>
+        <h4 className={classes.summaryTitle}>
+          {t("addWizard", "recipeReady")}
+        </h4>
+        <p className={classes.summaryText}>{t("addWizard", "savePrompt")}</p>
+        <button
+          type="button"
+          className={classes.previewBtn}
+          onClick={() => setShowPreview(true)}
+        >
+          <Eye size={16} /> {t("addWizard", "previewRecipe")}
+        </button>
+      </div>
+
+      {showPreview && renderPreview()}
+
+      <div className={shared.formGroup}>
+        <label className={shared.formLabel}>
+          {t("addWizard", "rating")}
+        </label>
+        <div className={classes.starRating}>
+          {[1, 2, 3, 4, 5].map((star) => (
+            <button
+              key={star}
+              type="button"
+              className={`${classes.starBtn} ${star <= recipe.rating ? classes.starBtnActive : ""}`}
+              onClick={() =>
+                updateRecipe("rating", star === recipe.rating ? 0 : star)
+              }
+            >
+              <Star size={24} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <label className={classes.favoriteToggle}>
+        <input
+          type="checkbox"
+          className={classes.favoriteCheckbox + " " + buttonClasses.checkBox}
+          checked={recipe.isFavorite}
+          onChange={() => updateRecipe("isFavorite", !recipe.isFavorite)}
+        />
+        <Heart size={16} />
+        <span className={classes.favoriteLabel}>
+          {t(
+            "recipes",
+            recipe.isFavorite ? "removeFromFavorites" : "addToFavorites",
+          )}
+        </span>
+      </label>
+
+      <label className={classes.favoriteToggle}>
+        <input
+          type="checkbox"
+          className={classes.favoriteCheckbox + " " + buttonClasses.checkBox}
+          checked={recipe.shareToGlobal}
+          onChange={() => {
+            const next = !recipe.shareToGlobal;
+            updateRecipe("shareToGlobal", next);
+            if (!next) updateRecipe("showMyName", false);
+          }}
+        />
+        <Globe size={16} />
+        <span className={classes.favoriteLabel}>
+          {t("recipes", "shareToGlobal")}
+        </span>
+      </label>
+    </div>
+  );
+
+  // ========== Manual step navigation ==========
+  const renderManualStep = () => {
+    switch (manualStep) {
+      case 0:
+        return renderBasicInfo();
+      case 1:
+        return renderIngredients();
+      case 2:
+        return renderInstructions();
+      case 3:
+        return renderImageCategories();
+      case 4:
+        return renderSummary();
+      default:
+        return null;
+    }
+  };
+
+  const isStepValid = (step) => {
+    switch (step) {
+      case 0:
+        return recipe.name.trim().length > 0;
+      case 1:
+        return recipe.ingredients.some((ing) => ing && ing.trim().length > 0);
+      case 2:
+        return recipe.instructions.some(
+          (inst) => inst && inst.trim().length > 0,
+        );
+      default:
+        return true;
+    }
+  };
+
+  const getStepError = (step) => {
+    switch (step) {
+      case 0:
+        return t("addWizard", "requiredName");
+      case 1:
+        return t("addWizard", "requiredIngredients");
+      case 2:
+        return t("addWizard", "requiredInstructions");
+      default:
+        return "";
+    }
+  };
+
+  const canProceed = () => isStepValid(manualStep);
+
+  const canNavigateToStep = (targetStep) => {
+    for (let s = 0; s < targetStep; s++) {
+      if (!isStepValid(s)) return false;
+    }
+    return true;
+  };
+
+  const handleNext = async () => {
+    if (!isStepValid(manualStep)) {
+      setStepError(getStepError(manualStep));
+      return;
+    }
+    setStepError("");
+    if (manualStep === 4) {
+      await handleSubmit();
+    } else {
+      const nextStep = manualStep + 1;
+      setManualStep(nextStep);
+      setVisitedSteps((prev) => new Set([...prev, nextStep]));
+    }
+  };
+
+  const handlePrev = () => {
+    setStepError("");
+    setManualStep(manualStep - 1);
+  };
+
+  const handleStepClick = (stepIndex) => {
+    if (stepIndex > manualStep && !canNavigateToStep(stepIndex)) {
+      const firstInvalidStep = Array.from(
+        { length: stepIndex },
+        (_, i) => i,
+      ).find((s) => !isStepValid(s));
+      if (firstInvalidStep !== undefined) {
+        setStepError(getStepError(firstInvalidStep));
+      }
+      return;
+    }
+    setStepError("");
+    setManualStep(stepIndex);
+    setVisitedSteps((prev) => new Set([...prev, stepIndex]));
+  };
+
+  // ========== Screens ==========
+  const renderMethodSelection = () => (
+    <div className={classes.wizardContainer}>
+
+      <CloseButton
+        className={classes.methodCloseBtn}
+        onClick={handleClose}
+        size={25}
+      />
+
+      <h1 className={classes.methodTitle}>{t("addWizard", "title")}</h1>
+      <p className={classes.methodSubtitle}>{t("addWizard", "subtitle")}</p>
+
+      <div className={classes.methodCards}>
+        <div
+          className={`${classes.methodCard} ${classes.methodCardPhoto}`}
+          onClick={() => setScreen("photo")}
+        >
+          <div className={`${classes.methodIcon} ${classes.methodIconPhoto}`}>
+            <Camera size={24} />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "fromPhoto")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "fromPhotoDesc")}
+            </p>
+          </div>
+ 
+        </div>
+        <div
+          className={`${classes.methodCard} ${classes.methodCardUrl}`}
+          onClick={() => setScreen("url")}
+        >
+          <div className={`${classes.methodIcon} ${classes.methodIconUrl}`}>
+            <Link size={24} />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "fromUrl")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "fromUrlDesc")}
+            </p>
+          </div>
+ 
+        </div>
+
+        <div
+          className={`${classes.methodCard} ${classes.methodCardText}`}
+          onClick={() => setScreen("text")}
+        >
+          <div className={`${classes.methodIcon} ${classes.methodIconText}`}>
+            <ClipboardList size={24} />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "fromText")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "fromTextDesc")}
+            </p>
+          </div>
+
+        </div>
+
+        <div
+          className={`${classes.methodCard} ${classes.methodCardRecording}`}
+          onClick={() => setScreen("recording")}
+        >
+          <div
+            className={`${classes.methodIcon} ${classes.methodIconRecording}`}
+          >
+            <Mic size={24} />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "fromRecording")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "fromRecordingDesc")}
+            </p>
+          </div>
+
+        </div>
+
+        <div
+          className={`${classes.methodCard} ${classes.methodCardManual}`}
+          onClick={() => {
+            setScreen("manual");
+            setManualStep(0);
+          }}
+        >
+          <div className={`${classes.methodIcon} ${classes.methodIconManual}`}>
+            <FilePenLine size={24} />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "manual")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "manualDesc")}
+            </p>
+          </div>
+   
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderUrlScreen = () => (
+    <div className={classes.wizardContainer}>
+      <div className={classes.screenTopBar}>
+        <button
+          type="button"
+          className={classes.backLink}
+          onClick={() => {
+            setScreen("method");
+            setImportError("");
+          }}
+        >
+          <ChevronRight  /> {t("addWizard", "backToMethod")}
+        </button>
+        <CloseButton
+          onClick={handleClose}
+          size={25}
+        />
+      </div>
+
+      <h2 className={classes.screenTitle}>{t("addWizard", "fromUrlTitle")}</h2>
+      <p className={classes.screenSubtitle}>
+        {t("addWizard", "fromUrlSubtitle")}
+      </p>
+
+      <label className={classes.fieldLabel}>
+        {t("addWizard", "recipeLink")}
+      </label>
+      <input
+        type="url"
+        className={shared.formInput}
+        placeholder="https://example.com/recipe/chocolate-cake"
+        value={recipeUrl}
+        onChange={(e) => setRecipeUrl(e.target.value)}
+      />
+
+      <div className={classes.tipBox}>
+        <span className={classes.tipIcon}>
+          <Lightbulb size={16} />
+        </span>
+        <span>
+          <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
+          {t("addWizard", "urlTip")}
+        </span>
+      </div>
+
+      {isImporting && (
+        <>
+          <div className={classes.progressBarContainer}>
+            <div
+              className={classes.progressBar}
+              style={{ width: `${Math.min(importProgress, 100)}%` }}
+            />
+          </div>
+          <p className={classes.aiProcessingHint}>
+            {t("addWizard", "aiProcessingHint")}
+          </p>
+        </>
+      )}
+
+      {importError && <p className={classes.errorText}>{importError}</p>}
+
+      <button
+        className={classes.continueBtn}
+        onClick={handleImportFromUrl}
+        disabled={isImporting || !recipeUrl.trim()}
+      >
+        {isImporting ? t("addWizard", "importing") : t("addWizard", "continue")}
+        {/* {!isImporting && <ChevronRight />} */}
+      </button>
+    </div>
+  );
+
+  const renderTextScreen = () => (
+    <div className={classes.wizardContainer}>
+      <div className={classes.screenTopBar}>
+        <button
+          type="button"
+          className={classes.backLink}
+          onClick={() => {
+            setScreen("method");
+            setImportError("");
+          }}
+        >
+          <ChevronRight /> {t("addWizard", "backToMethod")}
+        </button>
+        <CloseButton
+          onClick={handleClose}
+          size={25}
+        />
+      </div>
+
+      <h2 className={classes.screenTitle}>{t("addWizard", "fromTextTitle")}</h2>
+      <p className={classes.screenSubtitle}>
+        {t("addWizard", "fromTextSubtitle")}
+      </p>
+
+      <label className={classes.fieldLabel}>
+        {t("addWizard", "recipeTextLabel")}
+      </label>
+      <textarea
+        className={shared.formTextareaPaste}
+        placeholder={t("addWizard", "textPlaceholder")}
+        value={recipeText}
+        onChange={(e) => setRecipeText(e.target.value)}
+      />
+
+      <div className={`${classes.tipBox} ${classes.tipBoxPurple}`}>
+        <span className={classes.tipIcon}>
+          <Lightbulb size={16} />
+        </span>
+        <span>
+          <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
+          {t("addWizard", "textTip")}
+        </span>
+      </div>
+
+      {importError && <p className={classes.errorText}>{importError}</p>}
+
+      <button
+        className={classes.continueBtn}
+        onClick={handleImportFromText}
+        disabled={isImporting || !recipeText.trim()}
+      >
+        {isImporting
+          ? t("addWizard", "importing")
+          : t("addWizard", "parseAndImport")}
+        {/* {!isImporting && <ChevronRight />} */}
+      </button>
+    </div>
+  );
+
+  const renderRecordingScreen = () => (
+    <div className={classes.wizardContainer}>
+      <div className={classes.screenTopBar}>
+        <button
+          type="button"
+          className={classes.backLink}
+          onClick={() => {
+            handleStopRecording();
+            setRecordingText("");
+            setScreen("method");
+            setImportError("");
+          }}
+        >
+          <ChevronRight /> {t("addWizard", "backToMethod")}
+        </button>
+        <CloseButton onClick={handleClose} size={25}/>
+      </div>
+
+      <h2 className={classes.screenTitle}>
+        {t("addWizard", "fromRecordingTitle")}
+      </h2>
+      <p className={classes.screenSubtitle}>
+        {t("addWizard", "fromRecordingSubtitle")}
+      </p>
+
+      <div className={classes.recordingArea}>
+        {!isRecording && (
+          <button
+            type="button"
+            className={classes.recordBtn}
+            onClick={handleStartRecording}
+          >
+            <Mic size={28} />
+            <span>
+              {recordingText.trim()
+                ? t("addWizard", "continueRecording")
+                : t("addWizard", "startRecording")}
+            </span>
+          </button>
+        )}
+
+        {isRecording && (
+          <>
+            <div className={classes.recordingPulse} />
+            <button
+              type="button"
+              className={classes.stopRecordBtn}
+              onClick={handleStopRecording}
+            >
+              <span className={classes.stopIcon} />
+              <span>{t("addWizard", "stopRecording")}</span>
+            </button>
+          </>
+        )}
+      </div>
+
+      {!isRecording && recordingText.trim() && (
+        <div className={classes.recordingPreview}>
+          <label className={classes.fieldLabel}>
+            {t("addWizard", "recordedText")}:
+          </label>
+          <textarea
+            className={shared.formTextareaPaste}
+            value={recordingText}
+            onChange={(e) => setRecordingText(e.target.value)}
+            rows={6}
+          />
+          <p className={classes.fieldHint}>
+            {t("addWizard", "recordedTextHint")}
+          </p>
+        </div>
+      )}
+
+      <div className={`${classes.tipBox} ${classes.tipBoxPurple}`}>
+        <span className={classes.tipIcon}>
+          <Mic size={16} />
+        </span>
+        <span>
+          <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
+          {t("addWizard", "recordingTip")
+            .split("\\n")
+            .map((line, i) => (
+              <span key={i}>
+                {i > 0 && <br />}
+                {line}
+              </span>
+            ))}
+        </span>
+      </div>
+
+      <div className={`${classes.tipBox} ${classes.tipBoxGreen}`}>
+        <span className={classes.tipIcon}>
+          <Lightbulb size={16} />
+        </span>
+        <span>{t("addWizard", "recordingExample")}</span>
+      </div>
+
+      <div className={`${classes.tipBox} ${classes.tipBoxBlue}`}>
+        <span className={classes.tipIcon}>
+          <MessageCircle size={16} />
+        </span>
+        <span>{t("addWizard", "freeSpeechNote")}</span>
+      </div>
+
+      {importError && <p className={classes.errorText}>{importError}</p>}
+
+      {!isRecording && recordingText.trim() && (
+        <div className={classes.recordingActions}>
+          {isImporting && (
+            <p className={classes.aiProcessingHint}>
+              {t("addWizard", "aiProcessingHint")}
+            </p>
+          )}
+          <button
+            type="button"
+            className={classes.continueBtn}
+            onClick={handleImportFromRecording}
+            disabled={isImporting}
+          >
+            {isImporting
+              ? t("addWizard", "importing")
+              : t("addWizard", "parseAndImport")}
+            {/* {!isImporting && <ChevronRight />} */}
+          </button>
+          <button
+            type="button"
+            className={classes.aiParseBtn}
+            onClick={doImportWithAI}
+            disabled={isImporting}
+          >
+            {isImporting ? (
+              t("addWizard", "importing")
+            ) : (
+              <>
+                <Sparkles size={16} />
+                {t("addWizard", "aiParse")}
+              </>
+            )}
+          </button>
+          <button
+            type="button"
+            className={classes.secondaryBtn}
+            onClick={() => {
+              setRecordingText("");
+              setImportError("");
+              accumulatedTextRef.current = "";
+              recordingTextRef.current = "";
+              setRecipeText("");
+              handleStartRecording();
+            }}
+          >
+            {t("addWizard", "reRecord")}
+          </button>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderPhotoScreen = () => (
+    <div className={classes.wizardContainer}>
+      <div className={classes.screenTopBar}>
+        <button
+          type="button"
+          className={classes.backLink}
+          onClick={() => {
+            setScreen("method");
+            setImportError("");
+          }}
+        >
+          <ChevronRight /> {t("addWizard", "backToMethod")}
+        </button>
+        <CloseButton
+          onClick={handleClose}
+          size={25}
+        />
+      </div>
+
+      <h2 className={classes.screenTitle}>
+        {t("addWizard", "fromPhotoTitle")}
+      </h2>
+      <p className={classes.screenSubtitle}>
+        {t("addWizard", "fromPhotoSubtitle")}
+      </p>
+
+      {isImporting ? (
+        <div className={classes.photoUploadArea}>
+          <Camera className={classes.photoUploadIcon} />
+          <span className={classes.photoUploadText}>
+            {t("addWizard", "analyzingPhoto")}
+          </span>
+          <p className={classes.aiProcessingHint}>
+            {t("addWizard", "aiProcessingHint")}
+          </p>
+        </div>
+      ) : (
+        <div
+          className={`${classes.imageUploadButtons} ${photoDragOver ? shared.dropActive : ""}`}
+          onDragOver={(e) => {
+            preventDragDefault(e);
+            setPhotoDragOver(true);
+          }}
+          onDragLeave={() => setPhotoDragOver(false)}
+          onDrop={handlePhotoDrop}
+        >
+          {isMobileDevice && (
+            <div
+              className={classes.imageOptionBtn}
+              style={{ position: "relative", overflow: "hidden" }}
+            >
+              <input
+                type="file"
+                accept="image/*,.jfif"
+                capture="environment"
+                ref={photoInputRef}
+                onChange={handleImportFromPhoto}
+                style={{
+                  position: "absolute",
+                  top: 0,
+                  left: 0,
+                  width: "100%",
+                  height: "100%",
+                  opacity: 0,
+                  cursor: "pointer",
+                  zIndex: 2,
+                }}
+              />
+              <Camera className={classes.imageOptionIcon} />
+              <span>{t("addWizard", "takePhoto")}</span>
+            </div>
+          )}
+          <div
+            className={classes.imageOptionBtn}
+            style={{ position: "relative", overflow: "hidden" }}
+          >
+            <input
+              type="file"
+              accept="image/*,.jfif"
+              ref={photoFileInputRef}
+              onChange={handleImportFromPhoto}
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                width: "100%",
+                height: "100%",
+                opacity: 0,
+                cursor: "pointer",
+                zIndex: 2,
+              }}
+            />
+            <Upload className={classes.imageOptionIcon} />
+            <span>{t("addWizard", "fromFile")}</span>
+          </div>
+        </div>
+      )}
+
+      <div className={`${classes.tipBox} ${classes.tipBoxGreen}`}>
+        <span className={classes.tipIcon}>
+          <Camera size={16} />
+        </span>
+        <span>
+          <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
+          {t("addWizard", "photoTip")}
+        </span>
+      </div>
+
+      {importError && <p className={classes.errorText}>{importError}</p>}
+    </div>
+  );
+
+  const handleManualBack = () => {
+    if (cameFromRecording) {
+      setCameFromRecording(false);
+      setScreen("recording");
+    } else {
+      setScreen("method");
+    }
+  };
+
+  const renderManualScreen = () => (
+    <div className={classes.wizardContainer}>
+      <div className={classes.manualTopBar}>
+        <button
+          type="button"
+          className={classes.backLink}
+          onClick={handleManualBack}
+        >
+          <ChevronRight />{" "}
+          {cameFromRecording
+            ? t("addWizard", "backToRecording")
+            : t("addWizard", "backToMethod")}
+        </button>
+        <CloseButton
+          onClick={cameFromRecording ? handleManualBack : handleClose}
+          size={25}
+        />
+      </div>
+
+      {recipe.sourceUrl && (
+        <div className={classes.tipBox}>
+          <span className={classes.tipIcon}>
+            <Info size={16} />
+          </span>
+          <span>{t("addWizard", "importReviewNote")}</span>
+        </div>
+      )}
+
+      {renderStepper()}
+      {renderManualStep()}
+
+      <div className={classes.navButtons}>
+        {stepError && <p className={classes.stepErrorText}>{stepError}</p>}
+        <div className={classes.navButtonsRow}>
+          {manualStep > 0 && (
+            <button
+              type="button"
+              className={classes.prevBtn}
+              onClick={handlePrev}
+            >
+              {t("addWizard", "previous")}
+            </button>
+          )}
+          {savedMessage && (
+            <span className={classes.savedMessage}>{savedMessage}</span>
+          )}
+          <button
+            type="button"
+            className={classes.nextBtn}
+            onClick={handleNext}
+            disabled={
+              !canProceed() ||
+              saving ||
+              savedMessage ||
+              uploadingImage ||
+              generatingAiImage
+            }
+          >
+            {saving ? (
+              <>
+                <Loader2 size={16} className={classes.spinning} />{" "}
+                {t("common", "loading") || "..."}
+              </>
+            ) : manualStep === 4 ? (
+              t("addWizard", "saveRecipe")
+            ) : (
+              t("addWizard", "continue")
+            )}
+            {/* <ChevronRight /> */}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderScreen = () => {
+    switch (screen) {
+      case "method":
+        return renderMethodSelection();
+      case "url":
+        return renderUrlScreen();
+      case "text":
+        return renderTextScreen();
+      case "recording":
+        return renderRecordingScreen();
+      case "photo":
+        return renderPhotoScreen();
+      case "manual":
+        return renderManualScreen();
+      default:
+        return renderMethodSelection();
+    }
+  };
+
+  return (
+    <Modal
+      onClose={handleClose}
+      maxWidth="550px"
+      className={screen === "manual" ? `$shared.noPadModal} ${classes.noPadModal}` : undefined}
+    >
+      {renderScreen()}
+    </Modal>
+  );
+}
+
+export default AddRecipeWizard;

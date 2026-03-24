@@ -1,0 +1,395 @@
+/* Add Recipe Wizard — Stepper, Manual Form Fields, Images */
+
+/* ========== Stepper ========== */
+.stepperHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.stepperTitle {
+  font-size: var(--large-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  margin: 0;
+}
+
+.stepperCount {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+}
+
+.segmentedBar {
+  display: flex;
+  gap: 0.4rem;
+  margin-bottom: 2rem;
+}
+
+.segment {
+  flex: 1;
+  height: 26px;
+  background: transparent;
+  position: relative;
+  cursor: default;
+  display: flex;
+  align-items: center;
+}
+
+.segment::before {
+  content: "";
+  display: block;
+  width: 100%;
+  height: 6px;
+  background: var(--clr-border-light);
+  border-radius: 3px;
+  transition: var(--transition);
+}
+
+.segmentActive::before {
+  background: var(--clr-accent-primary);
+}
+
+.segmentCurrent::before {
+  background: var(--clr-accent-primary);
+}
+
+.segmentClickable {
+  cursor: pointer;
+}
+
+.segmentClickable:active::before {
+  opacity: 0.7;
+}
+
+/* ========== Step Content ========== */
+.stepContent {
+  margin-bottom: 1.5rem;
+}
+
+.stepSectionTitle {
+  font-size: var(--large-font);
+  font-weight: var(--font-weight-secondary);
+  color: var(--clr-text-primary);
+  margin: 0 0 0.3rem 0;
+}
+
+.stepSectionSubtitle {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  margin: 0 0 1.5rem 0;
+}
+
+/* ========== Dynamic Lists (Ingredients/Instructions) ========== */
+.dynamicItem {
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* ========== Ingredient Group ========== */
+
+/* Parse ingredients: collapsible; help icon shows explanation */
+.parseIngredientsBox {
+  margin-top: 1.5rem;
+  padding: 1rem;
+  padding-bottom: 1.25rem;
+  border: 1px solid var(--clr-border-light);
+  border-radius: 12px;
+  background: var(--clr-bg-tertiary);
+}
+.parseIngredientsHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  cursor: pointer;
+  user-select: none;
+  margin: 0;
+  padding: 0;
+}
+.parseIngredientsHeader:hover {
+  color: var(--clr-text-secondary);
+}
+.parseIngredientsTitle {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  margin: 0;
+}
+.parseIngredientsHeaderIcons {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+.parseIngredientsHelpBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.25rem;
+  background: none;
+  border: none;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  border-radius: 50%;
+}
+.parseIngredientsHelpBtn:hover {
+  color: var(--clr-text-primary);
+  background: var(--clr-bg-hover);
+}
+.parseIngredientsHelpPopover {
+  margin-top: 0.75rem;
+  padding: 0.75rem;
+  padding-top: 2rem;
+  border: 1px solid var(--clr-border-light);
+  border-radius: 8px;
+  background: var(--clr-bg-primary);
+  position: relative;
+}
+.parseIngredientsHelpClose {
+  position: absolute;
+  top: 0.5rem;
+  left: 0.5rem;
+  padding: 0.25rem;
+  background: none;
+  border: none;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  border-radius: 4px;
+}
+.parseIngredientsHelpClose:hover {
+  color: var(--clr-text-primary);
+  background: var(--clr-bg-hover);
+}
+.parseIngredientsHelpBody {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  line-height: 1.5;
+}
+.parseIngredientsHelpBlock {
+  margin-bottom: 0.75rem;
+}
+.parseIngredientsHelpBlock:last-child {
+  margin-bottom: 0;
+}
+.parseIngredientsHelpLabel {
+  font-weight: var(--font-weight-heading);
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.parseIngredientsHelpContent {
+  display: block;
+  padding-left: 1rem;
+}
+.parseIngredientsExampleLabel {
+  display: block;
+  font-size: var(--small-font);
+  font-style: italic;
+  color: var(--clr-text-muted);
+  margin: 0 0 0.35rem 0;
+  opacity: 0.9;
+}
+.parseIngredientsTextarea {
+  width: 100%;
+  min-height: 100px;
+  padding: 0.75rem;
+  font-size: var(--basic-font);
+  font-family: inherit;
+  border: 1px solid var(--clr-border-light);
+  border-radius: 8px;
+  resize: vertical;
+  margin-bottom: 0.5rem;
+  box-sizing: border-box;
+}
+.parseIngredientsTextarea::placeholder {
+  font-style: italic;
+  color: var(--clr-text-muted);
+  opacity: 0.5;
+}
+.parseIngredientsActions {
+  margin-top: 0.75rem;
+}
+/* Same dark style as nextBtn / main site buttons */
+.parseIngredientsApplyBtn {
+  padding: 0.6em 1.25em;
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  background: var(--clr-text-primary);
+  color: var(--clr-white);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+.parseIngredientsApplyBtn:hover:not(:disabled) {
+  background: var(--clr-text-secondary);
+}
+.parseIngredientsApplyBtn:disabled {
+  background: var(--clr-border-light);
+  cursor: not-allowed;
+  opacity: var(--disabled-opacity);
+}
+
+/* ========== Image Upload ========== */
+.imageUploadArea {
+  border: 2px dashed var(--clr-border-light);
+  border-radius: 16px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: var(--clr-bg-tertiary);
+  min-height: 150px;
+  position: relative;
+  overflow: hidden;
+}
+
+.imageUploadArea:hover {
+  border-color: var(--clr-success-border);
+  background: var(--clr-success-bg);
+}
+
+.imageUploadIcon {
+  font-size: 2.5rem;
+  color: var(--clr-text-muted);
+}
+
+.imageUploadText {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+}
+
+.imageUploadButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.imageOptionBtn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.5rem 2rem;
+  border: 2px dashed var(--clr-btn-outline-border);
+  border-radius: 16px;
+  background: var(--clr-btn-outline-bg);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: var(--small-font);
+  color: var(--clr-btn-outline-text);
+  flex: 1;
+}
+
+.imageOptionBtn:hover {
+  border-color: var(--clr-btn-outline-border-hover);
+  background: var(--clr-btn-outline-bg-hover);
+}
+
+.imageOptionIcon {
+  font-size: 2rem;
+  color: var(--clr-text-muted);
+}
+
+.imageHint {
+  width: 100%;
+  text-align: center;
+  font-size: var(--basic-font);
+  color: var(--clr-text-muted);
+  margin: 0.3rem 0 0;
+}
+
+.imagePreview {
+  width: 100%;
+  max-height: 200px;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.imageRemoveBtn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: rgba(0, 0, 0, 0.5);
+  color: var(--clr-white);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+/* ========== Image Grid (multiple images) ========== */
+
+.imageGridItem .imageRemoveBtn {
+  width: 24px;
+  height: 24px;
+  top: 0.35rem;
+  right: 0.35rem;
+}
+
+.addMoreImages {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.generateAiImageBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6em 1em;
+  border-radius: 12px;
+  border: 2px solid var(--clr-border-light);
+  background: var(--clr-bg-tertiary);
+  color: var(--clr-text-secondary);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex: 1;
+  min-width: 8rem;
+}
+
+.generateAiImageBtn:hover:not(:disabled) {
+  border-color: var(--clr-success-border);
+  color: var(--clr-success-text);
+}
+
+.generateAiImageBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.imageUploadButtons .generateAiImageBtn {
+  flex: 1 1 8rem;
+  min-height: 5.5rem;
+}
+
+/* ========== Responsive ========== */
+@media (max-width: 500px) {
+  .dynamicItem {
+    gap: 0.3rem;
+  }
+
+  .stepContent {
+    width: 100%;
+    box-sizing: border-box;
+    overflow: visible;
+  }
+
+  .dragHandle {
+    touch-action: none;
+    padding: 0.4em;
+  }
+}

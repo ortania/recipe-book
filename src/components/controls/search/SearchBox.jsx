@@ -1,0 +1,58 @@
+import { useState, useEffect, forwardRef } from "react";
+import { Search } from "lucide-react";
+import classes from "./search-box.module.css";
+
+const SearchBox = forwardRef(function SearchBox({
+  searchTerm,
+  onSearchChange,
+  onKeyDown,
+  onFocus,
+  placeholder = "Search...",
+  examples = [],
+  size = "medium",
+  className = "",
+  autoFocus = false,
+}, ref) {
+  const [currentExample, setCurrentExample] = useState(0);
+
+  useEffect(() => {
+    if (!examples.length || searchTerm) return;
+    const interval = setInterval(() => {
+      setCurrentExample((prev) => (prev + 1) % examples.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [examples, searchTerm]);
+
+  const displayPlaceholder =
+    !searchTerm && examples.length ? examples[currentExample] : placeholder;
+
+  const sizeClass = size !== "medium" ? classes[size] || "" : "";
+
+  return (
+    <div className={`${classes.searchBox} ${sizeClass} ${className}`.trim()}>
+      <Search size={18} className={classes.searchIcon} />
+      <input
+        type="text"
+        placeholder={displayPlaceholder}
+        value={searchTerm}
+        onChange={(e) => onSearchChange(e.target.value)}
+        onKeyDown={onKeyDown}
+        onFocus={onFocus}
+        className={classes.searchInput}
+        autoFocus={autoFocus}
+        ref={ref}
+      />
+      {searchTerm && (
+        <button
+          className={classes.clearSearch}
+          onClick={() => onSearchChange("")}
+          aria-label="Clear search"
+        >
+          ×
+        </button>
+      )}
+    </div>
+  );
+});
+
+export default SearchBox;

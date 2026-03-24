@@ -1,0 +1,212 @@
+/* ── Help icon button ────────────────────────────────── */
+.wrapper {
+  position: relative;
+}
+
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--btn-circle);
+  height: var(--btn-circle);
+  font-size: var(--btn-icon);
+  font-weight: var(--font-weight-heading);
+  line-height: 1;
+  border-radius: 50%;
+  border: 1.5px solid var(--clr-text-primary);
+  background: transparent;
+  color: var(--clr-text-primary);
+  cursor: pointer;
+  padding: 0;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+  flex-shrink: 0;
+}
+
+.btn:focus,
+.btn:focus-visible {
+  outline: none;
+}
+
+.btn:hover {
+  opacity: 0.7;
+  transform: scale(1.1);
+}
+
+/* ── Desktop overlay ──────────────────────────────────── */
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--clr-overlay);
+  z-index: 10199;
+}
+
+/* ── Desktop floating popup ──────────────────────────── */
+.dropdown {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--clr-bg-primary);
+  border: none;
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+  width: 95vw;
+  max-width: 400px;
+  max-height: 80vh;
+  max-height: calc(100dvh - 2rem);
+  overflow-y: auto;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+  z-index: 10200;
+  animation: helpFadeIn 0.25s ease forwards;
+  direction: rtl;
+  text-align: right;
+}
+
+@keyframes helpFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ── Desktop drag header ─────────────────────────────── */
+.dragHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+  margin: -0.4rem -0.4rem 0.4rem;
+  padding: 0.2rem 0.4rem;
+  border-radius: 10px 10px 0 0;
+}
+
+.dragHeader:active {
+  cursor: grabbing;
+}
+
+.dragIndicator {
+  color: var(--clr-text-muted);
+  font-size: 2rem;
+  letter-spacing: 0;
+}
+
+.close {
+  background: none;
+  border: none;
+  font-size: var(--basic-font);
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  padding: 0.2em;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.close:hover {
+  color: var(--clr-text-primary);
+}
+
+/* ── Shared content styles (desktop popup + bottom sheet) */
+.content {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  line-height: 1.6;
+}
+
+.content strong {
+  display: block;
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  margin-bottom: 0.3rem;
+}
+
+.description {
+  margin: 0.3rem 0 1.25rem;
+  font-size: var(--basic-font);
+  color: var(--clr-text-secondary);
+  line-height: 1.6;
+  white-space: pre-line;
+}
+
+.content ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.content li {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.7rem 0.75rem;
+  font-size: var(--basic-font);
+  line-height: 1.5;
+  white-space: pre-line;
+  border: 1.5px solid var(--clr-border-light);
+  border-radius: 10px;
+  background: var(--clr-bg-secondary, rgba(0, 0, 0, 0.02));
+}
+
+.content li:last-child {
+  border-bottom: 1.5px solid var(--clr-border-light);
+}
+
+.content li.indent {
+  margin-inline-start: 1rem;
+  list-style: none;
+}
+
+.content li.indent::before {
+  content: "− ";
+  margin-inline-end: 0.25rem;
+}
+
+/* ── Section headers (voice chat subsections) ────────── */
+.sectionHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.75rem !important;
+  font-weight: var(--font-weight-heading);
+  font-size: calc(var(--basic-font) * 0.95);
+  color: var(--clr-text-primary);
+  border: none !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  margin-inline-start: 0.6rem;
+  margin-bottom: -0.4rem;
+}
+
+.sectionIcon {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Example blocks (voice chat examples) ────────────── */
+.exampleBlock {
+  display: block !important;
+  padding: 0.45rem 0.75rem 0.55rem !important;
+  font-size: calc(var(--basic-font) * 0.88);
+  color: var(--clr-text-secondary);
+  line-height: 1.7;
+  border: 1px dashed var(--clr-border-light) !important;
+  border-radius: 8px !important;
+  background: transparent !important;
+  margin-inline-start: 0.6rem;
+}
+
+.exampleBlock::before {
+  content: none !important;
+}

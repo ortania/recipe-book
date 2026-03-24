@@ -1,0 +1,123 @@
+.searchBox {
+  position: relative;
+  flex: 1 1 320px;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  inset-inline-start: 0.75rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--clr-text-muted);
+  font-size:var(--basic-font);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.searchInput {
+  width: 100%;
+  border: 2px solid var(--clr-input-border);
+  border-radius: var(--input-border-radius);
+  padding-block: 0.5em;
+  padding-inline-start: 3.5rem;
+  padding-inline-end: 2.4rem;
+  font-size: var(--basic-font);
+  outline: none;
+  background: var(--clr-input-bg);
+  color: var(--clr-input-text);
+  box-sizing: border-box;
+  text-overflow: ellipsis;
+  transition:
+    border-color 0.2s,
+    background-color 0.3s;
+}
+
+.searchInput::placeholder {
+  color: var(--clr-input-placeholder);
+  font-size: var(--input-placeholder-font-size);
+}
+
+.searchInput:focus {
+  border-color: var(--clr-input-border-focus);
+}
+
+/* --- Size: small --- */
+.small .searchIcon {
+  font-size: var(--small-font);
+  inset-inline-start: 0.6rem;
+}
+
+.small .searchInput {
+  padding-block: 0.35rem;
+  padding-inline-start: 3rem;
+  padding-inline-end: 1.8rem;
+  font-size: var(--basic-font);
+  border-radius: var(--btn-small-border-radius);
+} 
+
+.small .clearSearch {
+  width: 1.2rem;
+  height: 1.2rem;
+  font-size: 2.3rem;
+  background: none;
+}
+
+/* --- Size: large --- */
+.large .searchIcon {
+  inset-inline-start: 0.9rem;
+}
+
+.large .searchInput {
+  padding-block: 0.5em;
+  padding-inline-start: 3.5rem;
+  padding-inline-end: 2.4rem;
+}
+
+.large .clearSearch {
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 2.5rem;
+  background: none;
+}
+
+.clearSearch {
+  position: absolute;
+  inset-inline-end: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  /* background: var(--clr-bg-hover); */
+  background: none;
+  border: none;
+  border-radius: 50%;
+  width: 2.4rem;
+  height: 2.4rem;
+  font-size: 2.4rem;
+  line-height: 1;
+  color: var(--clr-text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  transition: all 0.15s;
+}
+
+.clearSearch:hover {
+  /* background: var(--clr-border-light); */
+  color: var(--clr-text-primary);
+  transform: translateY(-50%) scale(1.1);
+}
+
+.clearSearch:focus {
+  outline: none;
+  background: var(--clr-border-light);
+  color: var(--clr-text-primary);
+}
+
+@media (max-width: 768px) {
+  .large .searchInput {
+    /* padding-block: 0.3em; */
+  }
+}

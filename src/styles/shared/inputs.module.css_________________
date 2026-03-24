@@ -1,0 +1,227 @@
+/* =============================================================
+   inputs.module.css  —  shared form input styles
+   Usage:
+     import inputClasses from '@/styles/shared/inputs.module.css';
+     className={inputClasses.formInput}
+   ============================================================= */
+
+/* ── Form group (label + field) ────────────────────────────── */
+.formGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.formRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 480px) {
+  .formRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Label ─────────────────────────────────────────────────── */
+.formLabel {
+  font-size: var(--basic-font);
+  font-weight: 600;
+  color: var(--clr-text-secondary);
+}
+
+.formLabel span {
+  font-size: 3rem;
+  padding: 0 0.5rem;
+  position: relative;
+  top: 0.3em;
+}
+
+/* ── Base input ─────────────────────────────────────────────── */
+.formInput {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--clr-input-border);
+  border-radius: var(--input-border-radius);
+  font-size: var(--basic-font);
+  font-family: inherit;
+  background: var(--clr-input-bg);
+  color: var(--clr-input-text);
+  outline: none;
+  transition: var(--transition);
+}
+
+.formInput::placeholder {
+  color: var(--clr-input-placeholder);
+  font-style: italic;
+}
+
+.formInput:hover {
+  border-color: var(--clr-input-border-hover);
+  background: var(--clr-input-bg-hover);
+}
+
+.formInput:focus {
+  border-color: var(--clr-input-border-focus);
+  background: var(--clr-input-bg-focus);
+}
+
+/* ── Select ────────────────────────────────────────────────── */
+.formSelect {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--clr-input-border);
+  border-radius: var(--input-border-radius);
+  font-size: var(--basic-font);
+  font-family: inherit;
+  background: var(--clr-input-bg);
+  color: var(--clr-input-text);
+  outline: none;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.formSelect:focus {
+  border-color: var(--clr-input-border-focus);
+}
+
+/* ── Textarea ──────────────────────────────────────────────── */
+.formTextarea {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--clr-input-border);
+  border-radius: var(--input-border-radius);
+  font-size: var(--basic-font);
+  font-family: inherit;
+  background: var(--clr-input-bg);
+  color: var(--clr-input-text);
+  outline: none;
+  resize: vertical;
+  min-height: 80px;
+  transition: var(--transition);
+}
+
+.formTextarea::placeholder {
+  color: var(--clr-input-placeholder);
+  font-style: italic;
+}
+
+.formTextarea:hover {
+  border-color: var(--clr-input-border-hover);
+}
+
+.formTextarea:focus {
+  border-color: var(--clr-input-border-focus);
+  background: var(--clr-input-bg-focus);
+}
+
+/* ── Input box (icon + input inline) ──────────────────────── */
+.inputBox {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--clr-input-border);
+  border-radius: var(--input-border-radius);
+  background: var(--clr-input-bg);
+  transition: var(--transition);
+}
+
+.inputBox:focus-within {
+  border-color: var(--clr-input-border-focus);
+  background: var(--clr-input-bg-focus);
+}
+
+/* ── Search box ────────────────────────────────────────────── */
+.searchBox {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--clr-search-border);
+  border-radius: var(--input-border-radius);
+  background: var(--clr-search-bg);
+  transition: var(--transition);
+}
+
+.searchBox:focus-within {
+  border-color: var(--clr-search-border-focus);
+  background: var(--clr-input-bg-focus);
+}
+
+.searchIcon {
+  color: var(--clr-search-icon);
+  flex-shrink: 0;
+}
+
+.searchBox:focus-within .searchIcon {
+  color: var(--clr-search-icon-focus);
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  font-size: var(--basic-font);
+  font-family: inherit;
+  color: var(--clr-input-text);
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: var(--clr-input-placeholder);
+}
+
+/* ── Password input wrapper ────────────────────────────────── */
+.passwordInput {
+  position: relative;
+  width: 100%;
+}
+
+.passwordInput .formInput {
+  padding-inline-end: 3rem;
+}
+
+.passwordToggle {
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-end: 0.75rem;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--clr-text-muted);
+  padding: 0.2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.passwordToggle:hover {
+  color: var(--clr-text-primary);
+}
+
+/* ── Error message ─────────────────────────────────────────── */
+.inputError {
+  font-size: var(--small-font);
+  color: var(--clr-error-message);
+  margin-top: 0.25rem;
+}
+
+/* ── Input states ──────────────────────────────────────────── */
+.inputInvalid {
+  border-color: var(--clr-danger-border) !important;
+}
+
+.inputInvalid:focus {
+  border-color: var(--clr-danger-border) !important;
+}

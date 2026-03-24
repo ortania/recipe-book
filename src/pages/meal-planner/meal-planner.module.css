@@ -1,0 +1,582 @@
+.mobileTitle {
+  font-size: var(--large-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+}
+
+/* ===== Page ===== */
+.page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  font-size: var(--basic-font);
+}
+
+/* ===== Header ===== */
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: var(--clr-bg-tertiary);
+  border: 1px solid var(--clr-border-light);
+  border-radius: 12px;
+  padding: 1.4rem 1.8rem;
+  margin-bottom: 1.4rem;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.title {
+  font-size: var(--very-large-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  margin: 0;
+  text-align: start;
+}
+
+.dateRange {
+  font-size: var(--basic-font);
+  color: var(--clr-text-muted);
+  display: block;
+  margin-top: 0.15rem;
+}
+
+.headerActions {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.headerBtn {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5em 1.2em;
+  border: 1px solid var(--clr-text-primary);
+  border-radius: 6px;
+  background: var(--clr-text-primary);
+  color: var(--clr-bg-primary);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.headerBtn:hover {
+  opacity: 0.85;
+}
+
+.badge {
+  background: var(--clr-danger-500);
+  color: var(--clr-white);
+  font-size: var(--very-small-font);
+  font-weight: var(--font-weight-heading);
+  padding: 0.05em 0.45em;
+  border-radius: 10px;
+  margin-inline-start: 0.25rem;
+}
+
+.headerBtnOutline {
+  padding: 0.5em 1.2em;
+  border: 1px solid var(--clr-btn-main-border);
+  border-radius: 6px;
+  background: var(--clr-bg-card);
+  color: var(--clr-text-secondary);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.headerBtnOutline:hover {
+  background: var(--clr-bg-hover);
+  border-color: var(--clr-border-light);
+}
+
+/* ===== Days Grid ===== */
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.2rem;
+}
+
+/* ===== Day Card ===== */
+.dayCard {
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.dayHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 1rem 1.1rem 0.6rem;
+}
+
+.dayCircle {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--clr-white);
+  font-weight: var(--font-weight-heading);
+  font-size: var(--basic-font);
+  flex-shrink: 0;
+}
+
+.dayInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.dayName {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  line-height: 1.2;
+}
+
+.dayDate {
+  font-size: var(--basic-font);
+  color: var(--clr-text-muted);
+}
+
+.dayBody {
+  padding: 0 1.1rem 0.5rem;
+  flex: 1;
+}
+
+/* ===== Meal Block ===== */
+.mealBlock {
+  background: var(--clr-bg-tertiary);
+  border: 1px solid var(--clr-border-light);
+  border-radius: 6px;
+  padding: 0.6rem 0.8rem;
+  margin-bottom: 0.5rem;
+}
+
+.mealBlock:last-child {
+  margin-bottom: 0;
+}
+
+.mealLabel {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  margin-bottom: 0.15rem;
+}
+
+.mealIcon {
+  font-size: var(--basic-font);
+  color: var(--clr-text-secondary);
+}
+
+.mealRecipeItem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.35rem 0;
+  border-bottom: 1px solid var(--clr-border-light);
+}
+
+.mealRecipeItem:last-child {
+  border-bottom: none;
+}
+
+.recipeName {
+  font-size: var(--basic-font);
+  color: var(--clr-text-secondary);
+  cursor: pointer;
+}
+
+.recipeName:hover {
+  color: var(--clr-secondary-500);
+  text-decoration: underline;
+}
+
+.removeBtn {
+  background: none;
+  border: none;
+  color: var(--clr-text-muted);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  padding: 0.2em;
+  line-height: 1;
+  transition: color 0.15s;
+}
+
+.removeBtn:hover {
+  color: var(--clr-danger-500);
+}
+
+/* ===== Add Meal Button ===== */
+.addMealBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.3rem;
+  width: 100%;
+  padding: 0.55em;
+  border: none;
+  border-radius: 0 0 12px 12px;
+  background: var(--clr-text-primary);
+  color: var(--clr-bg-primary);
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  cursor: pointer;
+  transition: opacity 0.15s;
+  margin-top: auto;
+}
+
+.addMealBtn:hover {
+  opacity: 0.85;
+}
+
+/* ===== Shopping List Modal ===== */
+.shoppingModal {
+  background: var(--clr-bg-card);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 460px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.shoppingModalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.3rem;
+  border-bottom: 1px solid var(--clr-border-light);
+}
+
+.shoppingModalTitle {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  margin: 0;
+}
+
+.shoppingProgress {
+  padding: 0.5rem 1.3rem;
+  font-size: var(--basic-font);
+  color: var(--clr-text-muted);
+  border-bottom: 1px solid var(--clr-border-light);
+}
+
+.shoppingEmpty {
+  font-size: var(--basic-font);
+  color: var(--clr-text-muted);
+  text-align: center;
+  padding: 2.5rem 1rem;
+}
+
+.shoppingItems {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem 1.3rem;
+}
+
+.shoppingItem {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  padding: 0.45rem 0;
+  font-size: var(--basic-font);
+  border-bottom: 1px solid var(--clr-border-light);
+}
+
+.shoppingItem:last-child {
+  border-bottom: none;
+}
+
+.shoppingCheckbox {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--clr-text-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.shoppingName {
+  color: var(--clr-text-primary);
+  font-size: var(--basic-font);
+}
+
+.shoppingNameChecked {
+  text-decoration: line-through;
+  color: var(--clr-text-muted);
+}
+
+.uncheckBtn {
+  display: block;
+  width: calc(100% - 2.6rem);
+  margin: 0.7rem 1.3rem;
+  padding: 0.5em;
+  border: 1px solid var(--clr-border-light);
+  border-radius: 8px;
+  background: var(--clr-bg-card);
+  color: var(--clr-text-muted);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  text-align: center;
+}
+
+.uncheckBtn:hover {
+  background: var(--clr-bg-hover);
+}
+
+/* ===== Recipe Picker Modal ===== */
+.pickerOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--clr-overlay);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.pickerModal {
+  background: var(--clr-bg-card);
+  border-radius: 14px;
+  width: 100%;
+  max-width: 460px;
+  max-height: 75vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+}
+
+.pickerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.1rem 1.3rem;
+  border-bottom: 1px solid var(--clr-border-light);
+}
+
+.pickerTitle {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  margin: 0;
+}
+
+.catListItem {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.7rem 1rem;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: start;
+  cursor: pointer;
+  border-bottom: 1px solid var(--clr-border-light);
+  transition: background 0.15s;
+  font-size: var(--basic-font);
+}
+
+.catListItem:hover {
+  background: var(--clr-bg-hover);
+}
+
+.catListItem:last-child {
+  border-bottom: none;
+}
+
+.catListIcon {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  flex-shrink: 0;
+}
+
+.catListName {
+  flex: 1;
+  font-weight: 500;
+  color: var(--clr-text-primary);
+}
+
+.catListCount {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+  flex-shrink: 0;
+}
+
+.pickerSubHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  border-bottom: 1px solid var(--clr-border-light);
+}
+
+.backBtn {
+  background: none;
+  border: none;
+  color: var(--clr-secondary-500);
+  font-size: var(--small-font);
+  cursor: pointer;
+  padding: 0.3em 0;
+  font-weight: 500;
+}
+
+.backBtn:hover {
+  text-decoration: underline;
+}
+
+.pickerSubCount {
+  font-size: var(--basic-font);
+  color: var(--clr-text-muted);
+}
+
+.doneBtn {
+  padding: 0.3em 0.8em;
+  border: none;
+  border-radius: 6px;
+  background: var(--clr-text-primary);
+  color: var(--clr-bg-primary);
+  font-size: var(--small-font);
+  font-weight: var(--font-weight-heading);
+  cursor: pointer;
+}
+
+.doneBtn:hover {
+  opacity: 0.85;
+}
+
+.pickerItemAdded {
+  background: var(--clr-bg-tertiary);
+}
+
+.pickerItemCheck {
+  color: var(--clr-success-500);
+  font-size: 1.1rem;
+  flex-shrink: 0;
+  margin-inline-start: auto;
+}
+
+.pickerSearch {
+  padding: 0.7rem 1.3rem;
+  border-bottom: 1px solid var(--clr-border-light);
+}
+
+.pickerSearchBox {
+  flex: 1;
+}
+
+.pickerList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0.5rem;
+}
+
+.pickerItem {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.55rem 0.7rem;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: start;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.15s;
+  font-size: var(--basic-font);
+}
+
+.pickerItem:hover {
+  background: var(--clr-bg-hover);
+}
+
+.pickerItemImage {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  object-fit: cover;
+  background: var(--clr-bg-tertiary);
+  flex-shrink: 0;
+}
+
+.pickerItemEmoji {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--clr-bg-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: var(--basic-font);
+  flex-shrink: 0;
+}
+
+.pickerItemName {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  font-weight: 500;
+}
+
+.pickerEmpty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--clr-text-muted);
+  font-size: var(--basic-font);
+}
+
+.bottomSpacer {
+  display: none;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .page {
+    padding: 0.75rem;
+    padding-top: 1rem;
+  }
+
+  .bottomSpacer {
+    display: block;
+    height: 10rem;
+    flex-shrink: 0;
+  }
+
+  .header {
+    padding: 1rem;
+  }
+
+  .title {
+    font-size: var(--large-font);
+  }
+
+  .daysGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .headerActions {
+    width: 100%;
+    justify-content: center;
+  }
+}
