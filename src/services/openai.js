@@ -142,50 +142,56 @@ export const extractRecipeFromImage = async (base64Images, language = "he") => {
 };
 
 async function extractRecipeDirectFromImage(images) {
-  const imageCount = images.length;
+  // Pass 1: Google Cloud Vision OCR — pure pixel reading, zero AI knowledge
+  const ocrResponse = await fetch(CLOUD_OCR_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
+    body: JSON.stringify({ images }),
+  });
 
-  const systemContent = `You are a recipe extraction expert. You are given ${imageCount > 1 ? "photos" : "a photo"} of a recipe — it may be handwritten or printed.
-Read the image carefully and extract the recipe into valid JSON in this exact format:
+  if (!ocrResponse.ok) {
+    throw new Error(`OCR failed (${ocrResponse.status})`);
+  }
+
+  const { text: rawText } = await ocrResponse.json();
+
+  if (!rawText?.trim()) {
+    return { error: "No text found in image" };
+  }
+
+  // Pass 2: GPT structures the raw OCR text — no image, no hallucination risk
+  const structureSystemPrompt = `You are a recipe formatter. You receive raw text extracted by an OCR scanner from a recipe image.
+Your job is to structure it into JSON. Use ONLY the text provided — do NOT add, infer, or complete anything from your own knowledge.
+
+Return valid JSON in this exact format:
 {
   "name": "recipe name",
   "ingredients": ["::group name", "ingredient 1 with quantity", "ingredient 2", "::another group", "ingredient 3"],
   "instructions": ["step 1", "step 2"],
-  "prepTime": "15" or "",
-  "cookTime": "30" or "",
-  "servings": "4" or "",
+  "prepTime": "15",
+  "cookTime": "30",
+  "servings": "4",
   "notes": ""
 }
-- Read ALL text from the image carefully, including handwritten text in Hebrew or any language.
-- Extract ALL ingredients with their exact quantities. Write quantities as digits (e.g. "3 ביצים" not "שלוש ביצים").
-- ONLY use "::" group prefixes for named sub-sections like "::לבלילה", "::למלית", "::לציפוי". Do NOT create groups for generic labels like "מרכיבים".
-- Extract ALL instructions as separate steps in order.
-- CRITICAL: ONLY extract what is ACTUALLY WRITTEN in the image. NEVER invent or add content that is not visible. If you cannot read a word, skip it.
-- Keep the ENTIRE recipe in its original language. Do NOT translate.
-- prepTime and cookTime should be numbers in minutes only.
-- If you cannot find a recipe, return: {"error": "No recipe found"}`;
 
-  const userContent = [
-    {
-      type: "text",
-      text:
-        imageCount > 1
-          ? `These ${imageCount} images show pages of the same recipe. It may be handwritten. Extract the full recipe as JSON.`
-          : "This image shows a recipe. It may be handwritten. Extract the full recipe as JSON.",
-    },
-    ...images.map((img) => ({
-      type: "image_url",
-      image_url: { url: img, detail: "high" },
-    })),
-  ];
+Rules:
+- ingredients: include only items listed in the ingredients section of the text. One item per array element.
+- ONLY use "::" group prefixes for clearly labeled sub-sections (e.g. "::לבלילה", "::למלית"). Do NOT create groups for generic labels like "מרכיבים".
+- instructions: include only steps listed in the instructions section. One step per array element.
+- prepTime / cookTime: numbers in minutes only. Return "" if not in the text.
+- servings: return "" if not in the text.
+- Keep the entire recipe in its original language. Do NOT translate.
+- If no recipe is found, return: {"error": "No recipe found"}`;
 
   const result = await callOpenAI({
     model: "gpt-4o",
     messages: [
-      { role: "system", content: systemContent },
-      { role: "user", content: userContent },
+      { role: "system", content: structureSystemPrompt },
+      { role: "user", content: `Structure this recipe text into JSON:\n\n${rawText}` },
     ],
     temperature: 0,
-    max_tokens: 3000,
+    max_tokens: 4096,
+    response_format: { type: "json_object" },
   });
 
   try {
@@ -195,7 +201,7 @@ Read the image carefully and extract the recipe into valid JSON in this exact fo
       .trim();
     return JSON.parse(cleaned);
   } catch {
-    return { error: result || "Failed to parse recipe from image" };
+    return { error: "Failed to parse recipe from image" };
   }
 }
 

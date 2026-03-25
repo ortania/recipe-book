@@ -12,7 +12,7 @@ function useTranslatedText(text) {
       return;
     }
 
-    if (language === "he" || language === "mixed") {
+    if (language === "he") {
       setTranslated(text);
       return;
     }

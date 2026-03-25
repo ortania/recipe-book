@@ -17,6 +17,7 @@
   top: 0;
   background: var(--clr-bg-card);
   z-index: 10;
+  padding: 2rem;
 }
 
 .editHeaderInfo {
@@ -206,7 +207,7 @@
 /* ========== Content Area ========== */
 .contentArea {
   flex: 1;
-  padding: 1.5rem 2rem 0;
+  padding: 1.5rem 2rem;
   overflow-y: auto;
   min-height: 0;
 }
@@ -330,7 +331,7 @@
   border-radius: 16px;
   padding: 2rem;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
   min-height: 200px;
   overflow: hidden;
 }
@@ -403,7 +404,7 @@
   color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   flex: 1 1 0;
   min-width: 0;
   white-space: nowrap;
@@ -419,7 +420,7 @@
   cursor: not-allowed;
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .imageActionRow {
     gap: 0.4rem;
   }
@@ -468,7 +469,7 @@
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
 }
 
 .deleteBtn:hover {
@@ -602,7 +603,7 @@
   .contentArea {
     padding: 1rem;
     /* Space for fixed save bar (same idea as add-recipe-wizard .wizardContainer) */
-    padding-bottom: 6.5rem;
+    padding-bottom: 8.5rem;
     flex: 1;
     min-height: 0;
     overflow-y: auto;

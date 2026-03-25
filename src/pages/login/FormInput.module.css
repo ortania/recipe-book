@@ -76,7 +76,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.2s;
+  transition: var(--transition);
   color: var(--clr-btn-icon-text);
 
   border-radius: var(--icon-border-radius);
@@ -135,7 +135,7 @@
   justify-content: center;
   color: var(--clr-text-primary);
   border-radius: 50%;
-  transition: all 0.2s;
+  transition: var(--transition);
 }
 
 .closeButton svg {

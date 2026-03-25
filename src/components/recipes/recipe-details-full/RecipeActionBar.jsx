@@ -7,7 +7,7 @@ import { useRecipeDetails } from "../RecipeDetailsContext";
 
 export default function RecipeActionBar() {
   const {
-    actionBarSentinelRef, actionBarRef, actionBarFixed, stickyHeaderRef,
+    actionBarRef,
     moreMenuRef, showMoreMenu, setShowMoreMenu, copyToMySuccess,
     onEdit, recipe, onDuplicate, onCopyRecipe, handleCopyClick,
     onCopyToMyRecipes, setCopyToMySuccess, onDelete, handleDeleteClick,
@@ -16,36 +16,10 @@ export default function RecipeActionBar() {
   } = useRecipeDetails();
 
   return (
-    <>
-      <div
-        ref={actionBarSentinelRef}
-        className={classes.actionBarSentinel}
-        style={
-          actionBarFixed && actionBarRef.current
-            ? { height: actionBarRef.current.offsetHeight }
-            : undefined
-        }
-      />
-      <div
-        ref={actionBarRef}
-        className={classes.actionBar}
-        style={
-          actionBarFixed
-            ? {
-                position: "fixed",
-                top: stickyHeaderRef.current
-                  ? `${stickyHeaderRef.current.offsetHeight}px`
-                  : "3.5rem",
-                left: 0,
-                right: 0,
-                zIndex: 99,
-                background: "var(--clr-bg-primary)",
-                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
-                paddingInline: "1rem",
-              }
-            : undefined
-        }
-      >
+    <div
+      ref={actionBarRef}
+      className={classes.actionBar}
+    >
         <div className={classes.actionBarStart}>
           <div className={classes.moreMenuWrapper} ref={moreMenuRef}>
             <button
@@ -231,7 +205,6 @@ export default function RecipeActionBar() {
             </button>
           )}
         </div>
-      </div>
-    </>
+    </div>
   );
 }

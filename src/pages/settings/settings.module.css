@@ -43,7 +43,7 @@
   border: 1px solid var(--clr-border-light);
   border-radius: 12px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   text-align: start;
 }
 
@@ -226,7 +226,7 @@
   border-radius: 10px;
   background: var(--clr-bg-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   font-size: var(--basic-font);
 }
 
@@ -257,7 +257,7 @@
   color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   margin-top: 0.5rem;
 }
 
@@ -282,7 +282,7 @@
   color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .themeBtn:hover {

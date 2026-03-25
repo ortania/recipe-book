@@ -81,7 +81,7 @@
   border-radius: 10px;
   background: var(--clr-bg-tertiary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   color: var(--clr-text-secondary);
   min-width: 0;
 }

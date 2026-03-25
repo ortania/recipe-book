@@ -84,7 +84,7 @@
   color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: var(--transition-fast);
 }
 
 .headerBtnOutline:hover {

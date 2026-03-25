@@ -16,7 +16,7 @@ function useTranslatedRecipe(recipe) {
   useEffect(() => {
     if (!recipe) return;
 
-    if (language === "he" || language === "mixed") {
+    if (language === "he") {
       setTranslated(recipe);
       setIsTranslating(false);
       return;

@@ -117,7 +117,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   z-index: 2;
   color: var(--clr-text-primary);
   -webkit-appearance: none;
@@ -168,7 +168,7 @@
   padding: 0.5rem;
   font-size: var(--basic-font);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   display: flex;
   align-items: center;
   justify-content: center;

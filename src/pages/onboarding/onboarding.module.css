@@ -160,7 +160,7 @@
   height: 8px;
   border-radius: 50%;
   background: var(--clr-border-light);
-  transition: all 0.3s ease;
+  transition: var(--transition-slow);
 }
 
 .dotActive {

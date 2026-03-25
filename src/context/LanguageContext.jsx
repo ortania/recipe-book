@@ -6,43 +6,32 @@ import {
   useCallback,
 } from "react";
 
-const RTL_LANGUAGES = ["he", "ar", "fa", "ur", "mixed"];
+import translations from "../utils/translations";
 
-// Start loading translations immediately (non-blocking)
-let _translations = null;
-const _translationsPromise = import("../utils/translations").then((m) => {
-  _translations = m.default;
-});
+const RTL_LANGUAGES = ["he", "ar", "fa", "ur"];
 
 const LanguageContext = createContext();
 
 export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState(() => {
-    return localStorage.getItem("language") || "he";
+    const saved = localStorage.getItem("language");
+    return saved && saved !== "mixed" ? saved : "he";
   });
-  const [translations, setTranslations] = useState(() => _translations);
-
-  useEffect(() => {
-    if (!_translations) {
-      _translationsPromise.then(() => setTranslations(_translations));
-    }
-  }, []);
 
   useEffect(() => {
     localStorage.setItem("language", language);
     const dir = RTL_LANGUAGES.includes(language) ? "rtl" : "ltr";
     document.documentElement.dir = dir;
-    document.documentElement.lang = language === "mixed" ? "he" : language;
+    document.documentElement.lang = language;
   }, [language]);
 
   const t = useCallback(
     (section, key) => {
-      if (!translations) return key;
       const entry = translations[section]?.[key];
       if (!entry) return key;
       return entry[language] || entry["en"] || key;
     },
-    [language, translations],
+    [language],
   );
 
   return (

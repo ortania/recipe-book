@@ -1,4 +1,4 @@
-import React, { Suspense, useRef, useState, useEffect } from "react";
+import React, { Suspense } from "react";
 import {
   BrowserRouter as Router,
   Routes,
@@ -465,33 +465,11 @@ function App() {
   );
 }
 
-// TODO: REMOVE after verifying LoginSkeleton design
-const PREVIEW_LOGIN_SKELETON = false;
-
 function AppContent() {
   const { isLoggedIn, isLoading } = useRecipeBook();
   const location = useLocation();
-  const initialLoadDone = useRef(false);
-  const [previewDone, setPreviewDone] = useState(!PREVIEW_LOGIN_SKELETON);
 
-  useEffect(() => {
-    if (PREVIEW_LOGIN_SKELETON) {
-      const timer = setTimeout(() => setPreviewDone(true), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, []);
-
-  if (!isLoading) {
-    initialLoadDone.current = true;
-  }
-
-  if (PREVIEW_LOGIN_SKELETON && !previewDone) {
-    return <LoginSkeleton />;
-  }
-
-  const showInitialLoading = isLoading && !initialLoadDone.current;
-
-  if (showInitialLoading) {
+  if (isLoading) {
     return skeletonForPath(location.pathname);
   }
 

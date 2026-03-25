@@ -30,7 +30,7 @@
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .confirmButton {

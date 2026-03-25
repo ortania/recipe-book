@@ -151,10 +151,14 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: var(--basic-font);
+  font-size: var(--large-font);
   color: var(--clr-text-primary);
-  transition: all 0.2s ease;
+  transition: var(--transition);
   font-weight: var(--font-weight-heading);
+}
+
+.servingButton svg {
+  display: block;
 }
 
 .servingButton:hover,
@@ -171,7 +175,7 @@
   font-weight: var(--font-weight-heading);
   color: var(--clr-text-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   margin-bottom: -2px;
 }
 
@@ -238,7 +242,7 @@
   -webkit-appearance: none;
   position: relative;
   border: 2px solid var(--clr-border-light);
-  transition: all 0.2s ease;
+  transition: var(--transition);
 }
 
 .checkbox:checked {

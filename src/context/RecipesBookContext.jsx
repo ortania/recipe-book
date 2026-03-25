@@ -23,7 +23,6 @@ import {
   onAuthStateChange,
   getUserData,
   logoutUser,
-  handleGoogleRedirect,
   ensureGoogleUserDoc,
 } from "../firebase/authService";
 import { doc, writeBatch } from "firebase/firestore";
@@ -39,20 +38,12 @@ export const useRecipeBook = () => {
   return context;
 };
 
-function hasCachedAuthUser() {
-  try {
-    return Object.keys(localStorage).some((k) => k.startsWith("firebase:authUser"));
-  } catch {
-    return false;
-  }
-}
-
 export const RecipeBookProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
   const [recipes, setRecipes] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(() => hasCachedAuthUser());
+  const [isLoading, setIsLoading] = useState(true);
   const [recipesLoaded, setRecipesLoaded] = useState(false);
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
@@ -62,6 +53,7 @@ export const RecipeBookProvider = ({ children }) => {
   const [isSearchActive, setIsSearchActive] = useState(false);
   const loginResolverRef = useRef(null);
   const initialLoadDone = useRef(false);
+  const nullTimeoutRef = useRef(null);
 
   const toggleCategory = (categoryId) => {
     setSelectedCategories((prev) => {
@@ -85,52 +77,73 @@ export const RecipeBookProvider = ({ children }) => {
 
   // Listen to auth state changes
   useEffect(() => {
-    handleGoogleRedirect();
+    // Safety net: if Firebase never fires (shouldn't happen), unblock UI after 5s
+    const loadingTimeout = setTimeout(() => setIsLoading(false), 5000);
 
     const unsubscribe = onAuthStateChange(async (user) => {
+      clearTimeout(loadingTimeout);
+      clearTimeout(nullTimeoutRef.current);
       if (user) {
         if (initialLoadDone.current) {
           // Token refresh — update user object but skip full reload
-          const userData = await getUserData(user.uid);
-          if (userData) {
-            setCurrentUser({ uid: user.uid, ...userData });
+          try {
+            const userData = await getUserData(user.uid);
+            if (userData) {
+              setCurrentUser({ uid: user.uid, ...userData });
+            }
+          } catch (err) {
+            console.error("Token refresh user data error:", err);
           }
           return;
         }
 
-        setIsLoading(true);
-        await ensureGoogleUserDoc(user);
-        let userData = await getUserData(user.uid);
-        if (!userData) {
-          await new Promise((resolve) => setTimeout(resolve, 1500));
-          userData = await getUserData(user.uid);
-        }
-        setCurrentUser({ uid: user.uid, ...userData });
-        setIsAdmin(true);
-
-        await loadUserData(user.uid, userData || user);
         setIsLoggedIn(true);
         initialLoadDone.current = true;
-        if (loginResolverRef.current) {
-          loginResolverRef.current();
-          loginResolverRef.current = null;
+
+        try {
+          setIsLoading(true);
+          await ensureGoogleUserDoc(user);
+          let userData = await getUserData(user.uid);
+          if (!userData) {
+            await new Promise((resolve) => setTimeout(resolve, 1500));
+            userData = await getUserData(user.uid);
+          }
+          setCurrentUser({ uid: user.uid, ...userData });
+          setIsAdmin(true);
+          await loadUserData(user.uid, userData || user);
+          if (loginResolverRef.current) {
+            loginResolverRef.current();
+            loginResolverRef.current = null;
+          }
+        } catch (err) {
+          console.error("Auth load error:", err);
+        } finally {
+          setIsLoading(false);
         }
-        setIsLoading(false);
       } else {
-        initialLoadDone.current = false;
-        setCurrentUser(null);
-        setIsAdmin(false);
-        setIsLoggedIn(false);
-        setRecipes([]);
-        setCategories([]);
-        setSelectedCategories(["all"]);
-        setRecipesLoaded(false);
-        setCategoriesLoaded(false);
-        setIsLoading(false);
+        if (initialLoadDone.current) {
+          // Genuine logout
+          initialLoadDone.current = false;
+          setCurrentUser(null);
+          setIsAdmin(false);
+          setIsLoggedIn(false);
+          setRecipes([]);
+          setCategories([]);
+          setSelectedCategories(["all"]);
+          setRecipesLoaded(false);
+          setCategoriesLoaded(false);
+          setIsLoading(false);
+        } else {
+          // null on initial load — Android fires null before user on refresh.
+          // Wait 2s for the user callback before concluding "not logged in".
+          nullTimeoutRef.current = setTimeout(() => {
+            if (!initialLoadDone.current) setIsLoading(false);
+          }, 2000);
+        }
       }
     });
 
-    return () => unsubscribe();
+    return () => { unsubscribe(); clearTimeout(loadingTimeout); clearTimeout(nullTimeoutRef.current); };
   }, []);
 
   // Load user's categories and recipes

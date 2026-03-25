@@ -3,7 +3,6 @@ const LANG_MAP = {
   en: "en",
   ru: "ru",
   de: "de",
-  mixed: null,
 };
 
 const STORAGE_KEY = "translationCache";
@@ -48,7 +47,7 @@ function parseGoogleResponse(data) {
 }
 
 async function translateText(text, targetLang, sourceLang = "auto") {
-  if (!text || !targetLang || targetLang === "mixed") {
+  if (!text || !targetLang) {
     return text;
   }
 
@@ -131,7 +130,7 @@ function mergeParentheticalItems(arr) {
 }
 
 export async function translateRecipeContent(recipe, targetLang) {
-  if (!recipe || !targetLang || targetLang === "mixed") {
+  if (!recipe || !targetLang) {
     return recipe;
   }
 

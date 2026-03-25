@@ -51,7 +51,7 @@
   width: 38px;
   height: 38px;
   border-radius: 50%;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
   padding: 0;
   margin-inline-end: 0.3rem;
   flex-shrink: 0;

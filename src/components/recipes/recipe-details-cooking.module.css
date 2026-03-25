@@ -130,7 +130,7 @@
   font-weight: var(--font-weight-heading);
   color: var(--clr-text-muted);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   margin-bottom: -3px;
 }
 
@@ -606,7 +606,7 @@
   opacity: 1;
   font-size: var(--large-font);
   font-weight: var(--font-weight-primary);
-  transition: all 0.3s ease;
+  transition: var(--transition-slow);
   /* background-color: #fef9e7; */
   padding: 2rem 2.5rem;
   border-radius: 12px;

@@ -77,8 +77,8 @@
   }
 }
 
-/* Only switch to multi-line layout below 767px */
-@media (max-width: 767px) {
+/* Only switch to multi-line layout below 768px */
+@media (max-width: 768px) {
   .simpleCard {
     flex-direction: column;
     align-items: flex-start;

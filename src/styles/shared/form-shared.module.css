@@ -315,7 +315,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.15s;
+  transition: var(--transition-fast);
   border-radius: 4px;
 }
 
@@ -363,7 +363,7 @@
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
   box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
 }
 

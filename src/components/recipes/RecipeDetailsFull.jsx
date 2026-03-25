@@ -132,9 +132,7 @@ function RecipeDetailsFull({
   const imageTouchRef = useRef({ startX: 0, startY: 0, swiping: false });
   const moreMenuRef = useRef(null);
   const stickyHeaderRef = useRef(null);
-  const actionBarSentinelRef = useRef(null);
   const actionBarRef = useRef(null);
-  const [actionBarFixed, setActionBarFixed] = useState(false);
   const [wakeLockActive, setWakeLockActive] = useState(false);
   const [wakeLockToast, setWakeLockToast] = useState("");
   const wakeLockRef = useRef(null);
@@ -219,6 +217,7 @@ function RecipeDetailsFull({
       if (actionBarRef.current) {
         const pos = getComputedStyle(actionBarRef.current).position;
         if (pos === "sticky" || pos === "fixed") {
+          actionBarRef.current.style.top = `${headerH}px`;
           actionBarH = actionBarRef.current.offsetHeight;
         }
       }
@@ -236,27 +235,6 @@ function RecipeDetailsFull({
     };
   }, []);
 
-  useEffect(() => {
-    const sentinel = actionBarSentinelRef.current;
-    if (!sentinel) return;
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    if (!isMobile) return;
-    const scrollRoot = sentinel.closest("main");
-    const handleScroll = () => {
-      const headerH = stickyHeaderRef.current?.offsetHeight || 56;
-      const rect = sentinel.getBoundingClientRect();
-      setActionBarFixed(rect.top < headerH);
-    };
-    if (scrollRoot) {
-      scrollRoot.addEventListener("scroll", handleScroll, { passive: true });
-    }
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => {
-      if (scrollRoot) scrollRoot.removeEventListener("scroll", handleScroll);
-      window.removeEventListener("scroll", handleScroll);
-    };
-  }, []);
 
   const handleShare = async () => {
     const shareData = {
@@ -334,9 +312,9 @@ function RecipeDetailsFull({
     activeImageIndex, setActiveImageIndex,
     // refs
     allImages, imageTouchRef, moreMenuRef, stickyHeaderRef,
-    actionBarSentinelRef, actionBarRef, wakeLockWrapperRef, tabsRef,
+    actionBarRef, wakeLockWrapperRef, tabsRef,
     // computed/state
-    actionBarFixed, wakeLockActive, wakeLockToast,
+    wakeLockActive, wakeLockToast,
     // computed values
     ingredientsArray, instructionsArray, commentCount,
     // handlers

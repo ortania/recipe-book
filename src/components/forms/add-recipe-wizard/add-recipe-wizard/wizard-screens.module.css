@@ -385,7 +385,7 @@
   cursor: pointer;
   font-size: var(--basic-font);
   font-weight: 500;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   width: 100%;
 }
 
@@ -474,7 +474,7 @@
   font-size: var(--basic-font);
   font-weight: 500;
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
   text-align: center;
 }
 

@@ -195,10 +195,15 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  font-size: var(--large-font);
   color: var(--clr-text-primary);
-  transition: all 0.2s ease;
-  font-weight: var(--font-weight-heading);
+  transition: var(--transition);
+}
+
+.servingButton svg {
+  width: 18px;
+  height: 18px;
+  display: block;
+  flex-shrink: 0;
 }
 
 .servingButton:hover {
@@ -234,7 +239,7 @@
   font-weight: 500;
   color: var(--clr-text-secondary);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   border-bottom-left-radius: 0;
   border-bottom-right-radius: 0;
   outline: none;

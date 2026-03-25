@@ -74,7 +74,7 @@
   }
 }
 
-@media (max-width: 700px) {
+@media (max-width: 768px) {
   .actions {
     bottom: 1.5rem;
     right: 1.5rem;

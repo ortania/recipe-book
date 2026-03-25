@@ -67,7 +67,7 @@
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   white-space: nowrap;
 }
 
@@ -125,7 +125,7 @@
   font-size: var(--basic-font);
   padding: 0;
   border-radius: 50%;
-  transition: all 0.15s;
+  transition: var(--transition-fast);
   width: 20px;
   height: 20px;
   font-weight: var(--font-weight-heading);

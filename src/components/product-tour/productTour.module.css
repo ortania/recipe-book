@@ -3,7 +3,7 @@
   position: fixed;
   inset: 0;
   z-index: 99999;
-  background: rgba(0, 0, 0, 0.7);
+  background: var(--clr-overlay-strong);
   backdrop-filter: blur(4px);
   display: flex;
   align-items: center;

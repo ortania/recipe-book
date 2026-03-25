@@ -56,7 +56,7 @@
   padding: 1rem 1.2rem;
   border: 1px solid var(--clr-input-border);
   border-radius: var(--input-border-radius);
-  transition: all 0.3s ease;
+  transition: var(--transition-slow);
   background: var(--clr-input-bg);
   color: var(--clr-input-text);
 }
@@ -312,7 +312,7 @@
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: var(--transition-slow);
 }
 
 .backButton:hover {

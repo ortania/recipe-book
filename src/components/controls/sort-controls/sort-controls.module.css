@@ -9,7 +9,7 @@
   border-radius: 6px;
   background: var(--clr-bg-card);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: var(--transition);
   font-size: 1.2rem;
 }
 

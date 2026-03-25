@@ -5110,6 +5110,6 @@ export const LANGUAGES = [
   { code: "de", label: "Deutsch", flag: "🇩🇪" },
 ];
 
-export const RTL_LANGUAGES = ["he", "mixed"];
+export const RTL_LANGUAGES = ["he"];
 
 export default translations;

@@ -29,7 +29,7 @@
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0, 0, 0, 0.9);
+  background: var(--clr-overlay-black);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -121,7 +121,7 @@
   position: absolute;
   top: 0.8rem;
   inset-inline-end: 0.75rem;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--clr-overlay);
   color: var(--clr-white);
   font-size: var(--basic-font);
   padding: 0.15rem 0.5rem;
@@ -134,7 +134,7 @@
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--clr-overlay-light);
   border: none;
   color: var(--clr-white);
   width: 2.2rem;
@@ -218,7 +218,7 @@
   bottom: 1.5rem;
   left: 50%;
   transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--clr-overlay);
   color: var(--clr-white);
   font-size: 0.9rem;
   padding: 0.3rem 0.8rem;

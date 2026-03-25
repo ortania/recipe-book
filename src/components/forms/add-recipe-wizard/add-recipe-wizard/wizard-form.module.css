@@ -242,7 +242,7 @@
   justify-content: center;
   gap: 0.5rem;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   background: var(--clr-bg-tertiary);
   min-height: 150px;
   position: relative;
@@ -281,7 +281,7 @@
   border-radius: 16px;
   background: var(--clr-btn-outline-bg);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   font-size: var(--small-font);
   color: var(--clr-btn-outline-text);
   flex: 1;
@@ -316,7 +316,7 @@
   position: absolute;
   top: 0.5rem;
   right: 0.5rem;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--clr-overlay);
   color: var(--clr-white);
   border: none;
   border-radius: 50%;
@@ -358,7 +358,7 @@
   color: var(--clr-text-secondary);
   font-size: var(--basic-font);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: var(--transition);
   flex: 1 1 0;
   min-width: 0;
   white-space: nowrap;

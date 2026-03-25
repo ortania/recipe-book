@@ -164,7 +164,7 @@
   font-size: var(--large-font);
   color: var(--clr-text-muted);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: var(--transition-fast);
 }
 
 .clearBtn:hover {
@@ -229,7 +229,7 @@
   font-size: var(--basic-font);
   color: var(--clr-text-primary);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: var(--transition-fast);
   white-space: nowrap;
 }
 
@@ -307,7 +307,7 @@
   width: 34px;
   height: 34px;
   border-radius: 50%;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
   font-size: 2rem;
 }
 
@@ -348,7 +348,7 @@
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: var(--transition-fast);
 }
 
 .applyBtn:hover:not(:disabled) {
@@ -370,7 +370,7 @@
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: var(--transition-fast);
 }
 
 .customChooseBtn:hover:not(:disabled) {

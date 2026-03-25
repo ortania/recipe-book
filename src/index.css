@@ -336,6 +336,7 @@ Variables
   --clr-overlay:        rgba(0, 0, 0, 0.5);   /* sidebar, sheet, picker overlays */
   --clr-overlay-dark:   rgba(0, 0, 0, 0.6);   /* heavy modal overlays */
   --clr-overlay-strong: rgba(0, 0, 0, 0.7);   /* full modal overlays */
+  --clr-overlay-black:  rgba(0, 0, 0, 0.9);   /* lightbox / near-opaque overlays */
 
   /* =========================
      GENERAL
@@ -373,6 +374,7 @@ Variables
   --skeleton-bg: var(--clr-neutral-300);
   --skeleton-highlight: var(--clr-neutral-100);
   --skeleton-border-radius: 0.5rem;
+  --skeleton-base: #ececec;
 
   /* chat */
   --clr-bubble-user: var(--clr-tertiary-200);
@@ -384,7 +386,9 @@ Variables
   --clr-bubble-avatar-bg: var(--clr-neutral-600);
 
   /* general */
-  --transition: all 0.2s ease;
+  --transition-fast: all 0.15s ease;
+  --transition:      all 0.2s ease;
+  --transition-slow: all 0.3s ease;
   --scale: 1.07;
   --spacing: 0;
   --max-width: 900px;
@@ -693,8 +697,12 @@ html {
   display: none !important;
 }
 
+[data-theme="dark"] {
+  --skeleton-base: #2a2a3e;
+}
+
 .react-loading-skeleton {
-  background-color: #ececec !important;
+  background-color: var(--skeleton-base) !important;
   animation: skeletonPulse 2s ease-in-out infinite !important;
 }
 
@@ -706,10 +714,6 @@ html {
   50% {
     opacity: 0.5;
   }
-}
-
-[data-theme="dark"] .react-loading-skeleton {
-  background-color: #2a2a3e !important;
 }
 
 /* Sharer profile mobile: swap back arrow and hamburger positions */

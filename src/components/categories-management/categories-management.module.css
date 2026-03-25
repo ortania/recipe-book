@@ -44,7 +44,7 @@
   font-size: 2rem;
   color: var(--clr-text-muted);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
 }
 
 .sortBtn:hover {
@@ -140,7 +140,7 @@
   color: var(--clr-text-muted);
   padding: 0.3rem;
   border-radius: 6px;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -274,7 +274,7 @@
   font-size: 1.9rem;
   color: var(--clr-text-secondary);
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
 }
 
 .iconOption:hover {
@@ -336,7 +336,7 @@
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--clr-overlay-dark);
   color: var(--clr-white);
   border: none;
   display: flex;
@@ -409,7 +409,7 @@
   padding: 0.6em 2em;
   border-radius: 10px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: var(--transition-fast);
 }
 
 .doneBtn:hover {
