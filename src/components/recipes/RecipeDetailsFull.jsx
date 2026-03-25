@@ -3,6 +3,7 @@ import React, {
   useMemo,
   useRef,
   useEffect,
+  useLayoutEffect,
   useCallback,
 } from "react";
 import { useNavigate } from "react-router-dom";
@@ -209,29 +210,38 @@ function RecipeDetailsFull({
       document.removeEventListener("pointerdown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    const computeTabsTop = () => {
-      if (!tabsRef.current) return;
-      const headerH = stickyHeaderRef.current?.offsetHeight || 0;
-      let actionBarH = 0;
-      if (actionBarRef.current) {
-        const pos = getComputedStyle(actionBarRef.current).position;
-        if (pos === "sticky" || pos === "fixed") {
-          actionBarRef.current.style.top = `${headerH}px`;
-          actionBarH = actionBarRef.current.offsetHeight;
-        }
-      }
-      tabsRef.current.style.top = `${headerH + actionBarH}px`;
+  useLayoutEffect(() => {
+    const computeStickyOffsets = () => {
+      const headerEl = stickyHeaderRef.current;
+      const barEl = actionBarRef.current;
+      const tabsEl = tabsRef.current;
+      if (!headerEl) return;
+
+      const headerRect = headerEl.getBoundingClientRect();
+      const mainEl = barEl?.closest("main");
+      const mainRect = mainEl ? mainEl.getBoundingClientRect() : { top: 0 };
+      const mainPad = mainEl
+        ? parseInt(getComputedStyle(mainEl).paddingTop, 10) || 0
+        : 0;
+
+      const stickyTop = headerRect.bottom - mainRect.top - mainPad;
+
+      if (barEl) barEl.style.top = `${stickyTop}px`;
+      const barH = barEl ? barEl.offsetHeight : 0;
+      if (tabsEl) tabsEl.style.top = `${stickyTop + barH}px`;
     };
 
-    computeTabsTop();
-    const ro = new ResizeObserver(computeTabsTop);
+    computeStickyOffsets();
+    requestAnimationFrame(computeStickyOffsets);
+
+    const ro = new ResizeObserver(computeStickyOffsets);
     if (stickyHeaderRef.current) ro.observe(stickyHeaderRef.current);
     if (actionBarRef.current) ro.observe(actionBarRef.current);
-    window.addEventListener("resize", computeTabsTop);
+    if (tabsRef.current) ro.observe(tabsRef.current);
+    window.addEventListener("resize", computeStickyOffsets);
     return () => {
       ro.disconnect();
-      window.removeEventListener("resize", computeTabsTop);
+      window.removeEventListener("resize", computeStickyOffsets);
     };
   }, []);
 

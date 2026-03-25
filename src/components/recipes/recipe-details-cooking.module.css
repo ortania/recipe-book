@@ -217,6 +217,8 @@
   max-width: var(--max-width);
 }
 
+
+
 .navButton,
 .restartButton,
 .nextButton {
@@ -224,6 +226,7 @@
   padding: 1rem 2rem;
   font-size: var(--basic-font);
   border: none;
+  border-radius: var(--btn-border-radius);
   cursor: pointer;
   font-weight: var(--font-weight-heading);
   transition: var(--transition);
@@ -231,26 +234,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: none;
+  opacity: 1;
 }
 
 .navButton {
-  background-color: var(--clr-bg-tertiary);
+  background: var(--clr-bg-tertiary);
   border: 1px solid var(--clr-btn-main-border);
+  color: var(--clr-text-primary);
+}
+
+.navButtonDisabled {
+  background: var(--clr-bg-secondary);
   color: var(--clr-text-muted);
-  border-radius: var(--btn-border-radius);
-  box-shadow: none;
+  cursor: not-allowed;
+  opacity: var(--disabled-opacity);
 }
 
 .restartButton {
   color: var(--clr-btn-main-text);
   background: var(--clr-btn-main-bg);
-  font-size: var(--basic-font);
-  display: flex;
-  align-items: center;
-  justify-content: center;
   gap: 0.5rem;
-  border-radius: var(--btn-border-radius);
-  box-shadow: none;
 }
 
 .restartButton:hover {
@@ -260,9 +264,7 @@
 
 .nextButton {
   background-color: var(--clr-btn-secondary-bg);
-  color: var(--clr-white);
-  border-radius: var(--btn-border-radius);
-  box-shadow: none;
+  color: var(--clr-btn-secondary-text);
 }
 
 .nextButton:hover {
@@ -546,8 +548,13 @@
   white-space: nowrap;
 }
 
-.startButton:hover {
+.startButton:hover:not(:disabled) {
   background: var(--clr-btn-outline-bg-hover-2);
+}
+
+.startButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
 }
 
 .completionSection {
@@ -679,6 +686,14 @@
   }
 
   .startButton {
+    font-size: var(--small-font);
+  }
+}
+
+@media (max-width: 500px) {
+  .navButton,
+  .restartButton,
+  .nextButton {
     font-size: var(--small-font);
   }
 }

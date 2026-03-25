@@ -1,15 +1,24 @@
-import { RotateCcw, Play, Clock, X } from "lucide-react";
+import { RotateCcw, Play, Clock, X, ArrowLeft, ArrowRight } from "lucide-react";
 import { AddButton } from "../../controls/add-button";
 import { useCookingMode } from "./CookingModeContext";
 
 export default function CookingModeBottomControls() {
   const {
-    showCompletion, totalSteps, activeTab,
-    currentStep, setCurrentStep, setShowCompletion,
-    handlePrevStep, handleNextStep,
-    customTimerInput, setCustomTimerInput,
-    startTimer, timers, removeTimer,
-    classes, t,
+    showCompletion,
+    totalSteps,
+    activeTab,
+    currentStep,
+    setCurrentStep,
+    setShowCompletion,
+    handlePrevStep,
+    handleNextStep,
+    customTimerInput,
+    setCustomTimerInput,
+    startTimer,
+    timers,
+    removeTimer,
+    classes,
+    t,
   } = useCookingMode();
 
   if (showCompletion || totalSteps === 0) return null;
@@ -18,30 +27,33 @@ export default function CookingModeBottomControls() {
     <div className={classes.bottomControls}>
       <div className={classes.navigationButtons}>
         <button
-          onClick={(e) => { e.stopPropagation(); handlePrevStep(); }}
-          disabled={currentStep === 0}
-          className={classes.navButton}
-          style={{
-            backgroundColor: currentStep === 0 ? "#f3f4f6" : "#e8eaed",
-            color: currentStep === 0 ? "#9ca3af" : "#635555",
-            cursor: currentStep === 0 ? "not-allowed" : "pointer",
-            opacity: currentStep === 0 ? 0.6 : 1,
-            border: "1px solid #635555",
+          onClick={(e) => {
+            e.stopPropagation();
+            handlePrevStep();
           }}
+          disabled={currentStep === 0}
+          className={`${classes.navButton} ${currentStep === 0 ? classes.navButtonDisabled : ""}`}
         >
-          → {t("recipes", "prev")}
+          <ArrowRight size={18} /> {t("recipes", "prev")}
         </button>
         <button
-          onClick={(e) => { e.stopPropagation(); setCurrentStep(0); setShowCompletion(false); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            setCurrentStep(0);
+            setShowCompletion(false);
+          }}
           className={classes.restartButton}
         >
           <RotateCcw size={16} /> {t("recipes", "resetTimer")}
         </button>
         <button
-          onClick={(e) => { e.stopPropagation(); handleNextStep(); }}
+          onClick={(e) => {
+            e.stopPropagation();
+            handleNextStep();
+          }}
           className={classes.nextButton}
         >
-          {t("recipes", "next")} ←
+          {t("recipes", "next")} <ArrowLeft size={18} />
         </button>
       </div>
 
@@ -50,13 +62,17 @@ export default function CookingModeBottomControls() {
           <div className={classes.timerContent}>
             <div className={classes.timerInputGroup}>
               <div className={classes.timerControlsFrame}>
-                <span className={classes.timerLabel}>{t("recipes", "timeInMinutes")}</span>
+                <span className={classes.timerLabel}>
+                  {t("recipes", "timeInMinutes")}
+                </span>
                 <AddButton
                   sign="+"
                   type="circle"
                   onClick={(e) => {
                     e.stopPropagation();
-                    setCustomTimerInput(String((parseInt(customTimerInput) || 0) + 1));
+                    setCustomTimerInput(
+                      String((parseInt(customTimerInput) || 0) + 1),
+                    );
                   }}
                 />
                 <div className={classes.timerDisplay}>
@@ -91,10 +107,6 @@ export default function CookingModeBottomControls() {
                 }}
                 disabled={!customTimerInput || parseInt(customTimerInput) <= 0}
                 className={classes.startButton}
-                style={{
-                  cursor: customTimerInput && parseInt(customTimerInput) > 0 ? "pointer" : "not-allowed",
-                  opacity: customTimerInput && parseInt(customTimerInput) > 0 ? 1 : 0.5,
-                }}
               >
                 <Play size={18} /> {t("recipes", "addTimer")}
               </button>
@@ -115,7 +127,10 @@ export default function CookingModeBottomControls() {
                     </span>
                     <button
                       className={classes.timerRemoveBtn}
-                      onClick={(e) => { e.stopPropagation(); removeTimer(tm.id); }}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeTimer(tm.id);
+                      }}
                     >
                       <X size={14} />
                     </button>

@@ -9,7 +9,7 @@
   border-bottom: 1px solid var(--clr-border-light);
   background: var(--clr-bg-primary);
   position: sticky;
-  top: 4.5rem;
+  top: 0;
   z-index: 46;
 }
 
@@ -295,7 +295,7 @@
 @media (max-width: 600px) {
   .actionBar {
     position: sticky;
-    top: 3rem; /* fallback — overridden by JS with exact header height */
+    top: 0;
     z-index: 46;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
