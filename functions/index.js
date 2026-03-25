@@ -2,9 +2,25 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { onDocumentWritten } = require("firebase-functions/v2/firestore");
 const { getFirestore } = require("firebase-admin/firestore");
+const { getAuth } = require("firebase-admin/auth");
 const { initializeApp } = require("firebase-admin/app");
 
 initializeApp();
+
+async function verifyFirebaseToken(req, res) {
+  const authHeader = req.headers.authorization;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) {
+    res.status(401).json({ error: "Unauthorized" });
+    return null;
+  }
+  const token = authHeader.split("Bearer ")[1];
+  try {
+    return await getAuth().verifyIdToken(token);
+  } catch {
+    res.status(401).json({ error: "Invalid token" });
+    return null;
+  }
+}
 
 function setCors(req, res) {
   res.set("Access-Control-Allow-Origin", "*");
@@ -265,6 +281,9 @@ exports.ocrImage = onRequest(
       return;
     }
 
+    const user = await verifyFirebaseToken(req, res);
+    if (!user) return;
+
     const { images } = req.body;
     if (!images || !Array.isArray(images) || images.length === 0) {
       res.status(400).json({ error: "Missing images array" });
@@ -303,6 +322,9 @@ exports.openaiChat = onRequest(
       res.status(405).json({ error: "Method not allowed" });
       return;
     }
+
+    const user = await verifyFirebaseToken(req, res);
+    if (!user) return;
 
     const key = process.env.OPENAI_API_KEY;
     if (!key) {
@@ -347,6 +369,9 @@ exports.openaiTts = onRequest(
       return;
     }
 
+    const user = await verifyFirebaseToken(req, res);
+    if (!user) return;
+
     const key = process.env.OPENAI_API_KEY;
     if (!key) {
       res.status(500).json({ error: "OpenAI API key not configured" });
@@ -387,7 +412,6 @@ exports.openaiRecipeImage = onRequest(
     region: "us-central1",
     timeoutSeconds: 120,
     memory: "512MiB",
-    // Gen2 runs on Cloud Run; without public invoker, browsers get 403 with no CORS headers → "CORS" error.
     invoker: "public",
   },
   async (req, res) => {
@@ -396,6 +420,9 @@ exports.openaiRecipeImage = onRequest(
       res.status(405).json({ error: "Method not allowed" });
       return;
     }
+
+    const user = await verifyFirebaseToken(req, res);
+    if (!user) return;
 
     const key = process.env.OPENAI_API_KEY;
     if (!key) {

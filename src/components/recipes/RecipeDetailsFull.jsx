@@ -55,13 +55,36 @@ function RecipeDetailsFull({
   const { commentCount } = useComments(recipe.id);
 
   const [activeTab, setActiveTabRaw] = useState("ingredients");
+  const activeTabRef = useRef("ingredients");
+  const tabScrollPositions = useRef({});
+  const tabsRef = useRef(null);
+
+  const getScrollTop = () => {
+    const main = document.querySelector("main");
+    return main ? main.scrollTop : window.scrollY;
+  };
+  const setScrollTop = (y) => {
+    const main = document.querySelector("main");
+    if (main) main.scrollTop = y;
+    else window.scrollTo(0, y);
+  };
+
   const setActiveTab = useCallback(
     (tab) => {
+      tabScrollPositions.current[activeTabRef.current] = getScrollTop();
+      activeTabRef.current = tab;
       setActiveTabRaw(tab);
       onActiveTabChange?.(tab);
     },
     [onActiveTabChange],
   );
+
+  useEffect(() => {
+    const saved = tabScrollPositions.current[activeTab];
+    if (saved !== undefined) {
+      requestAnimationFrame(() => setScrollTop(saved));
+    }
+  }, [activeTab]);
   const [hoverStar, setHoverStar] = useState(0);
   const touchRef = useRef({ startX: 0, startY: 0 });
 
@@ -189,6 +212,31 @@ function RecipeDetailsFull({
   }, []);
 
   useEffect(() => {
+    const computeTabsTop = () => {
+      if (!tabsRef.current) return;
+      const headerH = stickyHeaderRef.current?.offsetHeight || 0;
+      let actionBarH = 0;
+      if (actionBarRef.current) {
+        const pos = getComputedStyle(actionBarRef.current).position;
+        if (pos === "sticky" || pos === "fixed") {
+          actionBarH = actionBarRef.current.offsetHeight;
+        }
+      }
+      tabsRef.current.style.top = `${headerH + actionBarH}px`;
+    };
+
+    computeTabsTop();
+    const ro = new ResizeObserver(computeTabsTop);
+    if (stickyHeaderRef.current) ro.observe(stickyHeaderRef.current);
+    if (actionBarRef.current) ro.observe(actionBarRef.current);
+    window.addEventListener("resize", computeTabsTop);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("resize", computeTabsTop);
+    };
+  }, []);
+
+  useEffect(() => {
     const sentinel = actionBarSentinelRef.current;
     if (!sentinel) return;
     const isMobile = window.matchMedia("(max-width: 768px)").matches;
@@ -286,7 +334,7 @@ function RecipeDetailsFull({
     activeImageIndex, setActiveImageIndex,
     // refs
     allImages, imageTouchRef, moreMenuRef, stickyHeaderRef,
-    actionBarSentinelRef, actionBarRef, wakeLockWrapperRef,
+    actionBarSentinelRef, actionBarRef, wakeLockWrapperRef, tabsRef,
     // computed/state
     actionBarFixed, wakeLockActive, wakeLockToast,
     // computed values

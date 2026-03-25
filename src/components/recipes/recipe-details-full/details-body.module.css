@@ -212,9 +212,9 @@
   gap: 0;
   margin-bottom: 1.5rem;
   position: sticky;
-  top: 0;
+  top: 0; /* overridden by JS with exact measured value */
   background: var(--clr-bg-primary);
-  z-index: 10;
+  z-index: 45;
   padding: 0.5rem 0;
 }
 

@@ -1,3 +1,5 @@
+import { auth } from "../firebase/config";
+
 const CLOUD_CHAT_URL =
   "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiChat";
 const CLOUD_TTS_URL =
@@ -6,6 +8,13 @@ const CLOUD_OCR_URL =
   "https://us-central1-recipe-book-82d57.cloudfunctions.net/ocrImage";
 const CLOUD_RECIPE_IMAGE_URL =
   "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiRecipeImage";
+
+async function getAuthHeaders() {
+  const user = auth.currentUser;
+  if (!user) return {};
+  const token = await user.getIdToken();
+  return { Authorization: `Bearer ${token}` };
+}
 
 const nutritionCache = new Map();
 const NUTRITION_CACHE_MAX = 50;
@@ -18,7 +27,7 @@ export const speakWithOpenAI = async (text, voice = "nova") => {
   if (!text) return null;
   const response = await fetch(CLOUD_TTS_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
     body: JSON.stringify({
       model: "tts-1",
       input: text,
@@ -41,7 +50,7 @@ export async function generateRecipeImageDataUrl({
 }) {
   const response = await fetch(CLOUD_RECIPE_IMAGE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
     body: JSON.stringify({ recipeName, ingredients }),
   });
 
@@ -68,7 +77,7 @@ export const callOpenAI = async (requestBody, options = {}) => {
   const { signal } = options;
   const response = await fetch(CLOUD_CHAT_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
     body: JSON.stringify(requestBody),
     signal,
   });

@@ -11,12 +11,13 @@ export default function RecipeTabsSection() {
     instructionsArray, checkedInstructions, toggleInstruction,
     chatMessages, setChatMessages, chatAppliedFields, setChatAppliedFields,
     onSaveRecipe, originalRecipe, servings,
+    tabsRef,
     classes, buttonClasses, t,
   } = useRecipeDetails();
 
   return (
     <>
-      <div className={classes.tabs}>
+      <div ref={tabsRef} className={classes.tabs}>
         <button
           className={`${classes.tab} ${activeTab === "ingredients" ? classes.activeTab : ""}`}
           onClick={() => setActiveTab("ingredients")}
