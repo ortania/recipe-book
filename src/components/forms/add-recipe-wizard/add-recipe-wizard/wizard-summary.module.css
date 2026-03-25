@@ -195,14 +195,7 @@
   cursor: pointer;
 }
 
-/* ========== Drag Handle ========== */
-
-.dynamicItem.dragging,
-.groupItem.dragging {
-  opacity: 0.4;
-  background: var(--clr-bg-tertiary, #f5f5f5);
-  border: 2px dashed var(--border-color, #ccc);
-}
+/* (dragging styles moved to wizard-form.module.css to avoid Object.assign class collision) */
 
 /* ========== Star Rating ========== */
 .starRating {

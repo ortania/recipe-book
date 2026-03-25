@@ -10,7 +10,7 @@
   background: var(--clr-bg-primary);
   position: sticky;
   top: 4.5rem;
-  z-index: 40;
+  z-index: 46;
 }
 
 .actionBarStart {
@@ -296,7 +296,7 @@
   .actionBar {
     position: sticky;
     top: 3rem; /* fallback — overridden by JS with exact header height */
-    z-index: 40;
+    z-index: 46;
     gap: 0.5rem;
     padding: 0.5rem 1rem;
   }

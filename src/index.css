@@ -136,9 +136,9 @@ Variables
   --clr-success-text: var(--clr-success-700);
   --clr-success-border: var(--clr-success-300);
 
-  --clr-success-dark-bg: var(--clr-success-500);
+  --clr-success-dark-bg: var(--clr-success-700);
   --clr-success-dark-bg-hover: var(--clr-success-800);
-  --clr-success-dark-bg-active: var(--clr-success-900);
+  --clr-success-dark-bg-active: var(--clr-success-800);
 
   --clr-danger-bg: var(--clr-danger-100);
   --clr-danger-bg-hover: var(--clr-danger-200);

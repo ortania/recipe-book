@@ -84,8 +84,14 @@
 .dynamicItem {
   display: flex;
   flex-direction: row-reverse;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
+}
+
+.dynamicItem.dragging {
+  opacity: 0.4;
+  background: var(--clr-bg-tertiary, #f5f5f5);
+  border: 2px dashed var(--border-color, #ccc);
 }
 
 /* ========== Ingredient Group ========== */

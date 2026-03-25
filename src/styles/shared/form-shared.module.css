@@ -139,7 +139,7 @@
 .groupItem {
   display: flex;
   flex-direction: row-reverse;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.5rem;
   transition: var(--transition);
   margin-top: 0.75rem;
@@ -278,6 +278,7 @@
   color: var(--clr-text-muted);
   cursor: grab;
   padding: 0.2em;
+  margin-top: 0.45em;
   flex-shrink: 0;
   transition: color 0.15s ease;
 }
@@ -444,6 +445,10 @@
   width: 100%;
   box-sizing: border-box;
   background: var(--clr-input-bg);
+}
+
+.formInput[type='url'] {
+  direction: ltr;
 }
 
 .formInput::placeholder {

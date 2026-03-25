@@ -246,8 +246,8 @@
 }
 
 .checkbox:checked {
-  background: var(--clr-success-500);
-  border-color: var(--clr-success-500);
+  background: var(--clr-success-dark-bg);
+  border-color: var(--clr-success-dark-bg);
 }
 
 .checkbox:checked::after {

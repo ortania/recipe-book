@@ -167,14 +167,14 @@
   margin-bottom: 1.5rem;
 }
 
-.photoUploadArea:hover {
+/* .photoUploadArea:hover {
   border-color: var(--clr-warning-hover);
   background: linear-gradient(
     135deg,
     var(--clr-warning-bg-hover) 0%,
     #ffe8cc 100%
   );
-}
+} */
 
 .photoUploadIcon {
   font-size: 3rem;
