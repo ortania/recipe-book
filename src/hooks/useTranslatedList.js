@@ -1,7 +1,12 @@
 import { useState, useEffect } from "react";
 import { useLanguage } from "../context";
-import translations from "../utils/translations";
 import { translateText } from "../utils/translateContent";
+
+// Reuse the same promise from LanguageContext (module cache ensures single load)
+let _translations = null;
+const _translationsPromise = import("../utils/translations").then((m) => {
+  _translations = m.default;
+});
 
 const COMMON_TRANSLATIONS = {
   cakes: { he: "עוגות", ru: "Торты", de: "Kuchen" },
@@ -37,8 +42,15 @@ const CATEGORY_KEY_MAP = {
 
 function useTranslatedList(items, key = "name") {
   const { language } = useLanguage();
+  const [translations, setTranslations] = useState(() => _translations);
   const [apiTranslations, setApiTranslations] = useState({});
   const [descTranslations, setDescTranslations] = useState({});
+
+  useEffect(() => {
+    if (!_translations) {
+      _translationsPromise.then(() => setTranslations(_translations));
+    }
+  }, []);
 
   useEffect(() => {
     if (!items || items.length === 0) return;
@@ -93,16 +105,16 @@ function useTranslatedList(items, key = "name") {
 
     // Virtual categories
     if (id === "all") {
-      return translations.categories?.all?.[language] || originalName;
+      return translations?.categories?.all?.[language] || originalName;
     }
     if (id === "general") {
-      return translations.categories?.general?.[language] || originalName;
+      return translations?.categories?.general?.[language] || originalName;
     }
 
     // Known default categories — use static translations (unless user customized the name)
     const translationKey = CATEGORY_KEY_MAP[id];
     if (translationKey && !item.customName) {
-      const entry = translations.categories?.[translationKey];
+      const entry = translations?.categories?.[translationKey];
       if (entry && entry[language]) {
         return entry[language];
       }
@@ -149,7 +161,7 @@ function useTranslatedList(items, key = "name") {
     // Known categories — use static translations
     const descKey = DESC_KEY_MAP[id];
     if (descKey) {
-      const entry = translations.categories?.[descKey];
+      const entry = translations?.categories?.[descKey];
       if (entry && entry[language]) {
         return entry[language];
       }

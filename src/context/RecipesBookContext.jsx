@@ -39,12 +39,20 @@ export const useRecipeBook = () => {
   return context;
 };
 
+function hasCachedAuthUser() {
+  try {
+    return Object.keys(localStorage).some((k) => k.startsWith("firebase:authUser"));
+  } catch {
+    return false;
+  }
+}
+
 export const RecipeBookProvider = ({ children }) => {
   const [categories, setCategories] = useState([]);
   const [recipes, setRecipes] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(() => hasCachedAuthUser());
   const [recipesLoaded, setRecipesLoaded] = useState(false);
   const [categoriesLoaded, setCategoriesLoaded] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);

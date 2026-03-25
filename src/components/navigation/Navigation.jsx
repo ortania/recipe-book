@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, lazy, Suspense } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useRecipeBook, useLanguage, useRadio } from "../../context";
@@ -6,7 +6,7 @@ import classes from "./navigation.module.css";
 
 import { NavigationContext } from "./NavigationContext";
 import NavigationSidebar from "./NavigationSidebar";
-import NavigationModals from "./NavigationModals";
+const NavigationModals = lazy(() => import("./NavigationModals"));
 
 function Navigation({ onLogout, links }) {
   const navigate = useNavigate();
@@ -202,7 +202,7 @@ function Navigation({ onLogout, links }) {
 
       {isOpen && <div className={classes.overlay} onClick={closeSidebar} />}
 
-      <NavigationModals />
+      <Suspense fallback={null}><NavigationModals /></Suspense>
     </NavigationContext.Provider>
   );
 }

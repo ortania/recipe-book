@@ -13,7 +13,7 @@ import classes from "./app.module.css";
 
 import { MainLayout, ProtectedLayout } from "./layout";
 import { Login } from "../pages";
-import Signup from "../pages/signup";
+const Signup = React.lazy(() => import("../pages/signup/Signup"));
 import {
   RecipeBookProvider,
   useRecipeBook,
@@ -519,7 +519,15 @@ function AppContent() {
         />
         <Route
           path="/signup"
-          element={isLoggedIn ? <Navigate to="/categories" /> : <Signup />}
+          element={
+            isLoggedIn ? (
+              <Navigate to="/categories" />
+            ) : (
+              <Lazy fallback={<LoginSkeleton />}>
+                <Signup />
+              </Lazy>
+            )
+          }
         />
         <Route
           path="/"

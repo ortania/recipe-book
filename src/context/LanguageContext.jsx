@@ -5,7 +5,14 @@ import {
   useEffect,
   useCallback,
 } from "react";
-import translations, { RTL_LANGUAGES } from "../utils/translations";
+
+const RTL_LANGUAGES = ["he", "ar", "fa", "ur", "mixed"];
+
+// Start loading translations immediately (non-blocking)
+let _translations = null;
+const _translationsPromise = import("../utils/translations").then((m) => {
+  _translations = m.default;
+});
 
 const LanguageContext = createContext();
 
@@ -13,6 +20,13 @@ export function LanguageProvider({ children }) {
   const [language, setLanguage] = useState(() => {
     return localStorage.getItem("language") || "he";
   });
+  const [translations, setTranslations] = useState(() => _translations);
+
+  useEffect(() => {
+    if (!_translations) {
+      _translationsPromise.then(() => setTranslations(_translations));
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("language", language);
@@ -23,11 +37,12 @@ export function LanguageProvider({ children }) {
 
   const t = useCallback(
     (section, key) => {
+      if (!translations) return key;
       const entry = translations[section]?.[key];
       if (!entry) return key;
       return entry[language] || entry["en"] || key;
     },
-    [language],
+    [language, translations],
   );
 
   return (
