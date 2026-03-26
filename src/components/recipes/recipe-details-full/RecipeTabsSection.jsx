@@ -1,8 +1,13 @@
+import { useMemo } from "react";
 import { List, ListOrdered, Lightbulb, MessageCircle, Video } from "lucide-react";
 import ChatWindow from "../../chat/ChatWindow";
 import { CommentsSection } from "../../comments-section";
+import { Tooltip } from "../../controls";
 import { useRecipeDetails } from "../RecipeDetailsContext";
-import { isGroupHeader, getGroupName } from "../../../utils/ingredientUtils";
+import {
+  isGroupHeader, getGroupName,
+  buildIngredientSearchData, highlightIngredientsInText,
+} from "../../../utils/ingredientUtils";
 
 export default function RecipeTabsSection() {
   const {
@@ -14,6 +19,25 @@ export default function RecipeTabsSection() {
     tabsRef,
     classes, buttonClasses, t,
   } = useRecipeDetails();
+
+  const ingredientSearchData = useMemo(
+    () => buildIngredientSearchData(ingredientsArray),
+    [ingredientsArray],
+  );
+
+  function renderInstruction(text) {
+    const segments = highlightIngredientsInText(text, ingredientSearchData, scale);
+    if (!segments) return text;
+    return segments.map((seg, i) =>
+      seg.highlight ? (
+        <Tooltip key={i} text={seg.tooltip} className={classes.ingredientHighlight}>
+          {seg.text}
+        </Tooltip>
+      ) : (
+        <span key={i}>{seg.text}</span>
+      ),
+    );
+  }
 
   return (
     <>
@@ -104,7 +128,7 @@ export default function RecipeTabsSection() {
               {instructionsArray.length > 0 ? (
                 instructionsArray.map((instruction, index) => (
                   <li key={index} className={classes.instructionItem}>
-                    <label
+                    <div
                       className={classes.checkboxLabel}
                       style={{ pointerEvents: "none" }}
                     >
@@ -122,9 +146,9 @@ export default function RecipeTabsSection() {
                           checkedInstructions[index] ? classes.checkedText : ""
                         }
                       >
-                        {instruction}
+                        {renderInstruction(instruction)}
                       </span>
-                    </label>
+                    </div>
                   </li>
                 ))
               ) : (

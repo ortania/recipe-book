@@ -305,6 +305,86 @@ export function parseIngredients(recipe) {
   return [];
 }
 
+// ---- Ingredient Highlighting in Instructions ----
+
+/**
+ * Build search data from ingredients for highlighting in instruction text.
+ * Returns entries sorted by name length (longest first) for greedy matching.
+ */
+export function buildIngredientSearchData(ingredientsArray) {
+  const entries = [];
+  const seenKeys = new Set();
+
+  for (const ing of ingredientsArray) {
+    if (isGroupHeader(ing)) continue;
+    const key = normalizeKey(ing);
+    if (!key || key.length < 2 || seenKeys.has(key)) continue;
+    seenKeys.add(key);
+    entries.push({ name: key, fullText: ing });
+  }
+
+  entries.sort((a, b) => b.name.length - a.name.length);
+  return entries;
+}
+
+/**
+ * Find ingredient names inside an instruction string and return segments
+ * for rendering with highlights and tooltips.
+ *
+ * @param {string} text - instruction text
+ * @param {Array} entries - from buildIngredientSearchData
+ * @param {Function} [scaleFn] - optional scaleIngredient wrapper
+ * @returns {Array|null} segments array, or null if no matches
+ *
+ * Each segment: { text: string, highlight?: boolean, tooltip?: string }
+ */
+export function highlightIngredientsInText(text, entries, scaleFn) {
+  if (!text || !entries || entries.length === 0) return null;
+
+  // Safe Hebrew prefixes: ה (the), ו (and), ב (in), ל (to/for), כ (like).
+  // Excludes מ and ש to avoid false positives (מחממים, שמים).
+  // Lookbehind/lookahead enforce Hebrew-aware word boundaries.
+  const patterns = entries.map((e) => {
+    const escaped = e.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return `(?<![א-ת])(?:[הובלכ](?:ה)?)?${escaped}(?![א-ת])`;
+  });
+
+  const regex = new RegExp(`(${patterns.join("|")})`, "g");
+
+  const segments = [];
+  let lastIndex = 0;
+  let hasMatch = false;
+
+  for (const match of text.matchAll(regex)) {
+    hasMatch = true;
+    if (match.index > lastIndex) {
+      segments.push({ text: text.slice(lastIndex, match.index) });
+    }
+
+    const matchLower = match[0].toLowerCase();
+    let tooltip = match[0];
+    for (const entry of entries) {
+      if (matchLower.includes(entry.name)) {
+        tooltip = scaleFn ? scaleFn(entry.fullText) : entry.fullText;
+        break;
+      }
+    }
+
+    segments.push({ text: match[0], tooltip, highlight: true });
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (!hasMatch) return null;
+
+  if (lastIndex < text.length) {
+    segments.push({ text: text.slice(lastIndex) });
+  }
+
+  return segments;
+}
+
+// ---- End Ingredient Highlighting ----
+
 /**
  * Build an aggregated shopping list from an array of recipe IDs.
  * @param {string[]} selectedIds - recipe IDs to include

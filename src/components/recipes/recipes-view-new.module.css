@@ -68,7 +68,11 @@
 }
 
 .loadMoreButton {
-  background: linear-gradient(135deg, var(--clr-brown-600) 0%, var(--clr-brown-800) 100%);
+  background: linear-gradient(
+    135deg,
+    var(--clr-brown-600) 0%,
+    var(--clr-brown-800) 100%
+  );
   color: var(--clr-white);
   border: none;
   padding: 1rem 2.5rem;
@@ -338,7 +342,22 @@
   justify-content: center;
 }
 
-.filterButton,
+.filterButton {
+  padding: 0.5em 0.75em;
+  background: var(--clr-btn-outline-bg);
+  border: 1px solid var(--clr-btn-outline-border);
+  border-radius: 20px;
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-primary);
+  color: var(--clr-btn-outline-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+  transition: var(--transition);
+  box-sizing: border-box;
+  white-space: nowrap;
+}
 
 .filterButton > span,
 .sortingButton > span {
@@ -716,7 +735,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Empty state for new users */
@@ -755,7 +776,9 @@
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
 }
 
 .emptyButton:hover {

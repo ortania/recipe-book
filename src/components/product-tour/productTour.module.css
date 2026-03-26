@@ -174,11 +174,11 @@
 /* ===== Tooltip ===== */
 .tooltip {
   position: absolute;
-  background: rgba(0, 102, 204, 0.92);
-  border-radius: 8px;
+  background: var(--clr-brown-900);
+  border-radius: var(--tooltip-border-radius);
   padding: 0.45rem 0.8rem;
   color: var(--clr-white);
-  font-size: 14px;
+  font-size: var(--small-font);
   max-width: 220px;
   z-index: 11;
   line-height: 1.4;

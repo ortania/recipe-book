@@ -1,0 +1,30 @@
+.wrapper {
+  position: relative;
+  display: inline;
+  pointer-events: auto;
+}
+
+.trigger {
+  cursor: help;
+  pointer-events: auto;
+}
+
+.bubble {
+  position: fixed;
+  top: 0;
+  left: 0;
+  opacity: 0;
+  background: var(--clr-brown-800);
+  color: var(--clr-white);
+  padding: 0.4em 0.75em;
+  border-radius: var(--tooltip-border-radius);
+  font-size: var(--very-small-font);
+  max-width: calc(100vw - 16px);
+  width: max-content;
+  white-space: normal;
+  text-align: center;
+  z-index: 10000;
+  pointer-events: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+  transition: opacity 0.12s ease-out;
+}

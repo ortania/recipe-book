@@ -114,7 +114,7 @@ export default function TimerWidget() {
             <span className={classes.badge}>+{timers.length - 1}</span>
           )}
         </div>
-        {topTimer.running && (
+        {topTimer.running ? (
           <button
             className={classes.stopBtn}
             onClick={(e) => {
@@ -125,6 +125,8 @@ export default function TimerWidget() {
           >
             <Square size={12} fill="currentColor" />
           </button>
+        ) : (
+          <span></span>
         )}
         <button className={classes.expandBtn}>
           {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -157,7 +159,7 @@ export default function TimerWidget() {
                 </span>
               </div>
               <div className={classes.itemActions}>
-                {timer.running && (
+                {timer.running ? (
                   <button
                     className={classes.stopBtn}
                     onClick={() => stopTimer(timer.id)}
@@ -165,6 +167,8 @@ export default function TimerWidget() {
                   >
                     <Square size={12} fill="currentColor" />
                   </button>
+                ) : (
+                  <span></span>
                 )}
                 <button
                   className={classes.removeBtn}

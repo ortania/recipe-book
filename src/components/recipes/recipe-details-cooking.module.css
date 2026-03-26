@@ -217,8 +217,6 @@
   max-width: var(--max-width);
 }
 
-
-
 .navButton,
 .restartButton,
 .nextButton {
@@ -409,9 +407,10 @@
 }
 
 .timerInputGroup {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   align-items: center;
-  gap: 0.5rem;
+  column-gap: 10px;
   flex-shrink: 0;
 }
 
@@ -423,6 +422,7 @@
   border-radius: var(--btn-border-radius);
   padding: 0.6rem 0.8rem;
   background: var(--clr-btn-outline-bg);
+  grid-column: 1 / 4;
 }
 
 .timerControlsFrame:hover {
@@ -443,8 +443,7 @@
 
 .activeTimersList {
   display: grid;
-  /* grid-template-columns: auto 1fr auto auto; */
-  grid-template-columns: auto minmax(0, 1fr) minmax(0, 1fr) auto;
+  grid-template-columns: auto minmax(0, 1fr) auto auto;
   row-gap: 6px;
   flex: 1;
   min-width: 0;
@@ -471,6 +470,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   min-width: 0;
+  max-width: 100%;
   justify-self: start;
 }
 
@@ -492,7 +492,9 @@
   padding: 2px;
   display: flex;
   align-items: center;
+  justify-content: center;
   color: var(--clr-text-muted);
+  align-self: center;
 }
 
 .timerRemoveBtn:hover {
@@ -500,8 +502,9 @@
 }
 
 .timerDone {
-  background: var(--clr-success-bg);
-  border-color: var(--clr-success-border);
+  /* background: var(--clr-success-bg);
+  border-color: var(--clr-success-border); */
+  background: var(--clr-neutral-200);
 }
 
 .timerDone .activeTimerTime {
@@ -533,8 +536,7 @@
 }
 
 .startButton {
-  padding: 0.6em 1.2em;
-  font-size: var(--small-font);
+  padding: 0.5em 0.75em;
   background: var(--clr-btn-outline-bg);
   color: var(--clr-btn-main-bg);
   border: 1px solid var(--clr-btn-main-border);
@@ -546,6 +548,8 @@
   cursor: pointer;
   transition: var(--transition);
   white-space: nowrap;
+  grid-column: 4;
+  justify-self: center;
 }
 
 .startButton:hover:not(:disabled) {

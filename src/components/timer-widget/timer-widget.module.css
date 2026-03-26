@@ -40,12 +40,12 @@
 }
 
 .header {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
-  justify-content: space-between;
+  column-gap: 8px;
   padding: 10px 14px;
   cursor: grab;
-  gap: 8px;
   background: var(--clr-accent-secondary);
   color: var(--clr-white);
 }
@@ -115,9 +115,10 @@
 }
 
 .item {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
   align-items: center;
-  justify-content: space-between;
+  column-gap: 8px;
   padding: 8px 14px;
   border-bottom: 1px solid var(--clr-border-color);
 }
@@ -134,8 +135,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  flex: 1;
   min-width: 0;
+  grid-column: 1 / 3;
 }
 
 .itemLabel {
@@ -155,10 +156,7 @@
 }
 
 .itemActions {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-shrink: 0;
+  display: contents;
 }
 
 .stopBtn {

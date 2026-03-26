@@ -324,6 +324,7 @@ Variables
   --clr-tip-border: #d6c7b2;
   --clr-tip-text: var(--clr-neutral-800);
 
+  --tooltip-border-radius: 6px;
   --icon-border-radius: 8px;
   --form-border-radius: 12px;
 

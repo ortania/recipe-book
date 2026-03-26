@@ -339,7 +339,6 @@
   display: flex;
   align-items: flex-start;
   gap: 0.75rem;
-  cursor: pointer;
   user-select: none;
 }
 
@@ -400,6 +399,20 @@
 .checkedText {
   text-decoration: line-through;
   color: var(--clr-text-muted) !important;
+}
+
+/* Ingredient highlight in instructions */
+.ingredientHighlight {
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  text-decoration-color: var(--clr-primary);
+  text-underline-offset: 3px;
+}
+
+.checkedText .ingredientHighlight {
+  text-decoration: line-through;
+  text-decoration-style: solid;
+  text-decoration-color: var(--clr-text-muted);
 }
 
 /* Nutrition Section */
