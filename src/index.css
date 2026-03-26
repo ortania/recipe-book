@@ -687,7 +687,7 @@ html {
   }
 
   body.chat-open footer {
-    box-shadow: none !important;
+    display: none !important;
   }
 
   body.hide-footer footer {

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useRef, useCallback } from "react";
+import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
@@ -324,7 +324,7 @@ function RecipesView({
     }
   };
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (showChat) {
       document.body.classList.add("chat-open");
       window.scrollTo({ top: 0 });
