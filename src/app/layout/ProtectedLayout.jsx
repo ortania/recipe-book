@@ -6,6 +6,7 @@ import {
   useRadio,
   TimerProvider,
 } from "../../context";
+import { auth } from "../../firebase/config";
 import { Navigation, Header, Footer } from "../../components";
 import { RadioPlayer } from "../../components/radio-player";
 import TimerWidget from "../../components/timer-widget/TimerWidget";
@@ -51,6 +52,7 @@ function ProtectedLayout() {
   }, [pathname]);
 
   if (!isLoggedIn) {
+    if (auth.currentUser) return null;
     return <Navigate to="/login" />;
   }
 

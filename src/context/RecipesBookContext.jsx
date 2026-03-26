@@ -40,7 +40,7 @@ export const useRecipeBook = () => {
 
 const readSessionCache = () => {
   try {
-    const s = sessionStorage.getItem("appCache");
+    const s = localStorage.getItem("appCache");
     return s ? JSON.parse(s) : null;
   } catch {
     return null;
@@ -94,14 +94,17 @@ export const RecipeBookProvider = ({ children }) => {
     let expiredCacheTimer = null;
 
     // For users with no cache: show login page within 3s even if Firebase is slow
+    // But only if Firebase also confirms no user exists
     const noAuthFallback = !hasCache
       ? setTimeout(() => {
-          if (!initialLoadDone.current && !cancelled) setIsLoading(false);
+          if (!initialLoadDone.current && !cancelled && !auth.currentUser) {
+            setIsLoading(false);
+          }
         }, 3000)
       : null;
 
     const clearCachedSession = () => {
-      try { sessionStorage.removeItem("appCache"); } catch {}
+      try { localStorage.removeItem("appCache"); } catch {}
       setCurrentUser(null);
       setIsAdmin(false);
       setIsLoggedIn(false);
@@ -128,7 +131,7 @@ export const RecipeBookProvider = ({ children }) => {
               // Keep cache fresh
               try {
                 const cached = readSessionCache();
-                if (cached) sessionStorage.setItem("appCache", JSON.stringify({ ...cached, user: updated }));
+                if (cached) localStorage.setItem("appCache", JSON.stringify({ ...cached, user: updated }));
               } catch {}
             }
           } catch (err) {
@@ -174,7 +177,8 @@ export const RecipeBookProvider = ({ children }) => {
           initialLoadDone.current = false;
           clearCachedSession();
         }
-        // else: null on initial load — handled by authStateReady below
+        // Initial null: could be truly not logged in, or Android null-before-user.
+        // The noAuthFallback timer (3s) and authStateReady handle showing login.
       }
     });
 
@@ -191,10 +195,10 @@ export const RecipeBookProvider = ({ children }) => {
         expiredCacheTimer = setTimeout(() => {
           if (!initialLoadDone.current && !cancelled) clearCachedSession();
         }, 5000);
-      } else {
-        // No cache — definitely not logged in
-        setIsLoading(false);
       }
+      // No-cache case: the noAuthFallback timer (3s) handles showing login.
+      // We don't set isLoading(false) here to avoid the race where
+      // onAuthStateChange(user) hasn't fired yet (Android null-before-user).
     });
 
     return () => {
@@ -241,7 +245,7 @@ export const RecipeBookProvider = ({ children }) => {
 
       // Save full cache for instant display on next refresh
       try {
-        sessionStorage.setItem("appCache", JSON.stringify({
+        localStorage.setItem("appCache", JSON.stringify({
           user: confirmedUser,
           recipes: fetchedRecipes,
           categories: finalCategories,
@@ -532,7 +536,7 @@ export const RecipeBookProvider = ({ children }) => {
   const logout = async () => {
     try {
       initialLoadDone.current = false;
-      try { sessionStorage.removeItem("appCache"); } catch {}
+      try { localStorage.removeItem("appCache"); } catch {}
       await logoutUser();
       setCurrentUser(null);
       setIsAdmin(false);

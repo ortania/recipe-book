@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { Send, XCircle } from "lucide-react";
+import { Send, X } from "lucide-react";
 import { useLanguage } from "../../context";
 import classes from "./comment-form.module.css";
 
@@ -66,7 +66,7 @@ function CommentForm({ onSubmit, currentUser, disabled }) {
               }
             }}
           >
-            <XCircle strokeWidth={1} size={18} />
+            <X size={20} />
           </button>
         )}
         <button

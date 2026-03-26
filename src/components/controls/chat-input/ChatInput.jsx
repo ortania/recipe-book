@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from "react";
-import { Image, Square, XCircle, Mic, MicOff, Send, CircleX } from "lucide-react";
+import { Image, Square, X, Mic, MicOff, Send } from "lucide-react";
 import { useLanguage } from "../../../context";
 import classes from "./chat-input.module.css";
 
@@ -31,7 +31,9 @@ function ChatInput({
   useEffect(() => {
     return () => {
       if (recognitionRef.current) {
-        try { recognitionRef.current.stop(); } catch {}
+        try {
+          recognitionRef.current.stop();
+        } catch {}
         recognitionRef.current = null;
       }
     };
@@ -51,7 +53,9 @@ function ChatInput({
   const toggleSpeech = useCallback(() => {
     if (isListening) {
       if (recognitionRef.current) {
-        try { recognitionRef.current.stop(); } catch {}
+        try {
+          recognitionRef.current.stop();
+        } catch {}
         recognitionRef.current = null;
       }
       setIsListening(false);
@@ -95,7 +99,9 @@ function ChatInput({
     e.preventDefault();
     if (!disabled && value.trim()) {
       if (recognitionRef.current) {
-        try { recognitionRef.current.stop(); } catch {}
+        try {
+          recognitionRef.current.stop();
+        } catch {}
         recognitionRef.current = null;
         setIsListening(false);
       }
@@ -163,9 +169,8 @@ function ChatInput({
                 }}
                 title={t("common", "clear") || "Clear"}
               >
-                <XCircle strokeWidth={1} size={18} />
+                <X size={20} />
 
-  
                 {/* <CircleX strokeWidth={1} size={18} /> */}
               </button>
               <button

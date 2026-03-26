@@ -29,14 +29,14 @@
 }
 
 .badge {
-  background: var(--clr-success-bg);
+  background: var(--clr-brown-700);
   color: var(--clr-white);
   font-size: var(--very-small-font);
   font-weight: var(--font-weight-heading);
   min-width: 1.3em;
   height: 1.3em;
   padding: 0 0.35em;
-  border-radius: 10px;
+  border-radius: 50%;
   display: inline-flex;
   align-items: center;
   justify-content: center;

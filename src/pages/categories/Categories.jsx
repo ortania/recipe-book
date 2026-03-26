@@ -22,6 +22,7 @@ function Categories() {
   const {
     categories,
     recipes,
+    recipesLoaded,
     selectedCategories,
     addRecipe,
     editRecipe,
@@ -113,6 +114,7 @@ function Categories() {
         showGreeting={showGreetingOnce}
         sortStorageKey="categoriesSortPreference"
         hideRating
+        loading={!recipesLoaded}
       />
 
       {showChat && (

@@ -27,7 +27,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 25px;
+  border-radius: 14px;
   transition: transform 0.3s ease;
 }
 
@@ -44,7 +44,7 @@
   color: var(--clr-text-muted, #999);
   font-size: var(--basic-font);
   font-style: italic;
-  border-radius: 25px;
+  border-radius: 14px;
   border: 2px dashed var(--clr-text-muted, #ccc);
   opacity: 0.8;
 }

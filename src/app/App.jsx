@@ -19,6 +19,7 @@ import {
   useRecipeBook,
   LanguageProvider,
 } from "../context";
+import { auth } from "../firebase/config";
 import { ErrorBoundary } from "../components/error-boundary";
 
 const queryClient = new QueryClient({
@@ -469,7 +470,7 @@ function AppContent() {
   const { isLoggedIn, isLoading } = useRecipeBook();
   const location = useLocation();
 
-  if (isLoading) {
+  if (isLoading || (!isLoggedIn && auth.currentUser)) {
     return skeletonForPath(location.pathname);
   }
 
