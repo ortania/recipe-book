@@ -92,6 +92,19 @@ export default function BasicInfoStep() {
       </div>
 
       <div className={shared.formGroup}>
+        <label className={shared.formLabel}>
+          {t("addWizard", "recipeAuthor")} ({t("common", "optional")})
+        </label>
+        <input
+          type="text"
+          className={shared.formInput}
+          placeholder={t("addWizard", "authorPlaceholder")}
+          value={recipe.author || ""}
+          onChange={(e) => updateRecipe("author", e.target.value)}
+        />
+      </div>
+
+      <div className={shared.formGroup}>
         <label className={shared.formLabel}>{t("recipes", "notes")}</label>
         <textarea
           className={shared.formTextarea}

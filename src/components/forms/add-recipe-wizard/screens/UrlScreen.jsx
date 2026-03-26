@@ -10,6 +10,8 @@ export default function UrlScreen() {
     handleClose,
     recipeUrl,
     setRecipeUrl,
+    recipeAuthor,
+    setRecipeAuthor,
     isImporting,
     importError,
     importProgress,
@@ -49,6 +51,17 @@ export default function UrlScreen() {
         placeholder="https://example.com/recipe/chocolate-cake"
         value={recipeUrl}
         onChange={(e) => setRecipeUrl(e.target.value)}
+      />
+
+      <label className={classes.fieldLabel}>
+        {t("addWizard", "recipeAuthor")} ({t("common", "optional")})
+      </label>
+      <input
+        type="text"
+        className={shared.formInput}
+        placeholder={t("addWizard", "authorPlaceholder")}
+        value={recipeAuthor}
+        onChange={(e) => setRecipeAuthor(e.target.value)}
       />
 
       <div className={classes.tipBox}>

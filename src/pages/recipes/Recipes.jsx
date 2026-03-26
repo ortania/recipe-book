@@ -13,10 +13,12 @@ import {
 } from "../../components";
 import { Toast } from "../../components/controls";
 import { useRecipeBook, useLanguage } from "../../context";
+import useScrollRestore from "../../hooks/useScrollRestore";
 
 import { scrollToTop } from "../utils";
 
 function Recipes() {
+  useScrollRestore("recipes");
   const {
     recipes,
     categories,

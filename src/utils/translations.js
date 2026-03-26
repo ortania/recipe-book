@@ -2472,6 +2472,13 @@ const translations = {
 
   // ===================== RECIPE DETAILS =====================
   recipeDetails: {
+    recipeBy: {
+      he: "מתכון מאת",
+      en: "Recipe by",
+      ru: "Рецепт от",
+      de: "Rezept von",
+      mixed: "Recipe by",
+    },
     nutritionTitle: {
       he: "ערכים תזונתיים",
       en: "Nutritional values",
@@ -2934,6 +2941,13 @@ const translations = {
       ru: "Все рецепты",
       de: "Alle Rezepte",
       mixed: "All Recipes",
+    },
+    optional: {
+      he: "אופציונלי",
+      en: "Optional",
+      ru: "Необязательно",
+      de: "Optional",
+      mixed: "Optional",
     },
   },
 
@@ -3599,6 +3613,20 @@ const translations = {
       ru: "Ссылка на рецепт",
       de: "Rezeptlink",
       mixed: "קישור למתכון",
+    },
+    recipeAuthor: {
+      he: "שם מחבר המתכון",
+      en: "Recipe Author",
+      ru: "Автор рецепта",
+      de: "Rezeptautor",
+      mixed: "שם מחבר המתכון",
+    },
+    authorPlaceholder: {
+      he: "לדוגמה: ג'יימי אוליבר",
+      en: "e.g., Jamie Oliver",
+      ru: "например, Джейми Оливер",
+      de: "z.B. Jamie Oliver",
+      mixed: "e.g., Jamie Oliver",
     },
     tip: {
       he: "טיפ",

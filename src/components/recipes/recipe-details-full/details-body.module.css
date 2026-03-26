@@ -111,6 +111,25 @@
   font-weight: 500;
 }
 
+.authorSection {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-bottom: 1.5rem;
+  font-size: var(--basic-font);
+}
+
+.authorLabel {
+  color: var(--clr-text-muted);
+  font-weight: 400;
+}
+
+.authorName {
+  color: var(--clr-text-primary);
+  font-weight: 500;
+}
+
 .expandIcon {
   color: var(--clr-white);
   font-size: 1.75rem;

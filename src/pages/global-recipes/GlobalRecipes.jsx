@@ -13,10 +13,12 @@ import {
 } from "../../firebase/ratingService";
 import { useGlobalRecipes } from "../../hooks/useGlobalRecipes";
 import { RecipesView, UpButton, AddRecipeWizard } from "../../components";
+import useScrollRestore from "../../hooks/useScrollRestore";
 import { scrollToTop } from "../utils";
 import classes from "./global-recipes.module.css";
 
 function GlobalRecipes() {
+  useScrollRestore("globalRecipes");
   const { t, language } = useLanguage();
   const { currentUser, addRecipe, setRecipes, categories } = useRecipeBook();
 

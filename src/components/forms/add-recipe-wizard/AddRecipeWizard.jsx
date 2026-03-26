@@ -56,6 +56,7 @@ const INITIAL_RECIPE = {
   servings: "",
   difficulty: "Unknown",
   sourceUrl: "",
+  author: "",
   videoUrl: "",
   image_src: "",
   images: [],
@@ -104,6 +105,7 @@ function AddRecipeWizard({
     categories: defaultGroup ? [defaultGroup] : [],
   });
   const [recipeUrl, setRecipeUrl] = useState("");
+  const [recipeAuthor, setRecipeAuthor] = useState("");
   const [recipeText, setRecipeText] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [importError, setImportError] = useState("");
@@ -240,6 +242,7 @@ function AddRecipeWizard({
         image_src: parsed.image_src || prev.image_src,
         images: parsed.image_src ? [parsed.image_src] : prev.images,
         sourceUrl: recipeUrl,
+        author: recipeAuthor.trim() || prev.author,
       }));
       setImportProgress(100);
       clearInterval(progressRef.current);
@@ -1094,6 +1097,7 @@ function AddRecipeWizard({
       servings: recipe.servings ? parseInt(recipe.servings) : null,
       difficulty: recipe.difficulty,
       sourceUrl: recipe.sourceUrl,
+      author: recipe.author || "",
       videoUrl: recipe.videoUrl,
       image_src: images[0] || recipe.image_src,
       images,
@@ -1202,6 +1206,14 @@ function AddRecipeWizard({
       setCameFromRecording(false);
       setScreen("recording");
     } else {
+      setRecipe({
+        ...INITIAL_RECIPE,
+        categories: defaultGroup ? [defaultGroup] : [],
+      });
+      setManualStep(0);
+      setVisitedSteps(new Set([0]));
+      setRecipeUrl("");
+      setRecipeAuthor("");
       setScreen("method");
     }
   };
@@ -1216,6 +1228,8 @@ function AddRecipeWizard({
     setManualStep,
     recipeUrl,
     setRecipeUrl,
+    recipeAuthor,
+    setRecipeAuthor,
     recipeText,
     setRecipeText,
     isImporting,

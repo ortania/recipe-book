@@ -13,12 +13,14 @@ import {
 } from "../../components";
 import { PiArrowFatLineUp } from "react-icons/pi";
 import { useRecipeBook, useLanguage } from "../../context";
+import useScrollRestore from "../../hooks/useScrollRestore";
 
 import { scrollToTop } from "../utils";
 
 import classes from "./categories.module.css";
 
 function Categories() {
+  useScrollRestore("categories");
   const {
     categories,
     recipes,

@@ -165,6 +165,21 @@ export default function BasicTab() {
 
       <div className={shared.formGroup}>
         <label className={shared.formLabel}>
+          {t("addWizard", "recipeAuthor")} ({t("common", "optional")})
+        </label>
+        <input
+          type="text"
+          className={shared.formInput}
+          placeholder={t("addWizard", "authorPlaceholder")}
+          value={editedRecipe.author || ""}
+          onChange={(e) =>
+            setEditedRecipe((prev) => ({ ...prev, author: e.target.value }))
+          }
+        />
+      </div>
+
+      <div className={shared.formGroup}>
+        <label className={shared.formLabel}>
           {t("recipes", "notes")}
         </label>
         <textarea

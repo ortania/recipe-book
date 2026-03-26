@@ -1,7 +1,23 @@
 import {
-  ChefHat, Clock, Users, ChevronDown, ChevronUp,
-  Apple, Flame, Drumstick, Droplet, Wheat, Candy,
-  Leaf, Droplets, Pill, Sparkles, Bone, Atom, Info, MessageSquare,
+  ChefHat,
+  Clock,
+  Users,
+  ChevronDown,
+  ChevronUp,
+  Apple,
+  Flame,
+  Drumstick,
+  Droplet,
+  Wheat,
+  Candy,
+  Leaf,
+  Droplets,
+  Pill,
+  Sparkles,
+  Bone,
+  Atom,
+  Info,
+  MessageSquare,
 } from "lucide-react";
 import { AddButton } from "../../controls/add-button";
 import { useRecipeDetails } from "../RecipeDetailsContext";
@@ -9,10 +25,23 @@ import { hasTime, formatTime } from "../utils";
 
 export default function RecipeInfoSection() {
   const {
-    hideRating, onRate, hoverStar, setHoverStar, userRating, recipe,
-    commentCount, language, getCategoryName, servings, setServings,
-    showNutrition, setShowNutrition, scaleNutrition, onSaveRecipe,
-    classes, t,
+    hideRating,
+    onRate,
+    hoverStar,
+    setHoverStar,
+    userRating,
+    recipe,
+    commentCount,
+    language,
+    getCategoryName,
+    servings,
+    setServings,
+    showNutrition,
+    setShowNutrition,
+    scaleNutrition,
+    onSaveRecipe,
+    classes,
+    t,
   } = useRecipeDetails();
 
   return (
@@ -162,7 +191,9 @@ export default function RecipeInfoSection() {
           {hasTime(recipe.cookTime) && (
             <span className={classes.infoItem}>
               <Clock className={classes.infoIcon} size={16} />
-              {language === "he" || language === "mixed" ? "בישול" : "Cook"}{" "}
+              {language === "he" || language === "mixed"
+                ? "בישול"
+                : "Cook"}{" "}
               {formatTime(recipe.cookTime, t("recipes", "minutes"))}
             </span>
           )}
@@ -178,6 +209,15 @@ export default function RecipeInfoSection() {
                 {getCategoryName(cat)}
               </span>
             ))}
+        </div>
+      )}
+
+      {recipe.author && (
+        <div className={classes.authorSection}>
+          <span className={classes.authorLabel}>
+            {t("recipeDetails", "recipeBy")}:
+          </span>
+          <span className={classes.authorName}>{recipe.author}</span>
         </div>
       )}
 
