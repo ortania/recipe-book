@@ -1170,12 +1170,14 @@ function AddRecipeWizard({
       const nextStep = manualStep + 1;
       setManualStep(nextStep);
       setVisitedSteps((prev) => new Set([...prev, nextStep]));
+      window.scrollTo({ top: 0 });
     }
   };
 
   const handlePrev = () => {
     setStepError("");
     setManualStep(manualStep - 1);
+    window.scrollTo({ top: 0 });
   };
 
   const handleStepClick = (stepIndex) => {
@@ -1192,6 +1194,7 @@ function AddRecipeWizard({
     setStepError("");
     setManualStep(stepIndex);
     setVisitedSteps((prev) => new Set([...prev, stepIndex]));
+    window.scrollTo({ top: 0 });
   };
 
   const handleManualBack = () => {
