@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useRef, useCallback } from "react";
+import { auth } from "../firebase/config";
 
 const TimerContext = createContext();
 
@@ -193,11 +194,16 @@ function speakNative(text) {
 async function speakViaCloud(text) {
   let spoken = false;
   try {
+    const headers = { "Content-Type": "application/json" };
+    try {
+      const user = auth.currentUser;
+      if (user) headers.Authorization = `Bearer ${await user.getIdToken()}`;
+    } catch {}
     const res = await fetch(
       "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts",
       {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({
           model: "tts-1",
           input: text,

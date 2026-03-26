@@ -144,7 +144,6 @@ Variables
   --clr-danger-bg-hover: var(--clr-danger-200);
   --clr-danger-bg-active: var(--clr-danger-300);
   --clr-danger-dark-bg: var(--clr-danger-600);
-  
 
   --clr-danger-text: var(-var(--clr-danger-600));
   --clr-danger-text-strong: var(--clr-danger-800);
@@ -157,7 +156,6 @@ Variables
   --clr-error-message: var(--clr-primary-700);
 
   --danger-text-font-weight: 600;
-
 
   /* =========================
      GLOBAL INTERACTIONS
@@ -291,7 +289,6 @@ Variables
   --clr-bg-secondary: var(--clr-bg-card);
   --clr-bg-tertiary: var(--clr-tertiary-200);
 
-
   /* =========================
      BORDERS
   ========================= */
@@ -312,12 +309,21 @@ Variables
      TIP
   ========================= */
 
-  --clr-tip-bg: #f5f1ec;
+  /* --clr-tip-bg: #f5f1ec;
 
   --clr-tip-border: var(--clr-brown-200);
-  --clr-tip: var(--clr-brown-800);
+  --clr-tip-text: var(--clr-brown-800); */
   --tip-border-radius: 12px;
   --tip-label-font-weight: 500;
+
+  /* --clr-tip-bg: #f7f2e8;
+  --clr-tip-text: var(--clr-neutral-800);
+  --clr-tip-border: #e6dccb; */
+
+  --clr-tip-bg: #ebe3d7;
+  --clr-tip-border: #d6c7b2;
+  --clr-tip-text: var(--clr-neutral-800);
+
   --icon-border-radius: 8px;
   --form-border-radius: 12px;
 
@@ -331,12 +337,12 @@ Variables
   --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   /* Overlay / dimmer backgrounds */
-  --clr-overlay-subtle: rgba(0, 0, 0, 0.3);   /* light touch overlays */
-  --clr-overlay-light:  rgba(0, 0, 0, 0.4);   /* popup overlays */
-  --clr-overlay:        rgba(0, 0, 0, 0.5);   /* sidebar, sheet, picker overlays */
-  --clr-overlay-dark:   rgba(0, 0, 0, 0.6);   /* heavy modal overlays */
-  --clr-overlay-strong: rgba(0, 0, 0, 0.7);   /* full modal overlays */
-  --clr-overlay-black:  rgba(0, 0, 0, 0.9);   /* lightbox / near-opaque overlays */
+  --clr-overlay-subtle: rgba(0, 0, 0, 0.3); /* light touch overlays */
+  --clr-overlay-light: rgba(0, 0, 0, 0.4); /* popup overlays */
+  --clr-overlay: rgba(0, 0, 0, 0.5); /* sidebar, sheet, picker overlays */
+  --clr-overlay-dark: rgba(0, 0, 0, 0.6); /* heavy modal overlays */
+  --clr-overlay-strong: rgba(0, 0, 0, 0.7); /* full modal overlays */
+  --clr-overlay-black: rgba(0, 0, 0, 0.9); /* lightbox / near-opaque overlays */
 
   /* =========================
      GENERAL
@@ -387,7 +393,7 @@ Variables
 
   /* general */
   --transition-fast: all 0.15s ease;
-  --transition:      all 0.2s ease;
+  --transition: all 0.2s ease;
   --transition-slow: all 0.3s ease;
   --scale: 1.07;
   --spacing: 0;

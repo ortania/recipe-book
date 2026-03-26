@@ -147,7 +147,7 @@
 
 .content li {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.5rem;
   padding: 0.7rem 0.75rem;
   font-size: var(--basic-font);

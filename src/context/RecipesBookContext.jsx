@@ -26,7 +26,7 @@ import {
   ensureGoogleUserDoc,
 } from "../firebase/authService";
 import { doc, writeBatch } from "firebase/firestore";
-import { db } from "../firebase/config";
+import { db, auth } from "../firebase/config";
 
 const RecipeBookContext = createContext();
 
@@ -38,22 +38,35 @@ export const useRecipeBook = () => {
   return context;
 };
 
+const readSessionCache = () => {
+  try {
+    const s = sessionStorage.getItem("appCache");
+    return s ? JSON.parse(s) : null;
+  } catch {
+    return null;
+  }
+};
+
+// Captured once at module load — survives re-renders
+const SESSION_CACHE = readSessionCache(); // { user, recipes, categories } | null
+
 export const RecipeBookProvider = ({ children }) => {
-  const [categories, setCategories] = useState([]);
-  const [recipes, setRecipes] = useState([]);
-  const [isAdmin, setIsAdmin] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [recipesLoaded, setRecipesLoaded] = useState(false);
-  const [categoriesLoaded, setCategoriesLoaded] = useState(false);
-  const [currentUser, setCurrentUser] = useState(null);
+  const hasCache = !!SESSION_CACHE;
+  const [categories, setCategories] = useState(SESSION_CACHE?.categories || []);
+  const [recipes, setRecipes] = useState(SESSION_CACHE?.recipes || []);
+  const [isAdmin, setIsAdmin] = useState(hasCache);
+  const [isLoggedIn, setIsLoggedIn] = useState(hasCache);
+  // Skip loading screen when we have a cached session — show app immediately
+  const [isLoading, setIsLoading] = useState(!hasCache);
+  const [recipesLoaded, setRecipesLoaded] = useState(hasCache);
+  const [categoriesLoaded, setCategoriesLoaded] = useState(hasCache);
+  const [currentUser, setCurrentUser] = useState(SESSION_CACHE?.user || null);
   const [lastRecipeDoc, setLastRecipeDoc] = useState(null);
   const [hasMoreRecipes, setHasMoreRecipes] = useState(false);
   const [selectedCategories, setSelectedCategories] = useState(["all"]);
   const [isSearchActive, setIsSearchActive] = useState(false);
   const loginResolverRef = useRef(null);
   const initialLoadDone = useRef(false);
-  const nullTimeoutRef = useRef(null);
 
   const toggleCategory = (categoryId) => {
     setSelectedCategories((prev) => {
@@ -77,19 +90,46 @@ export const RecipeBookProvider = ({ children }) => {
 
   // Listen to auth state changes
   useEffect(() => {
-    // Safety net: if Firebase never fires (shouldn't happen), unblock UI after 5s
-    const loadingTimeout = setTimeout(() => setIsLoading(false), 5000);
+    let cancelled = false;
+    let expiredCacheTimer = null;
+
+    // For users with no cache: show login page within 3s even if Firebase is slow
+    const noAuthFallback = !hasCache
+      ? setTimeout(() => {
+          if (!initialLoadDone.current && !cancelled) setIsLoading(false);
+        }, 3000)
+      : null;
+
+    const clearCachedSession = () => {
+      try { sessionStorage.removeItem("appCache"); } catch {}
+      setCurrentUser(null);
+      setIsAdmin(false);
+      setIsLoggedIn(false);
+      setRecipes([]);
+      setCategories([]);
+      setSelectedCategories(["all"]);
+      setRecipesLoaded(false);
+      setCategoriesLoaded(false);
+      setIsLoading(false);
+    };
 
     const unsubscribe = onAuthStateChange(async (user) => {
-      clearTimeout(loadingTimeout);
-      clearTimeout(nullTimeoutRef.current);
+      if (cancelled) return;
       if (user) {
+        clearTimeout(expiredCacheTimer);
+        clearTimeout(noAuthFallback);
         if (initialLoadDone.current) {
           // Token refresh — update user object but skip full reload
           try {
             const userData = await getUserData(user.uid);
             if (userData) {
-              setCurrentUser({ uid: user.uid, ...userData });
+              const updated = { uid: user.uid, ...userData };
+              setCurrentUser(updated);
+              // Keep cache fresh
+              try {
+                const cached = readSessionCache();
+                if (cached) sessionStorage.setItem("appCache", JSON.stringify({ ...cached, user: updated }));
+              } catch {}
             }
           } catch (err) {
             console.error("Token refresh user data error:", err);
@@ -97,59 +137,83 @@ export const RecipeBookProvider = ({ children }) => {
           return;
         }
 
+        // Unblock the UI immediately using the basic Firebase user object.
+        // Full Firestore user data and recipes load in the background.
+        const basicUser = { uid: user.uid, email: user.email, displayName: user.displayName };
+        setCurrentUser(basicUser);
+        setIsAdmin(true);
         setIsLoggedIn(true);
+        setIsLoading(false);
+        // Unblock Login page navigation immediately — no need to wait for data
+        if (loginResolverRef.current) {
+          loginResolverRef.current();
+          loginResolverRef.current = null;
+        }
         initialLoadDone.current = true;
 
         try {
-          setIsLoading(true);
-          await ensureGoogleUserDoc(user);
-          let userData = await getUserData(user.uid);
+          const [, fetchedUserData] = await Promise.all([
+            ensureGoogleUserDoc(user),
+            getUserData(user.uid),
+          ]);
+          let userData = fetchedUserData;
           if (!userData) {
             await new Promise((resolve) => setTimeout(resolve, 1500));
             userData = await getUserData(user.uid);
           }
-          setCurrentUser({ uid: user.uid, ...userData });
-          setIsAdmin(true);
-          await loadUserData(user.uid, userData || user);
-          if (loginResolverRef.current) {
-            loginResolverRef.current();
-            loginResolverRef.current = null;
-          }
+          if (cancelled) return;
+          const confirmedUser = { uid: user.uid, ...userData };
+          setCurrentUser(confirmedUser);
+          await loadUserData(confirmedUser);
         } catch (err) {
           console.error("Auth load error:", err);
-        } finally {
-          setIsLoading(false);
         }
       } else {
         if (initialLoadDone.current) {
-          // Genuine logout
+          // Genuine logout after being logged in
           initialLoadDone.current = false;
-          setCurrentUser(null);
-          setIsAdmin(false);
-          setIsLoggedIn(false);
-          setRecipes([]);
-          setCategories([]);
-          setSelectedCategories(["all"]);
-          setRecipesLoaded(false);
-          setCategoriesLoaded(false);
-          setIsLoading(false);
-        } else {
-          // null on initial load — Android fires null before user on refresh.
-          // Wait 2s for the user callback before concluding "not logged in".
-          nullTimeoutRef.current = setTimeout(() => {
-            if (!initialLoadDone.current) setIsLoading(false);
-          }, 2000);
+          clearCachedSession();
         }
+        // else: null on initial load — handled by authStateReady below
       }
     });
 
-    return () => { unsubscribe(); clearTimeout(loadingTimeout); clearTimeout(nullTimeoutRef.current); };
+    // authStateReady resolves when Firebase knows the definitive initial auth state.
+    // — No cache: if no user, unblock immediately (show login page)
+    // — Has cache: if no user fires yet, wait briefly for Android null-before-user.
+    //   If user fires in time, the clearTimeout above cancels the expiry.
+    //   If not, assume the cached session truly expired and clear it.
+    auth.authStateReady().then(() => {
+      if (cancelled || initialLoadDone.current) return;
+      if (hasCache) {
+        // Firebase returned null but we had a cached session.
+        // Give it 5s for onAuthStateChanged(user) to arrive (Android pattern).
+        expiredCacheTimer = setTimeout(() => {
+          if (!initialLoadDone.current && !cancelled) clearCachedSession();
+        }, 5000);
+      } else {
+        // No cache — definitely not logged in
+        setIsLoading(false);
+      }
+    });
+
+    return () => {
+      cancelled = true;
+      clearTimeout(expiredCacheTimer);
+      clearTimeout(noAuthFallback);
+      unsubscribe();
+    };
   }, []);
 
   // Load user's categories and recipes
-  const loadUserData = async (userId, authUser) => {
+  const loadUserData = async (confirmedUser) => {
+    const userId = confirmedUser.uid;
     try {
-      let categoriesFromFirestore = await fetchCategories(userId);
+      const [categoriesFromFirestore, { recipes: fetchedRecipes }] =
+        await Promise.all([
+          fetchCategories(userId),
+          fetchRecipes(RECIPES_PER_PAGE, userId),
+        ]);
 
       const allCategory = {
         id: "all",
@@ -171,14 +235,18 @@ export const RecipeBookProvider = ({ children }) => {
       setCategories(finalCategories);
       setCategoriesLoaded(true);
 
-      // Load all user recipes (no pagination for personal recipes)
-      const { recipes: fetchedRecipes } = await fetchRecipes(
-        RECIPES_PER_PAGE,
-        userId,
-      );
       setRecipes(fetchedRecipes);
       setHasMoreRecipes(false);
       setRecipesLoaded(true);
+
+      // Save full cache for instant display on next refresh
+      try {
+        sessionStorage.setItem("appCache", JSON.stringify({
+          user: confirmedUser,
+          recipes: fetchedRecipes,
+          categories: finalCategories,
+        }));
+      } catch {}
     } catch (error) {
       console.error("Error loading user data:", error);
     }
@@ -408,7 +476,8 @@ export const RecipeBookProvider = ({ children }) => {
 
   const login = () => {
     return new Promise((resolve) => {
-      if (isLoggedIn) {
+      // initialLoadDone is a ref — always current, no stale closure
+      if (isLoggedIn || initialLoadDone.current) {
         resolve();
         return;
       }
@@ -463,6 +532,7 @@ export const RecipeBookProvider = ({ children }) => {
   const logout = async () => {
     try {
       initialLoadDone.current = false;
+      try { sessionStorage.removeItem("appCache"); } catch {}
       await logoutUser();
       setCurrentUser(null);
       setIsAdmin(false);

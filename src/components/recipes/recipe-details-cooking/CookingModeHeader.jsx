@@ -1,5 +1,5 @@
 import {
-  Lightbulb, RotateCcw, Users, Type, List, ListOrdered,
+  Lightbulb, Users, Type, List, ListOrdered,
   Music, Mic, Timer, Volume2, Smartphone, UtensilsCrossed,
 } from "lucide-react";
 import { CookingVoiceChat } from "../../cooking-voice-chat";
@@ -30,7 +30,7 @@ export default function CookingModeHeader() {
               {
                 content: (
                   <>
-                    <Lightbulb size="1.5em" style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
+                    <Lightbulb size="2em"  />
                     {t("cookingMode", "helpVolume")}
                   </>
                 ),
@@ -38,7 +38,7 @@ export default function CookingModeHeader() {
               {
                 content: (
                   <>
-                    <Smartphone size="1.2em" style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
+                    <Smartphone size="1.2em"  />
                     {t("cookingMode", "screenOn")}
                   </>
                 ),
@@ -48,7 +48,7 @@ export default function CookingModeHeader() {
               {
                 content: (
                   <>
-                    <Timer size="3.5em" style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
+                    <Timer size="4.5em"  />
                     {t("cookingMode", "timerTitle")} — {t("cookingMode", "timerText")}
                   </>
                 ),
@@ -56,7 +56,7 @@ export default function CookingModeHeader() {
               {
                 content: (
                   <>
-                    <Music size="1.5em" style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
+                    <Music size="2em"  />
                     {t("cookingMode", "radioTitle")} — {t("cookingMode", "radioText")}
                   </>
                 ),
@@ -64,7 +64,7 @@ export default function CookingModeHeader() {
               {
                 content: (
                   <>
-                    <Mic size="1.5em" style={{ verticalAlign: "middle", marginInlineEnd: "0.25rem" }} />
+                    <Mic size="1.7em"  />
                     {t("cookingMode", "chatTitle")} — {t("cookingMode", "chatText")}
                   </>
                 ),

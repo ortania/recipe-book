@@ -200,10 +200,11 @@
   background: var(--clr-tip-bg);
   /* border-inline-start: 2px solid var(--clr-tip-border); */
   border: 1px solid var(--clr-tip-border);
-  color: var(--clr-tip);
+  color: var(--clr-tip-text);
   line-height: 1.6;
   grid-column: 1 / -1;
   font-size: var(--basic-font);
+  border-radius: var(--tip-border-radius);
 }
 
 .faqList {

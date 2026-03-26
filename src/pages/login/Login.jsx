@@ -150,7 +150,6 @@ function Login() {
       } else {
         localStorage.removeItem("rememberedEmail");
       }
-      await login(user.uid);
       sessionStorage.setItem("justLoggedIn", "true");
       localStorage.setItem("tourCompleted", "true");
       navigate("/categories");
@@ -192,7 +191,6 @@ function Login() {
         setIsGoogleLoading(false);
         return;
       }
-      await login(user.uid);
       localStorage.setItem("onboardingDone", "true");
       sessionStorage.setItem("justLoggedIn", "true");
       localStorage.setItem("tourCompleted", "true");

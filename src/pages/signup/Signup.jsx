@@ -107,7 +107,6 @@ function Signup() {
         setIsGoogleLoading(false);
         return;
       }
-      await login(user.uid);
       localStorage.setItem("onboardingDone", "true");
       sessionStorage.setItem("justLoggedIn", "true");
       localStorage.setItem("tourCompleted", "true");
@@ -138,6 +137,7 @@ function Signup() {
 
     try {
       await signupUser(email, password, displayName);
+      navigate("/categories");
     } catch (error) {
       if (error.code === "auth/email-already-in-use") {
         setError(t("auth", "emailAlreadyInUse"));

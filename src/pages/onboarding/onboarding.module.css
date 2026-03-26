@@ -131,13 +131,13 @@
 .tipLabel {
   font-size: var(--basic-font);
   font-weight: var(--tip-label-font-weight);
-  color: var(--clr-tip);
+  color: var(--clr-tip-text);
 }
 
 .tipText {
   text-align: center;
   font-size: var(--basic-font);
-  color: var(--clr-tip);
+  color: var(--clr-tip-text);
   line-height: 1.5;
 }
 

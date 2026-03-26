@@ -426,7 +426,7 @@ function LoginSkeleton() {
 }
 
 function skeletonForPath(path) {
-  if (path.startsWith("/login") || path.startsWith("/signup"))
+  if (path === "/" || path.startsWith("/login") || path.startsWith("/signup"))
     return <LoginSkeleton />;
   if (path.startsWith("/conversions")) return <ConversionsSkeleton />;
   if (path.startsWith("/settings")) return <SettingsSkeleton />;

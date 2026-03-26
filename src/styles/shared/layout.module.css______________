@@ -259,7 +259,7 @@
   background: var(--clr-tip-bg);
   border: 1px solid var(--clr-tip-border);
   border-radius: var(--tip-border-radius);
-  color: var(--clr-tip);
+  color: var(--clr-tip-text);
   font-size: var(--small-font);
 }
 

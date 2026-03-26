@@ -20,6 +20,7 @@ function Recipes() {
   const {
     recipes,
     categories,
+    recipesLoaded,
     addRecipe,
     editRecipe,
     deleteRecipe,
@@ -106,6 +107,7 @@ function Recipes() {
         onDeleteRecipe={deleteRecipe}
         sortStorageKey="myRecipesSortPreference"
         hideRating
+        loading={!recipesLoaded}
       />
 
       <UpButton onClick={scrollToTop} title={t("common", "scrollToTop")}>

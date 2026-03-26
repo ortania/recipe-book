@@ -329,7 +329,7 @@
   height: 0;
   border-left: 12px solid transparent;
   border-right: 12px solid transparent;
-  border-bottom: 14px solid var(--clr-success-border);
+  border-bottom: 14px solid var(--clr-brown-800);
   animation: helpArrowBounce 1s ease-in-out infinite;
   z-index: 10;
 }

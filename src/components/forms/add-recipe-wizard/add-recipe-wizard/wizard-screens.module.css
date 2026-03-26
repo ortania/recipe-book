@@ -274,7 +274,7 @@
   border-radius: 12px;
   margin-top: 1rem;
   font-size: var(--basic-font);
-  color: var(--clr-tip);
+  color: var(--clr-tip-text);
   border: 1px solid var(--clr-tip-border);
   line-height: 1;
 }

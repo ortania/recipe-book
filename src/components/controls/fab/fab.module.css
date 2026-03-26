@@ -5,7 +5,8 @@
   bottom: calc(7rem + env(safe-area-inset-bottom, 0));
   height: 5.6rem;
   width: 5.6rem; /* changed for + to be square */
-  border-radius: 12px;
+  /* border-radius: var(--btn-small-border-radius); */
+  border-radius: 14px;
   display: flex;
   align-items: center;
   justify-content: center;

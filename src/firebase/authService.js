@@ -89,7 +89,6 @@ export const signInWithGoogle = async () => {
     await setPersistence(auth, browserLocalPersistence);
     const result = await signInWithPopup(auth, googleProvider);
     const user = result.user;
-    await ensureGoogleUserDoc(user);
     console.log("✅ Google sign-in (popup):", user.uid);
     return user;
   } catch (error) {
