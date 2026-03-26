@@ -57,7 +57,7 @@ function RecipeDetailsFull({
 
   const [activeTab, setActiveTabRaw] = useState("ingredients");
   const activeTabRef = useRef("ingredients");
-  const tabScrollPositions = useRef({});
+  const scrollBeforeTabChange = useRef(null);
   const tabsRef = useRef(null);
 
   const getScrollTop = () => {
@@ -72,7 +72,7 @@ function RecipeDetailsFull({
 
   const setActiveTab = useCallback(
     (tab) => {
-      tabScrollPositions.current[activeTabRef.current] = getScrollTop();
+      scrollBeforeTabChange.current = getScrollTop();
       activeTabRef.current = tab;
       setActiveTabRaw(tab);
       onActiveTabChange?.(tab);
@@ -80,10 +80,11 @@ function RecipeDetailsFull({
     [onActiveTabChange],
   );
 
-  useEffect(() => {
-    const saved = tabScrollPositions.current[activeTab];
-    if (saved !== undefined) {
-      requestAnimationFrame(() => setScrollTop(saved));
+  // Restore scroll synchronously before paint so content-height changes don't cause jumps
+  useLayoutEffect(() => {
+    if (scrollBeforeTabChange.current !== null) {
+      setScrollTop(scrollBeforeTabChange.current);
+      scrollBeforeTabChange.current = null;
     }
   }, [activeTab]);
   const [hoverStar, setHoverStar] = useState(0);

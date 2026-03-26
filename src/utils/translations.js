@@ -805,7 +805,7 @@ const translations = {
       mixed: "Save Changes",
     },
     saved: {
-      he: "נשמר!",
+      he: "מתכון נשמר בהצלחה",
       en: "Saved!",
       ru: "Сохранено!",
       de: "Gespeichert!",

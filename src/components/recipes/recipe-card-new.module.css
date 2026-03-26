@@ -68,7 +68,7 @@
 }
 
 .sharerName {
-  font-size: var(--basic-font);
+  font-size: var(--small-font);
   color: var(--clr-link);
   font-weight: var(--link-font-weight);
   text-decoration: underline;

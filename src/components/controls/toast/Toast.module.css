@@ -5,15 +5,17 @@
   transform: translateX(-50%);
   z-index: 10250;
   pointer-events: none;
-  width: fit-content;
-  max-width: calc(100% - 2rem);
+
+
+  width: max-content;
+  max-width: calc(100vw - 2rem);
 }
 
 .toast {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  font-size: var(--huge-font);
+  font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   line-height: 1;
   pointer-events: auto;
@@ -21,7 +23,10 @@
   border-radius: 1rem;
   padding: 0.8rem 1.2rem;
   box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.08);
-  width: fit-content;
+
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  white-space: nowrap;
 }
 
 .toast span {
