@@ -23,7 +23,12 @@ import shared from "../../../styles/shared/form-shared.module.css";
 import _screensClasses from "./add-recipe-wizard/wizard-screens.module.css";
 import _formClasses from "./add-recipe-wizard/wizard-form.module.css";
 import _summaryClasses from "./add-recipe-wizard/wizard-summary.module.css";
-const classes = Object.assign({}, _screensClasses, _formClasses, _summaryClasses);
+const classes = Object.assign(
+  {},
+  _screensClasses,
+  _formClasses,
+  _summaryClasses,
+);
 import { translateRecipeContent } from "../../../utils/translateContent";
 import {
   makeGroupHeader,
@@ -116,7 +121,12 @@ function AddRecipeWizard({
   const [stepError, setStepError] = useState("");
   const [visitedSteps, setVisitedSteps] = useState(new Set([0]));
   const [showPreview, setShowPreview] = useState(false);
-  const [imageToast, setImageToast] = useState({ open: false, message: null, variant: "success", duration: 4000 });
+  const [imageToast, setImageToast] = useState({
+    open: false,
+    message: null,
+    variant: "success",
+    duration: 4000,
+  });
   const [imageDragOver, setImageDragOver] = useState(false);
   const [photoDragOver, setPhotoDragOver] = useState(false);
   const [importProgress, setImportProgress] = useState(0);
@@ -679,7 +689,10 @@ function AddRecipeWizard({
     }
   };
 
-  const isMobileDevice = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isMobileDevice =
+    /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent,
+    ) || navigator.maxTouchPoints > 1;
 
   // ========== Image upload ==========
   const handleImageUpload = async (e) => {
@@ -755,23 +768,30 @@ function AddRecipeWizard({
     handleImageUpload({ target: { files }, preventDefault: () => {} });
   };
 
-  const handlePasteImage = useCallback(async (file) => {
-    if (!file || uploadingImage || generatingAiImage) return;
-    setUploadingImage(true);
-    try {
-      const userId = currentUser?.uid;
-      if (!userId) throw new Error("Not logged in");
-      const url = await uploadRecipeImage(userId, `new_${Date.now()}_paste`, file);
-      setRecipe((prev) => {
-        const allImages = [...(prev.images || []), url];
-        return { ...prev, images: allImages, image_src: allImages[0] || "" };
-      });
-    } catch (err) {
-      console.error("Paste image failed:", err);
-    } finally {
-      setUploadingImage(false);
-    }
-  }, [currentUser, uploadingImage, generatingAiImage]);
+  const handlePasteImage = useCallback(
+    async (file) => {
+      if (!file || uploadingImage || generatingAiImage) return;
+      setUploadingImage(true);
+      try {
+        const userId = currentUser?.uid;
+        if (!userId) throw new Error("Not logged in");
+        const url = await uploadRecipeImage(
+          userId,
+          `new_${Date.now()}_paste`,
+          file,
+        );
+        setRecipe((prev) => {
+          const allImages = [...(prev.images || []), url];
+          return { ...prev, images: allImages, image_src: allImages[0] || "" };
+        });
+      } catch (err) {
+        console.error("Paste image failed:", err);
+      } finally {
+        setUploadingImage(false);
+      }
+    },
+    [currentUser, uploadingImage, generatingAiImage],
+  );
 
   useEffect(() => {
     if (screen !== "manual" || manualStep !== 3) return;
@@ -790,7 +810,17 @@ function AddRecipeWizard({
 
   const handleGenerateAiImage = async () => {
     if (!recipe.name?.trim()) {
-      setImageToast({ open: true, message: <><AlertTriangle size={18} /> {t("addWizard", "generateAiImageNeedName")}</>, variant: "error", duration: 4000 });
+      setImageToast({
+        open: true,
+        message: (
+          <>
+            <AlertTriangle size={18} />{" "}
+            {t("addWizard", "generateAiImageNeedName")}
+          </>
+        ),
+        variant: "error",
+        duration: 4000,
+      });
       return;
     }
     if (uploadingImage || generatingAiImage) return;
@@ -799,7 +829,16 @@ function AddRecipeWizard({
 
     const safetyTimer = setTimeout(() => {
       setGeneratingAiImage(false);
-      setImageToast({ open: true, message: <><AlertTriangle size={18} /> Timeout</>, variant: "error", duration: 5000 });
+      setImageToast({
+        open: true,
+        message: (
+          <>
+            <AlertTriangle size={18} /> Timeout
+          </>
+        ),
+        variant: "error",
+        duration: 5000,
+      });
     }, 120000);
 
     try {
@@ -826,10 +865,29 @@ function AddRecipeWizard({
           image_src: allImages[0] || "",
         };
       });
-      setImageToast({ open: true, message: <><CircleCheck size={18} /> {t("addWizard", "generateAiImageDone")}</>, variant: "success", duration: 4000 });
+      setImageToast({
+        open: true,
+        message: (
+          <>
+            <CircleCheck size={18} /> {t("addWizard", "generateAiImageDone")}
+          </>
+        ),
+        variant: "success",
+        duration: 4000,
+      });
     } catch (err) {
       console.error("AI image generation failed:", err);
-      setImageToast({ open: true, message: <><AlertTriangle size={18} /> {err.message || t("addWizard", "generateAiImageError")}</>, variant: "error", duration: 5000 });
+      setImageToast({
+        open: true,
+        message: (
+          <>
+            <AlertTriangle size={18} />{" "}
+            {err.message || t("addWizard", "generateAiImageError")}
+          </>
+        ),
+        variant: "error",
+        duration: 5000,
+      });
     } finally {
       clearTimeout(safetyTimer);
       setGeneratingAiImage(false);
@@ -1264,27 +1322,27 @@ function AddRecipeWizard({
 
   return (
     <>
-    <Modal
-      onClose={handleClose}
-      maxWidth="550px"
-      className={
-        screen === "manual"
-          ? `${shared.noPadModal} ${classes.noPadModal}`
-          : undefined
-      }
-    >
-      <WizardContext.Provider value={contextValue}>
-        {renderScreen()}
-      </WizardContext.Provider>
-    </Modal>
-    <Toast
-      open={imageToast.open}
-      onClose={() => setImageToast((prev) => ({ ...prev, open: false }))}
-      variant={imageToast.variant}
-      duration={imageToast.duration}
-    >
-      {imageToast.message}
-    </Toast>
+      <Modal
+        onClose={handleClose}
+        maxWidth="550px"
+        className={
+          screen === "manual"
+            ? `${shared.noPadModal} ${classes.noPadModal}`
+            : undefined
+        }
+      >
+        <WizardContext.Provider value={contextValue}>
+          {renderScreen()}
+        </WizardContext.Provider>
+      </Modal>
+      <Toast
+        open={imageToast.open}
+        onClose={() => setImageToast((prev) => ({ ...prev, open: false }))}
+        variant={imageToast.variant}
+        duration={imageToast.duration}
+      >
+        {imageToast.message}
+      </Toast>
     </>
   );
 }

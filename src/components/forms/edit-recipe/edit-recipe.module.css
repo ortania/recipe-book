@@ -387,46 +387,65 @@
 /* ========== Image Action Row (uniform upload / paste / AI buttons) ========== */
 .imageActionRow {
   display: flex;
-  flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 0.75rem;
 }
 
-.imageActionBtn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.45rem;
-  padding: 0.55em 0.9em;
-  border-radius: 12px;
-  border: 2px solid var(--clr-border-light);
-  background: var(--clr-bg-tertiary);
-  color: var(--clr-text-secondary);
-  font-size: var(--basic-font);
-  cursor: pointer;
-  transition: var(--transition);
+.imageActionRow > * {
   flex: 1 1 0;
   min-width: 0;
+}
+
+.imageActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.6em 0.75em;
+  border-radius: 10px;
+  border: 1.5px solid var(--clr-border-light);
+  background: var(--clr-bg-card);
+  color: var(--clr-text-secondary);
+  font-size: var(--small-font);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: center;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.imageActionBtn svg {
+  flex-shrink: 0;
 }
 
 .imageActionBtn:hover:not(:disabled) {
-  border-color: var(--clr-success-border);
-  color: var(--clr-success-text);
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+  background: var(--clr-primary-100);
+}
+
+.imageActionBtn:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 .imageActionBtn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 @media (max-width: 768px) {
   .imageActionRow {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.4rem;
   }
   .imageActionBtn {
-    font-size: var(--small-font);
-    padding: 0.5em 0.6em;
+    font-size: var(--very-small-font);
+    padding: 0.5em 0.5em;
+    white-space: normal;
+    line-height: 1.3;
   }
 }
 

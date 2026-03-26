@@ -2,7 +2,7 @@
 
 /* ========== Summary Screen ========== */
 .summaryBox {
-  background: var(--clr-success-100);
+  background: var(--clr-bg-card);
   border-radius: 16px;
   padding: 2rem;
   text-align: center;
@@ -33,21 +33,26 @@
   align-items: center;
   gap: 0.6rem;
   padding: 0.6em 1.2em;
-  background: var(--clr-bg-card);
+  background: var(--clr-btn-outline-bg);
 
-  border: 1px solid var(--clr-success-border);
-  border-radius: 12px;
+  border: 1px solid var(--clr-btn-outline-border);
+  border-radius: var(--btn-border-radius);
 
-  color: var(--clr-success-text);
+  color: var(--clr-btn-outline-text);
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   cursor: pointer;
   transition: var(--transition);
+  line-height: 1;
 }
 
 .previewBtn:hover {
-  background: var(--clr-success-bg);
-  color: var(--clr-white);
+  background: var(--clr-btn-outline-bg-hover);
+  border-color: var(--clr-btn-outline-border-hover);
+}
+
+.previewBtn svg {
+  display: block;
 }
 
 /* ========== Recipe Preview ========== */
@@ -298,18 +303,19 @@
 .prevBtn {
   flex: 1;
   padding: 0.9rem;
-  background: var(--clr-bg-tertiary);
-  border: 1px solid var(--clr-btn-main-border);
+  background: var(--clr-btn-outline-bg);
+  order: 1px solid var(---clr-btn-outline-border);
   border-radius: var(--btn-small-border-radius);
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
-  color: var(--clr-text-primary);
+  color: var(--clr-btn-outline-text);
   cursor: pointer;
   transition: var(--transition);
 }
 
 .prevBtn:hover {
-  background: var(--clr-bg-hover);
+  background: var(--clr-btn-outline-bg-hover);
+  border-color: var(--clr-btn-outline-border-hover);
 }
 
 .nextBtn {

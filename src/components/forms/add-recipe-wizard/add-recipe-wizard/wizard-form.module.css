@@ -347,65 +347,120 @@
 /* ========== Image Action Row (shared by "has-images" + "no-images" states) ========== */
 .imageActionRow {
   display: flex;
-  flex-wrap: wrap;
   gap: 0.5rem;
-  margin-top: 0.25rem;
+  margin-top: 0.5rem;
+}
+
+.imageActionRow > * {
+  flex: 1 1 0;
+  min-width: 0;
 }
 
 .imageActionBtn {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   justify-content: center;
-  gap: 0.45rem;
-  padding: 0.55em 0.9em;
-  border-radius: 12px;
-  border: 2px solid var(--clr-border-light);
-  background: var(--clr-bg-tertiary);
+  gap: 0.4rem;
+  padding: 0.6em 0.75em;
+  border-radius: 10px;
+  border: 1.5px solid var(--clr-border-light);
+  background: var(--clr-bg-card);
   color: var(--clr-text-secondary);
-  font-size: var(--basic-font);
+  font-size: var(--small-font);
+  font-weight: var(--font-weight-medium);
   cursor: pointer;
-  transition: var(--transition);
-  flex: 1 1 0;
-  min-width: 0;
+  transition: var(--transition-fast);
+  text-align: center;
   white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.imageActionBtn svg {
+  flex-shrink: 0;
 }
 
 .imageActionBtn:hover:not(:disabled) {
-  border-color: var(--clr-success-border);
-  color: var(--clr-success-text);
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+  background: var(--clr-primary-100);
+}
+
+.imageActionBtn:active:not(:disabled) {
+  transform: scale(0.97);
 }
 
 .imageActionBtn:disabled {
-  opacity: 0.6;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
 /* Card variant used in the "no images yet" state */
 .imageActionCard {
-  composes: imageActionBtn;
+  display: flex;
   flex-direction: column;
-  gap: 0.5rem;
-  padding: 1.5rem 1rem;
-  min-height: 5.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.25rem 0.75rem;
+  border-radius: 12px;
+  border: 1.5px dashed var(--clr-border-light);
+  background: var(--clr-bg-card);
+  color: var(--clr-text-secondary);
+  font-size: var(--small-font);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: center;
+  min-height: 5rem;
+}
+
+.imageActionCard:hover:not(:disabled) {
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+  background: var(--clr-neutral-100);
+}
+
+.imageActionCard:hover .imageOptionIcon {
+  color: var(--clr-primary);
+}
+
+.imageActionCard:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.imageActionCard:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .imageActionCard .imageOptionIcon {
-  font-size: 2rem;
+  width: 28px;
+  height: 28px;
   color: var(--clr-text-muted);
+  transition: color var(--transition-fast);
 }
 
 @media (max-width: 500px) {
   .imageActionRow {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
     gap: 0.4rem;
   }
   .imageActionBtn {
-    font-size: var(--small-font);
-    padding: 0.5em 0.6em;
+    font-size: var(--very-small-font);
+    padding: 0.5em 0.5em;
+    white-space: normal;
+    line-height: 1.3;
   }
   .imageActionCard {
     padding: 1rem 0.5rem;
-    min-height: 4rem;
-    font-size: var(--small-font);
+    min-height: 4.5rem;
+    font-size: var(--very-small-font);
+  }
+  .imageActionCard .imageOptionIcon {
+    width: 24px;
+    height: 24px;
   }
 }
 

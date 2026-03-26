@@ -16,7 +16,7 @@
 }
 
 .categoryChip:hover {
-  border-color: var(--clr-success-border);
+  border-color: var(--clr-neutral-400);
 }
 
 @media (hover: none) {
@@ -27,7 +27,7 @@
 
 .categoryChipActive {
   background: var(--clr-bg-hover);
-  color: var(--clr-success-text);
+ border-color: var(--clr-neutral-600);
 }
 
 .addCategoryChip {
@@ -45,15 +45,15 @@
 }
 
 .addCategoryChip:hover {
-  border-color: var(--clr-success-border);
-  color: var(--clr-success-text);
+  border-color: var(--clr-btn-main-border);
+  color: var(---clr-btn-main-text);
 }
 
 .newCategoryInline {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  border: 1px solid var(--clr-success-border);
+  border: 1px solid var(--clr-btn-main-border);
   border-radius: 20px;
   padding: 0.25em 0.5em;
   background: var(--clr-bg-card);
@@ -79,7 +79,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--clr-success-bg);
+  background: var(--clr-success-dark-bg);
   color: var(--clr-white);
   border: none;
   border-radius: 50%;
