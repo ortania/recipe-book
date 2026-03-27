@@ -108,11 +108,8 @@ export default function RecipesStickyTop() {
         </div>
       </div>
 
-      {showGreeting && !showSearch && (
-        <div
-          className={classes.headerTitle}
-          style={{ display: showChat ? "none" : undefined }}
-        >
+      {showGreeting && !showSearch && !showChat && (
+        <div className={classes.headerTitle}>
           <Greeting />
         </div>
       )}
@@ -186,6 +183,7 @@ export default function RecipesStickyTop() {
             </div>
           </div>
         )}
+
     </div>
   );
 }

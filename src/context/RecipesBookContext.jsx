@@ -63,10 +63,25 @@ export const RecipeBookProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(SESSION_CACHE?.user || null);
   const [lastRecipeDoc, setLastRecipeDoc] = useState(null);
   const [hasMoreRecipes, setHasMoreRecipes] = useState(false);
-  const [selectedCategories, setSelectedCategories] = useState(["all"]);
+  const [selectedCategories, setSelectedCategories] = useState(() => {
+    try {
+      const saved = localStorage.getItem("selectedCategories");
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return ["all"];
+  });
   const [isSearchActive, setIsSearchActive] = useState(false);
   const loginResolverRef = useRef(null);
   const initialLoadDone = useRef(false);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem("selectedCategories", JSON.stringify(selectedCategories));
+    } catch {}
+  }, [selectedCategories]);
 
   const toggleCategory = (categoryId) => {
     setSelectedCategories((prev) => {

@@ -1884,6 +1884,13 @@ const translations = {
       de: "Gute Nacht",
       mixed: "Good night",
     },
+    whatToCook: {
+      he: "מה בא לך לבשל היום?",
+      en: "What do you feel like cooking today?",
+      ru: "Что хочется приготовить сегодня?",
+      de: "Was möchtest du heute kochen?",
+      mixed: "מה בא לך לבשל היום?",
+    },
     helpTitle: {
       he: "דף מתכונים",
       en: "Recipes Page",

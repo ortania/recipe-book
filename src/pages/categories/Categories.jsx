@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { useState, useMemo, useCallback } from "react";
 import { AnimatePresence } from "framer-motion";
 import { CircleCheck } from "lucide-react";
 import { Toast } from "../../components/controls";
@@ -41,20 +41,9 @@ function Categories() {
     setSaveToastOpen(false);
     setShowAddRecipe(false);
   }, []);
-  const [showGreetingOnce, setShowGreetingOnce] = useState(() => {
-    return sessionStorage.getItem("justLoggedIn") === "true";
-  });
   const [showTour, setShowTour] = useState(() => {
     return !localStorage.getItem("tourCompleted");
   });
-
-  useEffect(() => {
-    if (showGreetingOnce) {
-      sessionStorage.removeItem("justLoggedIn");
-      const timer = setTimeout(() => setShowGreetingOnce(false), 20000);
-      return () => clearTimeout(timer);
-    }
-  }, [showGreetingOnce]);
 
   const handleCloseTour = () => {
     setShowTour(false);
@@ -113,7 +102,7 @@ function Categories() {
           setShowAddRecipe(true);
         }}
         selectedGroup={isAllSelected ? "all" : selectedCategories}
-        showGreeting={showGreetingOnce}
+        showGreeting={true}
         sortStorageKey="categoriesSortPreference"
         hideRating
         loading={!recipesLoaded}

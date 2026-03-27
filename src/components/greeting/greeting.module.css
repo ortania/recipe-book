@@ -1,6 +1,24 @@
-.greeting {
-  font-size: var(--very-large-font);
-  font-weight: var(--font-weight-heading);
-  color: var(--clr-text-primary);
-  padding: 0.5rem 0;
+.greetingWrapper {
+  margin: 0.8rem 0 1.2rem;
+  text-align: center;
+}
+
+.greetingSmall {
+  font-size: 1.4rem;
+  color: var(--clr-text-muted);
+  opacity: 1;
+  max-height: 2rem;
+  transition: opacity 0.3s ease, max-height 0.3s ease;
+  overflow: hidden;
+  margin-bottom: 0.2rem;
+}
+
+.greetingSmall.hide {
+  opacity: 0;
+  max-height: 0;
+}
+
+.greetingPrompt {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-primary);
 }
