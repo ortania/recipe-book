@@ -40,14 +40,16 @@ function setCors(req, res) {
 
 function extractTextFromHtml(html) {
   let text = html
-    .replace(/<script[\s\S]*?<\/script>/gi, " ")
-    .replace(/<style[\s\S]*?<\/style>/gi, " ")
-    .replace(/<noscript[\s\S]*?<\/noscript>/gi, " ")
-    .replace(/<nav[\s\S]*?<\/nav>/gi, " ")
-    .replace(/<footer[\s\S]*?<\/footer>/gi, " ")
-    .replace(/<header[\s\S]*?<\/header>/gi, " ")
-    .replace(/<aside[\s\S]*?<\/aside>/gi, " ")
-    .replace(/<iframe[\s\S]*?<\/iframe>/gi, " ")
+    .replace(/<script[\s\S]*?<\/script>/gi, "")
+    .replace(/<style[\s\S]*?<\/style>/gi, "")
+    .replace(/<noscript[\s\S]*?<\/noscript>/gi, "")
+    .replace(/<nav[\s\S]*?<\/nav>/gi, "")
+    .replace(/<footer[\s\S]*?<\/footer>/gi, "")
+    .replace(/<header[\s\S]*?<\/header>/gi, "")
+    .replace(/<aside[\s\S]*?<\/aside>/gi, "")
+    .replace(/<iframe[\s\S]*?<\/iframe>/gi, "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/?(h[1-6]|p|div|li|ol|ul|tr|dt|dd|blockquote|section|article|figcaption|figure|table|thead|tbody|tfoot)[^>]*>/gi, "\n")
     .replace(/<[^>]+>/g, " ")
     .replace(/&nbsp;/gi, " ")
     .replace(/&amp;/gi, "&")
@@ -56,9 +58,52 @@ function extractTextFromHtml(html) {
     .replace(/&quot;/gi, '"')
     .replace(/&#39;/gi, "'")
     .replace(/&#\d+;/gi, " ")
-    .replace(/\s+/g, " ")
+    .replace(/[ \t]+/g, " ")
+    .replace(/\n[ \t]+/g, "\n")
+    .replace(/[ \t]+\n/g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
     .trim();
   return text;
+}
+
+function extractMicrodataFromHtml(html) {
+  const result = { name: "", ingredients: [], instructions: [] };
+
+  const nameMatch = html.match(
+    /itemprop=["']name["'][^>]*>([^<]+)/i,
+  );
+  if (nameMatch) result.name = nameMatch[1].trim();
+
+  const ingRegex =
+    /<[^>]+itemprop=["']recipeIngredient["'][^>]*>([\s\S]*?)<\/[^>]+>/gi;
+  let m;
+  while ((m = ingRegex.exec(html)) !== null) {
+    const text = m[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    if (text) result.ingredients.push(text);
+  }
+
+  const instBlockMatch = html.match(
+    /itemprop=["']recipeInstructions["']([\s\S]*?)(?=<\/(?:div|ol|section))/i,
+  );
+  if (instBlockMatch) {
+    const stepRegex =
+      /itemprop=["'](?:text|step|itemListElement)["'][^>]*>([\s\S]*?)<\/[^>]+>/gi;
+    while ((m = stepRegex.exec(instBlockMatch[0])) !== null) {
+      const text = m[1].replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+      if (text) result.instructions.push(text);
+    }
+  }
+
+  if (result.ingredients.length === 0) {
+    const altRegex =
+      /itemprop=["']ingredients["'][^>]*>([^<]+)/gi;
+    while ((m = altRegex.exec(html)) !== null) {
+      const text = m[1].trim();
+      if (text) result.ingredients.push(text);
+    }
+  }
+
+  return result.ingredients.length > 0 ? result : null;
 }
 
 function extractJsonLd(html) {
@@ -118,16 +163,35 @@ exports.fetchUrl = onRequest(
         return;
       }
 
-      const html = await response.text();
+      const iconv = require("iconv-lite");
+      const rawBuffer = Buffer.from(await response.arrayBuffer());
+      const contentType = response.headers.get("content-type") || "";
+      let charset = "utf-8";
+      const ctMatch = contentType.match(/charset=([^\s;]+)/i);
+      if (ctMatch) {
+        charset = ctMatch[1].replace(/['"]/g, "");
+      } else {
+        const preview = rawBuffer.slice(0, 4096).toString("ascii");
+        const metaMatch =
+          preview.match(/<meta[^>]*charset=["']?([^"';\s>]+)/i) ||
+          preview.match(/content=["'][^"']*charset=([^"';\s]+)/i);
+        if (metaMatch) charset = metaMatch[1];
+      }
+      const html = iconv.encodingExists(charset)
+        ? iconv.decode(rawBuffer, charset)
+        : rawBuffer.toString("utf-8");
+
       const cleanText = extractTextFromHtml(html);
       const jsonLd = extractJsonLd(html);
       const ogImage = extractOgImage(html);
+      const microdata = extractMicrodataFromHtml(html);
 
       res.json({
         contents: html,
         cleanText,
         jsonLd,
         ogImage,
+        microdata,
       });
     } catch (error) {
       res.status(500).json({ error: error.message });

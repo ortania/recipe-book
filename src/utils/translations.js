@@ -636,6 +636,13 @@ const translations = {
 
   // ===================== RECIPES =====================
   recipes: {
+    source: {
+      he: "מקור",
+      en: "Source",
+      ru: "Источник",
+      de: "Quelle",
+      mixed: "מקור",
+    },
     ingredients: {
       he: "מרכיבים",
       en: "Ingredients",

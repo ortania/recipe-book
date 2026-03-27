@@ -248,7 +248,7 @@ export const parseRecipeFromUrl = async (url) => {
     const serverCleanText = fetchResult.cleanText || "";
     const serverJsonLd = fetchResult.jsonLd || [];
     const serverOgImage = fetchResult.ogImage || "";
-    const serverMicrodata = fetchResult.microdata || null;
+    let serverMicrodata = fetchResult.microdata || null;
     let hadJsonLdRecipe = false;
 
     console.log(
@@ -294,6 +294,43 @@ export const parseRecipeFromUrl = async (url) => {
         recipe.instructions = serverMicrodata.instructions.join("\n");
       }
       if (recipe.name && recipe.ingredients) return recipe;
+    }
+
+    // --- Try client-side microdata extraction from HTML ---
+    if (!serverMicrodata && html) {
+      const domParser = new DOMParser();
+      const domDoc = domParser.parseFromString(html, "text/html");
+      const domIngredients = [
+        ...domDoc.querySelectorAll('[itemprop="recipeIngredient"]'),
+      ].map((el) => el.textContent.trim()).filter(Boolean);
+      if (domIngredients.length > 0) {
+        const domName = (
+          domDoc.querySelector('[itemprop="name"]') ||
+          domDoc.querySelector("h1")
+        )?.textContent?.trim() || "";
+        const domInstructions = [
+          ...domDoc.querySelectorAll(
+            '[itemprop="recipeInstructions"] [itemprop="text"], ' +
+            '[itemprop="recipeInstructions"] li, ' +
+            '[itemprop="step"] [itemprop="text"]'
+          ),
+        ].map((el) => el.textContent.trim()).filter(Boolean);
+        serverMicrodata = {
+          name: domName,
+          ingredients: domIngredients,
+          instructions: domInstructions,
+        };
+        console.log("[recipeParser] Extracted client-side microdata:", domIngredients.length, "ingredients");
+      }
+
+      if (serverMicrodata) {
+        recipe.name = serverMicrodata.name || "";
+        recipe.ingredients = serverMicrodata.ingredients.join("\n");
+        if (serverMicrodata.instructions && serverMicrodata.instructions.length > 0) {
+          recipe.instructions = serverMicrodata.instructions.join("\n");
+        }
+        if (recipe.name && recipe.ingredients) return recipe;
+      }
     }
 
     // --- Try JSON-LD structured data (from server or browser) ---
@@ -371,7 +408,14 @@ export const parseRecipeFromUrl = async (url) => {
                 .filter(Boolean)
                 .join("\n");
             } else if (typeof recipeData.recipeInstructions === "string") {
-              recipe.instructions = cleanHtml(recipeData.recipeInstructions);
+              const rawInst = recipeData.recipeInstructions
+                .replace(/<br\s*\/?>/gi, "\n")
+                .replace(/&lt;br\s*\/?&gt;/gi, "\n");
+              recipe.instructions = rawInst
+                .split("\n")
+                .map((s) => cleanHtml(s).replace(/^\d+\.\s*/, ""))
+                .filter((s) => s.length > 3)
+                .join("\n");
             }
           }
 
@@ -400,20 +444,32 @@ export const parseRecipeFromUrl = async (url) => {
             }
           }
 
-          const jsonLdIngCount = recipe.ingredients
-            ? recipe.ingredients.split("\n").filter(Boolean).length
-            : 0;
+          const jsonLdIngs = recipe.ingredients
+            ? recipe.ingredients.split("\n").filter(Boolean)
+            : [];
+          const jsonLdIngCount = jsonLdIngs.length;
+          const ingsWithQty = jsonLdIngs.filter((ing) =>
+            /\d|½|¼|¾|⅓|⅔|כוס|כף|כפית|יחידה|יחידות|גרם|מ"ל|ליטר|ק"ג/.test(ing),
+          ).length;
+          const ingredientsLackQuantities =
+            jsonLdIngCount > 0 && ingsWithQty / jsonLdIngCount < 0.3;
           const textForAI = ensureMultiSectionFromHtml(
             html,
             serverCleanText || "",
             url,
           );
 
-          if (jsonLdIngCount < 6 && textForAI.length > 500) {
+          const shouldTryAI =
+            (jsonLdIngCount < 6 || ingredientsLackQuantities) &&
+            textForAI.length > 500;
+
+          if (shouldTryAI) {
             console.log(
-              "[recipeParser] JSON-LD has only",
+              "[recipeParser] JSON-LD ingredients:",
               jsonLdIngCount,
-              "ingredients, trying OpenAI to find more...",
+              "with quantities:",
+              ingsWithQty,
+              "- trying OpenAI...",
             );
             try {
               const { extractRecipeFromText: aiExtract } =
@@ -423,10 +479,10 @@ export const parseRecipeFromUrl = async (url) => {
                 aiResult &&
                 !aiResult.error &&
                 Array.isArray(aiResult.ingredients) &&
-                aiResult.ingredients.length > jsonLdIngCount
+                aiResult.ingredients.length >= jsonLdIngCount
               ) {
                 console.log(
-                  "[recipeParser] OpenAI found more:",
+                  "[recipeParser] OpenAI found:",
                   aiResult.ingredients.length,
                   "ingredients",
                 );

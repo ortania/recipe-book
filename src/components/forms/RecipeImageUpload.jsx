@@ -66,6 +66,27 @@ export default function RecipeImageUpload({
     if (file) onPasteImage(file);
   };
 
+  const handlePasteClick = async () => {
+    if (busy) return;
+    try {
+      if (navigator.clipboard?.read) {
+        const items = await navigator.clipboard.read();
+        for (const item of items) {
+          const imageType = item.types.find((type) => type.startsWith("image/"));
+          if (imageType) {
+            const blob = await item.getType(imageType);
+            const file = new File([blob], "pasted-image.png", { type: imageType });
+            onPasteImage(file);
+            return;
+          }
+        }
+      }
+    } catch {
+      // permission denied or API unavailable — fall back to manual paste
+    }
+    pasteAreaRef.current?.focus();
+  };
+
   const busy = uploadingImage || generatingAiImage;
   const hasImages = images.length > 0;
 
@@ -98,7 +119,8 @@ export default function RecipeImageUpload({
         <span>{t("addWizard", "fromFile")}</span>
       </ActionCard>
       <ActionCard
-        onClick={() => pasteAreaRef.current?.focus()}
+        onClick={handlePasteClick}
+        disabled={busy}
         style={{ cursor: busy ? "not-allowed" : "pointer", opacity: busy ? 0.5 : 1 }}
       >
         <Clipboard className={imgClasses.imageOptionIcon} />
