@@ -134,8 +134,6 @@ function AddRecipeWizard({
   const [importProgress, setImportProgress] = useState(0);
   const progressRef = useRef(null);
   const fileInputRef = useRef(null);
-  const cameraInputRef = useRef(null);
-  const photoInputRef = useRef(null);
   const photoFileInputRef = useRef(null);
   const ingredientsListRef = useRef(null);
   const instructionsListRef = useRef(null);
@@ -614,7 +612,6 @@ function AddRecipeWizard({
       try {
         inputEl.value = "";
       } catch {}
-      if (photoInputRef.current) photoInputRef.current.value = "";
       if (photoFileInputRef.current) photoFileInputRef.current.value = "";
     };
 
@@ -711,7 +708,6 @@ function AddRecipeWizard({
         inputEl.value = "";
       } catch {}
       if (fileInputRef.current) fileInputRef.current.value = "";
-      if (cameraInputRef.current) cameraInputRef.current.value = "";
     };
 
     const safetyTimer = setTimeout(() => {
@@ -905,6 +901,10 @@ function AddRecipeWizard({
     );
     if (files.length === 0) return;
     handleImportFromPhoto({ target: { files }, preventDefault: () => {} });
+  };
+
+  const handlePastePhotoImage = (file) => {
+    handleImportFromPhoto({ target: { files: [file] }, preventDefault: () => {} });
   };
 
   const preventDragDefault = (e) => e.preventDefault();
@@ -1270,8 +1270,7 @@ function AddRecipeWizard({
     accumulatedTextRef,
     recordingTextRef,
     fileInputRef,
-    cameraInputRef,
-    photoInputRef,
+
     photoFileInputRef,
     ingredientsListRef,
     instructionsListRef,
@@ -1284,6 +1283,7 @@ function AddRecipeWizard({
     handleStopRecording,
     handleImportFromPhoto,
     handlePhotoDrop,
+    handlePastePhotoImage,
     handleImageUpload,
     handleRemoveImage,
     handleImageDrop,

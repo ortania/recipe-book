@@ -20,7 +20,7 @@ import useTranslatedList from "../../../hooks/useTranslatedList";
 import buttonClasses from "../../../styles/shared/buttons.module.css";
 import catShared from "../../../styles/shared/category-chips.module.css";
 import shared from "../../../styles/shared/form-shared.module.css";
-import classes from "./edit-recipe.module.css";
+import _editClasses from "./edit-recipe.module.css";
 import { CloseButton, Toast } from "../../controls";
 import {
   calculateNutrition,
@@ -35,6 +35,8 @@ import InstructionsTab from "./tabs/InstructionsTab";
 import ImageTab from "./tabs/ImageTab";
 import CategoriesTab from "./tabs/CategoriesTab";
 import DeleteTab from "./tabs/DeleteTab";
+
+const classes = _editClasses;
 
 const TABS = [
   {
@@ -336,20 +338,6 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
     }
   }, [currentUser, recipe.id, uploadingImage, generatingAiImage]);
 
-  useEffect(() => {
-    if (activeTab !== "image") return;
-    const onPaste = (e) => {
-      const imageItem = Array.from(e.clipboardData?.items || []).find((item) =>
-        item.type.startsWith("image/"),
-      );
-      if (!imageItem) return;
-      e.preventDefault();
-      const file = imageItem.getAsFile();
-      if (file) handlePasteImage(file);
-    };
-    window.addEventListener("paste", onPaste);
-    return () => window.removeEventListener("paste", onPaste);
-  }, [activeTab, handlePasteImage]);
 
   const handleGenerateAiImage = async () => {
     if (!editedRecipe.name?.trim()) {

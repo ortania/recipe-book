@@ -1,7 +1,8 @@
 import React from "react";
-import { ChevronRight, Camera, Upload } from "lucide-react";
+import { ChevronRight, Camera } from "lucide-react";
 import { CloseButton } from "../../../controls";
 import { useWizard } from "../WizardContext";
+import RecipeImageUpload from "../../RecipeImageUpload";
 
 export default function PhotoScreen() {
   const {
@@ -14,8 +15,9 @@ export default function PhotoScreen() {
     setPhotoDragOver,
     handleImportFromPhoto,
     handlePhotoDrop,
-    preventDragDefault,
-    photoInputRef,
+    handlePastePhotoImage,
+    handleGenerateAiImage,
+    generatingAiImage,
     photoFileInputRef,
     isMobileDevice,
     classes,
@@ -56,65 +58,21 @@ export default function PhotoScreen() {
           </p>
         </div>
       ) : (
-        <div
-          className={`${classes.imageUploadButtons} ${photoDragOver ? "dropActive" : ""}`}
-          onDragOver={(e) => {
-            preventDragDefault(e);
-            setPhotoDragOver(true);
-          }}
-          onDragLeave={() => setPhotoDragOver(false)}
+        <RecipeImageUpload
+          images={[]}
+          uploadingImage={false}
+          generatingAiImage={generatingAiImage}
+          isDragOver={photoDragOver}
+          setIsDragOver={setPhotoDragOver}
+          onImageUpload={handleImportFromPhoto}
+          onRemoveImage={() => {}}
           onDrop={handlePhotoDrop}
-        >
-          {isMobileDevice && (
-            <div
-              className={classes.imageOptionBtn}
-              style={{ position: "relative", overflow: "hidden" }}
-            >
-              <input
-                type="file"
-                accept="image/*,.jfif"
-                capture="environment"
-                ref={photoInputRef}
-                onChange={handleImportFromPhoto}
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  width: "100%",
-                  height: "100%",
-                  opacity: 0,
-                  cursor: "pointer",
-                  zIndex: 2,
-                }}
-              />
-              <Camera className={classes.imageOptionIcon} />
-              <span>{t("addWizard", "takePhoto")}</span>
-            </div>
-          )}
-          <div
-            className={classes.imageOptionBtn}
-            style={{ position: "relative", overflow: "hidden" }}
-          >
-            <input
-              type="file"
-              accept="image/*,.jfif"
-              ref={photoFileInputRef}
-              onChange={handleImportFromPhoto}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: "100%",
-                opacity: 0,
-                cursor: "pointer",
-                zIndex: 2,
-              }}
-            />
-            <Upload className={classes.imageOptionIcon} />
-            <span>{t("addWizard", "fromFile")}</span>
-          </div>
-        </div>
+          onPasteImage={handlePastePhotoImage}
+          onGenerateAiImage={handleGenerateAiImage}
+          fileInputRef={photoFileInputRef}
+          isMobile={isMobileDevice}
+          t={t}
+        />
       )}
 
       <div className={`${classes.tipBox} ${classes.tipBoxGreen}`}>

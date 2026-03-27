@@ -1,16 +1,7 @@
-import React, { useRef } from "react";
-import { X, Camera, Upload, Loader2, Sparkles, Plus, Check, Clipboard } from "lucide-react";
+import React from "react";
+import { Plus, Check, X } from "lucide-react";
 import { useWizard } from "../WizardContext";
-
-const hiddenPasteStyle = {
-  position: "fixed",
-  top: -9999,
-  left: -9999,
-  width: 1,
-  height: 1,
-  overflow: "hidden",
-  opacity: 0,
-};
+import RecipeImageUpload from "../../RecipeImageUpload";
 
 export default function ImageCategoriesStep() {
   const {
@@ -24,7 +15,6 @@ export default function ImageCategoriesStep() {
     handleImageDrop,
     handlePasteImage,
     handleGenerateAiImage,
-    preventDragDefault,
     toggleCategory,
     newCategoryName,
     setNewCategoryName,
@@ -33,7 +23,6 @@ export default function ImageCategoriesStep() {
     handleAddNewCategory,
     importError,
     fileInputRef,
-    cameraInputRef,
     isMobileDevice,
     groups,
     getTranslatedGroup,
@@ -43,33 +32,11 @@ export default function ImageCategoriesStep() {
     t,
   } = useWizard();
 
-  const pasteAreaRef = useRef(null);
-
-  const handlePasteFromArea = (e) => {
-    const imageItem = Array.from(e.clipboardData?.items || []).find((item) =>
-      item.type.startsWith("image/"),
-    );
-    if (!imageItem) return;
-    e.preventDefault();
-    const file = imageItem.getAsFile();
-    if (file) handlePasteImage(file);
-  };
-
   return (
     <div className={classes.stepContent}>
       <h3 className={classes.stepSectionTitle}>
         {t("addWizard", "imageCategories")}
       </h3>
-
-      <div
-        ref={pasteAreaRef}
-        contentEditable
-        suppressContentEditableWarning
-        onPaste={handlePasteFromArea}
-        style={hiddenPasteStyle}
-        tabIndex={0}
-        aria-hidden
-      />
 
       {/* Image upload */}
       <div className={shared.formGroup}>
@@ -77,217 +44,22 @@ export default function ImageCategoriesStep() {
           {t("addWizard", "recipeImage")}
         </label>
 
-        {recipe.images?.length > 0 ? (
-          <>
-            <div
-              className={`${shared.imageGrid} ${imageDragOver ? shared.dropActive : ""}`}
-              onDragOver={(e) => {
-                preventDragDefault(e);
-                setImageDragOver(true);
-              }}
-              onDragLeave={() => setImageDragOver(false)}
-              onDrop={handleImageDrop}
-            >
-              {recipe.images.map((url, i) => (
-                <div key={i} className={shared.imageGridItem}>
-                  <img
-                    src={url}
-                    alt={`${i + 1}`}
-                    className={shared.imageGridPreview}
-                  />
-                  <button
-                    type="button"
-                    className={classes.imageRemoveBtn}
-                    onClick={() => handleRemoveImage(i)}
-                  >
-                    <X size={14} />
-                  </button>
-                </div>
-              ))}
-            </div>
+        <RecipeImageUpload
+          images={recipe.images || []}
+          uploadingImage={uploadingImage}
+          generatingAiImage={generatingAiImage}
+          isDragOver={imageDragOver}
+          setIsDragOver={setImageDragOver}
+          onImageUpload={handleImageUpload}
+          onRemoveImage={handleRemoveImage}
+          onDrop={handleImageDrop}
+          onPasteImage={handlePasteImage}
+          onGenerateAiImage={handleGenerateAiImage}
+          fileInputRef={fileInputRef}
+          isMobile={isMobileDevice}
+          t={t}
+        />
 
-            <div className={classes.imageActionRow}>
-              {isMobileDevice && (
-                <div
-                  className={classes.imageActionBtn}
-                  style={{ position: "relative", overflow: "hidden" }}
-                >
-                  <input
-                    type="file"
-                    accept="image/*,.jfif"
-                    capture="environment"
-                    ref={cameraInputRef}
-                    onChange={handleImageUpload}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      opacity: 0,
-                      cursor: "pointer",
-                      zIndex: 2,
-                    }}
-                  />
-                  <Camera size={16} /> {t("addWizard", "takePhoto")}
-                </div>
-              )}
-              <div
-                className={classes.imageActionBtn}
-                style={{ position: "relative", overflow: "hidden" }}
-              >
-                <input
-                  type="file"
-                  accept="image/*,.jfif"
-                  {...(!isMobileDevice && { multiple: true })}
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    opacity: 0,
-                    cursor: "pointer",
-                    zIndex: 2,
-                  }}
-                />
-                <Plus size={16} />{" "}
-                {isMobileDevice
-                  ? t("addWizard", "addImage")
-                  : t("addWizard", "addMoreImages")}
-              </div>
-              <button
-                type="button"
-                className={classes.imageActionBtn}
-                onClick={() => pasteAreaRef.current?.focus()}
-                disabled={uploadingImage || generatingAiImage}
-              >
-                <Clipboard size={16} /> {t("addWizard", "pasteImage")}
-              </button>
-              <button
-                type="button"
-                className={classes.imageActionBtn}
-                onClick={handleGenerateAiImage}
-                disabled={uploadingImage || generatingAiImage}
-              >
-                {generatingAiImage ? (
-                  <Loader2 size={16} className={classes.spinning} />
-                ) : (
-                  <Sparkles size={16} />
-                )}
-                {generatingAiImage
-                  ? t("addWizard", "generatingAiImage")
-                  : t("addWizard", "generateAiImage")}
-              </button>
-            </div>
-          </>
-        ) : (
-          <div
-            className={`${classes.imageUploadButtons} ${imageDragOver ? shared.dropActive : ""}`}
-            onDragOver={(e) => {
-              preventDragDefault(e);
-              setImageDragOver(true);
-            }}
-            onDragLeave={() => setImageDragOver(false)}
-            onDrop={handleImageDrop}
-          >
-            <div className={classes.imageActionRow}>
-              {isMobileDevice && (
-                <div
-                  className={classes.imageActionCard}
-                  style={{ position: "relative", overflow: "hidden" }}
-                >
-                  <input
-                    type="file"
-                    accept="image/*,.jfif"
-                    capture="environment"
-                    ref={cameraInputRef}
-                    onChange={handleImageUpload}
-                    style={{
-                      position: "absolute",
-                      top: 0,
-                      left: 0,
-                      width: "100%",
-                      height: "100%",
-                      opacity: 0,
-                      cursor: "pointer",
-                      zIndex: 2,
-                    }}
-                  />
-                  <Camera className={classes.imageOptionIcon} />
-                  <span>{t("addWizard", "takePhoto")}</span>
-                </div>
-              )}
-              <div
-                className={classes.imageActionCard}
-                style={{ position: "relative", overflow: "hidden" }}
-              >
-                <input
-                  type="file"
-                  accept="image/*,.jfif"
-                  {...(!isMobileDevice && { multiple: true })}
-                  ref={fileInputRef}
-                  onChange={handleImageUpload}
-                  style={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    opacity: 0,
-                    cursor: "pointer",
-                    zIndex: 2,
-                  }}
-                />
-                <Upload className={classes.imageOptionIcon} />
-                <span>{t("addWizard", "fromFile")}</span>
-              </div>
-              <div
-                className={classes.imageActionCard}
-                onClick={() => pasteAreaRef.current?.focus()}
-                style={{
-                  cursor:
-                    uploadingImage || generatingAiImage
-                      ? "not-allowed"
-                      : "pointer",
-                }}
-              >
-                <Clipboard className={classes.imageOptionIcon} />
-                <span>{t("addWizard", "pasteImage")}</span>
-              </div>
-              <button
-                type="button"
-                className={classes.imageActionCard}
-                onClick={handleGenerateAiImage}
-                disabled={uploadingImage || generatingAiImage}
-              >
-                {generatingAiImage ? (
-                  <Loader2 className={classes.imageOptionIcon + " " + classes.spinning} />
-                ) : (
-                  <Sparkles className={classes.imageOptionIcon} />
-                )}
-                <span>
-                  {generatingAiImage
-                    ? t("addWizard", "generatingAiImage")
-                    : t("addWizard", "generateAiImage")}
-                </span>
-              </button>
-            </div>
-            <p className={classes.imageHint}>
-              {t("addWizard", "multipleImagesHint")}
-            </p>
-          </div>
-        )}
-
-        {(uploadingImage || generatingAiImage) && (
-          <p className={classes.imageHint}>
-            {uploadingImage
-              ? t("recipes", "uploading")
-              : t("addWizard", "generatingAiImage")}
-          </p>
-        )}
         {importError && <p className={classes.errorText}>{importError}</p>}
       </div>
 

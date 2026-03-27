@@ -1,0 +1,131 @@
+/* ========== Image Upload (shared) ========== */
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+/* Wrapper used in the "no images yet" card grid */
+.imageUploadButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.imageOptionIcon {
+  font-size: 2rem;
+  color: var(--clr-text-muted);
+}
+
+.imageHint {
+  width: 100%;
+  text-align: center;
+  font-size: var(--basic-font);
+  color: var(--clr-text-muted);
+  margin: 0.3rem 0 0;
+}
+
+.imageRemoveBtn {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  background: var(--clr-overlay);
+  color: var(--clr-white);
+  border: none;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.imageGridItem .imageRemoveBtn {
+  width: 24px;
+  height: 24px;
+  top: 0.35rem;
+  right: 0.35rem;
+}
+
+/* ========== Action Row (compact upload / paste / AI buttons) ========== */
+
+.imageActionRow {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.imageActionRow > * {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+/* Card variant */
+.imageActionCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  padding: 1.25rem 0.75rem;
+  border-radius: 12px;
+  border: 1.5px dashed var(--clr-border-light);
+  background: var(--clr-bg-card);
+  color: var(--clr-text-secondary);
+  font-size: var(--small-font);
+  font-weight: var(--font-weight-medium);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  text-align: center;
+  min-height: 5rem;
+}
+
+.imageActionCard:hover:not(:disabled) {
+  border-color: var(--clr-primary);
+  color: var(--clr-primary);
+  background: var(--clr-neutral-100);
+}
+
+.imageActionCard:hover .imageOptionIcon {
+  color: var(--clr-primary);
+}
+
+.imageActionCard:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.imageActionCard:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.imageActionCard .imageOptionIcon {
+  width: 28px;
+  height: 28px;
+  color: var(--clr-text-muted);
+  transition: color var(--transition-fast);
+}
+
+@media (max-width: 500px) {
+  .imageActionRow {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.4rem;
+  }
+
+  .imageActionCard {
+    padding: 1rem 0.5rem;
+    min-height: 4.5rem;
+    font-size: var(--very-small-font);
+  }
+
+  .imageActionCard .imageOptionIcon {
+    width: 24px;
+    height: 24px;
+  }
+}
