@@ -230,6 +230,11 @@ function RecipeInfo({
               }}
             />
           )}
+          {hasImage && recipe.author && !onSaveRecipe && !onCopyRecipe && (
+            <div className={classes.authorOverlay}>
+              <span className={classes.authorName}>{recipe.author}</span>
+            </div>
+          )}
           {onSaveRecipe ? (
             <button
               className={`${classes.favoriteButton} ${isSaved ? classes.active : ""}`}
