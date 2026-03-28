@@ -13,10 +13,7 @@ import _imageClasses from "./recipe-details-full/details-image.module.css";
 import _bodyClasses from "./recipe-details-full/details-body.module.css";
 const classes = Object.assign({}, _bodyClasses, _headerClasses, _imageClasses);
 import { useLanguage } from "../../context";
-import {
-  parseIngredients,
-  scaleIngredient,
-} from "../../utils/ingredientUtils";
+import { parseIngredients, scaleIngredient } from "../../utils/ingredientUtils";
 import { Menu } from "lucide-react";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { CopyRecipeDialog } from "../forms/copy-recipe-dialog";
@@ -57,22 +54,17 @@ function RecipeDetailsFull({
 
   const [activeTab, setActiveTabRaw] = useState("ingredients");
   const activeTabRef = useRef("ingredients");
-  const scrollBeforeTabChange = useRef(null);
+  const tabScrollMap = useRef({});
+  const switchingRef = useRef(false);
   const tabsRef = useRef(null);
 
-  const getScrollTop = () => {
-    const main = document.querySelector("main");
-    return main ? main.scrollTop : window.scrollY;
-  };
-  const setScrollTop = (y) => {
-    const main = document.querySelector("main");
-    if (main) main.scrollTop = y;
-    else window.scrollTo(0, y);
-  };
+  const getMain = () => document.querySelector("main");
 
   const setActiveTab = useCallback(
     (tab) => {
-      scrollBeforeTabChange.current = getScrollTop();
+      const main = getMain();
+      if (main) tabScrollMap.current[activeTabRef.current] = main.scrollTop;
+      switchingRef.current = true;
       activeTabRef.current = tab;
       setActiveTabRaw(tab);
       onActiveTabChange?.(tab);
@@ -80,11 +72,28 @@ function RecipeDetailsFull({
     [onActiveTabChange],
   );
 
-  // Restore scroll synchronously before paint so content-height changes don't cause jumps
   useLayoutEffect(() => {
-    if (scrollBeforeTabChange.current !== null) {
-      setScrollTop(scrollBeforeTabChange.current);
-      scrollBeforeTabChange.current = null;
+    if (!switchingRef.current) return;
+    switchingRef.current = false;
+
+    const main = getMain();
+    const tabsEl = tabsRef.current;
+    if (!main || !tabsEl) return;
+
+    const stickyTop = parseInt(tabsEl.style.top, 10) || 0;
+    const mainPad = parseInt(getComputedStyle(main).paddingTop, 10) || 0;
+    const prevScroll = main.scrollTop;
+    main.scrollTop = 0;
+    const tabsNatural = tabsEl.getBoundingClientRect().top - main.getBoundingClientRect().top - mainPad;
+    main.scrollTop = prevScroll;
+
+    const minScroll = Math.max(0, tabsNatural - stickyTop);
+
+    const saved = tabScrollMap.current[activeTab];
+    if (saved != null && saved > minScroll) {
+      main.scrollTop = saved;
+    } else {
+      main.scrollTop = minScroll;
     }
   }, [activeTab]);
   const [hoverStar, setHoverStar] = useState(0);
@@ -246,7 +255,6 @@ function RecipeDetailsFull({
     };
   }, []);
 
-
   const handleShare = async () => {
     const shareData = {
       title: recipe.name,
@@ -308,31 +316,81 @@ function RecipeDetailsFull({
 
   const contextValue = {
     // props
-    recipe, originalRecipe, isTranslating, onClose, onEdit, onDelete,
-    onDuplicate, onSaveRecipe, getCategoryName, onEnterCookingMode,
-    onCopyRecipe, onCopyToMyRecipes, currentUserId, onToggleFavorite,
-    onRate, userRating, hideRating, servings, setServings,
+    recipe,
+    originalRecipe,
+    isTranslating,
+    onClose,
+    onEdit,
+    onDelete,
+    onDuplicate,
+    onSaveRecipe,
+    getCategoryName,
+    onEnterCookingMode,
+    onCopyRecipe,
+    onCopyToMyRecipes,
+    currentUserId,
+    onToggleFavorite,
+    onRate,
+    userRating,
+    hideRating,
+    servings,
+    setServings,
     // state
-    activeTab, setActiveTab, hoverStar, setHoverStar, touchRef,
-    checkedIngredients, checkedInstructions,
-    showDeleteConfirm, setShowDeleteConfirm,
-    showNutrition, setShowNutrition, showCopyDialog, setShowCopyDialog,
-    chatMessages, setChatMessages, chatAppliedFields, setChatAppliedFields,
-    showMoreMenu, setShowMoreMenu, copyToMySuccess, setCopyToMySuccess,
-    showImageLightbox, setShowImageLightbox,
-    activeImageIndex, setActiveImageIndex,
+    activeTab,
+    setActiveTab,
+    hoverStar,
+    setHoverStar,
+    touchRef,
+    checkedIngredients,
+    checkedInstructions,
+    showDeleteConfirm,
+    setShowDeleteConfirm,
+    showNutrition,
+    setShowNutrition,
+    showCopyDialog,
+    setShowCopyDialog,
+    chatMessages,
+    setChatMessages,
+    chatAppliedFields,
+    setChatAppliedFields,
+    showMoreMenu,
+    setShowMoreMenu,
+    copyToMySuccess,
+    setCopyToMySuccess,
+    showImageLightbox,
+    setShowImageLightbox,
+    activeImageIndex,
+    setActiveImageIndex,
     // refs
-    allImages, imageTouchRef, moreMenuRef, stickyHeaderRef,
-    actionBarRef, wakeLockWrapperRef, tabsRef,
+    allImages,
+    imageTouchRef,
+    moreMenuRef,
+    stickyHeaderRef,
+    actionBarRef,
+    wakeLockWrapperRef,
+    tabsRef,
     // computed/state
-    wakeLockActive, wakeLockToast,
+    wakeLockActive,
+    wakeLockToast,
     // computed values
-    ingredientsArray, instructionsArray, commentCount,
+    ingredientsArray,
+    instructionsArray,
+    commentCount,
     // handlers
-    handleCopyClick, toggleWakeLock, handleShare, handleDeleteClick,
-    handleTabSwipe, toggleIngredient, toggleInstruction, scale, scaleNutrition,
+    handleCopyClick,
+    toggleWakeLock,
+    handleShare,
+    handleDeleteClick,
+    handleTabSwipe,
+    toggleIngredient,
+    toggleInstruction,
+    scale,
+    scaleNutrition,
     // css + i18n
-    classes, buttonClasses, t, language,
+    classes,
+    buttonClasses,
+    t,
+    language,
   };
 
   return (

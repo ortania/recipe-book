@@ -520,11 +520,28 @@ function RecipesView({
 
     // Filter by selected categories (for flat list views like sharer profile)
     if (!selectedCategories.includes("all") && selectedCategories.length > 0) {
-      filtered = filtered.filter(
-        (recipe) =>
+      filtered = filtered.filter((recipe) => {
+        // If "general" is selected, include recipes without categories OR with "general" category
+        if (selectedCategories.includes("general")) {
+          const hasNoCategories =
+            !recipe.categories || recipe.categories.length === 0;
+          const hasGeneralCategory =
+            recipe.categories && recipe.categories.includes("general");
+          const hasOtherSelectedCategories =
+            recipe.categories &&
+            recipe.categories.some(
+              (c) => selectedCategories.includes(c) && c !== "general",
+            );
+          return (
+            hasNoCategories || hasGeneralCategory || hasOtherSelectedCategories
+          );
+        }
+        // For other categories, check if recipe has any of the selected categories
+        return (
           recipe.categories &&
-          recipe.categories.some((c) => selectedCategories.includes(c)),
-      );
+          recipe.categories.some((c) => selectedCategories.includes(c))
+        );
+      });
     }
 
     return search(filtered, debouncedSearch, sortField, sortDirection);

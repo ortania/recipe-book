@@ -1442,6 +1442,13 @@ const translations = {
     multiSelectHint: {
       he: "בחר קטגוריות להצגה במתכונים",
     },
+    done: {
+      he: "סיימתי",
+      en: "Done",
+      ru: "Готово",
+      de: "Fertig",
+      mixed: "סיימתי",
+    },
     allRecipes: {
       he: "כל המתכונים",
       en: "All Recipes",
@@ -3232,6 +3239,20 @@ const translations = {
       ru: "На что обратить внимание при удвоении?",
       de: "Worauf achten beim Verdoppeln?",
       mixed: "מה לשים לב כשמכפילים את המתכון?",
+    },
+    suggestSubstituteFor: {
+      he: "במה אפשר להחליף {ing}?",
+      en: "What can I substitute for {ing}?",
+      ru: "Чем можно заменить {ing}?",
+      de: "Was kann ich anstelle von {ing} verwenden?",
+      mixed: "במה אפשר להחליף {ing}?",
+    },
+    suggestTips: {
+      he: "טיפים להכנת {name}",
+      en: "Tips for making {name}",
+      ru: "Советы по приготовлению {name}",
+      de: "Tipps für die Zubereitung von {name}",
+      mixed: "טיפים להכנת {name}",
     },
     tabLabel: {
       he: "צ'אט",

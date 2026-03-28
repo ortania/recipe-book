@@ -105,6 +105,7 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
 
   const {
     handleTouchStart,
+    handleLongPressStart,
     isActive: isTouchDragActive,
     justFinishedRef: touchDragJustFinishedRef,
   } = useTouchDragDrop(handleTouchReorder);
@@ -676,6 +677,7 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
     handleDragEnd,
     handleMoveItem,
     handleTouchStart,
+    handleLongPressStart,
     handleAddNewCategory,
     classes,
     shared,

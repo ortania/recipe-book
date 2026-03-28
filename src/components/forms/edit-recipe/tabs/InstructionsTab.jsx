@@ -17,6 +17,7 @@ export default function InstructionsTab() {
     addInstruction,
     removeInstruction,
     handleTouchStart,
+    handleLongPressStart,
     instructionsListRef,
     classes,
     shared,
@@ -37,6 +38,9 @@ export default function InstructionsTab() {
             onDragOver={(e) => handleDragOver(e, i)}
             onDrop={() => handleDrop(i, "instructions")}
             onDragEnd={handleDragEnd}
+            onTouchStart={(e) =>
+              handleLongPressStart(e, i, "instructions", instructionsListRef)
+            }
           >
             <span
               className={`${shared.dragHandle} ${classes.dragHandle}`}

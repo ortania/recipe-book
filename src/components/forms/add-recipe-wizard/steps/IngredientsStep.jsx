@@ -22,6 +22,7 @@ export default function IngredientsStep() {
     handleAddIngredientGroup,
     handleRemoveIngredient,
     handleTouchStart,
+    handleLongPressStart,
     ingredientsListRef,
     parseIngredientsPaste,
     setParseIngredientsPaste,
@@ -73,6 +74,9 @@ export default function IngredientsStep() {
               onDragOver={(e) => handleDragOver(e, i)}
               onDrop={() => handleDrop(i, "ingredients")}
               onDragEnd={handleDragEnd}
+              onTouchStart={(e) =>
+                handleLongPressStart(e, i, "ingredients", ingredientsListRef)
+              }
             >
               <span
                 className={shared.dragHandle}

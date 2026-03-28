@@ -85,7 +85,8 @@ function CategoriesManagement({
     [onReorderCategories],
   );
 
-  const { handleTouchStart } = useTouchDragDrop(handleReorder);
+  const { handleTouchStart, handleLongPressStart } =
+    useTouchDragDrop(handleReorder);
 
   const [dragOverIndex, setDragOverIndex] = useState(null);
 
@@ -326,23 +327,11 @@ function CategoriesManagement({
           {t("categories", "categoryManagement")}
         </h2>
         <div className={classes.headerActions}>
-          <button
-            className={classes.sortBtn}
-            onClick={() =>
-              onSortAlphabetically && onSortAlphabetically(getTranslated)
-            }
-            title={t("categories", "sortAlphabetically") || "מיון לפי אב"}
-          >
-            <LuArrowUpDown />
-          </button>
           <CloseButton onClick={onClose} />
         </div>
       </div>
 
-      <div
-        className={classes.listWrap}
-        ref={listRef}
-      >
+      <div className={classes.listWrap} ref={listRef}>
         {editableCategories.map((category, index) => (
           <div
             key={category.id}
@@ -351,6 +340,9 @@ function CategoriesManagement({
             onDragOver={(e) => handleDragOver(e, index)}
             onDrop={() => handleDrop(index)}
             onDragEnd={handleDragEnd}
+            onTouchStart={(e) =>
+              handleLongPressStart(e, index, "categories", listRef)
+            }
           >
             {editingId === category.id ? (
               renderInlineForm(true)

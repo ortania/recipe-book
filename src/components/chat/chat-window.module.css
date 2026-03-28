@@ -65,7 +65,7 @@
   height: 30px;
   border-radius: 50%;
   background: var(--clr-bubble-avatar-bg);
-  color: var(--color-white);
+  color: var(--clr-white);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -341,10 +341,10 @@
 
 .applyBtn {
   padding: 0.3em 0.8em;
-  border: 1px solid var(--clr-success-500);
+  border: 1px solid var(--clr-btn-main-border);
   border-radius: 6px;
-  background: var(--clr-success-100);
-  color: var(--clr-success-500);
+  background: var(--clr-btn-main-bg);
+  color: var(--clr-btn-main-text);
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   cursor: pointer;
@@ -352,8 +352,8 @@
 }
 
 .applyBtn:hover:not(:disabled) {
-  background: var(--clr-success-500);
-  color: var(--clr-white);
+  background: var(--clr-btn-main-bg-hover);
+  border-color: var(--clr-btn-main-border-hover);
 }
 
 .applyBtn:disabled {
@@ -363,10 +363,10 @@
 
 .customChooseBtn {
   padding: 0.3em 0.8em;
-  border: 1px solid var(--clr-border-accent-primary);
+  border: 1px solid var(--clr-btn-outline-border);
   border-radius: 6px;
-  background: var(--clr-brown-50);
-  color: var(--clr-text-primary);
+  background: var(--clr-btn-outline-bg);
+  color: var(--clr-btn-outline-text);
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   cursor: pointer;
@@ -374,13 +374,13 @@
 }
 
 .customChooseBtn:hover:not(:disabled) {
-  background: var(--clr-accent-primary);
-  color: var(--clr-white);
+  background: var(--clr-btn-outline-bg-hover);
+  border-color: var(--clr-btn-outline-border-hover);
 }
 
 .customChooseBtn:disabled {
   cursor: not-allowed;
-  opacity: 0.7;
+  opacity: var(--disabled-opacity);
 }
 
 .customUpdateWrap {
@@ -518,7 +518,7 @@
 /* When embedded inside recipe detail tabs */
 .embedded {
   height: auto;
-  padding-bottom: 5rem;
+  padding-bottom: 7rem;
 }
 
 .embeddedInputWrapper {
@@ -556,7 +556,7 @@
     right: auto;
     z-index: auto;
     padding: 0;
-    padding-bottom: calc(5rem + env(safe-area-inset-bottom, 0px));
+    padding-bottom: calc(8.5rem + env(safe-area-inset-bottom, 0px));
     height: auto;
   }
 

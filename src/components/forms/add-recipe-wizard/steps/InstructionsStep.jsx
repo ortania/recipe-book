@@ -17,6 +17,7 @@ export default function InstructionsStep() {
     handleAddInstruction,
     handleRemoveInstruction,
     handleTouchStart,
+    handleLongPressStart,
     instructionsListRef,
     classes,
     shared,
@@ -56,6 +57,9 @@ export default function InstructionsStep() {
             onDragOver={(e) => handleDragOver(e, i)}
             onDrop={() => handleDrop(i, "instructions")}
             onDragEnd={handleDragEnd}
+            onTouchStart={(e) =>
+              handleLongPressStart(e, i, "instructions", instructionsListRef)
+            }
           >
             <span
               className={shared.dragHandle}

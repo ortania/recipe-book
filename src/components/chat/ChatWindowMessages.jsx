@@ -1,7 +1,34 @@
+import { useMemo } from "react";
 import { Lightbulb, Info } from "lucide-react";
 import { useChatWindow } from "./ChatWindowContext";
 
 const IDEA_CHIPS = ["ideaChip1", "ideaChip2", "ideaChip3", "ideaChip4", "ideaChip5", "ideaChip6"];
+
+function buildRecipeChips(recipe, recipeContext, t) {
+  if (!recipeContext) return [];
+  const chips = [];
+  const name = recipeContext.name || "";
+  const ings = recipeContext.ingredients || [];
+
+  const pick = (arr) => arr.length > 0 ? arr[Math.floor(arr.length / 2)] : null;
+  const randomIng = pick(ings.filter((x) => typeof x === "string" && x.trim()));
+
+  if (randomIng) {
+    const clean = randomIng.replace(/^[\d\s½¼¾⅓⅔.,/\-–]+/, "").trim();
+    if (clean) chips.push(t("recipeChat", "suggestSubstituteFor").replace("{ing}", clean));
+  }
+  if (!chips.length) chips.push(t("recipeChat", "suggestSubstitute"));
+
+  chips.push(t("recipeChat", "suggestHealthier"));
+
+  if (name) {
+    chips.push(t("recipeChat", "suggestTips").replace("{name}", name));
+  } else {
+    chips.push(t("recipeChat", "suggestDouble"));
+  }
+
+  return chips;
+}
 
 export default function ChatWindowMessages() {
   const {
@@ -11,8 +38,14 @@ export default function ChatWindowMessages() {
     appliedFields, userInitial,
     handleApplyUpdate, handleChipClick,
     messagesEndRef, messagesAreaRef,
+    recipe, recipeContext,
     classes, t,
   } = useChatWindow();
+
+  const recipeChips = useMemo(
+    () => (isRecipeMode ? buildRecipeChips(recipe, recipeContext, t) : []),
+    [isRecipeMode, recipe, recipeContext, t],
+  );
 
   return (
     <div className={classes.messagesArea} ref={messagesAreaRef}>
@@ -40,11 +73,7 @@ export default function ChatWindowMessages() {
           </p>
           <div className={classes.ideaChips}>
             {isRecipeMode
-              ? [
-                  t("recipeChat", "suggestSubstitute"),
-                  t("recipeChat", "suggestHealthier"),
-                  t("recipeChat", "suggestDouble"),
-                ].map((text, i) => (
+              ? recipeChips.map((text, i) => (
                   <button
                     key={i}
                     className={classes.ideaChip}

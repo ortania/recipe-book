@@ -40,11 +40,28 @@ export function useTouchDragDrop(onReorder) {
     if (s.sourceItem) {
       s.sourceItem.style.opacity = "";
       s.sourceItem.style.background = "";
+      s.sourceItem.style.userSelect = "";
+      s.sourceItem.style.webkitUserSelect = "";
       s.sourceItem = null;
     }
     document.removeEventListener("touchmove", s._onMove);
     document.removeEventListener("touchend", s._onEnd);
     document.removeEventListener("touchcancel", s._onEnd);
+
+    if (s._disabledEls) {
+      const els = s._disabledEls;
+      const blockClick = (ev) => {
+        ev.preventDefault();
+        ev.stopPropagation();
+      };
+      document.addEventListener("click", blockClick, true);
+      setTimeout(() => {
+        els.forEach((el) => { el.style.pointerEvents = ""; });
+        document.removeEventListener("click", blockClick, true);
+      }, 350);
+      s._disabledEls = null;
+    }
+
     s.active = false;
     s.clone = null;
     s.indicator = null;
@@ -81,7 +98,7 @@ export function useTouchDragDrop(onReorder) {
       clone.style.pointerEvents = "none";
       clone.style.transition = "none";
       clone.style.background = "var(--clr-bg-card, #fff)";
-      clone.style.border = "2px solid var(--clr-brown-500, #948585)";
+      clone.style.border = "1px solid var(--clr-brown-500, #948585)";
       clone.style.transform = "scale(1.03)";
       document.body.appendChild(clone);
 
@@ -223,11 +240,122 @@ export function useTouchDragDrop(onReorder) {
     [cleanUp],
   );
 
+  const longPressRef = useRef(null);
+
+  const cancelLongPress = useCallback(() => {
+    if (longPressRef.current) {
+      clearTimeout(longPressRef.current.timer);
+      if (longPressRef.current.moveHandler) {
+        document.removeEventListener("touchmove", longPressRef.current.moveHandler);
+        document.removeEventListener("touchend", longPressRef.current.endHandler);
+        document.removeEventListener("touchcancel", longPressRef.current.endHandler);
+      }
+      if (longPressRef.current.item) {
+        longPressRef.current.item.style.transition = "";
+        longPressRef.current.item.style.transform = "";
+        longPressRef.current.item.style.userSelect = "";
+        longPressRef.current.item.style.webkitUserSelect = "";
+        if (longPressRef.current.contextMenuHandler) {
+          longPressRef.current.item.removeEventListener("contextmenu", longPressRef.current.contextMenuHandler);
+        }
+      }
+      if (longPressRef.current.disabledEls) {
+        longPressRef.current.disabledEls.forEach((el) => {
+          el.style.pointerEvents = "";
+        });
+      }
+      longPressRef.current = null;
+    }
+  }, []);
+
+  const handleLongPressStart = useCallback(
+    (e, index, field, listRef) => {
+      if (dragState.current.active) return;
+      cancelLongPress();
+
+      const item = e.currentTarget.closest
+        ? e.currentTarget.closest("[data-drag-item]") || e.currentTarget
+        : e.currentTarget;
+      if (!item.hasAttribute("data-drag-item")) return;
+
+      const touch = e.touches[0];
+      const startX = touch.clientX;
+      const startY = touch.clientY;
+
+      const focusable = item.querySelectorAll("input, textarea, select, [contenteditable]");
+      const allInteractive = item.querySelectorAll("input, textarea, select, [contenteditable], button, a");
+      focusable.forEach((el) => { el.style.pointerEvents = "none"; });
+      if (document.activeElement && item.contains(document.activeElement)) {
+        document.activeElement.blur();
+      }
+
+      item.style.userSelect = "none";
+      item.style.webkitUserSelect = "none";
+
+      item.style.transition = "transform 0.2s ease";
+      item.style.transform = "scale(0.98)";
+
+      const lp = {
+        item, index, field, listRef, timer: null, moveHandler: null, endHandler: null,
+        disabledEls: Array.from(focusable),
+        allInteractive: Array.from(allInteractive),
+      };
+
+      const cancel = () => {
+        cancelLongPress();
+      };
+
+      lp.moveHandler = (ev) => {
+        const t = ev.touches[0];
+        if (Math.abs(t.clientX - startX) > 8 || Math.abs(t.clientY - startY) > 8) {
+          cancel();
+        }
+      };
+      lp.endHandler = cancel;
+      lp.contextMenuHandler = (ev) => { ev.preventDefault(); };
+      item.addEventListener("contextmenu", lp.contextMenuHandler);
+
+      lp.timer = setTimeout(() => {
+        document.removeEventListener("touchmove", lp.moveHandler);
+        document.removeEventListener("touchend", lp.endHandler);
+        document.removeEventListener("touchcancel", lp.endHandler);
+        item.removeEventListener("contextmenu", lp.contextMenuHandler);
+        item.style.transition = "";
+        item.style.transform = "";
+        longPressRef.current = null;
+
+        lp.allInteractive.forEach((el) => { el.style.pointerEvents = "none"; });
+
+        if (document.activeElement && document.activeElement !== document.body) {
+          document.activeElement.blur();
+        }
+
+        if (navigator.vibrate) navigator.vibrate(30);
+
+        dragState.current._disabledEls = lp.allInteractive;
+
+        const syntheticTouches = [{ clientX: startX, clientY: startY }];
+        const syntheticEvent = {
+          currentTarget: item,
+          touches: syntheticTouches,
+          preventDefault: () => {},
+        };
+        handleTouchStart(syntheticEvent, index, field, listRef);
+      }, 400);
+
+      document.addEventListener("touchmove", lp.moveHandler, { passive: true });
+      document.addEventListener("touchend", lp.endHandler);
+      document.addEventListener("touchcancel", lp.endHandler);
+      longPressRef.current = lp;
+    },
+    [handleTouchStart, cancelLongPress],
+  );
+
   const justFinishedRef = useRef(false);
   const isActive = useCallback(() => dragState.current.active, []);
   const justFinished = useCallback(() => justFinishedRef.current, []);
 
-  return { handleTouchStart, isActive, justFinished, justFinishedRef };
+  return { handleTouchStart, handleLongPressStart, isActive, justFinished, justFinishedRef };
 }
 
 function findScrollParent(el) {

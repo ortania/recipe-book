@@ -160,6 +160,7 @@ function AddRecipeWizard({
 
   const {
     handleTouchStart,
+    handleLongPressStart,
     isActive: isTouchDragActive,
     justFinishedRef: touchDragJustFinishedRef,
   } = useTouchDragDrop(handleTouchReorder);
@@ -1283,6 +1284,7 @@ function AddRecipeWizard({
     handleDrop,
     handleDragEnd,
     handleTouchStart,
+    handleLongPressStart,
     toggleCategory,
     handleAddNewCategory,
     applyParsedIngredients,

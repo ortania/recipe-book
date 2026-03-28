@@ -3,9 +3,7 @@ import { UtensilsCrossed, Settings2, LayoutGrid, Rows4 } from "lucide-react";
 import { useRecipeBook, useLanguage } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { getCategoryIcon } from "../../utils/categoryIcons";
-import { Trash2 } from "lucide-react";
 import { SearchBox } from "../controls/search";
-import { CloseButton } from "../controls/close-button";
 import { CategoryCard } from "../category-card";
 import classes from "./categories-sheet-content.module.css";
 
@@ -19,13 +17,18 @@ function CategoriesSheetContent({
   toggleCategoryOverride,
   clearCategorySelectionOverride,
   hideManage = false,
+  onAfterToggle,
 }) {
   const ctx = useRecipeBook();
   const categories = categoriesOverride || ctx.categories;
   const recipes = recipesOverride || ctx.recipes;
   const selectedCategories =
     selectedCategoriesOverride || ctx.selectedCategories;
-  const toggleCategory = toggleCategoryOverride || ctx.toggleCategory;
+  const baseToggle = toggleCategoryOverride || ctx.toggleCategory;
+  const toggleCategory = (id) => {
+    baseToggle(id);
+    onAfterToggle?.();
+  };
   const clearCategorySelection =
     clearCategorySelectionOverride || ctx.clearCategorySelection;
   const { t } = useLanguage();
@@ -94,8 +97,11 @@ function CategoriesSheetContent({
     <div className={`${classes.content} ${className || ""}`}>
       {onClose && (
         <div className={classes.modalHeader}>
-          <CloseButton onClick={onClose} />
+          <button type="button" className={classes.doneBtn} onClick={onClose}>
+            {t("categories", "done")}
+          </button>
           <span className={classes.modalTitle}>{t("nav", "categories")}</span>
+
           <button
             type="button"
             className={classes.viewToggleBtn}
@@ -107,9 +113,9 @@ function CategoriesSheetContent({
             }
           >
             {viewMode === "list" ? (
-              <LayoutGrid size={20} />
+              <LayoutGrid size={22} />
             ) : (
-              <Rows4 size={20} />
+              <Rows4 size={22} />
             )}
           </button>
         </div>

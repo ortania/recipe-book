@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { AnimatePresence } from "framer-motion";
 import { ProductTour } from "../product-tour";
 import { CategoriesManagement } from "../categories-management";
@@ -21,6 +23,15 @@ export default function NavigationModals() {
     reorderCategories, sortCategoriesAlphabetically, getGroupContacts,
     classes, t,
   } = useNavigation();
+
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const handleCategoryToggle = useCallback(() => {
+    if (location.pathname !== "/categories") {
+      navigate("/categories");
+    }
+  }, [location.pathname, navigate]);
 
   return (
     <>
@@ -51,6 +62,7 @@ export default function NavigationModals() {
                   managementFromSheetRef.current = true;
                   setShowManagement(true);
                 }}
+                onAfterToggle={handleCategoryToggle}
               />
             </Modal>
           )
@@ -65,6 +77,7 @@ export default function NavigationModals() {
                     managementFromSheetRef.current = true;
                     setShowManagement(true);
                   }}
+                  onAfterToggle={handleCategoryToggle}
                 />
               </div>
             </>

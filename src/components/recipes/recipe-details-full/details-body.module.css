@@ -362,9 +362,16 @@
 }
 
 .checkboxLabel span {
-  flex: 1;
+  /* flex: 1; */
   line-height: 1.5;
   color: var(--clr-text-primary);
+}
+
+.stepNumber {
+  flex: 0 0 auto;
+  font-weight: 600;
+  color: var(--clr-brown-500, #948585);
+  min-width: 1.5em;
 }
 
 .checkbox {

@@ -1,23 +1,47 @@
 import { useMemo } from "react";
-import { List, ListOrdered, Lightbulb, MessageCircle, Video } from "lucide-react";
+import {
+  List,
+  ListOrdered,
+  Lightbulb,
+  MessageCircle,
+  Video,
+} from "lucide-react";
 import ChatWindow from "../../chat/ChatWindow";
 import { CommentsSection } from "../../comments-section";
 import { Tooltip } from "../../controls";
 import { useRecipeDetails } from "../RecipeDetailsContext";
 import {
-  isGroupHeader, getGroupName,
-  buildIngredientSearchData, highlightIngredientsInText,
+  isGroupHeader,
+  getGroupName,
+  buildIngredientSearchData,
+  highlightIngredientsInText,
 } from "../../../utils/ingredientUtils";
 
 export default function RecipeTabsSection() {
   const {
-    activeTab, setActiveTab, recipe, touchRef, handleTabSwipe,
-    ingredientsArray, scale, checkedIngredients, toggleIngredient,
-    instructionsArray, checkedInstructions, toggleInstruction,
-    chatMessages, setChatMessages, chatAppliedFields, setChatAppliedFields,
-    onSaveRecipe, originalRecipe, servings,
+    activeTab,
+    setActiveTab,
+    recipe,
+    touchRef,
+    handleTabSwipe,
+    ingredientsArray,
+    scale,
+    checkedIngredients,
+    toggleIngredient,
+    instructionsArray,
+    checkedInstructions,
+    toggleInstruction,
+    chatMessages,
+    setChatMessages,
+    chatAppliedFields,
+    setChatAppliedFields,
+    onSaveRecipe,
+    originalRecipe,
+    servings,
     tabsRef,
-    classes, buttonClasses, t,
+    classes,
+    buttonClasses,
+    t,
   } = useRecipeDetails();
 
   const ingredientSearchData = useMemo(
@@ -26,11 +50,19 @@ export default function RecipeTabsSection() {
   );
 
   function renderInstruction(text) {
-    const segments = highlightIngredientsInText(text, ingredientSearchData, scale);
+    const segments = highlightIngredientsInText(
+      text,
+      ingredientSearchData,
+      scale,
+    );
     if (!segments) return text;
     return segments.map((seg, i) =>
       seg.highlight ? (
-        <Tooltip key={i} text={seg.tooltip} className={classes.ingredientHighlight}>
+        <Tooltip
+          key={i}
+          text={seg.tooltip}
+          className={classes.ingredientHighlight}
+        >
           {seg.text}
         </Tooltip>
       ) : (
@@ -141,6 +173,7 @@ export default function RecipeTabsSection() {
                         }
                         style={{ pointerEvents: "auto" }}
                       />
+                      <span className={classes.stepNumber}>{index + 1}.</span>
                       <span
                         className={
                           checkedInstructions[index] ? classes.checkedText : ""

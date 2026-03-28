@@ -22,6 +22,7 @@ export default function IngredientsTab() {
     addIngredientGroup,
     removeIngredient,
     handleTouchStart,
+    handleLongPressStart,
     ingredientsListRef,
     classes,
     shared,
@@ -47,6 +48,9 @@ export default function IngredientsTab() {
               onDragOver={(e) => handleDragOver(e, i)}
               onDrop={() => handleDrop(i, "ingredients")}
               onDragEnd={handleDragEnd}
+              onTouchStart={(e) =>
+                handleLongPressStart(e, i, "ingredients", ingredientsListRef)
+              }
             >
               <span
                 className={`${shared.dragHandle} ${classes.dragHandle}`}

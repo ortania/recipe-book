@@ -268,6 +268,7 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
     handleApplyUpdate: onUpdateRecipe ? handleApplyUpdate : null,
     handleChipClick,
     messagesEndRef, messagesAreaRef,
+    recipe, recipeContext,
     classes, t,
   };
 

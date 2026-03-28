@@ -84,7 +84,7 @@
 .dynamicItem {
   display: flex;
   flex-direction: row-reverse;
-  align-items: flex-start;
+  align-items: center;
   gap: 0.5rem;
 }
 
@@ -251,6 +251,7 @@
 
   .dragHandle {
     touch-action: none;
-    padding: 0.4em;
+    /* padding: 0.4em; */
+    padding: 0;
   }
 }
