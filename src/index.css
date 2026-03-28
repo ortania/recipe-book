@@ -129,6 +129,7 @@ Variables
   /* =========================
      STATES (Success / Danger)
   ========================= */
+  --clr-success: var(--clr-success-500);
   --clr-success-bg: var(--clr-success-100);
   --clr-success-bg-hover: var(--clr-success-200);
   --clr-success-bg-active: var(--clr-success-300);

@@ -105,34 +105,15 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
 
   const {
     handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
     isActive: isTouchDragActive,
+    justFinishedRef: touchDragJustFinishedRef,
   } = useTouchDragDrop(handleTouchReorder);
-  const touchDragJustFinishedRef = useRef(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth <= 600);
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
-
-  useEffect(() => {
-    const onMove = (e) => handleTouchMove(e);
-    const onEnd = (e) => {
-      handleTouchEnd(e);
-      touchDragJustFinishedRef.current = true;
-      setTimeout(() => {
-        touchDragJustFinishedRef.current = false;
-      }, 300);
-    };
-    document.addEventListener("touchmove", onMove, { passive: false });
-    document.addEventListener("touchend", onEnd);
-    return () => {
-      document.removeEventListener("touchmove", onMove);
-      document.removeEventListener("touchend", onEnd);
-    };
-  }, [handleTouchMove, handleTouchEnd]);
 
   const [editedRecipe, setEditedRecipe] = useState({
     name: recipe.name,

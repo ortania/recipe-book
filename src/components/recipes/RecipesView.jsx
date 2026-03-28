@@ -1,4 +1,11 @@
-import { useState, useEffect, useLayoutEffect, useMemo, useRef, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useCallback,
+} from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
 import {
@@ -140,6 +147,8 @@ function RecipesView({
   }, []);
   const [localRecipes, setLocalRecipes] = useState(recipesProp);
   const [isSimpleView, setIsSimpleView] = useState(() => {
+    // For categories view, always default to grid with images (false)
+    if (readOnlyCategories) return false;
     try {
       return localStorage.getItem("recipesSimpleView") === "true";
     } catch {
@@ -154,7 +163,9 @@ function RecipesView({
   const [selectedStepCount, setSelectedStepCount] = useState("all");
   const [filterIngredients, setFilterIngredients] = useState([]);
   const [ingredientInput, setIngredientInput] = useState("");
-  const [activeView, setActiveView] = useState("recipes");
+  const [activeView, setActiveView] = useState(
+    readOnlyCategories ? "categories" : "recipes",
+  );
   const [showChat, setShowChat] = useState(false);
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showSavedOnly, setShowSavedOnly] = useState(false);
@@ -321,6 +332,13 @@ function RecipesView({
       setShowChat(true);
     } else {
       setShowChat(false);
+    }
+    // Set grid view (with images) as default when entering categories
+    if (view === "categories") {
+      setIsSimpleView(false);
+      try {
+        localStorage.setItem("recipesSimpleView", "false");
+      } catch {}
     }
   };
 
@@ -671,7 +689,7 @@ function RecipesView({
           onClick={() => setShowSharerSheet(true)}
           title={t("globalRecipes", "filterBySharer")}
         >
-          <Users size={20} />
+          <Users size={23} />
         </button>
       )}
       <button
@@ -683,7 +701,7 @@ function RecipesView({
             : t("recipesView", "listView")
         }
       >
-        {isSimpleView ? <LayoutGrid size={20} /> : <Rows4 size={20} />}
+        {isSimpleView ? <LayoutGrid size={22} /> : <Rows4 size={22} />}
       </button>
     </>
   ) : backAction ? (
@@ -733,7 +751,7 @@ function RecipesView({
           onClick={() => setShowCategoriesSheet(true)}
           title={t("nav", "categories")}
         >
-          <Tags size={20} />
+          <Tags size={23} />
         </button>
       )}
       <button
@@ -745,7 +763,7 @@ function RecipesView({
             : t("recipesView", "listView")
         }
       >
-        {isSimpleView ? <LayoutGrid size={20} /> : <Rows4 size={20} />}
+        {isSimpleView ? <LayoutGrid size={22} /> : <Rows4 size={22} />}
       </button>
     </div>
   );
@@ -760,46 +778,138 @@ function RecipesView({
 
   const contextValue = {
     // props
-    localRecipes, onAddRecipe, groups, onEditRecipe, onDeleteRecipe,
-    selectedGroup, onSelectGroup, showGreeting, showAddAndFavorites, showCategories,
-    emptyTitle, onCopyRecipe, onSaveRecipe, savedRecipes, onRate, userRatings,
-    loading, backAction, showTabs, headerAction, sharerOptions, selectedSharer,
-    onSelectSharer, followingList, searchPlaceholder, hasContentAbove, backLabel,
-    linkState, hideRating, readOnlyCategories, recipesTabLabel,
+    localRecipes,
+    onAddRecipe,
+    groups,
+    onEditRecipe,
+    onDeleteRecipe,
+    selectedGroup,
+    onSelectGroup,
+    showGreeting,
+    showAddAndFavorites,
+    showCategories,
+    emptyTitle,
+    onCopyRecipe,
+    onSaveRecipe,
+    savedRecipes,
+    onRate,
+    userRatings,
+    loading,
+    backAction,
+    showTabs,
+    headerAction,
+    sharerOptions,
+    selectedSharer,
+    onSelectSharer,
+    followingList,
+    searchPlaceholder,
+    hasContentAbove,
+    backLabel,
+    linkState,
+    hideRating,
+    readOnlyCategories,
+    recipesTabLabel,
     // state
-    searchTerm, setSearchTerm, sortField, setSortField, sortDirection, setSortDirection,
-    editingRecipe, setEditingRecipe, isSimpleView, showFilterMenu, setShowFilterMenu,
-    selectedRating, setSelectedRating, selectedPrepTime, setSelectedPrepTime,
-    selectedDifficulty, setSelectedDifficulty, selectedIngredientCount, setSelectedIngredientCount,
-    selectedStepCount, setSelectedStepCount, filterIngredients, ingredientInput, setIngredientInput,
-    activeView, showChat, showFavoritesOnly, setShowFavoritesOnly,
-    showSavedOnly, setShowSavedOnly, showSearch, setShowSearch, isMobile,
-    mobileTabsEl, mobileActionsEl, showCategoriesSheet, setShowCategoriesSheet,
-    showEmptyAddSheet, setShowEmptyAddSheet, showSharerSheet, setShowSharerSheet,
-    showManagement, setShowManagement, filterRef, filterMenuStyle,
+    searchTerm,
+    setSearchTerm,
+    sortField,
+    setSortField,
+    sortDirection,
+    setSortDirection,
+    editingRecipe,
+    setEditingRecipe,
+    isSimpleView,
+    showFilterMenu,
+    setShowFilterMenu,
+    selectedRating,
+    setSelectedRating,
+    selectedPrepTime,
+    setSelectedPrepTime,
+    selectedDifficulty,
+    setSelectedDifficulty,
+    selectedIngredientCount,
+    setSelectedIngredientCount,
+    selectedStepCount,
+    setSelectedStepCount,
+    filterIngredients,
+    ingredientInput,
+    setIngredientInput,
+    activeView,
+    showChat,
+    showFavoritesOnly,
+    setShowFavoritesOnly,
+    showSavedOnly,
+    setShowSavedOnly,
+    showSearch,
+    setShowSearch,
+    isMobile,
+    mobileTabsEl,
+    mobileActionsEl,
+    showCategoriesSheet,
+    setShowCategoriesSheet,
+    showEmptyAddSheet,
+    setShowEmptyAddSheet,
+    showSharerSheet,
+    setShowSharerSheet,
+    showManagement,
+    setShowManagement,
+    filterRef,
+    filterMenuStyle,
     // computed
-    selectedCategories, toggleCategory, clearCategorySelection, categories, recipes,
-    hasMoreRecipes, loadMoreRecipes,
-    filteredAndSortedRecipes, recentlyViewed, hasActiveFilters,
-    isAllSelected, selectedCount, selectedCategoryObjects, hasSelectedCategories,
-    currentUser, getGroupContacts, getTranslatedGroup,
+    selectedCategories,
+    toggleCategory,
+    clearCategorySelection,
+    categories,
+    recipes,
+    hasMoreRecipes,
+    loadMoreRecipes,
+    filteredAndSortedRecipes,
+    recentlyViewed,
+    hasActiveFilters,
+    isAllSelected,
+    selectedCount,
+    selectedCategoryObjects,
+    hasSelectedCategories,
+    currentUser,
+    getGroupContacts,
+    getTranslatedGroup,
     recipeSortOptions,
     // from useRecipeBook
-    addCategory, editCategory, deleteCategory, reorderCategories, sortCategoriesAlphabetically,
+    addCategory,
+    editCategory,
+    deleteCategory,
+    reorderCategories,
+    sortCategoriesAlphabetically,
     // handlers
-    navigate, closeSearch, handleViewChange, handleSort, clearAllFilters,
-    addFilterIngredient, removeFilterIngredient, handleSaveEdit, handleToggleFavorite,
-    handleEditClick, toggleView, handleRecipeSortChange, trackRecentlyViewed,
+    navigate,
+    closeSearch,
+    handleViewChange,
+    handleSort,
+    clearAllFilters,
+    addFilterIngredient,
+    removeFilterIngredient,
+    handleSaveEdit,
+    handleToggleFavorite,
+    handleEditClick,
+    toggleView,
+    handleRecipeSortChange,
+    trackRecentlyViewed,
     onSaved: () => setSaveToastOpen(true),
     // css
-    classes, fabClasses, t,
+    classes,
+    fabClasses,
+    t,
   };
 
   if (!recipes || (recipes.length === 0 && !hasSelectedCategories)) {
     return (
       <RecipesViewContext.Provider value={contextValue}>
         <RecipesEmptyState />
-        <Toast open={saveToastOpen} onClose={handleSaveToastClose} variant="success">
+        <Toast
+          open={saveToastOpen}
+          onClose={handleSaveToastClose}
+          variant="success"
+        >
           <CircleCheck size={18} aria-hidden />
           <span>{t("recipes", "saved")}</span>
         </Toast>
@@ -846,7 +956,9 @@ function RecipesView({
             getTranslatedGroup={getTranslatedGroup}
             selectedCategoryObjects={selectedCategoryObjects}
             isAllSelected={isAllSelected}
-            onRecipeNavigate={recentlyViewedKey ? trackRecentlyViewed : undefined}
+            onRecipeNavigate={
+              recentlyViewedKey ? trackRecentlyViewed : undefined
+            }
           />
         ) : showChat ? (
           <ChatWindow showImageButton showGreeting={showGreeting} />
@@ -856,7 +968,11 @@ function RecipesView({
 
         <RecipesSheets />
       </div>
-      <Toast open={saveToastOpen} onClose={handleSaveToastClose} variant="success">
+      <Toast
+        open={saveToastOpen}
+        onClose={handleSaveToastClose}
+        variant="success"
+      >
         <CircleCheck size={18} aria-hidden />
         <span>{t("recipes", "saved")}</span>
       </Toast>

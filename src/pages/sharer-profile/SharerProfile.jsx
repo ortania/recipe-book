@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { UserPlus, UserCheck } from "lucide-react";
 import { BackButton } from "../../components/controls/back-button";
 import { useRecipeBook, useLanguage } from "../../context";
+import useTranslatedList from "../../hooks/useTranslatedList";
 import {
   fetchSharerRecipes,
   copyRecipeToUser,
@@ -11,6 +12,7 @@ import {
 import { getUserData, toggleFollowUser } from "../../firebase/authService";
 import { fetchCategories } from "../../firebase/categoryService";
 import { RecipesView } from "../../components";
+import { CategoryCard } from "../../components/category-card";
 import Skeleton from "react-loading-skeleton";
 import classes from "./sharer-profile.module.css";
 
@@ -27,6 +29,7 @@ function SharerProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [mobileActionsEl, setMobileActionsEl] = useState(null);
+  const [selectedCategory, setSelectedCategory] = useState(null);
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 767px)");
@@ -124,6 +127,45 @@ function SharerProfile() {
     [recipes],
   );
 
+  const { getTranslated } = useTranslatedList(sharerCategories, "name");
+
+  const categoryImageMap = useMemo(() => {
+    const map = {};
+    sharerCategories.forEach((cat) => {
+      if (cat.id === "all") return;
+      const catRecipes = recipes.filter(
+        (r) => r.categories && r.categories.includes(cat.id),
+      );
+      const withImage = catRecipes.filter((r) => r.image_src || r.image);
+      if (withImage.length > 0) {
+        map[cat.id] = withImage[0].image_src || withImage[0].image;
+      }
+    });
+    const allWithImage = recipes.filter((r) => r.image_src || r.image);
+    if (allWithImage.length > 0) {
+      map["all"] = allWithImage[0].image_src || allWithImage[0].image;
+    }
+    return map;
+  }, [sharerCategories, recipes]);
+
+  const filteredRecipes = useMemo(() => {
+    if (!selectedCategory || selectedCategory === "all")
+      return recipesWithoutSharer;
+    return recipesWithoutSharer.filter(
+      (r) => r.categories && r.categories.includes(selectedCategory),
+    );
+  }, [recipesWithoutSharer, selectedCategory]);
+
+  const getRecipeCount = useCallback(
+    (catId) => {
+      if (catId === "all") return recipes.length;
+      return recipes.filter(
+        (r) => r.categories && r.categories.includes(catId),
+      ).length;
+    },
+    [recipes],
+  );
+
   if (loading) {
     return (
       <div className={classes.page}>
@@ -143,7 +185,7 @@ function SharerProfile() {
   return (
     <div className={classes.page}>
       {/* Public profile (mobile): back arrow portaled to the hamburger row */}
-      {isPublic && isMobile && mobileActionsEl &&
+      {isPublic && isMobile && mobileActionsEl && !selectedCategory &&
         createPortal(
           <BackButton onClick={() => navigate(-1)} size={22} />,
           mobileActionsEl,
@@ -207,12 +249,33 @@ function SharerProfile() {
         </div>
       </div>
 
-      {isPublic && (
+      {isPublic && !selectedCategory && (
+        <div className={classes.categoriesGrid}>
+          {sharerCategories.map((cat) => (
+            <CategoryCard
+              key={cat.id}
+              category={cat}
+              name={
+                cat.id === "all"
+                  ? t("categories", "allRecipes")
+                  : getTranslated(cat)
+              }
+              selected={false}
+              onClick={() => setSelectedCategory(cat.id)}
+              count={getRecipeCount(cat.id)}
+              recipeImage={categoryImageMap[cat.id]}
+            />
+          ))}
+        </div>
+      )}
+
+      {isPublic && selectedCategory && (
         <RecipesView
-          recipes={recipesWithoutSharer}
+          recipes={filteredRecipes}
           groups={sharerCategories}
+          selectedGroup={selectedCategory}
           showAddAndFavorites={false}
-          showCategories
+          showCategories={selectedCategory === "all"}
           readOnlyCategories
           loading={!sharerData}
           emptyTitle={t("sharerProfile", "noRecipes")}
@@ -222,7 +285,8 @@ function SharerProfile() {
           defaultSortField="rating"
           defaultSortDirection="desc"
           sortStorageKey="sharerRecipesSortPreference"
-          backLabel={`${t("sharerProfile", "backToRecipesOf")} ${sharerName}`}
+          backLabel={t("nav", "categories")}
+          backAction={() => setSelectedCategory(null)}
           showTabs={false}
           hasContentAbove
           searchPlaceholder={`${t("common", "search")} ${t("sharerProfile", "inRecipesOf")} ${sharerName}...`}

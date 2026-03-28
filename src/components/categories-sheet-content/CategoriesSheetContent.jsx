@@ -33,9 +33,9 @@ function CategoriesSheetContent({
   const [categorySearch, setCategorySearch] = useState("");
   const [viewMode, setViewMode] = useState(() => {
     try {
-      return localStorage.getItem("categoriesViewMode") || "list";
+      return localStorage.getItem("categoriesViewMode") || "grid";
     } catch {
-      return "list";
+      return "grid";
     }
   });
 

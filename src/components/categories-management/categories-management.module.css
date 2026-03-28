@@ -75,6 +75,31 @@
   opacity: 0.3;
 }
 
+.dragOverAbove,
+.dragOverBelow {
+  position: relative;
+}
+
+.dragOverAbove::before,
+.dragOverBelow::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--clr-brown-500, #948585);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.dragOverAbove::before {
+  top: -2px;
+}
+
+.dragOverBelow::after {
+  bottom: -2px;
+}
+
 .dragHandle {
   display: flex;
   align-items: center;

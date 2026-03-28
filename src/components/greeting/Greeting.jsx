@@ -13,22 +13,30 @@ function getGreetingKey() {
 function Greeting() {
   const { currentUser } = useRecipeBook();
   const { t } = useLanguage();
-  const [visible, setVisible] = useState(true);
+  const [name, setName] = useState(currentUser?.displayName || "");
+  const [phase, setPhase] = useState("");
 
   useEffect(() => {
-    const timer = setTimeout(() => setVisible(false), 5000);
+    if (currentUser?.displayName) {
+      setName(currentUser.displayName);
+      requestAnimationFrame(() => setPhase("show"));
+    }
+  }, [currentUser?.displayName]);
+
+  useEffect(() => {
+    if (phase !== "show") return;
+    const timer = setTimeout(() => setPhase("hide"), 5000);
     return () => clearTimeout(timer);
-  }, []);
+  }, [phase]);
 
   const greetingKey = getGreetingKey();
   const greeting = t("recipesView", greetingKey);
-  const name = currentUser?.displayName || "";
   const whatToCook = t("recipesView", "whatToCook");
 
   return (
     <div className={classes.greetingWrapper}>
-      <div className={`${classes.greetingSmall}${visible ? "" : ` ${classes.hide}`}`}>
-        {greeting}{name ? ` ${name}` : ""}
+      <div className={`${classes.greetingSmall}${phase ? ` ${classes[phase]}` : ""}`}>
+        {greeting} {name}
       </div>
       <div className={classes.greetingPrompt}>{whatToCook}</div>
     </div>

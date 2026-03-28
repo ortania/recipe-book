@@ -281,6 +281,7 @@
   margin-top: 0.45em;
   flex-shrink: 0;
   transition: color 0.15s ease;
+  touch-action: none;
 }
 
 .dragHandle:active {
@@ -292,11 +293,11 @@
 }
 
 .dragOverAbove {
-  box-shadow: 0 -3px 0 0 var(--clr-success-bg);
+  box-shadow: 0 -4px 0 0 var(--clr-brown-500);
 }
 
 .dragOverBelow {
-  box-shadow: 0 3px 0 0 var(--clr-success-bg);
+  box-shadow: 0 4px 0 0 var(--clr-brown-500);
 }
 
 /* ========== Move Buttons (mobile touch reorder) ========== */

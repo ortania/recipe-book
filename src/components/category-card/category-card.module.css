@@ -100,7 +100,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--clr-success-bg);
+  background: var(--clr-success-dark-bg);
   color: var(--clr-white);
   display: flex;
   align-items: center;

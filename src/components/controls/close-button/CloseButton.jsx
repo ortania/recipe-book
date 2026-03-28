@@ -3,7 +3,7 @@ import { X } from "lucide-react";
 import btnClasses from "../../../styles/shared/buttons.module.css";
 
 export const CLOSE_DESKTOP_SIZE = 25;
-export const CLOSE_MOBILE_SIZE = 20;
+export const CLOSE_MOBILE_SIZE = 25;
 
 const MOBILE_BREAKPOINT = 768;
 

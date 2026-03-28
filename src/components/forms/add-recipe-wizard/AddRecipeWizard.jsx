@@ -160,28 +160,9 @@ function AddRecipeWizard({
 
   const {
     handleTouchStart,
-    handleTouchMove,
-    handleTouchEnd,
     isActive: isTouchDragActive,
+    justFinishedRef: touchDragJustFinishedRef,
   } = useTouchDragDrop(handleTouchReorder);
-  const touchDragJustFinishedRef = useRef(false);
-
-  useEffect(() => {
-    const onMove = (e) => handleTouchMove(e);
-    const onEnd = (e) => {
-      handleTouchEnd(e);
-      touchDragJustFinishedRef.current = true;
-      setTimeout(() => {
-        touchDragJustFinishedRef.current = false;
-      }, 300);
-    };
-    document.addEventListener("touchmove", onMove, { passive: false });
-    document.addEventListener("touchend", onEnd);
-    return () => {
-      document.removeEventListener("touchmove", onMove);
-      document.removeEventListener("touchend", onEnd);
-    };
-  }, [handleTouchMove, handleTouchEnd]);
 
   const updateRecipe = (field, value) => {
     setRecipe((prev) => ({ ...prev, [field]: value }));

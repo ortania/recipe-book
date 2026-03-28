@@ -85,15 +85,17 @@ function CategoriesManagement({
     [onReorderCategories],
   );
 
-  const { handleTouchStart, handleTouchMove, handleTouchEnd } =
-    useTouchDragDrop(handleReorder);
+  const { handleTouchStart } = useTouchDragDrop(handleReorder);
+
+  const [dragOverIndex, setDragOverIndex] = useState(null);
 
   const handleDragStart = (index) => {
     setDragIndex(index);
   };
 
-  const handleDragOver = (e) => {
+  const handleDragOver = (e, index) => {
     e.preventDefault();
+    setDragOverIndex(index);
   };
 
   const handleDrop = (toIndex) => {
@@ -101,10 +103,12 @@ function CategoriesManagement({
       handleReorder(dragIndex, toIndex);
     }
     setDragIndex(null);
+    setDragOverIndex(null);
   };
 
   const handleDragEnd = () => {
     setDragIndex(null);
+    setDragOverIndex(null);
   };
 
   const editableCategories = categories.filter(
@@ -338,15 +342,13 @@ function CategoriesManagement({
       <div
         className={classes.listWrap}
         ref={listRef}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
       >
         {editableCategories.map((category, index) => (
           <div
             key={category.id}
             data-drag-item
-            className={`${classes.catRow} ${dragIndex === index ? classes.dragging : ""}`}
-            onDragOver={handleDragOver}
+            className={`${classes.catRow} ${dragIndex === index ? classes.dragging : ""} ${dragOverIndex === index && dragIndex !== null && dragIndex !== index ? (dragIndex > index ? classes.dragOverAbove : classes.dragOverBelow) : ""}`}
+            onDragOver={(e) => handleDragOver(e, index)}
             onDrop={() => handleDrop(index)}
             onDragEnd={handleDragEnd}
           >

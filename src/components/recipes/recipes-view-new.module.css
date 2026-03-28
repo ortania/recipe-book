@@ -1148,7 +1148,7 @@
   cursor: pointer;
   padding: 0.25em;
   border-radius: 6px;
-  transition: background 0.15s ease;
+  transition: var(--transition-fast);
 }
 
 .mobileHeaderBtn:hover {
