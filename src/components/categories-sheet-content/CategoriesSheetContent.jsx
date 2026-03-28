@@ -81,11 +81,26 @@ function CategoriesSheetContent({
     return map;
   }, [categories, recipes]);
 
+  const validGroupIds = useMemo(
+    () => new Set(categories.filter((g) => g.id !== "all" && g.id !== "general").map((g) => g.id)),
+    [categories],
+  );
+
   const getGroupContacts = (groupId) => {
-    if (groupId === "all") return recipes;
+    if (groupId === "all") {
+      const seen = new Set();
+      return recipes.filter((r) => {
+        if (seen.has(r.id)) return false;
+        seen.add(r.id);
+        return true;
+      });
+    }
     if (groupId === "general") {
       return recipes.filter(
-        (recipe) => !recipe.categories || recipe.categories.length === 0,
+        (recipe) =>
+          !recipe.categories ||
+          recipe.categories.length === 0 ||
+          !recipe.categories.some((catId) => validGroupIds.has(catId)),
       );
     }
     return recipes.filter(

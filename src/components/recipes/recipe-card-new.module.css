@@ -54,7 +54,7 @@
 }
 
 .authorLabel {
-  font-size: var(--very-small-font);
+  font-size: var(--small-font);
   color: var(--clr-text-muted);
   margin: 0.1rem 0 0;
   white-space: nowrap;

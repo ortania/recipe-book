@@ -1,4 +1,12 @@
-import { History, UtensilsCrossed, FilePenLine, Trash2, Copy, Bookmark, UserCheck } from "lucide-react";
+import {
+  History,
+  UtensilsCrossed,
+  FilePenLine,
+  Trash2,
+  Copy,
+  Bookmark,
+  UserCheck,
+} from "lucide-react";
 import Skeleton from "react-loading-skeleton";
 import { useRecipesView } from "../RecipesViewContext";
 import { RecipeInfo } from "../RecipeInfo";
@@ -6,13 +14,45 @@ import { EditRecipe } from "../../forms/edit-recipe";
 
 export default function RecipesMainContent() {
   const {
-    recentlyViewed, classes, t, navigate, linkState, recentlyViewedKey, trackRecentlyViewed,
-    showCategories, isAllSelected, selectedCategoryObjects, toggleCategory, getTranslatedGroup,
-    clearCategorySelection, editingRecipe, setEditingRecipe, handleSaveEdit, groups,
-    loading, isSimpleView, filteredAndSortedRecipes, showSavedOnly, showFavoritesOnly,
-    showAddAndFavorites, selectedGroup, onSelectGroup, onDeleteRecipe, onEditRecipe,
-    handleEditClick, handleToggleFavorite, hideRating, onCopyRecipe, onSaveRecipe, savedRecipes,
-    onRate, userRatings, currentUser, followingList, hasMoreRecipes, loadMoreRecipes,
+    recentlyViewed,
+    classes,
+    t,
+    navigate,
+    linkState,
+    recentlyViewedKey,
+    trackRecentlyViewed,
+    showCategories,
+    isAllSelected,
+    selectedCategoryObjects,
+    toggleCategory,
+    getTranslatedGroup,
+    clearCategorySelection,
+    editingRecipe,
+    setEditingRecipe,
+    handleSaveEdit,
+    groups,
+    loading,
+    isSimpleView,
+    filteredAndSortedRecipes,
+    showSavedOnly,
+    showFavoritesOnly,
+    showAddAndFavorites,
+    selectedGroup,
+    onSelectGroup,
+    onDeleteRecipe,
+    onEditRecipe,
+    handleEditClick,
+    handleToggleFavorite,
+    hideRating,
+    onCopyRecipe,
+    onSaveRecipe,
+    savedRecipes,
+    onRate,
+    userRatings,
+    currentUser,
+    followingList,
+    hasMoreRecipes,
+    loadMoreRecipes,
     onSaved,
   } = useRecipesView();
 
@@ -181,9 +221,7 @@ export default function RecipesMainContent() {
                     {groupRecipes.length > 8 && (
                       <button
                         className={classes.seeMore}
-                        onClick={() =>
-                          onSelectGroup && onSelectGroup(group.id)
-                        }
+                        onClick={() => onSelectGroup && onSelectGroup(group.id)}
                       >
                         {t("categories", "seeMore")}
                       </button>
@@ -264,9 +302,14 @@ export default function RecipesMainContent() {
               );
             })}
           {(() => {
+            const validGroupIds = new Set(
+              groups.filter((g) => g.id !== "all" && g.id !== "general").map((g) => g.id),
+            );
             const uncategorizedRecipes = filteredAndSortedRecipes.filter(
               (recipe) =>
-                !recipe.categories || recipe.categories.length === 0,
+                !recipe.categories ||
+                recipe.categories.length === 0 ||
+                !recipe.categories.some((catId) => validGroupIds.has(catId)),
             );
             if (uncategorizedRecipes.length === 0) return null;
             const displayRecipes = uncategorizedRecipes.slice(0, 8);
@@ -489,9 +532,7 @@ export default function RecipesMainContent() {
               isSaved={savedRecipes.includes(recipe.id)}
               onRate={onRate}
               userRating={userRatings[recipe.id] || 0}
-              onCardClick={
-                recentlyViewedKey ? trackRecentlyViewed : undefined
-              }
+              onCardClick={recentlyViewedKey ? trackRecentlyViewed : undefined}
               followingList={followingList}
               linkState={linkState}
               hideRating={hideRating}
@@ -502,10 +543,7 @@ export default function RecipesMainContent() {
 
       {hasMoreRecipes && (
         <div className={classes.loadMoreContainer}>
-          <button
-            className={classes.loadMoreButton}
-            onClick={loadMoreRecipes}
-          >
+          <button className={classes.loadMoreButton} onClick={loadMoreRecipes}>
             {t("recipesView", "loadMore")}
           </button>
         </div>

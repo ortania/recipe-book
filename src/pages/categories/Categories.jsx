@@ -26,6 +26,7 @@ function Categories() {
     recipes,
     recipesLoaded,
     selectedCategories,
+    selectCategory,
     addRecipe,
     editRecipe,
     deleteRecipe,
@@ -102,6 +103,7 @@ function Categories() {
           setShowAddRecipe(true);
         }}
         selectedGroup={isAllSelected ? "all" : selectedCategories}
+        onSelectGroup={selectCategory}
         showGreeting={true}
         sortStorageKey="categoriesSortPreference"
         hideRating

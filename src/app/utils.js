@@ -86,7 +86,10 @@ export const handleAddRecipe = (setRecipes, userId) => async (newRecipe) => {
     const addedRecipe = await addRecipeToDB(newRecipe, userId);
     console.log("🔥 UTILS - Recipe added to Firebase with ID:", addedRecipe.id);
     console.log("🔥 UTILS - Added recipe rating:", addedRecipe.rating);
-    setRecipes((prev) => [...prev, addedRecipe]);
+    setRecipes((prev) => {
+      if (prev.some((r) => r.id === addedRecipe.id)) return prev;
+      return [...prev, addedRecipe];
+    });
     return addedRecipe;
   } catch (error) {
     console.error("Error adding recipe to Firebase:", error);

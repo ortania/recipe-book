@@ -47,13 +47,24 @@ const readSessionCache = () => {
   }
 };
 
+const dedupeRecipes = (arr) => {
+  const seen = new Set();
+  return arr.filter((r) => {
+    if (seen.has(r.id)) return false;
+    seen.add(r.id);
+    return true;
+  });
+};
+
 // Captured once at module load — survives re-renders
 const SESSION_CACHE = readSessionCache(); // { user, recipes, categories } | null
 
 export const RecipeBookProvider = ({ children }) => {
   const hasCache = !!SESSION_CACHE;
   const [categories, setCategories] = useState(SESSION_CACHE?.categories || []);
-  const [recipes, setRecipes] = useState(SESSION_CACHE?.recipes || []);
+  const [recipes, setRecipes] = useState(() =>
+    dedupeRecipes(SESSION_CACHE?.recipes || []),
+  );
   const [isAdmin, setIsAdmin] = useState(hasCache);
   const [isLoggedIn, setIsLoggedIn] = useState(hasCache);
   // Skip loading screen when we have a cached session — show app immediately
@@ -254,7 +265,8 @@ export const RecipeBookProvider = ({ children }) => {
       setCategories(finalCategories);
       setCategoriesLoaded(true);
 
-      setRecipes(fetchedRecipes);
+      const uniqueRecipes = dedupeRecipes(fetchedRecipes);
+      setRecipes(uniqueRecipes);
       setHasMoreRecipes(false);
       setRecipesLoaded(true);
 
@@ -262,7 +274,7 @@ export const RecipeBookProvider = ({ children }) => {
       try {
         localStorage.setItem("appCache", JSON.stringify({
           user: confirmedUser,
-          recipes: fetchedRecipes,
+          recipes: uniqueRecipes,
           categories: finalCategories,
         }));
       } catch {}

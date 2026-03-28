@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { createPortal } from "react-dom";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { UserPlus, UserCheck } from "lucide-react";
 import { BackButton } from "../../components/controls/back-button";
 import { useRecipeBook, useLanguage } from "../../context";
@@ -14,13 +14,17 @@ import { fetchCategories } from "../../firebase/categoryService";
 import { RecipesView } from "../../components";
 import { CategoryCard } from "../../components/category-card";
 import Skeleton from "react-loading-skeleton";
+import useScrollRestore from "../../hooks/useScrollRestore";
 import classes from "./sharer-profile.module.css";
 
 function SharerProfile() {
   const { userId: sharerUserId } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { t, language } = useLanguage();
   const { currentUser, setCurrentUser, setRecipes } = useRecipeBook();
+
+  useScrollRestore(`sharerProfile-${sharerUserId}`);
 
   const [sharerData, setSharerData] = useState(null);
   const [recipes, setSharerRecipes] = useState([]);
@@ -29,7 +33,18 @@ function SharerProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [mobileActionsEl, setMobileActionsEl] = useState(null);
-  const [selectedCategory, setSelectedCategory] = useState(null);
+  // Restore the previously selected category only when returning to the same
+  // history entry (navigate(-1)), not on fresh visits.
+  const [selectedCategory, setSelectedCategory] = useState(() => {
+    try {
+      const saved = sessionStorage.getItem(`sharerCat-${sharerUserId}`);
+      if (saved) {
+        const { catId, locationKey } = JSON.parse(saved);
+        if (locationKey === location.key) return catId;
+      }
+    } catch {}
+    return null;
+  });
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 767px)");
@@ -117,7 +132,9 @@ function SharerProfile() {
         currentUser.uid,
         language,
       );
-      setRecipes((prev) => [...prev, copied]);
+      setRecipes((prev) =>
+        prev.some((r) => r.id === copied.id) ? prev : [...prev, copied],
+      );
     },
     [currentUser, language, setRecipes],
   );
@@ -158,8 +175,16 @@ function SharerProfile() {
 
   const getRecipeCount = useCallback(
     (catId) => {
-      if (catId === "all") return recipes.length;
-      return recipes.filter(
+      const uniqueRecipes = Array.from(
+        new Map(recipes.map((r) => [r.id, r])).values(),
+      );
+      if (catId === "all") return uniqueRecipes.length;
+      if (catId === "general") {
+        return uniqueRecipes.filter(
+          (r) => !r.categories || r.categories.length === 0,
+        ).length;
+      }
+      return uniqueRecipes.filter(
         (r) => r.categories && r.categories.includes(catId),
       ).length;
     },
@@ -185,7 +210,10 @@ function SharerProfile() {
   return (
     <div className={classes.page}>
       {/* Public profile (mobile): back arrow portaled to the hamburger row */}
-      {isPublic && isMobile && mobileActionsEl && !selectedCategory &&
+      {isPublic &&
+        isMobile &&
+        mobileActionsEl &&
+        !selectedCategory &&
         createPortal(
           <BackButton onClick={() => navigate(-1)} size={22} />,
           mobileActionsEl,
@@ -261,7 +289,18 @@ function SharerProfile() {
                   : getTranslated(cat)
               }
               selected={false}
-              onClick={() => setSelectedCategory(cat.id)}
+              onClick={() => {
+                try {
+                  sessionStorage.setItem(
+                    `sharerCat-${sharerUserId}`,
+                    JSON.stringify({
+                      catId: cat.id,
+                      locationKey: location.key,
+                    }),
+                  );
+                } catch {}
+                setSelectedCategory(cat.id);
+              }}
               count={getRecipeCount(cat.id)}
               recipeImage={categoryImageMap[cat.id]}
             />
@@ -275,7 +314,7 @@ function SharerProfile() {
           groups={sharerCategories}
           selectedGroup={selectedCategory}
           showAddAndFavorites={false}
-          showCategories={selectedCategory === "all"}
+          showCategories={false}
           readOnlyCategories
           loading={!sharerData}
           emptyTitle={t("sharerProfile", "noRecipes")}
@@ -286,7 +325,12 @@ function SharerProfile() {
           defaultSortDirection="desc"
           sortStorageKey="sharerRecipesSortPreference"
           backLabel={t("nav", "categories")}
-          backAction={() => setSelectedCategory(null)}
+          backAction={() => {
+            try {
+              sessionStorage.removeItem(`sharerCat-${sharerUserId}`);
+            } catch {}
+            setSelectedCategory(null);
+          }}
           showTabs={false}
           hasContentAbove
           searchPlaceholder={`${t("common", "search")} ${t("sharerProfile", "inRecipesOf")} ${sharerName}...`}

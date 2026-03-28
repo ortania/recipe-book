@@ -688,10 +688,27 @@ function RecipesView({
   const isAllSelected = selectedCategories.includes("all");
   const selectedCount = isAllSelected ? 0 : selectedCategories.length;
 
+  const validGroupIds = useMemo(
+    () => new Set(categories.filter((g) => g.id !== "all" && g.id !== "general").map((g) => g.id)),
+    [categories],
+  );
+
   const getGroupContacts = (groupId) => {
-    if (groupId === "all") return recipes;
+    if (groupId === "all") {
+      const seen = new Set();
+      return recipes.filter((r) => {
+        if (seen.has(r.id)) return false;
+        seen.add(r.id);
+        return true;
+      });
+    }
     if (groupId === "general") {
-      return recipes.filter((r) => !r.categories || r.categories.length === 0);
+      return recipes.filter(
+        (r) =>
+          !r.categories ||
+          r.categories.length === 0 ||
+          !r.categories.some((catId) => validGroupIds.has(catId)),
+      );
     }
     return recipes.filter(
       (r) => r.categories && r.categories.includes(groupId),

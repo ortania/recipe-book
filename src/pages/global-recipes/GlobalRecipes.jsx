@@ -123,7 +123,9 @@ function GlobalRecipes() {
         currentUser.uid,
         language,
       );
-      setRecipes((prev) => [...prev, copied]);
+      setRecipes((prev) =>
+        prev.some((r) => r.id === copied.id) ? prev : [...prev, copied],
+      );
     },
     [currentUser, language, setRecipes],
   );

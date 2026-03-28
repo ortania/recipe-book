@@ -33,9 +33,27 @@ function Navigation({ onLogout, links }) {
   const managementFromSheetRef = useRef(false);
   const navScrollableRef = useRef(null);
 
+  const validGroupIds = new Set(
+    categories.filter((g) => g.id !== "all" && g.id !== "general").map((g) => g.id),
+  );
+
   const getGroupContacts = (groupId) => {
-    if (groupId === "all") return recipes;
-    if (groupId === "general") return recipes.filter((r) => !r.categories || r.categories.length === 0);
+    if (groupId === "all") {
+      const seen = new Set();
+      return recipes.filter((r) => {
+        if (seen.has(r.id)) return false;
+        seen.add(r.id);
+        return true;
+      });
+    }
+    if (groupId === "general") {
+      return recipes.filter(
+        (r) =>
+          !r.categories ||
+          r.categories.length === 0 ||
+          !r.categories.some((catId) => validGroupIds.has(catId)),
+      );
+    }
     return recipes.filter((r) => r.categories && r.categories.includes(groupId));
   };
 

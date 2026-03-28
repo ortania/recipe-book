@@ -29,7 +29,7 @@ export const fetchRecipes = async (
 
     let q;
     if (userId) {
-      q = query(recipesRef, where("userId", "==", userId), orderBy("order"));
+      q = query(recipesRef, where("userId", "==", userId));
     } else {
       q = lastDoc
         ? query(

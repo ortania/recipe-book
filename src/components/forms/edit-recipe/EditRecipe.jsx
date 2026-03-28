@@ -554,6 +554,7 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
       isFavorite: editedRecipe.isFavorite,
       notes: editedRecipe.notes,
       rating: editedRecipe.rating || 0,
+      author: editedRecipe.author || "",
       shareToGlobal: editedRecipe.shareToGlobal,
       showMyName: editedRecipe.shareToGlobal ? editedRecipe.showMyName : false,
       nutrition,
