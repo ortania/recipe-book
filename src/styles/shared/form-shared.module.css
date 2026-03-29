@@ -278,7 +278,7 @@
   color: var(--clr-text-muted);
   cursor: grab;
   padding: 0em;
-  margin-top: 0.45em;
+  /* margin-top: 0.45em; */
   flex-shrink: 0;
   transition: color 0.15s ease;
   touch-action: none;
