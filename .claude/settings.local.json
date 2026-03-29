@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(rm \"C:\\\\Users\\\\Tania\\\\HANDASAIM\\\\HTML5\\\\MyCourse\\\\Videos\\\\React\\\\Lessons-Vite-24\\\\recipe-book-2\\\\src\\\\components\\\\controls\\\\button\\\\button.module.css\")",
-      "Bash(rm \"C:\\\\Users\\\\Tania\\\\HANDASAIM\\\\HTML5\\\\MyCourse\\\\Videos\\\\React\\\\Lessons-Vite-24\\\\recipe-book-2\\\\src\\\\components\\\\controls\\\\controls.module.css\")"
+      "Bash(rm \"C:\\\\Users\\\\Tania\\\\HANDASAIM\\\\HTML5\\\\MyCourse\\\\Videos\\\\React\\\\Lessons-Vite-24\\\\recipe-book-2\\\\src\\\\components\\\\controls\\\\controls.module.css\")",
+      "Bash(xargs grep:*)"
     ]
   }
 }

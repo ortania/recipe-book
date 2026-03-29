@@ -3,14 +3,17 @@ import { FaRegEdit } from "react-icons/fa";
 import { GoTrash } from "react-icons/go";
 import { PiPlusLight } from "react-icons/pi";
 import { LuArrowUpDown } from "react-icons/lu";
-import { Camera, X as LuX, GripVertical } from "lucide-react";
+import { GripVertical, CircleCheck, AlertTriangle } from "lucide-react";
 import { Modal } from "../modal";
 import { CloseButton } from "../controls/close-button";
+import { Toast } from "../controls";
 import { ConfirmDialog } from "../forms/confirm-dialog";
+import RecipeImageUpload from "../forms/RecipeImageUpload";
 import { useLanguage, useRecipeBook } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { useTouchDragDrop } from "../../hooks/useTouchDragDrop";
 import { uploadRecipeImage } from "../../firebase/imageService";
+import { generateRecipeImageDataUrl } from "../../services/openai";
 import {
   CATEGORY_ICONS,
   DEFAULT_ICON_ID,
@@ -58,6 +61,7 @@ function CategoriesManagement({
   const { t } = useLanguage();
   const { currentUser } = useRecipeBook();
   const { getTranslated } = useTranslatedList(categories, "name");
+  const isMobile = window.innerWidth < 768;
 
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
@@ -72,6 +76,9 @@ function CategoriesManagement({
   const [formImage, setFormImage] = useState("");
   const [showIconPicker, setShowIconPicker] = useState(false);
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [generatingAiImage, setGeneratingAiImage] = useState(false);
+  const [imageDragOver, setImageDragOver] = useState(false);
+  const [imageToast, setImageToast] = useState({ open: false, message: "", variant: "success" });
   const imageInputRef = useRef(null);
 
   // Drag and drop
@@ -123,6 +130,8 @@ function CategoriesManagement({
     setFormImage("");
     setShowIconPicker(false);
     setUploadingImage(false);
+    setGeneratingAiImage(false);
+    setImageDragOver(false);
   };
 
   const handleImageUpload = async (e) => {
@@ -141,6 +150,75 @@ function CategoriesManagement({
     }
     setUploadingImage(false);
     if (imageInputRef.current) imageInputRef.current.value = "";
+  };
+
+  const handlePasteImage = async (file) => {
+    if (!file || !currentUser || uploadingImage || generatingAiImage) return;
+    setUploadingImage(true);
+    try {
+      const url = await uploadRecipeImage(
+        currentUser.uid,
+        `cat_${editingId || Date.now()}_paste`,
+        file,
+      );
+      setFormImage(url);
+    } catch (err) {
+      console.error("Category paste image failed:", err);
+    }
+    setUploadingImage(false);
+  };
+
+  const handleImageDrop = (e) => {
+    e.preventDefault();
+    setImageDragOver(false);
+    const file = Array.from(e.dataTransfer.files).find(
+      (f) => f.type.startsWith("image/") || /\.jfif$/i.test(f.name),
+    );
+    if (!file) return;
+    handleImageUpload({ target: { files: [file] } });
+  };
+
+  const handleGenerateAiImage = async () => {
+    if (!formName.trim()) {
+      setImageToast({
+        open: true,
+        message: <><AlertTriangle size={18} /> {t("addWizard", "generateAiImageNeedName")}</>,
+        variant: "error",
+      });
+      return;
+    }
+    if (uploadingImage || generatingAiImage) return;
+    setGeneratingAiImage(true);
+    const safetyTimer = setTimeout(() => {
+      setGeneratingAiImage(false);
+      setImageToast({ open: true, message: <><AlertTriangle size={18} /> Timeout</>, variant: "error" });
+    }, 120000);
+    try {
+      const dataUrl = await generateRecipeImageDataUrl({
+        recipeName: formName.trim(),
+        ingredients: [],
+      });
+      const url = await uploadRecipeImage(
+        currentUser.uid,
+        `cat_${editingId || Date.now()}_ai`,
+        dataUrl,
+      );
+      setFormImage(url);
+      setImageToast({
+        open: true,
+        message: <><CircleCheck size={18} /> {t("addWizard", "generateAiImageDone")}</>,
+        variant: "success",
+      });
+    } catch (err) {
+      setImageToast({
+        open: true,
+        message: <><AlertTriangle size={18} /> {err.message || t("addWizard", "generateAiImageError")}</>,
+        variant: "error",
+      });
+    } finally {
+      clearTimeout(safetyTimer);
+      setGeneratingAiImage(false);
+    }
   };
 
   const handleAddClick = () => {
@@ -267,37 +345,21 @@ function CategoriesManagement({
       )}
 
       <div className={classes.imagePickerRow}>
-        <input
-          ref={imageInputRef}
-          type="file"
-          accept="image/*"
-          style={{ display: "none" }}
-          onChange={handleImageUpload}
+        <RecipeImageUpload
+          images={formImage ? [formImage] : []}
+          uploadingImage={uploadingImage}
+          generatingAiImage={generatingAiImage}
+          isDragOver={imageDragOver}
+          setIsDragOver={setImageDragOver}
+          onImageUpload={handleImageUpload}
+          onRemoveImage={() => setFormImage("")}
+          onDrop={handleImageDrop}
+          onPasteImage={handlePasteImage}
+          onGenerateAiImage={handleGenerateAiImage}
+          fileInputRef={imageInputRef}
+          isMobile={isMobile}
+          t={t}
         />
-        {formImage ? (
-          <div className={classes.imagePreviewWrap}>
-            <img src={formImage} alt="" className={classes.imagePreview} />
-            <button
-              type="button"
-              className={classes.imageRemoveBtn}
-              onClick={() => setFormImage("")}
-            >
-              <LuX size={12} />
-            </button>
-          </div>
-        ) : (
-          <button
-            type="button"
-            className={classes.imageUploadBtn}
-            onClick={() => imageInputRef.current?.click()}
-            disabled={uploadingImage}
-          >
-            <Camera size={16} />
-            {uploadingImage
-              ? t("common", "loading") || "..."
-              : t("categories", "addImage") || "הוסף תמונה"}
-          </button>
-        )}
       </div>
 
       <div className={classes.inlineFormActions}>
@@ -410,9 +472,18 @@ function CategoriesManagement({
   );
 
   return (
-    <Modal onClose={onClose} maxWidth="480px">
-      {content}
-    </Modal>
+    <>
+      <Modal onClose={onClose} maxWidth="480px">
+        {content}
+      </Modal>
+      <Toast
+        open={imageToast.open}
+        onClose={() => setImageToast((p) => ({ ...p, open: false }))}
+        variant={imageToast.variant}
+      >
+        {imageToast.message}
+      </Toast>
+    </>
   );
 }
 
