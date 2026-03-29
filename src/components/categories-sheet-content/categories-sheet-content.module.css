@@ -25,21 +25,23 @@
 }
 
 .doneBtn {
-  background: none;
-  border: none;
-  color: var(--clr-text-primary);
-  font-size: var(--large-font);
+  background: var(--clr-btn-main-bg);
+  border: 1px solid var(--clr-btn-main-border);
+  color: var(--clr-btn-main-text);
+  font-size: var(--basic-font);
   /* font-weight: var(--font-weight-heading); */
   cursor: pointer;
   padding: 0.4em 0.8em;
   border-radius: 8px;
   transition: var(--transition);
-  text-decoration: underline;
-  text-decoration-color: currentColor;
+  border-radius: var(--btn-border-radius);
+  /* text-decoration: underline;
+  text-decoration-color: currentColor; */
 }
 
 .doneBtn:hover {
-  color: var(--clr-text-primary-hover);
+  background: var(--clr-btn-main-bg-hover);
+  border-color: var(--clr-btn-main-border-hover);
 }
 
 .search {

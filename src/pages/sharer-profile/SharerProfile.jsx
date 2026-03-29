@@ -33,18 +33,8 @@ function SharerProfile() {
   const [isFollowing, setIsFollowing] = useState(false);
   const [isMobile, setIsMobile] = useState(() => window.innerWidth < 768);
   const [mobileActionsEl, setMobileActionsEl] = useState(null);
-  // Restore the previously selected category only when returning to the same
-  // history entry (navigate(-1)), not on fresh visits.
-  const [selectedCategory, setSelectedCategory] = useState(() => {
-    try {
-      const saved = sessionStorage.getItem(`sharerCat-${sharerUserId}`);
-      if (saved) {
-        const { catId, locationKey } = JSON.parse(saved);
-        if (locationKey === location.key) return catId;
-      }
-    } catch {}
-    return null;
-  });
+  const [selectedCategories, setSelectedCategories] = useState(["all"]);
+  const [showCategoryGrid, setShowCategoryGrid] = useState(true);
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 767px)");
@@ -144,6 +134,22 @@ function SharerProfile() {
     [recipes],
   );
 
+  const toggleCategory = useCallback((categoryId) => {
+    setSelectedCategories((prev) => {
+      if (categoryId === "all") return ["all"];
+      const withoutAll = prev.filter((id) => id !== "all");
+      if (withoutAll.includes(categoryId)) {
+        const filtered = withoutAll.filter((id) => id !== categoryId);
+        return filtered.length === 0 ? ["all"] : filtered;
+      }
+      return [...withoutAll, categoryId];
+    });
+  }, []);
+
+  const clearCategorySelection = useCallback(() => {
+    setSelectedCategories(["all"]);
+  }, []);
+
   const { getTranslated } = useTranslatedList(sharerCategories, "name");
 
   const categoryImageMap = useMemo(() => {
@@ -164,14 +170,6 @@ function SharerProfile() {
     }
     return map;
   }, [sharerCategories, recipes]);
-
-  const filteredRecipes = useMemo(() => {
-    if (!selectedCategory || selectedCategory === "all")
-      return recipesWithoutSharer;
-    return recipesWithoutSharer.filter(
-      (r) => r.categories && r.categories.includes(selectedCategory),
-    );
-  }, [recipesWithoutSharer, selectedCategory]);
 
   const getRecipeCount = useCallback(
     (catId) => {
@@ -213,7 +211,6 @@ function SharerProfile() {
       {isPublic &&
         isMobile &&
         mobileActionsEl &&
-        !selectedCategory &&
         createPortal(
           <BackButton onClick={() => navigate(-1)} size={22} />,
           mobileActionsEl,
@@ -277,7 +274,7 @@ function SharerProfile() {
         </div>
       </div>
 
-      {isPublic && !selectedCategory && (
+      {isPublic && showCategoryGrid && (
         <div className={classes.categoriesGrid}>
           {sharerCategories.map((cat) => (
             <CategoryCard
@@ -290,16 +287,8 @@ function SharerProfile() {
               }
               selected={false}
               onClick={() => {
-                try {
-                  sessionStorage.setItem(
-                    `sharerCat-${sharerUserId}`,
-                    JSON.stringify({
-                      catId: cat.id,
-                      locationKey: location.key,
-                    }),
-                  );
-                } catch {}
-                setSelectedCategory(cat.id);
+                setSelectedCategories([cat.id]);
+                setShowCategoryGrid(false);
               }}
               count={getRecipeCount(cat.id)}
               recipeImage={categoryImageMap[cat.id]}
@@ -308,14 +297,21 @@ function SharerProfile() {
         </div>
       )}
 
-      {isPublic && selectedCategory && (
+      {isPublic && !showCategoryGrid && (
         <RecipesView
-          recipes={filteredRecipes}
+          recipes={recipesWithoutSharer}
           groups={sharerCategories}
-          selectedGroup={selectedCategory}
+          selectedGroup={
+            selectedCategories.length === 1 && selectedCategories[0] === "all"
+              ? "all"
+              : selectedCategories
+          }
           showAddAndFavorites={false}
-          showCategories={false}
+          showCategories={true}
           readOnlyCategories
+          readOnlySelectedCategories={selectedCategories}
+          readOnlyToggleCategory={toggleCategory}
+          readOnlyClearCategorySelection={clearCategorySelection}
           loading={!sharerData}
           emptyTitle={t("sharerProfile", "noRecipes")}
           onCopyRecipe={undefined}
@@ -324,13 +320,6 @@ function SharerProfile() {
           defaultSortField="rating"
           defaultSortDirection="desc"
           sortStorageKey="sharerRecipesSortPreference"
-          backLabel={t("nav", "categories")}
-          backAction={() => {
-            try {
-              sessionStorage.removeItem(`sharerCat-${sharerUserId}`);
-            } catch {}
-            setSelectedCategory(null);
-          }}
           showTabs={false}
           hasContentAbove
           searchPlaceholder={`${t("common", "search")} ${t("sharerProfile", "inRecipesOf")} ${sharerName}...`}

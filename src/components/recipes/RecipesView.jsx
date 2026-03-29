@@ -116,6 +116,9 @@ function RecipesView({
   linkState,
   hideRating = false,
   readOnlyCategories = false,
+  readOnlySelectedCategories,
+  readOnlyToggleCategory,
+  readOnlyClearCategorySelection,
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
@@ -221,13 +224,13 @@ function RecipesView({
   }, []);
 
   const selectedCategories = readOnlyCategories
-    ? localSelectedCategories
+    ? readOnlySelectedCategories || localSelectedCategories
     : ctxSelectedCategories;
   const toggleCategory = readOnlyCategories
-    ? localToggleCategory
+    ? readOnlyToggleCategory || localToggleCategory
     : ctxToggleCategory;
   const clearCategorySelection = readOnlyCategories
-    ? localClearCategorySelection
+    ? readOnlyClearCategorySelection || localClearCategorySelection
     : ctxClearCategorySelection;
   const categories = readOnlyCategories ? groups : ctxCategories;
   const recipes = readOnlyCategories ? recipesProp : ctxRecipes;
@@ -689,7 +692,12 @@ function RecipesView({
   const selectedCount = isAllSelected ? 0 : selectedCategories.length;
 
   const validGroupIds = useMemo(
-    () => new Set(categories.filter((g) => g.id !== "all" && g.id !== "general").map((g) => g.id)),
+    () =>
+      new Set(
+        categories
+          .filter((g) => g.id !== "all" && g.id !== "general")
+          .map((g) => g.id),
+      ),
     [categories],
   );
 

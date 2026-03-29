@@ -1440,13 +1440,13 @@ const translations = {
       mixed: "selected",
     },
     multiSelectHint: {
-      he: "בחר קטגוריות להצגה במתכונים",
+      he: "בחר קטגוריה אחת או יותר, ואז סגור את החלון כדי לראות את המתכונים",
     },
     done: {
-      he: "סיימתי",
-      en: "Done",
-      ru: "Готово",
-      de: "Fertig",
+      he: "הצג מתכונים",
+      en: "Show Recipes",
+      ru: "Показать рецепты",
+      de: "Rezepte anzeigen",
       mixed: "סיימתי",
     },
     allRecipes: {
@@ -1471,7 +1471,7 @@ const translations = {
       mixed: "Add Image",
     },
     done: {
-      he: "סיום",
+      he: "הצג מתכונים",
       en: "Done",
       ru: "Готово",
       de: "Fertig",
