@@ -34,6 +34,7 @@ export default function RecipeInfoSection() {
     commentCount,
     language,
     getCategoryName,
+    onCategoryClick,
     servings,
     setServings,
     showNutrition,
@@ -205,9 +206,14 @@ export default function RecipeInfoSection() {
           {recipe.categories
             .filter((cat) => getCategoryName(cat))
             .map((cat, idx) => (
-              <span key={idx} className={classes.categoryTag}>
+              <button
+                key={idx}
+                type="button"
+                className={classes.categoryTag}
+                onClick={() => onCategoryClick && onCategoryClick(cat)}
+              >
                 {getCategoryName(cat)}
-              </span>
+              </button>
             ))}
         </div>
       )}

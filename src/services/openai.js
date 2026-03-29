@@ -178,8 +178,10 @@ Rules:
 - ingredients: include only items listed in the ingredients section of the text. One item per array element.
 - ONLY use "::" group prefixes for clearly labeled sub-sections (e.g. "::לבלילה", "::למלית"). Do NOT create groups for generic labels like "מרכיבים".
 - instructions: include only steps listed in the instructions section. One step per array element.
-- prepTime / cookTime: numbers in minutes only. Return "" if not in the text.
+- prepTime: preparation/hands-on time in minutes. Return "" if not in the text.
+- cookTime: cooking, baking, or oven time in minutes. This includes any time labeled as אפייה, בישול, זמן תנור, זמן אפייה, baking time, cooking time, oven time. For ranges like "45-55 דקות", return the higher value (e.g. "55"). Return "" if not in the text.
 - servings: return "" if not in the text.
+- notes: include any extra info like oven temperature (e.g. "170-175 מעלות"), cooling instructions, or tips found in the text. Return "" if none.
 - Keep the entire recipe in its original language. Do NOT translate.
 - If no recipe is found, return: {"error": "No recipe found"}`;
 
@@ -241,7 +243,8 @@ You MUST respond with valid JSON in this exact format:
 - Explicit rule: When the source text contains multiple sections (e.g. "לבלילה:" and "למלית:", or "לבלילת העוגה:" and "לקישוט העוגה:"), your ingredients array MUST include a group and ingredients for EACH section (e.g. "::לבלילה" and "::למלית"). One section alone is wrong.
 - Extract ALL instructions as separate steps in order.
 - CRITICAL: ONLY extract instructions that are ACTUALLY WRITTEN in the source text. NEVER invent, generate, or add instructions that do not appear in the original text. If there are no instructions in the text, return an empty array for "instructions".
-- prepTime and cookTime should be numbers in minutes only (no units).
+- prepTime: preparation/hands-on time in minutes only (no units). Return "" if not found.
+- cookTime: cooking, baking, or oven time in minutes only (no units). This includes any time labeled as אפייה, בישול, זמן תנור, זמן אפייה, baking time, cooking time, oven time. For ranges like "45-55 דקות", return the higher value (e.g. "55"). Return "" if not found.
 - CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
 - IMPORTANT: ONLY extract the actual recipe content. Completely IGNORE any of these: advertisements, recommendations, "you might also like", related articles, comments, social media links, navigation, author bio, newsletter signup, or any other non-recipe content.
 - If you cannot find a recipe in the text, return: {"error": "No recipe found"}`;
@@ -332,7 +335,8 @@ You MUST respond with valid JSON in this exact format:
 - CRITICAL for Hebrew: If the user said "לבלילה", "למלית", "לציפוי", "לעיטור", "לקישוט" or similar before a set of ingredients, you MUST output a "::group name" line and then the ingredients for that group. For example: if they said "לבלילה מרכיב 2 ביצים למלית מרכיב 500 גרם גבינה", output ["::לבלילה", "2 ביצים", "::למלית", "500 גרם גבינה"]. Never merge multiple sections into one.
 - Extract ALL instructions as separate steps in order.
 - CRITICAL: ONLY extract instructions that the user ACTUALLY SAID or WROTE. NEVER invent, generate, or add instructions that do not appear in the original text. If the user did not mention any instructions, return an empty array for "instructions".
-- prepTime and cookTime should be numbers in minutes only (no units).
+- prepTime: preparation/hands-on time in minutes only (no units). Return "" if not found.
+- cookTime: cooking, baking, or oven time in minutes only (no units). This includes any time labeled as אפייה, בישול, זמן תנור, זמן אפייה, baking time, cooking time, oven time. For ranges like "45-55 דקות", return the higher value (e.g. "55"). Return "" if not found.
 - CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
 - If difficulty is mentioned, map it to: VeryEasy, Easy, Medium, or Hard.
 - Even if difficulty is NOT explicitly mentioned, try to estimate it from the recipe complexity.${categoriesHint}

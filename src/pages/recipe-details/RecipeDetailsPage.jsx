@@ -32,6 +32,11 @@ function RecipeDetailsPage() {
     setRecipes,
   } = useRecipeBook();
 
+  const handleCategoryClick = (catId) => {
+    try { sessionStorage.setItem("pendingCategorySelect", catId); } catch {}
+    navigate("/categories");
+  };
+
   useEffect(() => {
     document.body.classList.add("hide-footer");
     return () => document.body.classList.remove("hide-footer");
@@ -322,6 +327,7 @@ function RecipeDetailsPage() {
         onDuplicate={isOwner ? handleDuplicate : undefined}
         onSaveRecipe={isOwner ? editRecipe : undefined}
         getCategoryName={getCategoryName}
+        onCategoryClick={handleCategoryClick}
         onEnterCookingMode={handleCookingModeToggle}
         servings={servings}
         setServings={setServings}

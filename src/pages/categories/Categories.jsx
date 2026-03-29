@@ -1,4 +1,4 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useEffect } from "react";
 import { AnimatePresence } from "framer-motion";
 import { CircleCheck } from "lucide-react";
 import { Toast } from "../../components/controls";
@@ -33,6 +33,18 @@ function Categories() {
     clearCategoryRecipes,
   } = useRecipeBook();
   const { t } = useLanguage();
+
+  // When navigating here from a recipe's category tag, select that category.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(() => {
+    try {
+      const cat = sessionStorage.getItem("pendingCategorySelect");
+      if (cat) {
+        sessionStorage.removeItem("pendingCategorySelect");
+        selectCategory(cat);
+      }
+    } catch {}
+  }, []);
 
   const [showAddRecipe, setShowAddRecipe] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
@@ -94,7 +106,7 @@ function Categories() {
       )}
 
       <RecipesView
-        recipes={filteredRecipes}
+        recipes={recipes}
         groups={categories}
         onEditRecipe={editRecipe}
         onDeleteRecipe={deleteRecipe}

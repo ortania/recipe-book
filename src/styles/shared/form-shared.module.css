@@ -277,7 +277,7 @@
   justify-content: center;
   color: var(--clr-text-muted);
   cursor: grab;
-  padding: 0.2em;
+  padding: 0em;
   margin-top: 0.45em;
   flex-shrink: 0;
   transition: color 0.15s ease;

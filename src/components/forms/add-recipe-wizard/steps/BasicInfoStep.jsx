@@ -26,13 +26,10 @@ export default function BasicInfoStep() {
 
       <div className={shared.formRow}>
         <div className={shared.formGroup}>
-          <label className={shared.formLabel}>
-            {t("recipes", "servings")}
-          </label>
+          <label className={shared.formLabel}>{t("recipes", "servings")}</label>
           <input
             type="number"
             className={shared.formInput}
-            placeholder="4"
             value={recipe.servings}
             onChange={(e) => updateRecipe("servings", e.target.value)}
             min="1"
@@ -66,7 +63,6 @@ export default function BasicInfoStep() {
             inputMode="numeric"
             min="0"
             className={shared.formInput}
-            placeholder="45"
             value={recipe.cookTime}
             onChange={(e) =>
               updateRecipe("cookTime", e.target.value.replace(/[^0-9]/g, ""))
@@ -82,7 +78,6 @@ export default function BasicInfoStep() {
             inputMode="numeric"
             min="0"
             className={shared.formInput}
-            placeholder="30"
             value={recipe.prepTime}
             onChange={(e) =>
               updateRecipe("prepTime", e.target.value.replace(/[^0-9]/g, ""))

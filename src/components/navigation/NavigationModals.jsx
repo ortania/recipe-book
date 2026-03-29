@@ -33,6 +33,13 @@ export default function NavigationModals() {
     }
   }, [location.pathname, navigate]);
 
+  const handleCategoriesClose = useCallback(() => {
+    setShowCategoriesSheet(false);
+    if (location.pathname !== "/categories") {
+      navigate("/categories");
+    }
+  }, [location.pathname, navigate, setShowCategoriesSheet]);
+
   return (
     <>
       {showManagement && (
@@ -54,9 +61,9 @@ export default function NavigationModals() {
 
       {isMobile
         ? showCategoriesSheet && (
-            <Modal onClose={() => setShowCategoriesSheet(false)} maxWidth="480px">
+            <Modal onClose={handleCategoriesClose} maxWidth="480px">
               <CategoriesSheetContent
-                onClose={() => setShowCategoriesSheet(false)}
+                onClose={handleCategoriesClose}
                 onManage={() => {
                   setShowCategoriesSheet(false);
                   managementFromSheetRef.current = true;
@@ -68,10 +75,10 @@ export default function NavigationModals() {
           )
         : showCategoriesSheet && (
             <>
-              <div className={classes.catPopupOverlay} onClick={() => setShowCategoriesSheet(false)} />
+              <div className={classes.catPopupOverlay} onClick={handleCategoriesClose} />
               <div className={classes.catPopup}>
                 <CategoriesSheetContent
-                  onClose={() => setShowCategoriesSheet(false)}
+                  onClose={handleCategoriesClose}
                   onManage={() => {
                     setShowCategoriesSheet(false);
                     managementFromSheetRef.current = true;
