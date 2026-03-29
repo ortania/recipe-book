@@ -358,6 +358,7 @@ function CategoriesManagement({
           onGenerateAiImage={handleGenerateAiImage}
           fileInputRef={imageInputRef}
           isMobile={isMobile}
+          hideHint
           t={t}
         />
       </div>

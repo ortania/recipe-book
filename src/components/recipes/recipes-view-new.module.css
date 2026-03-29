@@ -1071,7 +1071,7 @@
 
 .compactActions {
   display: flex;
-  gap: 0.4rem;
+  gap: .5rem;
   flex-shrink: 0;
   align-items: center;
 }
@@ -1090,8 +1090,7 @@
   font-size: var(--basic-font);
   border-radius: 6px;
   transition:
-    color 0.2s ease,
-    background 0.2s ease;
+    var(--transition);
   border-bottom: none;
 }
 
@@ -1107,6 +1106,11 @@
 .compactDanger:hover {
   color: var(--clr-danger-700);
   background: rgba(231, 76, 60, 0.1);
+}
+
+.compactActionBtn svg, .compactDanger svg {
+  width: 1.2em;
+  height: 1.2em;
 }
 
 /* ===== Compact item thumbnail ===== */

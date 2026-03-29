@@ -151,7 +151,7 @@
 
 .catActions {
   display: flex;
-  gap: 0.4rem;
+  gap: 1.2rem;
   flex-shrink: 0;
   align-items: center;
 }
@@ -171,8 +171,14 @@
   justify-content: center;
 }
 
+.editBtn svg,
+.deleteBtn svg {
+  width: 1.2em;
+  height: 1.2em;
+}
+
 .editBtn:hover {
-  color: var(--clr-text-secondary);
+  color: var(--clr-text-primary);
   background: var(--clr-bg-hover);
 }
 
@@ -316,7 +322,7 @@
 /* Image picker */
 .imagePickerRow {
   display: flex;
-  align-items: center;
+  flex-direction: column;
   gap: 0.5rem;
   margin-top: 0.5rem;
 }

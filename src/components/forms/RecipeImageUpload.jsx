@@ -51,6 +51,7 @@ export default function RecipeImageUpload({
   onGenerateAiImage,
   fileInputRef,
   isMobile,
+  hideHint = false,
   t,
 }) {
   const pasteAreaRef = useRef(null);
@@ -184,7 +185,7 @@ export default function RecipeImageUpload({
         })}
       >
         {actionCards}
-        {!hasImages && (
+        {!hasImages && !hideHint && (
           <p className={imgClasses.imageHint}>{t("addWizard", "multipleImagesHint")}</p>
         )}
       </div>
