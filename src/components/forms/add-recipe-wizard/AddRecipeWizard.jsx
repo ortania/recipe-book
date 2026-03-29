@@ -657,6 +657,7 @@ function AddRecipeWizard({
         prepTime: parsed.prepTime || prev.prepTime,
         cookTime: parsed.cookTime || prev.cookTime,
         servings: parsed.servings || prev.servings,
+        difficulty: parsed.difficulty || prev.difficulty,
         notes: parsed.notes || prev.notes,
       }));
       needsTranslationRef.current = true;

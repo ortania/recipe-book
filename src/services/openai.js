@@ -27,7 +27,10 @@ export const speakWithOpenAI = async (text, voice = "nova") => {
   if (!text) return null;
   const response = await fetch(CLOUD_TTS_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await getAuthHeaders()),
+    },
     body: JSON.stringify({
       model: "tts-1",
       input: text,
@@ -50,7 +53,10 @@ export async function generateRecipeImageDataUrl({
 }) {
   const response = await fetch(CLOUD_RECIPE_IMAGE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await getAuthHeaders()),
+    },
     body: JSON.stringify({ recipeName, ingredients }),
   });
 
@@ -77,7 +83,10 @@ export const callOpenAI = async (requestBody, options = {}) => {
   const { signal } = options;
   const response = await fetch(CLOUD_CHAT_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await getAuthHeaders()),
+    },
     body: JSON.stringify(requestBody),
     signal,
   });
@@ -145,7 +154,10 @@ async function extractRecipeDirectFromImage(images) {
   // Pass 1: Google Cloud Vision OCR — pure pixel reading, zero AI knowledge
   const ocrResponse = await fetch(CLOUD_OCR_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...(await getAuthHeaders()) },
+    headers: {
+      "Content-Type": "application/json",
+      ...(await getAuthHeaders()),
+    },
     body: JSON.stringify({ images }),
   });
 
@@ -189,7 +201,10 @@ Rules:
     model: "gpt-4o",
     messages: [
       { role: "system", content: structureSystemPrompt },
-      { role: "user", content: `Structure this recipe text into JSON:\n\n${rawText}` },
+      {
+        role: "user",
+        content: `Structure this recipe text into JSON:\n\n${rawText}`,
+      },
     ],
     temperature: 0,
     max_tokens: 4096,

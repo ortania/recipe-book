@@ -38,6 +38,31 @@ function setCors(req, res) {
   return false;
 }
 
+/** URL from GET query or POST JSON body (avoids query-string length limits on long Hebrew URLs). */
+function getRequestUrl(req) {
+  let u = req.query?.url;
+  if (Array.isArray(u)) u = u[0];
+  if (typeof u === "string" && u.trim()) return u.trim();
+  const b = req.body;
+  if (b && typeof b === "object" && typeof b.url === "string" && b.url.trim()) {
+    return b.url.trim();
+  }
+  if (typeof b === "string" && b.length > 0) {
+    try {
+      const o = JSON.parse(b);
+      if (typeof o.url === "string" && o.url.trim()) return o.url.trim();
+    } catch {}
+  }
+  const raw = req.rawBody;
+  if (raw && Buffer.isBuffer(raw)) {
+    try {
+      const o = JSON.parse(raw.toString("utf8"));
+      if (typeof o.url === "string" && o.url.trim()) return o.url.trim();
+    } catch {}
+  }
+  return "";
+}
+
 function extractTextFromHtml(html) {
   let text = html
     .replace(/<script[\s\S]*?<\/script>/gi, "")
@@ -137,7 +162,7 @@ exports.fetchUrl = onRequest(
   { cors: true, region: "us-central1" },
   async (req, res) => {
     if (setCors(req, res)) return;
-    const url = req.query.url || req.body.url;
+    const url = getRequestUrl(req);
 
     if (!url) {
       res.status(400).json({ error: "Missing url parameter" });
@@ -145,6 +170,10 @@ exports.fetchUrl = onRequest(
     }
 
     try {
+      let referer = "";
+      try {
+        referer = new URL(url).origin + "/";
+      } catch {}
       const response = await fetch(url, {
         headers: {
           "User-Agent":
@@ -152,6 +181,7 @@ exports.fetchUrl = onRequest(
           Accept:
             "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8",
           "Accept-Language": "he-IL,he;q=0.9,en-US;q=0.8,en;q=0.7",
+          ...(referer ? { Referer: referer } : {}),
         },
         redirect: "follow",
       });
@@ -201,10 +231,15 @@ exports.fetchUrl = onRequest(
 
 // ── Fetch URL via headless browser (for bot-protected sites) ──
 exports.fetchUrlBrowser = onRequest(
-  { cors: true, region: "us-central1", memory: "1GiB", timeoutSeconds: 60 },
+  {
+    cors: true,
+    region: "us-central1",
+    memory: "2GiB",
+    timeoutSeconds: 120,
+  },
   async (req, res) => {
     if (setCors(req, res)) return;
-    const url = req.query.url || req.body.url;
+    const url = getRequestUrl(req);
     if (!url) {
       res.status(400).json({ error: "Missing url parameter" });
       return;
@@ -212,24 +247,25 @@ exports.fetchUrlBrowser = onRequest(
 
     let browser;
     try {
-      const puppeteer = require("puppeteer");
+      // Full `puppeteer` bundle often fails on Cloud Functions (no usable Chrome).
+      // @sparticuz/chromium ships a Lambda/GCF-compatible binary for puppeteer-core.
+      const chromium = require("@sparticuz/chromium");
+      const puppeteer = require("puppeteer-core");
+
       browser = await puppeteer.launch({
-        headless: "new",
-        args: [
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-dev-shm-usage",
-          "--disable-gpu",
-          "--single-process",
-          "--no-zygote",
-        ],
+        args: [...chromium.args, "--disable-dev-shm-usage"],
+        defaultViewport: chromium.defaultViewport,
+        executablePath: await chromium.executablePath(),
+        headless: chromium.headless,
       });
 
       const page = await browser.newPage();
       await page.setUserAgent(
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
       );
-      await page.goto(url, { waitUntil: "networkidle2", timeout: 30000 });
+      // networkidle2 often times out on WordPress / ad-heavy sites (e.g. chef-lavan.co.il)
+      await page.goto(url, { waitUntil: "domcontentloaded", timeout: 60000 });
+      await new Promise((r) => setTimeout(r, 2500));
 
       // Scroll to bottom to trigger lazy-loaded content
       await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
