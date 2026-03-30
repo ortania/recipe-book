@@ -105,12 +105,13 @@
   }
 
   .profileSection {
-    padding: 0.25rem 0 0;
+    /* padding: 0.25rem; */
+    padding: 0.25rem 0.5rem 2rem;
     gap: 1rem;
   }
 
   .categoriesGrid {
     grid-template-columns: repeat(2, 1fr);
-    padding: 0 0.5rem 2rem;
+    padding: 0 0.5rem 10rem;
   }
 }
