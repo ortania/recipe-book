@@ -1,7 +1,7 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import { FiCheck, FiShoppingCart, FiPrinter, FiTrash2 } from "react-icons/fi";
-import { Globe, Plus, FilePenLine, Trash2, Check } from "lucide-react";
+import { FiCheck, FiShoppingCart, FiPrinter } from "react-icons/fi";
+import { Globe } from "lucide-react";
 import SearchBox from "../../components/controls/search/SearchBox";
 import { SortButton } from "../../components/controls/sort-button";
 import { search } from "../../components/recipes/utils";
@@ -13,24 +13,45 @@ import {
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { buildShoppingList } from "../../utils/ingredientUtils";
 import { getCategoryIcon } from "../../utils/categoryIcons";
+import { ShoppingListView } from "../../components/shopping-list-view";
 import Skeleton from "react-loading-skeleton";
 import { BackButton } from "../../components/controls/back-button";
-import buttonClasses from "../../styles/shared/buttons.module.css";
 import classes from "./shopping-list.module.css";
+
+const STORAGE_KEY = "shoppingListState";
+
+function loadSaved() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : null;
+    console.log(
+      "[ShoppingList] loadSaved:",
+      parsed
+        ? {
+            selectedRecipes: parsed.selectedRecipes?.length,
+            showList: parsed.showList,
+          }
+        : "null",
+    );
+    return parsed;
+  } catch {
+    return null;
+  }
+}
 
 function ShoppingList() {
   const { t } = useLanguage();
   const { recipes, categories, currentUser } = useRecipeBook();
   const { getTranslated } = useTranslatedList(categories, "name");
-  const [selectedRecipes, setSelectedRecipes] = useState([]);
+  const saved = useRef(loadSaved());
+  const [selectedRecipes, setSelectedRecipes] = useState(
+    saved.current?.selectedRecipes || [],
+  );
   const [selectedCat, setSelectedCat] = useState(null);
-  const [checkedItems, setCheckedItems] = useState({});
-  const [showList, setShowList] = useState(false);
-  const [manualItems, setManualItems] = useState([]);
-  const [newItemText, setNewItemText] = useState("");
-  const [editingKey, setEditingKey] = useState(null);
-  const [editText, setEditText] = useState("");
-  const [editedItems, setEditedItems] = useState({});
+  const [checkedItems, setCheckedItems] = useState(
+    saved.current?.checkedItems || {},
+  );
+  const [showList, setShowList] = useState(saved.current?.showList || false);
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
   const [globalRecipes, setGlobalRecipes] = useState([]);
   const [loadingGlobal, setLoadingGlobal] = useState(false);
@@ -38,6 +59,16 @@ function ShoppingList() {
   const [folderSearch, setFolderSearch] = useState("");
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
+
+  const didMount = useRef(false);
+  useEffect(() => {
+    if (!didMount.current) {
+      didMount.current = true;
+      return;
+    }
+    const data = { selectedRecipes, checkedItems, showList };
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  }, [selectedRecipes, checkedItems, showList]);
 
   const shoppingSortOptions = [
     { field: "name", defaultDir: "asc" },
@@ -125,64 +156,12 @@ function ShoppingList() {
     setCheckedItems((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handlePrint = () => window.print();
-
   const handleClear = () => {
     setSelectedRecipes([]);
     setCheckedItems({});
-    setManualItems([]);
     setShowList(false);
+    localStorage.removeItem(STORAGE_KEY);
   };
-
-  const handleAddManualItem = () => {
-    const text = newItemText.trim();
-    if (!text) return;
-    const id = `manual_${Date.now()}`;
-    setManualItems((prev) => [...prev, { id, text }]);
-    setNewItemText("");
-  };
-
-  const handleDeleteItem = (id) => {
-    setManualItems((prev) => prev.filter((m) => m.id !== id));
-  };
-
-  const handleStartEdit = (key, currentText) => {
-    setEditingKey(key);
-    setEditText(currentText);
-  };
-
-  const handleSaveEdit = (key) => {
-    const text = editText.trim();
-    if (!text) {
-      setEditingKey(null);
-      return;
-    }
-    if (key.startsWith("manual_")) {
-      setManualItems((prev) =>
-        prev.map((m) => (m.id === key ? { ...m, text } : m)),
-      );
-    } else {
-      setEditedItems((prev) => ({ ...prev, [key]: text }));
-    }
-    setEditingKey(null);
-  };
-
-  const combinedList = useMemo(() => {
-    const generated = shoppingList.map((item) => {
-      const key = item.name.toLowerCase();
-      return {
-        key,
-        text: editedItems[key] || item.displayText,
-        isManual: false,
-      };
-    });
-    const manual = manualItems.map((m) => ({
-      key: m.id,
-      text: m.text,
-      isManual: true,
-    }));
-    return [...generated, ...manual];
-  }, [shoppingList, manualItems, editedItems]);
 
   if (showList && selectedRecipes.length > 0) {
     return (
@@ -195,106 +174,24 @@ function ShoppingList() {
               {t("mealPlanner", "shoppingList")}
             </h1>
           )}
-          <span className={classes.subtitle}>
-            {selectedRecipes.length} {t("recipesView", "recipesCount")},{" "}
-            {combinedList.length} {t("mealPlanner", "items")}
-          </span>
           <div className={classes.listHeaderActions}>
-            <button className={classes.headerBtn} onClick={handlePrint}>
-              <FiPrinter /> {t("mealPlanner", "print")}
+            <button
+              className={classes.listHeaderIconBtn}
+              onClick={() => window.print()}
+              aria-label="print"
+            >
+              <FiPrinter size={18} />
             </button>
-            <button className={classes.headerBtnOutline} onClick={handleClear}>
-              <FiTrash2 /> {t("mealPlanner", "clearAll")}
+            <button className={classes.listHeaderTextBtn} onClick={handleClear}>
+              {t("mealPlanner", "clearAll")}
             </button>
           </div>
         </div>
-
-        <div className={classes.addItemRow}>
-          <input
-            type="text"
-            className={classes.addItemInput}
-            value={newItemText}
-            onChange={(e) => setNewItemText(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleAddManualItem();
-            }}
-            placeholder={t("mealPlanner", "addItemPlaceholder")}
-          />
-          <button
-            className={classes.addItemBtn}
-            onClick={handleAddManualItem}
-            disabled={!newItemText.trim()}
-          >
-            <Plus size={18} />
-          </button>
-        </div>
-
-        <div className={classes.listContainer}>
-          {combinedList.map((item) => {
-            const isChecked = checkedItems[item.key];
-            const isEditing = editingKey === item.key;
-            return (
-              <div
-                key={item.key}
-                className={`${classes.listItem} ${isChecked ? classes.listItemChecked : ""}`}
-              >
-                <input
-                  type="checkbox"
-                  checked={!!isChecked}
-                  onChange={() => toggleChecked(item.key)}
-                  className={classes.checkbox + " " + buttonClasses.checkBox}
-                />
-                {isEditing ? (
-                  <input
-                    type="text"
-                    className={classes.editInput}
-                    value={editText}
-                    onChange={(e) => setEditText(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") handleSaveEdit(item.key);
-                      if (e.key === "Escape") setEditingKey(null);
-                    }}
-                    onBlur={() => handleSaveEdit(item.key)}
-                    autoFocus
-                  />
-                ) : (
-                  <span
-                    className={classes.listItemText}
-                    onClick={() => handleStartEdit(item.key, item.text)}
-                  >
-                    {item.text}
-                  </span>
-                )}
-                <div className={classes.listItemActions}>
-                  {!isEditing && (
-                    <button
-                      className={classes.itemActionBtn}
-                      onClick={() => handleStartEdit(item.key, item.text)}
-                    >
-                      <FilePenLine size={14} />
-                    </button>
-                  )}
-                  {item.isManual && !isEditing && (
-                    <button
-                      className={classes.itemActionBtn}
-                      onClick={() => handleDeleteItem(item.key)}
-                    >
-                      <Trash2 size={14} />
-                    </button>
-                  )}
-                  {isEditing && (
-                    <button
-                      className={classes.itemActionBtn}
-                      onClick={() => handleSaveEdit(item.key)}
-                    >
-                      <Check size={14} />
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        <ShoppingListView
+          shoppingList={shoppingList}
+          checkedItems={checkedItems}
+          onToggleChecked={toggleChecked}
+        />
         <div className={classes.bottomSpacer} />
       </div>
     );

@@ -135,6 +135,7 @@ Variables
   --clr-success-bg-active: var(--clr-success-300);
 
   --clr-success-text: var(--clr-success-700);
+  --clr-danger-text-strong: var(--clr-success-800);
   --clr-success-border: var(--clr-success-300);
 
   --clr-success-dark-bg: var(--clr-success-700);
@@ -700,7 +701,7 @@ html {
   }
 }
 
-/* Override react-loading-skeleton: gentle color pulse, no gradient sweep */
+/* Override react-loading-skeleton: pulse flash animation */
 .react-loading-skeleton::after {
   display: none !important;
 }
@@ -711,7 +712,7 @@ html {
 
 .react-loading-skeleton {
   background-color: var(--skeleton-base) !important;
-  animation: skeletonPulse 2s ease-in-out infinite !important;
+  animation: skeletonPulse 1.6s ease-in-out infinite !important;
 }
 
 @keyframes skeletonPulse {
@@ -720,7 +721,7 @@ html {
     opacity: 1;
   }
   50% {
-    opacity: 0.5;
+    opacity: 0.3;
   }
 }
 

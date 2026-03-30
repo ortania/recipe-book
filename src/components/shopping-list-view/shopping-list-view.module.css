@@ -1,0 +1,253 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+/* ── Global empty ── */
+
+.emptyAll {
+  text-align: center;
+  color: var(--clr-text-muted);
+  padding: 2.5rem 1rem;
+  font-size: var(--basic-font);
+}
+
+/* ── Add item row (one pill, input + button inside) ── */
+
+.addRow {
+  display: flex;
+  align-items: center;
+  background: var(--clr-tertiary-200);
+  border-radius: 50px;
+  padding: 0.25rem 0.3rem;
+}
+
+.addInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0.55em 1em;
+  font-size: var(--basic-font);
+  font-family: inherit;
+  color: var(--clr-text-primary);
+  outline: none;
+  min-width: 0;
+}
+
+.addInput::placeholder {
+  color: var(--clr-text-muted);
+}
+
+.addBtn {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: none;
+  background: var(--clr-brown-700);
+  color: var(--clr-white);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.addBtn:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.addBtn:hover:not(:disabled) {
+  opacity: 0.85;
+}
+
+/* ── Section header ── */
+
+.sectionHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.5rem 0.1rem 0.15rem;
+  margin-top: 0.3rem;
+  width: 100%;
+}
+
+.sectionLabel {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+}
+
+.sectionEnd {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  color: var(--clr-text-muted);
+}
+
+.sectionBadge {
+  font-size: var(--small-font);
+  font-weight: var(--font-weight-primary);
+  color: var(--clr-text-muted);
+  background: var(--clr-tertiary-200);
+  border-radius: 50px;
+  padding: 0.25em 0.75em;
+  white-space: nowrap;
+}
+
+/* ── Item list ── */
+
+.itemList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+/* ── Single item (rounded pill card) ── */
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: var(--clr-bg-tertiary);
+  border-radius: var(--input-border-radius);
+  padding: 0.65rem 0.7rem 0.65rem 0.9rem;
+  color: var(--clr-text-primary);
+  font-size: var(--basic-font);
+  transition: var(--transition);
+}
+
+.item:hover {
+  background: var(--clr-bg-hover);
+}
+
+.menuLabel {
+  flex: 1;
+  font-weight: var(--font-weight-secondary);
+}
+
+.itemChecked {
+  opacity: var(--disabled-opacity);
+}
+
+.itemChecked .itemText {
+  text-decoration: line-through;
+  color: var(--clr-text-muted);
+}
+
+/* ── Delete button (on every item, inline-start = right in RTL) ── */
+
+.deleteBtn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  padding: 0.15em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+/* ── Item text ── */
+
+.itemText {
+  flex: 1;
+  color: var(--clr-text-primary);
+  cursor: pointer;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.editInput {
+  flex: 1;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-size: var(--basic-font);
+  font-family: inherit;
+  color: var(--clr-text-primary);
+  outline: none;
+  min-width: 0;
+}
+
+.saveBtn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: var(--clr-brown-700);
+  cursor: pointer;
+  padding: 0.2em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Circle checkbox (inline-end = left in RTL) ── */
+
+.circle {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--clr-brown-300);
+  background: transparent;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.circle:hover {
+  border-color: var(--clr-brown-700);
+}
+
+.circleActive {
+  background: var(--clr-brown-700);
+  border-color: var(--clr-brown-700);
+}
+
+.checkIcon {
+  color: var(--clr-white);
+}
+
+/* ── Empty section state ── */
+
+.emptySection {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.4rem 1rem;
+  background: var(--clr-tertiary-100);
+  border: 1px dashed var(--clr-tertiary-300);
+  border-radius: 16px;
+  color: var(--clr-text-muted);
+  font-size: var(--small-font);
+}
+
+/* ── Uncheck all ── */
+
+.uncheckBtn {
+  margin-top: 0.5rem;
+  padding: 0.45em 1em;
+  border: 1px solid var(--clr-border-light);
+  border-radius: 50px;
+  background: none;
+  color: var(--clr-text-muted);
+  font-size: var(--small-font);
+  cursor: pointer;
+  align-self: center;
+}
+
+.uncheckBtn:hover {
+  background: var(--clr-bg-hover);
+}

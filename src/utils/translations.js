@@ -4533,6 +4533,27 @@ const translations = {
       de: "Drucken",
       mixed: "Print",
     },
+    mustBuy: {
+      he: "צריך לקנות",
+      en: "Must Buy",
+      ru: "Нужно купить",
+      de: "Muss kaufen",
+      mixed: "Must Buy",
+    },
+    maybeAtHome: {
+      he: "אולי יש בבית",
+      en: "Maybe At Home",
+      ru: "Возможно есть дома",
+      de: "Vielleicht zuhause",
+      mixed: "Maybe At Home",
+    },
+    noItemsInSection: {
+      he: "אין פריטים בקטגוריה זו",
+      en: "No items in this category",
+      ru: "Нет товаров в этой категории",
+      de: "Keine Artikel in dieser Kategorie",
+      mixed: "No items in this category",
+    },
   },
   // ===================== PRODUCT TOUR =====================
   productTour: {

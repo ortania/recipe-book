@@ -36,19 +36,6 @@
   text-align: start;
 }
 
-.subtitle {
-  font-size: var(--basic-font);
-  color: var(--clr-text-muted);
-  display: block;
-  margin-top: 0.15rem;
-}
-
-.headerActions {
-  display: flex;
-  gap: 0.6rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
 
 .headerBtn {
   display: flex;
@@ -68,23 +55,6 @@
   opacity: 0.85;
 }
 
-.headerBtnOutline {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5em 1.2em;
-  border: 1px solid var(--clr-border-light);
-  border-radius: 6px;
-  background: var(--clr-bg-card);
-  color: var(--clr-text-secondary);
-  font-size: var(--basic-font);
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.headerBtnOutline:hover {
-  background: var(--clr-bg-hover);
-}
 
 .instructions {
   font-size: var(--basic-font);
@@ -98,16 +68,41 @@
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  flex-wrap: wrap;
   padding: 0.6rem 0;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
 }
 
 .listHeaderActions {
   display: flex;
-  gap: 0.5rem;
   align-items: center;
+  gap: 0.6rem;
   margin-inline-start: auto;
+}
+
+.listHeaderIconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--clr-brown-800);
+  cursor: pointer;
+  padding: 0.2em;
+}
+
+.listHeaderTextBtn {
+  background: none;
+  border: none;
+  color: var(--clr-brown-800);
+  font-size: var(--small-font);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+
+.listHeaderTextBtn:hover,
+.listHeaderIconBtn:hover {
+  opacity: 0.7;
 }
 
 /* ===== Category List ===== */
@@ -250,17 +245,18 @@
   padding: 0.55rem 0.7rem;
   border: none;
 
-  background: none;
+  background: var(--clr-btn-outline-bg);
   width: 100%;
   text-align: start;
   cursor: pointer;
-  border-bottom: 1px solid var(--clr-border-light);
-  transition: background 0.15s;
+  border-bottom: 1px solid var(--clr-btn-outline-border);
+  transition: var(--transition-fast);
   font-size: var(--basic-font);
+  color: var(--clr-btn-outline-text);
 }
 
 .recipeItem:hover {
-  background: var(--clr-bg-hover);
+  background: var(--clr-btn-outline-bg-hover);
 }
 
 .recipeItem:last-child {
@@ -268,8 +264,8 @@
 }
 
 .recipeItemSelected {
-  background: var(--clr-bg-tertiary);
-  border-radius: 12px;
+  background: var(--clr-btn-outline-bg-active);
+  /* border-radius: 12px; */
 }
 
 .recipeItemImage {
@@ -277,7 +273,7 @@
   height: 40px;
   border-radius: 8px;
   object-fit: cover;
-  background: var(--clr-bg-tertiary);
+  background: var(--clr-btn-secondary-bg);
   flex-shrink: 0;
 }
 
@@ -303,156 +299,6 @@
   color: var(--clr-success-text);
   font-size: 2rem;
   flex-shrink: 0;
-}
-
-/* ===== Shopping List ===== */
-.progress {
-  text-align: center;
-  font-size: var(--small-font);
-  color: var(--clr-success-bg);
-  font-weight: var(--font-weight-heading);
-  margin-bottom: 0.5rem;
-}
-
-.listContainer {
-  background: var(--clr-bg-card);
-  border: 1px solid var(--clr-border-light);
-  border-radius: 12px;
-  overflow: hidden;
-}
-
-.listItem {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 0.65rem 1rem;
-  border-bottom: 1px solid var(--clr-border-light);
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.listItem:hover {
-  background: var(--clr-bg-hover);
-}
-
-.listItem:last-child {
-  border-bottom: none;
-}
-
-.listItemChecked {
-  background: var(--clr-bg-tertiary);
-}
-
-.listItemChecked .listItemText {
-  text-decoration: line-through;
-  color: var(--clr-text-muted);
-}
-
-.checkbox {
-  width: 18px;
-  height: 18px;
-  accent-color: var(--clr-success-500);
-  flex-shrink: 0;
-}
-
-.listItemText {
-  flex: 1;
-  font-size: var(--basic-font);
-  color: var(--clr-text-primary);
-}
-
-.listItemActions {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  flex-shrink: 0;
-  margin-inline-start: auto;
-}
-
-.itemActionBtn {
-  background: none;
-  border: none;
-  color: var(--clr-text-muted);
-  cursor: pointer;
-  padding: 0.3em;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 4px;
-  transition:
-    color 0.15s,
-    background 0.15s;
-}
-
-.itemActionBtn:hover {
-  color: var(--clr-text-primary);
-  background: var(--clr-bg-hover);
-}
-
-/* ===== Add Item Row ===== */
-.addItemRow {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
-.addItemInput {
-  flex: 1;
-  border: 1px solid var(--clr-border-light);
-  border-radius: 24px;
-  padding: 0.5rem 1rem;
-  font-size: var(--basic-font);
-  font-family: inherit;
-  background: var(--clr-bg-secondary);
-  color: var(--clr-text-primary);
-  outline: none;
-  transition: border-color 0.2s;
-}
-
-.addItemInput:focus {
-  border-color: var(--clr-success);
-}
-
-.addItemInput::placeholder {
-  color: var(--clr-text-muted);
-}
-
-.addItemBtn {
-  flex-shrink: 0;
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: none;
-  background: var(--clr-success-bg);
-  color: var(--clr-white);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: opacity 0.15s;
-}
-
-.addItemBtn:disabled {
-  opacity: var(--disabled-opacity);
-  cursor: not-allowed;
-}
-
-.addItemBtn:hover:not(:disabled) {
-  opacity: 0.85;
-}
-
-/* ===== Inline Edit ===== */
-.editInput {
-  flex: 1;
-  border: 1px solid var(--clr-success-border);
-  border-radius: 6px;
-  padding: 0.3rem 0.5rem;
-  font-size: var(--basic-font);
-  font-family: inherit;
-  background: var(--clr-bg-primary);
-  color: var(--clr-text-primary);
-  outline: none;
 }
 
 /* Empty state */
@@ -491,7 +337,9 @@
   border: none;
   border-radius: 50px;
   cursor: pointer;
-  transition: background 0.2s ease, transform 0.15s ease;
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
 }
 
 .emptyButton:hover {

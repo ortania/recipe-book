@@ -63,11 +63,21 @@ function SharerProfile() {
 
           // Build category list: keep only categories that have recipes
           const usedCatIds = new Set();
+          const hasUncategorized = sharerRecipes.some(
+            (r) => !r.categories || r.categories.length === 0,
+          );
           sharerRecipes.forEach((r) => {
             if (r.categories) r.categories.forEach((c) => usedCatIds.add(c));
           });
           const filtered = cats.filter((c) => usedCatIds.has(c.id));
-          setSharerCategories([{ id: "all", name: "all" }, ...filtered]);
+          const generalCat = hasUncategorized
+            ? [{ id: "general", name: "כללי" }]
+            : [];
+          setSharerCategories([
+            { id: "all", name: "all" },
+            ...filtered,
+            ...generalCat,
+          ]);
         } else {
           setSharerRecipes([]);
           setSharerCategories([]);

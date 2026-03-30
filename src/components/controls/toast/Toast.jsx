@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import toastClasses from "./Toast.module.css";
 
 /** Default time (ms) before `onClose` runs when `duration` is not passed. */
-export const DEFAULT_TOAST_DURATION_MS = 3000;
+export const DEFAULT_TOAST_DURATION_MS = 2500;
 
 /**
  * Centered toast in the viewport (portaled to `document.body`).

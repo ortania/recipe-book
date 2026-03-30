@@ -2,6 +2,21 @@
  * Shared utilities for ingredient parsing and shopping list aggregation.
  */
 
+import {
+  normalizeIngredientName,
+  normalizeUnit,
+  mergeQuantities,
+  unitsCompatible,
+  classifyIngredient,
+  displayUnit,
+  formatQty,
+  PREP_STRIP_RE,
+  PREP_ONLY_LINE_RE,
+  PREP_WORDS,
+} from "./ingredientCalc";
+
+const _prepSet = new Set(PREP_WORDS.map((w) => w.toLowerCase()));
+
 // ---- Ingredient Group Helpers ----
 const GROUP_PREFIX = "::";
 
@@ -127,28 +142,18 @@ const junkPatterns =
   /related\s*articles|advertisement|sponsored|click\s*here|read\s*more|sign\s*up|subscribe|newsletter|copyright|©|http|www\.|ראה בקישור|לחצ[וי] כאן|see link|see recipe/i;
 
 const nonIngredientWords =
-  /^(יבשים|רטובים|לקישוט|להגשה|לציפוי|לבצק|למילוי|לעיטור|לבלילה|למלית|לסירופ|לקרם|לקוביות|לתערובת|לשכבה|אופציונלי|optional|for garnish|for serving|for decoration|מים|water)$/i;
+  /^(יבשים|רטובים|לקישוט|להגשה|לציפוי|לבצק|למילוי|לעיטור|לבלילה|למלית|לסירופ|לקרם|לקוביות|לתערובת|לשכבה|לשטרוייזל|לרוטב|לתבלינים|לטיגון|לאפייה|למרינדה|לגרנולה|לדבש|לזיגוג|לטופינג|אופציונלי|optional|for garnish|for serving|for decoration|for the|מים|water)$/i;
+
+// General catch: lines starting with "ל" + description + no digits = section headers
+const SECTION_LIKE_LINE = /^ל\S+\s+\S/;
+
 
 // Common Hebrew measurement words to skip when extracting the key word
 const measurementWords =
-  /^(כוס|כוסות|כף|כפות|כפית|כפיות|גרם|ק"ג|קילו|ליטר|מ"ל|מל|חבילה|חבילות|שקית|שקיות|יח'|יחידה|יחידות|קורט|קמצוץ|cup|cups|tbsp|tsp|tablespoon|teaspoon|gram|grams|kg|liter|ml|oz|ounce|ounces|pound|pounds|lb|lbs|piece|pieces|bunch|can|cans|clove|cloves|slice|slices|pinch|dash|handful)$/i;
+  /^(כוס|כוסות|כף|כפות|כפית|כפיות|גרם|ק"ג|קילו|ליטר|מ"ל|מל|חבילה|חבילות|שקית|שקיות|יח'|יחידה|יחידות|קורט|קמצוץ|גביע|גביעים|גדושה|גדושות|גדוש|שטוחה|שטוחות|שטוח|cup|cups|tbsp|tsp|tablespoon|teaspoon|gram|grams|kg|liter|ml|oz|ounce|ounces|pound|pounds|lb|lbs|piece|pieces|bunch|can|cans|clove|cloves|slice|slices|pinch|dash|handful|heaped|rounded|level|packed)$/i;
 
-// Quantity adverbs to skip when extracting the key ("קצת מלח" → key should be "מלח")
-const quantityAdverbs = /^(קצת|מעט|הרבה|שפע|כמה|little|some|few|lots)$/i;
-
-// Ingredients to exclude entirely from the shopping list (common pantry basics)
-const EXCLUDED_INGREDIENT_LINE =
-  /^(מים|מייים|water|מלח ופלפל|salt and pepper|קצת מלח ופלפל|מלח|פלפל שחור|פלפל)$/i;
-const EXCLUDED_FULL_TEXT = /\b(מים|מייים|water)\b/i;
-const EXCLUDED_KEYS = new Set([
-  "מלח",
-  "salt",
-  "פלפל",
-  "pepper",
-  "מים",
-  "מייים",
-  "water",
-]);
+// Quantity adverbs, fractions, and Hebrew number words to skip when extracting the key
+const quantityAdverbs = /^(קצת|מעט|הרבה|שפע|כמה|חצי|וחצי|רבע|שליש|רביע|אחד|אחת|שניים|שנים|שתיים|שתי|שלוש|שלושה|ארבע|ארבעה|חמש|חמישה|שש|שישה|שבע|שבעה|שמונה|תשע|תשעה|עשר|עשרה|ושליש|ורבע|little|some|few|lots|half|quarter|third)$/i;
 
 // Compound ingredient names — if the first meaningful word matches a key here,
 // consume the next word(s) to form the full name.
@@ -161,16 +166,14 @@ const COMPOUND_NAMES = {
   קמח: null, // keep next word: קמח תירס, קמח מלא
   שוקולד: null, // keep next word: שוקולד מריר, שוקולד חלב
   רוטב: null, // keep next word: רוטב סויה, רוטב עגבניות
-  baking: "baking powder",
+  סודה: null, // keep next word: סודה לשתייה
+  baking: null, // keep next word: baking powder, baking soda
   cream: null,
   olive: "olive oil",
   coconut: null,
   soy: null,
 };
 
-// Preparation adjectives to strip from shopping display
-const PREP_STRIP =
-  /\s+(מגורד|מגורדים|מגורדת|קלוף|קלופים|קלופה|חצוי|חצויים|חצויה|מומס|מומסת|מומסים|מופשר|מופשרת|מופשרים)(\s|,|$)/gi;
 
 /**
  * Build a normalized key for aggregation.
@@ -204,9 +207,14 @@ export function normalizeKey(s) {
       if (word in COMPOUND_NAMES) {
         const fixed = COMPOUND_NAMES[word];
         if (fixed) return fixed; // exact compound like "אבקת אפיה"
-        // null means keep next word dynamically
+        // null means keep next word dynamically (skip prep words)
         const next = words[i + 1];
-        if (next && next.length > 1 && !measurementWords.test(next)) {
+        if (
+          next &&
+          next.length > 1 &&
+          !measurementWords.test(next) &&
+          !_prepSet.has(next)
+        ) {
           return word + " " + next;
         }
       }
@@ -214,34 +222,76 @@ export function normalizeKey(s) {
     }
   }
 
-  // Fallback: return first word
-  return words[0] || stripped;
+  // No meaningful ingredient word found — return empty to filter out
+  return "";
 }
 
 /**
  * Extract numeric quantity from the beginning of an ingredient string.
  */
+const HE_NUMBERS = {
+  אחד: 1, אחת: 1,
+  שניים: 2, שנים: 2, שתיים: 2, שתי: 2,
+  שלוש: 3, שלושה: 3,
+  ארבע: 4, ארבעה: 4,
+  חמש: 5, חמישה: 5,
+  שש: 6, שישה: 6,
+  שבע: 7, שבעה: 7,
+  שמונה: 8,
+  תשע: 9, תשעה: 9,
+  עשר: 10, עשרה: 10,
+  חצי: 0.5,
+  שליש: 0.33,
+  רבע: 0.25,
+};
+
 export function extractQty(s) {
+  // Try numeric prefix first: "1", "1.5", "1/2", "½"
   const m = s.match(/^([\d½¼¾⅓⅔.,/]+)/);
-  if (!m) return 1;
-  const v = m[1].replace(",", ".");
-  const fracs = {
-    "½": 0.5,
-    "¼": 0.25,
-    "¾": 0.75,
-    "⅓": 0.33,
-    "⅔": 0.67,
-  };
-  if (fracs[v]) return fracs[v];
-  const num = parseFloat(v);
-  return isNaN(num) ? 1 : num;
+  if (m) {
+    const v = m[1].replace(",", ".");
+    const fracs = {
+      "½": 0.5, "¼": 0.25, "¾": 0.75, "⅓": 0.33, "⅔": 0.67,
+    };
+    if (fracs[v]) return fracs[v];
+    if (v.includes("/")) {
+      const [num, denom] = v.split("/").map(Number);
+      if (denom && !isNaN(num) && !isNaN(denom)) return num / denom;
+    }
+    const num = parseFloat(v);
+    if (!isNaN(num)) {
+      const rest = s.slice(m[0].length).trim();
+      if (/^וחצי(?=\s|$)/.test(rest)) return num + 0.5;
+      if (/^ורבע(?=\s|$)/.test(rest)) return num + 0.25;
+      if (/^ושליש(?=\s|$)/.test(rest)) return num + 0.33;
+      return num;
+    }
+  }
+  // Try Hebrew number/fraction word: "חצי", "אחד וחצי", "שלוש כפות"
+  const heWords = Object.keys(HE_NUMBERS).join("|");
+  const heMatch = s.match(new RegExp(`^(${heWords})(?:\\s|$)`));
+  if (heMatch) {
+    const base = HE_NUMBERS[heMatch[1]];
+    const rest = s.slice(heMatch[0].length).trim();
+    if (/^וחצי(?=\s|$)/.test(rest)) return base + 0.5;
+    if (/^ורבע(?=\s|$)/.test(rest)) return base + 0.25;
+    if (/^ושליש(?=\s|$)/.test(rest)) return base + 0.33;
+    return base;
+  }
+  return 1;
 }
 
 /**
  * Extract the measurement unit from an ingredient string (e.g. "גרם" from "153 גרם סוכר").
  */
+const HE_NUM_WORDS_RE = /^(אחד|אחת|שניים|שנים|שתיים|שתי|שלוש|שלושה|ארבע|ארבעה|חמש|חמישה|שש|שישה|שבע|שבעה|שמונה|תשע|תשעה|עשר|עשרה|חצי|רבע|שליש|וחצי|ורבע|ושליש)\s+/i;
+
 function extractUnit(s) {
-  const afterQty = s.replace(/^[\d\s½¼¾⅓⅔.,/\-]+/, "").trim();
+  let afterQty = s.replace(/^[\d\s½¼¾⅓⅔.,/\-]+/, "").trim();
+  // Skip Hebrew number/fraction words to reach the unit
+  while (HE_NUM_WORDS_RE.test(afterQty)) {
+    afterQty = afterQty.replace(HE_NUM_WORDS_RE, "").trim();
+  }
   const words = afterQty.split(/\s+/);
   if (words.length > 1 && measurementWords.test(words[0])) {
     return words[0];
@@ -254,7 +304,7 @@ function extractUnit(s) {
  */
 function cleanForShopping(s) {
   return s
-    .replace(PREP_STRIP, "$2")
+    .replace(PREP_STRIP_RE, " ")
     .replace(/\s{2,}/g, " ")
     .trim();
 }
@@ -387,11 +437,17 @@ export function highlightIngredientsInText(text, entries, scaleFn) {
 
 /**
  * Build an aggregated shopping list from an array of recipe IDs.
+ * Normalizes ingredient names and units, converts compatible units before merging,
+ * and classifies items as must-buy / pantry / excluded.
+ *
  * @param {string[]} selectedIds - recipe IDs to include
  * @param {object[]} recipes - all available recipes
- * @returns {Array<{name: string, unit: string, count: number, totalQty: number, display: string, displayText: string}>}
+ * @returns {Array<{name: string, normalizedName: string, unit: string, normalizedUnit: string,
+ *   count: number, totalQty: number, display: string, displayText: string,
+ *   shouldBuy: boolean, isPantry: boolean, excludeReason: string}>}
  */
 export function buildShoppingList(selectedIds, recipes) {
+  // Map keyed by "normalizedName|normalizedUnit-group" for safe merging
   const ingredientMap = {};
 
   selectedIds.forEach((id) => {
@@ -403,35 +459,60 @@ export function buildShoppingList(selectedIds, recipes) {
       if (!raw || raw.length < 2 || raw.length > 150) return;
       if (isGroupHeader(raw)) return;
       if (junkPatterns.test(raw)) return;
-      if (EXCLUDED_FULL_TEXT.test(raw)) return;
 
       const stripped = raw.replace(/^[\d\s½¼¾⅓⅔.,/\-]+/, "").trim();
-      if (EXCLUDED_INGREDIENT_LINE.test(stripped)) return;
+      if (nonIngredientWords.test(stripped)) return;
+      if (PREP_ONLY_LINE_RE.test(stripped)) return;
+      if (SECTION_LIKE_LINE.test(stripped) && !/\d/.test(stripped)) return;
 
-      const key = normalizeKey(raw) || raw.toLowerCase();
-      if (!key || nonIngredientWords.test(key)) return;
-      if (EXCLUDED_KEYS.has(key)) return;
+      const rawKey = normalizeKey(raw) || raw.toLowerCase();
+      if (!rawKey) return;
+      if (/^\d+$/.test(rawKey)) return;
+      if (!/[א-תa-zA-Z]/.test(rawKey)) return;
+      if (!/[א-ת]/.test(rawKey) && rawKey.length < 3) return;
 
+      const normalizedName = normalizeIngredientName(rawKey);
+      const rawUnit = extractUnit(raw);
+      const normUnit = normalizeUnit(rawUnit) || rawUnit;
       const qty = extractQty(raw);
-      const unit = extractUnit(raw);
       const cleaned = cleanForShopping(raw);
+      const classification = classifyIngredient(normalizedName, raw);
 
-      if (ingredientMap[key]) {
-        ingredientMap[key].count += 1;
-        ingredientMap[key].totalQty += qty;
-        if (!ingredientMap[key].unit && unit) {
-          ingredientMap[key].unit = unit;
+      // Build a merge key that keeps incompatible units separate
+      // e.g. "ביצה|piece" vs "ביצה|g" won't merge
+      const unitGroup = getUnitGroup(normUnit);
+      const mergeKey = `${normalizedName}|${unitGroup}`;
+
+      const existing = ingredientMap[mergeKey];
+      if (existing) {
+        const merged = mergeQuantities(
+          existing.totalQty,
+          existing.normalizedUnit,
+          qty,
+          normUnit,
+        );
+        if (merged) {
+          existing.totalQty = merged.qty;
+          existing.normalizedUnit = merged.unit;
+        } else {
+          existing.totalQty += qty;
         }
-        if (cleaned.length > ingredientMap[key].display.length) {
-          ingredientMap[key].display = cleaned;
+        existing.count += 1;
+        if (cleaned.length > existing.display.length) {
+          existing.display = cleaned;
         }
       } else {
-        ingredientMap[key] = {
-          name: key,
-          unit: unit,
+        ingredientMap[mergeKey] = {
+          name: rawKey,
+          normalizedName,
+          unit: rawUnit,
+          normalizedUnit: normUnit,
           count: 1,
           totalQty: qty,
           display: cleaned,
+          shouldBuy: classification.shouldBuy,
+          isPantry: classification.isPantry,
+          excludeReason: classification.excludeReason,
         };
       }
     });
@@ -439,18 +520,22 @@ export function buildShoppingList(selectedIds, recipes) {
 
   return Object.values(ingredientMap)
     .map((item) => {
-      if (item.count > 1) {
-        const qtyStr =
-          item.totalQty % 1 === 0
-            ? String(item.totalQty)
-            : item.totalQty.toFixed(1);
-        item.displayText = item.unit
-          ? `${qtyStr} ${item.unit} ${item.name}`
-          : `${qtyStr} ${item.name}`;
-      } else {
-        item.displayText = item.display;
-      }
+      const qtyStr = formatQty(item.totalQty);
+      const unitStr = displayUnit(item.normalizedUnit) || item.unit;
+      item.displayText = unitStr
+        ? `${qtyStr} ${unitStr} ${item.normalizedName}`
+        : `${qtyStr} ${item.normalizedName}`;
       return item;
     })
-    .sort((a, b) => a.name.localeCompare(b.name));
+    .sort((a, b) => {
+      if (a.isPantry !== b.isPantry) return a.isPantry ? 1 : -1;
+      return a.normalizedName.localeCompare(b.normalizedName);
+    });
+}
+
+function getUnitGroup(normUnit) {
+  if (!normUnit) return "count";
+  if (["g", "kg", "oz", "lb"].includes(normUnit)) return "weight";
+  if (["ml", "l", "tbsp", "tsp", "cup"].includes(normUnit)) return "volume";
+  return normUnit;
 }

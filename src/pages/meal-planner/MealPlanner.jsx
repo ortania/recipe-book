@@ -14,7 +14,7 @@ import { useMealPlanner } from "../../hooks/useMealPlanner";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { SearchBox } from "../../components/controls/search";
 import { CloseButton } from "../../components/controls/close-button";
-import buttonClasses from "../../styles/shared/buttons.module.css";
+import { ShoppingListView } from "../../components/shopping-list-view";
 import classes from "./meal-planner.module.css";
 
 const DAY_COLORS = [
@@ -107,11 +107,6 @@ function MealPlanner() {
     addRecipeToDay(day, meal, recipeId);
   };
 
-  const checkedCount = shoppingList.filter(
-    (item) => checkedItems[item.name.toLowerCase()],
-  ).length;
-
-  const handlePrint = () => window.print();
 
   return (
     <div className={classes.page}>
@@ -134,7 +129,7 @@ function MealPlanner() {
               <span className={classes.badge}>{shoppingList.length}</span>
             )}
           </button>
-          <button className={classes.headerBtn} onClick={handlePrint}>
+          <button className={classes.headerBtn} onClick={() => window.print()}>
             <FiPrinter /> {t("mealPlanner", "print")}
           </button>
           {totalPlanned > 0 && (
@@ -245,48 +240,12 @@ function MealPlanner() {
               <CloseButton onClick={() => setShowShopping(false)} />
             </div>
 
-            {shoppingList.length === 0 ? (
-              <div className={classes.shoppingEmpty}>
-                {t("mealPlanner", "emptyShoppingHint")}
-              </div>
-            ) : (
-              <>
-                <div className={classes.shoppingProgress}>
-                  {checkedCount}/{shoppingList.length}{" "}
-                  {t("mealPlanner", "purchased")}
-                </div>
-                <div className={classes.shoppingItems}>
-                  {shoppingList.map((item) => {
-                    const key = item.name.toLowerCase();
-                    const isChecked = !!checkedItems[key];
-                    return (
-                      <label key={key} className={classes.shoppingItem}>
-                        <input
-                          type="checkbox"
-                          className={
-                            classes.shoppingCheckbox +
-                            " " +
-                            buttonClasses.checkBox
-                          }
-                          checked={isChecked}
-                          onChange={() => toggleChecked(key)}
-                        />
-                        <span
-                          className={`${classes.shoppingName} ${isChecked ? classes.shoppingNameChecked : ""}`}
-                        >
-                          {item.displayText}
-                        </span>
-                      </label>
-                    );
-                  })}
-                </div>
-                {checkedCount > 0 && (
-                  <button className={classes.uncheckBtn} onClick={clearChecked}>
-                    {t("mealPlanner", "uncheckAll")}
-                  </button>
-                )}
-              </>
-            )}
+            <ShoppingListView
+              shoppingList={shoppingList}
+              checkedItems={checkedItems}
+              onToggleChecked={toggleChecked}
+              onClearChecked={clearChecked}
+            />
           </div>
         </div>
       )}

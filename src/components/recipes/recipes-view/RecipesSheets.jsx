@@ -10,13 +10,33 @@ import AddRecipeMenu from "./AddRecipeMenu";
 
 export default function RecipesSheets() {
   const {
-    onAddRecipe, showChat, showSearch, t,
-    isMobile, showCategoriesSheet, setShowCategoriesSheet,
-    showManagement, setShowManagement, readOnlyCategories,
-    categories, recipes, selectedCategories, toggleCategory, clearCategorySelection,
-    addCategory, editCategory, deleteCategory, reorderCategories, sortCategoriesAlphabetically,
-    getGroupContacts, sharerOptions, onSelectSharer,
-    showSharerSheet, setShowSharerSheet, selectedSharer, followingList,
+    onAddRecipe,
+    showChat,
+    showSearch,
+    t,
+    isMobile,
+    showCategoriesSheet,
+    setShowCategoriesSheet,
+    showManagement,
+    setShowManagement,
+    readOnlyCategories,
+    categories,
+    recipes,
+    selectedCategories,
+    toggleCategory,
+    clearCategorySelection,
+    addCategory,
+    editCategory,
+    deleteCategory,
+    reorderCategories,
+    sortCategoriesAlphabetically,
+    getGroupContacts,
+    sharerOptions,
+    onSelectSharer,
+    showSharerSheet,
+    setShowSharerSheet,
+    selectedSharer,
+    followingList,
     classes,
   } = useRecipesView();
 
@@ -28,64 +48,29 @@ export default function RecipesSheets() {
         </Fab>
       )}
 
-      {isMobile
-        ? showCategoriesSheet && (
-            <Modal
-              onClose={() => setShowCategoriesSheet(false)}
-              maxWidth="480px"
-            >
-              <CategoriesSheetContent
-                onClose={() => setShowCategoriesSheet(false)}
-                onManage={() => {
-                  setShowCategoriesSheet(false);
-                  setShowManagement(true);
-                }}
-                hideManage={readOnlyCategories}
-                categoriesOverride={readOnlyCategories ? categories : undefined}
-                recipesOverride={readOnlyCategories ? recipes : undefined}
-                selectedCategoriesOverride={
-                  readOnlyCategories ? selectedCategories : undefined
-                }
-                toggleCategoryOverride={
-                  readOnlyCategories ? toggleCategory : undefined
-                }
-                clearCategorySelectionOverride={
-                  readOnlyCategories ? clearCategorySelection : undefined
-                }
-              />
-            </Modal>
-          )
-        : showCategoriesSheet && (
-            <>
-              <div
-                className={classes.categoriesPopupOverlay}
-                onClick={() => setShowCategoriesSheet(false)}
-              />
-              <div className={classes.categoriesPopup}>
-                <CategoriesSheetContent
-                  onClose={() => setShowCategoriesSheet(false)}
-                  onManage={() => {
-                    setShowCategoriesSheet(false);
-                    setShowManagement(true);
-                  }}
-                  hideManage={readOnlyCategories}
-                  categoriesOverride={
-                    readOnlyCategories ? categories : undefined
-                  }
-                  recipesOverride={readOnlyCategories ? recipes : undefined}
-                  selectedCategoriesOverride={
-                    readOnlyCategories ? selectedCategories : undefined
-                  }
-                  toggleCategoryOverride={
-                    readOnlyCategories ? toggleCategory : undefined
-                  }
-                  clearCategorySelectionOverride={
-                    readOnlyCategories ? clearCategorySelection : undefined
-                  }
-                />
-              </div>
-            </>
-          )}
+      {showCategoriesSheet && (
+        <Modal onClose={() => setShowCategoriesSheet(false)} maxWidth="480px">
+          <CategoriesSheetContent
+            onClose={() => setShowCategoriesSheet(false)}
+            onManage={() => {
+              setShowCategoriesSheet(false);
+              setShowManagement(true);
+            }}
+            hideManage={readOnlyCategories}
+            categoriesOverride={readOnlyCategories ? categories : undefined}
+            recipesOverride={readOnlyCategories ? recipes : undefined}
+            selectedCategoriesOverride={
+              readOnlyCategories ? selectedCategories : undefined
+            }
+            toggleCategoryOverride={
+              readOnlyCategories ? toggleCategory : undefined
+            }
+            clearCategorySelectionOverride={
+              readOnlyCategories ? clearCategorySelection : undefined
+            }
+          />
+        </Modal>
+      )}
 
       {showManagement && !readOnlyCategories && (
         <CategoriesManagement

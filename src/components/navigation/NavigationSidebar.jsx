@@ -1,7 +1,17 @@
 import {
-  LogOut, Calculator, Settings, Home, HelpCircle, CalendarDays,
-  ShoppingCart, Globe, BookOpen, Menu, MessageSquareMore,
-  Tags, Music,
+  LogOut,
+  Calculator,
+  Settings,
+  Home,
+  HelpCircle,
+  CalendarDays,
+  ShoppingCart,
+  Globe,
+  BookOpen,
+  Menu,
+  MessageSquareMore,
+  Tags,
+  Music,
 } from "lucide-react";
 import { NavLink } from "react-router-dom";
 import { CloseButton } from "../controls/close-button";
@@ -29,20 +39,33 @@ const navTranslationMap = {
 
 export default function NavigationSidebar() {
   const {
-    isOpen, closeSidebar, navScrollableRef, filteredLinks,
-    isGlobalRecipesPage, isSharerProfilePage,
-    showRadio, toggleRadio,
-    setShowChatHistory, setShowCategoriesSheet,
-    setShowHelp, setShowTour,
-    currentUser, handleLogout,
-    classes, t,
+    isOpen,
+    closeSidebar,
+    navScrollableRef,
+    filteredLinks,
+    isGlobalRecipesPage,
+    isSharerProfilePage,
+    showRadio,
+    toggleRadio,
+    setShowChatHistory,
+    setShowCategoriesSheet,
+    setShowHelp,
+    setShowTour,
+    currentUser,
+    handleLogout,
+    classes,
+    t,
   } = useNavigation();
 
   return (
     <nav className={`${classes.nav} ${isOpen ? classes.open : ""}`}>
       <div ref={navScrollableRef} className={classes.navScrollable}>
         <div className={classes.mobileCloseRow}>
-          <CloseButton onClick={closeSidebar} type="plain" className={classes.sidebarCloseBtn} />
+          <CloseButton
+            onClick={closeSidebar}
+            type="plain"
+            className={classes.sidebarCloseBtn}
+          />
         </div>
         <div className={classes.desktopOnly}>
           <span className={classes.logo}>Cooki</span>
@@ -57,7 +80,9 @@ export default function NavigationSidebar() {
                 key={el.name}
                 to={el.link}
                 onClick={closeSidebar}
-                className={({ isActive }) => `${classes.navLink} ${isActive ? classes.active : ""}`}
+                className={({ isActive }) =>
+                  `${classes.navLink} ${isActive ? classes.active : ""}`
+                }
               >
                 {Icon && <Icon size={18} className={classes.icon} />}
                 {t("nav", navTranslationMap[el.name] || el.name.toLowerCase())}
@@ -90,7 +115,10 @@ export default function NavigationSidebar() {
 
         <button
           className={classes.navLink}
-          onClick={() => { setShowChatHistory(true); closeSidebar(); }}
+          onClick={() => {
+            setShowChatHistory(true);
+            closeSidebar();
+          }}
         >
           <MessageSquareMore size={18} className={classes.icon} />
           {t("nav", "chatLog")}
@@ -102,7 +130,10 @@ export default function NavigationSidebar() {
       <div className={classes.navBottom}>
         <button
           className={`${classes.navLink} ${showRadio ? classes.active : ""}`}
-          onClick={() => { toggleRadio(); closeSidebar(); }}
+          onClick={() => {
+            toggleRadio();
+            closeSidebar();
+          }}
         >
           <Music size={18} className={classes.icon} />
           {t("radio", "title")}
@@ -116,7 +147,10 @@ export default function NavigationSidebar() {
         </button>
         <button
           className={classes.navLink}
-          onClick={() => { closeSidebar(); setShowTour(true); }}
+          onClick={() => {
+            closeSidebar();
+            setShowTour(true);
+          }}
         >
           <HelpCircle size={18} className={classes.icon} />
           {t("home", "showTutorial")}
@@ -126,7 +160,9 @@ export default function NavigationSidebar() {
         <NavLink
           to="/settings"
           onClick={closeSidebar}
-          className={({ isActive }) => `${classes.navLink} ${isActive ? classes.active : ""}`}
+          className={({ isActive }) =>
+            `${classes.navLink} ${isActive ? classes.active : ""}`
+          }
         >
           <Settings size={18} className={classes.icon} />
           {t("nav", "settings")}
