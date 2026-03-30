@@ -36,7 +36,6 @@
   text-align: start;
 }
 
-
 .headerBtn {
   display: flex;
   align-items: center;
@@ -54,7 +53,6 @@
 .headerBtn:hover {
   opacity: 0.85;
 }
-
 
 .instructions {
   font-size: var(--basic-font);
@@ -85,7 +83,7 @@
   justify-content: center;
   background: none;
   border: none;
-  color: var(--clr-brown-800);
+  color: var(--clr-text-primary);
   cursor: pointer;
   padding: 0.2em;
 }
@@ -93,16 +91,20 @@
 .listHeaderTextBtn {
   background: none;
   border: none;
-  color: var(--clr-brown-800);
-  font-size: var(--small-font);
+  color: var(--clr-text-primary);
+  font-size: var(--basic-font);
   font-weight: 500;
   cursor: pointer;
   padding: 0;
+  padding: 0.3em 0.5em;
+  transition: var(--transition-fast);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
 }
 
 .listHeaderTextBtn:hover,
 .listHeaderIconBtn:hover {
-  opacity: 0.7;
+  color: var(--clr-text-primary-hover);
 }
 
 /* ===== Category List ===== */

@@ -2,6 +2,7 @@ import { useState, useMemo } from "react";
 import {
   Plus,
   Trash2,
+  RotateCcw,
   Check,
   ShoppingCart,
   ChevronDown,
@@ -24,7 +25,7 @@ export default function ShoppingListView({
   const [editedItems, setEditedItems] = useState({});
   const [mustBuyOpen, setMustBuyOpen] = useState(true);
   const [pantryOpen, setPantryOpen] = useState(true);
-  const [deletedKeys, setDeletedKeys] = useState(new Set());
+  const [disabledKeys, setDisabledKeys] = useState(new Set());
 
   const { mustBuyList, pantryList } = useMemo(() => {
     const buyable = (shoppingList || []).filter(
@@ -51,10 +52,10 @@ export default function ShoppingListView({
     ];
     const allPantry = buyable.filter((i) => i.isPantry).map(toItem);
     return {
-      mustBuyList: allMust.filter((i) => !deletedKeys.has(i.key)),
-      pantryList: allPantry.filter((i) => !deletedKeys.has(i.key)),
+      mustBuyList: allMust,
+      pantryList: allPantry,
     };
-  }, [shoppingList, manualItems, editedItems, deletedKeys]);
+  }, [shoppingList, manualItems, editedItems]);
 
   const totalCount = mustBuyList.length + pantryList.length;
   const checkedCount = [...mustBuyList, ...pantryList].filter(
@@ -68,12 +69,16 @@ export default function ShoppingListView({
     setNewItemText("");
   };
 
-  const handleDeleteItem = (key, isManual) => {
-    if (isManual) {
-      setManualItems((prev) => prev.filter((m) => m.id !== key));
-    } else {
-      setDeletedKeys((prev) => new Set(prev).add(key));
-    }
+  const handleDisableItem = (key) => {
+    setDisabledKeys((prev) => new Set(prev).add(key));
+  };
+
+  const handleRestoreItem = (key) => {
+    setDisabledKeys((prev) => {
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
   };
 
   const handleStartEdit = (key, currentText) => {
@@ -100,14 +105,16 @@ export default function ShoppingListView({
   const renderItem = (item) => {
     const isChecked = checkedItems[item.key];
     const isEditing = editingKey === item.key;
+    const isDisabled = disabledKeys.has(item.key);
     return (
       <div
         key={item.key}
-        className={`${classes.item} ${isChecked ? classes.itemChecked : ""}`}
+        className={`${classes.item} ${isChecked ? classes.itemChecked : ""} ${isDisabled ? classes.itemDisabled : ""}`}
       >
         <button
           className={`${classes.circle} ${isChecked ? classes.circleActive : ""}`}
-          onClick={() => onToggleChecked(item.key)}
+          onClick={() => !isDisabled && onToggleChecked(item.key)}
+          disabled={isDisabled}
           aria-label="toggle"
         >
           {isChecked && <Check size={14} className={classes.checkIcon} />}
@@ -129,7 +136,7 @@ export default function ShoppingListView({
         ) : (
           <span
             className={classes.itemText}
-            onClick={() => handleStartEdit(item.key, item.text)}
+            onClick={() => !isDisabled && handleStartEdit(item.key, item.text)}
           >
             {item.text}
           </span>
@@ -145,12 +152,21 @@ export default function ShoppingListView({
         )}
 
         {!isEditing && (
-          <button
-            className={classes.deleteBtn}
-            onClick={() => handleDeleteItem(item.key, item.isManual)}
-          >
-            <Trash2 size={14} />
-          </button>
+          isDisabled ? (
+            <button
+              className={classes.restoreBtn}
+              onClick={() => handleRestoreItem(item.key)}
+            >
+              <RotateCcw size={14} />
+            </button>
+          ) : (
+            <button
+              className={classes.deleteBtn}
+              onClick={() => handleDisableItem(item.key)}
+            >
+              <Trash2 size={14} />
+            </button>
+          )
         )}
       </div>
     );

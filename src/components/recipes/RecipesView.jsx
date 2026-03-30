@@ -617,7 +617,6 @@ function RecipesView({
         recipe.id === updatedRecipe.id ? updatedRecipe : recipe,
       ),
     );
-    setEditingRecipe(updatedRecipe);
     try {
       await onEditRecipe(updatedRecipe);
     } catch (error) {

@@ -29,6 +29,7 @@ import {
 import { ingredientsOnly } from "../../../utils/ingredientUtils";
 import { makeGroupHeader } from "../../../utils/ingredientUtils";
 import { EditRecipeContext } from "./EditRecipeContext";
+import { ConfirmDialog } from "../confirm-dialog";
 import BasicTab from "./tabs/BasicTab";
 import IngredientsTab from "./tabs/IngredientsTab";
 import InstructionsTab from "./tabs/InstructionsTab";
@@ -71,7 +72,7 @@ const TABS = [
   },
 ];
 
-function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
+function EditRecipe({ recipe, onSave, onCancel, onSaved, onDelete, groups = [] }) {
   const { t } = useLanguage();
   const { currentUser, addCategory, deleteCategory } = useRecipeBook();
   const createdCategoriesRef = useRef([]);
@@ -91,7 +92,13 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
   const [dragOverIndex, setDragOverIndex] = useState(null);
   const [savedMessage, setSavedMessage] = useState("");
   const [saving, setSaving] = useState(false);
-  const [imageToast, setImageToast] = useState({ open: false, message: null, variant: "success", duration: 4000 });
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [imageToast, setImageToast] = useState({
+    open: false,
+    message: null,
+    variant: "success",
+    duration: 4000,
+  });
   const [editImageDragOver, setEditImageDragOver] = useState(false);
 
   const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
@@ -302,28 +309,44 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
     handleImageUpload({ target: { files }, preventDefault: () => {} });
   };
 
-  const handlePasteImage = useCallback(async (file) => {
-    if (!file || uploadingImage || generatingAiImage) return;
-    setUploadingImage(true);
-    try {
-      const userId = currentUser?.uid;
-      if (!userId) throw new Error("Not logged in");
-      const url = await uploadRecipeImage(userId, `${recipe.id}_${Date.now()}_paste`, file);
-      setEditedRecipe((prev) => {
-        const allImages = [...(prev.images || []), url];
-        return { ...prev, images: allImages, image_src: allImages[0] || "" };
-      });
-    } catch (err) {
-      console.error("Paste image failed:", err);
-    } finally {
-      setUploadingImage(false);
-    }
-  }, [currentUser, recipe.id, uploadingImage, generatingAiImage]);
-
+  const handlePasteImage = useCallback(
+    async (file) => {
+      if (!file || uploadingImage || generatingAiImage) return;
+      setUploadingImage(true);
+      try {
+        const userId = currentUser?.uid;
+        if (!userId) throw new Error("Not logged in");
+        const url = await uploadRecipeImage(
+          userId,
+          `${recipe.id}_${Date.now()}_paste`,
+          file,
+        );
+        setEditedRecipe((prev) => {
+          const allImages = [...(prev.images || []), url];
+          return { ...prev, images: allImages, image_src: allImages[0] || "" };
+        });
+      } catch (err) {
+        console.error("Paste image failed:", err);
+      } finally {
+        setUploadingImage(false);
+      }
+    },
+    [currentUser, recipe.id, uploadingImage, generatingAiImage],
+  );
 
   const handleGenerateAiImage = async () => {
     if (!editedRecipe.name?.trim()) {
-      setImageToast({ open: true, message: <><AlertTriangle size={18} /> {t("addWizard", "generateAiImageNeedName")}</>, variant: "error", duration: 4000 });
+      setImageToast({
+        open: true,
+        message: (
+          <>
+            <AlertTriangle size={18} />{" "}
+            {t("addWizard", "generateAiImageNeedName")}
+          </>
+        ),
+        variant: "error",
+        duration: 4000,
+      });
       return;
     }
     if (uploadingImage || generatingAiImage) return;
@@ -332,7 +355,16 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
 
     const safetyTimer = setTimeout(() => {
       setGeneratingAiImage(false);
-      setImageToast({ open: true, message: <><AlertTriangle size={18} /> Timeout</>, variant: "error", duration: 5000 });
+      setImageToast({
+        open: true,
+        message: (
+          <>
+            <AlertTriangle size={18} /> Timeout
+          </>
+        ),
+        variant: "error",
+        duration: 5000,
+      });
     }, 120000);
 
     try {
@@ -355,10 +387,29 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
         const allImages = [...(prev.images || []), url];
         return { ...prev, images: allImages, image_src: allImages[0] || "" };
       });
-      setImageToast({ open: true, message: <><CircleCheck size={18} /> {t("addWizard", "generateAiImageDone")}</>, variant: "success", duration: 4000 });
+      setImageToast({
+        open: true,
+        message: (
+          <>
+            <CircleCheck size={18} /> {t("addWizard", "generateAiImageDone")}
+          </>
+        ),
+        variant: "success",
+        duration: 4000,
+      });
     } catch (err) {
       console.error("AI image generation failed:", err);
-      setImageToast({ open: true, message: <><AlertTriangle size={18} /> {err.message || t("addWizard", "generateAiImageError")}</>, variant: "error", duration: 5000 });
+      setImageToast({
+        open: true,
+        message: (
+          <>
+            <AlertTriangle size={18} />{" "}
+            {err.message || t("addWizard", "generateAiImageError")}
+          </>
+        ),
+        variant: "error",
+        duration: 5000,
+      });
     } finally {
       clearTimeout(safetyTimer);
       setGeneratingAiImage(false);
@@ -576,8 +627,7 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
       return;
     }
     createdCategoriesRef.current = [];
-    setSaving(false);
-    setSavedMessage("");
+    onCancel();
     onSaved?.();
   };
 
@@ -592,6 +642,16 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
     createdCategoriesRef.current = [];
     onCancel();
   }, [onCancel, deleteCategory]);
+
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setShowDeleteConfirm(false);
+    onCancel();
+    if (onDelete) await onDelete(recipe.id);
+  };
 
   const handleAddNewCategory = async () => {
     const name = newCategoryName.trim();
@@ -680,6 +740,7 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
     handleTouchStart,
     handleLongPressStart,
     handleAddNewCategory,
+    handleDeleteClick,
     classes,
     shared,
     catShared,
@@ -708,96 +769,107 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, groups = [] }) {
 
   return (
     <>
-    <Modal
-      onClose={handleCancel}
-      className={`${shared.noPadModal} ${classes.noPadModal}`}
-    >
+      <Modal
+        onClose={handleCancel}
+        className={`${shared.noPadModal} ${classes.noPadModal}`}
+      >
         <EditRecipeContext.Provider value={contextValue}>
-        <div className={classes.editContainer}>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              flex: 1,
-              minHeight: 0,
-            }}
-          >
-            <div className={classes.editHeader}>
-              <div className={classes.editHeaderInfo}>
-                <CloseButton
-                  className={classes.editCloseBtn}
-                  onClick={handleCancel}
-                />
-                <div className={classes.editTitleGroup}>
-                  <h2>{t("recipes", "editRecipe")}</h2>
-                  <p>{editedRecipe.name}</p>
+          <div className={classes.editContainer}>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                flex: 1,
+                minHeight: 0,
+              }}
+            >
+              <div className={classes.editHeader}>
+                <div className={classes.editHeaderInfo}>
+                  <CloseButton
+                    className={classes.editCloseBtn}
+                    onClick={handleCancel}
+                  />
+                  <div className={classes.editTitleGroup}>
+                    <h2>{t("recipes", "editRecipe")}</h2>
+                    <p>{editedRecipe.name}</p>
+                  </div>
+                </div>
+                <div className={classes.editHeaderActions}>
+                  {savedMessage && (
+                    <span className={classes.savedMessage}>{savedMessage}</span>
+                  )}
+                  <button
+                    type="button"
+                    className={classes.saveBtn}
+                    onClick={handleSubmit}
+                    disabled={saving}
+                  >
+                    <Save size={16} />{" "}
+                    {saving
+                      ? t("common", "loading")
+                      : t("recipes", "saveChanges")}
+                  </button>
                 </div>
               </div>
-              <div className={classes.editHeaderActions}>
-                {savedMessage && (
-                  <span className={classes.savedMessage}>{savedMessage}</span>
-                )}
-                <button
-                  type="button"
-                  className={classes.saveBtn}
-                  onClick={handleSubmit}
-                  disabled={saving}
-                >
-                  <Save size={16} />{" "}
-                  {saving ? t("common", "loading") : t("recipes", "saveChanges")}
-                </button>
-              </div>
-            </div>
 
-            <div className={classes.editBody}>
-              <div className={classes.sidebar}>
-                {TABS.map((tab) => {
-                  const Icon = tab.icon;
-                  return (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      className={`${classes.sidebarTab} ${activeTab === tab.id ? classes.sidebarTabActive : ""}`}
-                      onClick={() => setActiveTab(tab.id)}
-                    >
-                      <span className={classes.sidebarTabIcon}>
-                        <Icon />
-                      </span>
-                      {t(
-                        "addWizard",
-                        isMobile ? tab.shortLabelKey : tab.labelKey,
-                      )}
-                    </button>
-                  );
-                })}
-                <button
-                  type="button"
-                  className={`${classes.sidebarTab} ${classes.sidebarTabDelete} ${activeTab === "delete" ? classes.sidebarTabActive : ""}`}
-                  onClick={() => setActiveTab("delete")}
-                >
-                  <span className={classes.sidebarTabIcon}>
-                    <Trash2 />
-                  </span>
-                  {isMobile
-                    ? t("confirm", "deleteRecipeShort")
-                    : t("confirm", "deleteRecipe")}
-                </button>
-              </div>
+              <div className={classes.editBody}>
+                <div className={classes.sidebar}>
+                  {TABS.map((tab) => {
+                    const Icon = tab.icon;
+                    return (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        className={`${classes.sidebarTab} ${activeTab === tab.id ? classes.sidebarTabActive : ""}`}
+                        onClick={() => setActiveTab(tab.id)}
+                      >
+                        <span className={classes.sidebarTabIcon}>
+                          <Icon />
+                        </span>
+                        {t(
+                          "addWizard",
+                          isMobile ? tab.shortLabelKey : tab.labelKey,
+                        )}
+                      </button>
+                    );
+                  })}
+                  <button
+                    type="button"
+                    className={`${classes.sidebarTab} ${classes.sidebarTabDelete} ${activeTab === "delete" ? classes.sidebarTabActive : ""}`}
+                    onClick={() => setActiveTab("delete")}
+                  >
+                    <span className={classes.sidebarTabIcon}>
+                      <Trash2 />
+                    </span>
+                    {isMobile
+                      ? t("confirm", "deleteRecipeShort")
+                      : t("confirm", "deleteRecipe")}
+                  </button>
+                </div>
 
-              <div className={classes.contentArea}>{renderActiveTab()}</div>
+                <div className={classes.contentArea}>{renderActiveTab()}</div>
+              </div>
             </div>
           </div>
-        </div>
         </EditRecipeContext.Provider>
-    </Modal>
-    <Toast
-      open={imageToast.open}
-      onClose={() => setImageToast((prev) => ({ ...prev, open: false }))}
-      variant={imageToast.variant}
-      duration={imageToast.duration}
-    >
-      {imageToast.message}
-    </Toast>
+      </Modal>
+      <Toast
+        open={imageToast.open}
+        onClose={() => setImageToast((prev) => ({ ...prev, open: false }))}
+        variant={imageToast.variant}
+        duration={imageToast.duration}
+      >
+        {imageToast.message}
+      </Toast>
+      {showDeleteConfirm && (
+        <ConfirmDialog
+          title={t("confirm", "deleteRecipe")}
+          message={`${t("confirm", "deleteRecipeMsg")} "${recipe.name}"? ${t("confirm", "cannotUndo")}.`}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
+          confirmText={t("confirm", "yesDelete")}
+        />
+      )}
     </>
   );
 }

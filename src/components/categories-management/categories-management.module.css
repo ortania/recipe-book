@@ -163,7 +163,7 @@
   cursor: pointer;
   font-size: var(--basic-font);
   color: var(--clr-text-muted);
-  padding: 0.3rem;
+  padding: 0.3em;
   border-radius: 6px;
   transition: var(--transition-fast);
   display: flex;
@@ -177,19 +177,11 @@
   height: 1.2em;
 }
 
-.editBtn:hover {
+.editBtn:hover, .deleteBtn:hover {
   color: var(--clr-text-primary);
   background: var(--clr-bg-hover);
 }
 
-.deleteBtn {
-  color: var(--clr-danger-500);
-}
-
-.deleteBtn:hover {
-  color: var(--clr-danger-700);
-  background: rgba(231, 76, 60, 0.1);
-}
 
 /* Add new category button */
 .addNewBtn {

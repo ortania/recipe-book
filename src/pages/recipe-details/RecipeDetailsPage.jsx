@@ -33,7 +33,9 @@ function RecipeDetailsPage() {
   } = useRecipeBook();
 
   const handleCategoryClick = (catId) => {
-    try { sessionStorage.setItem("pendingCategorySelect", catId); } catch {}
+    try {
+      sessionStorage.setItem("pendingCategorySelect", catId);
+    } catch {}
     navigate("/categories");
   };
 
@@ -371,11 +373,16 @@ function RecipeDetailsPage() {
           onSave={handleSaveEdit}
           onCancel={() => setEditingRecipe(null)}
           onSaved={() => setSaveToastOpen(true)}
+          onDelete={isOwner ? handleDelete : undefined}
           groups={categories}
         />
       )}
 
-      <Toast open={saveToastOpen} onClose={handleSaveToastClose} variant="success">
+      <Toast
+        open={saveToastOpen}
+        onClose={handleSaveToastClose}
+        variant="success"
+      >
         <CircleCheck size={18} aria-hidden />
         <span>{t("recipes", "saved")}</span>
       </Toast>

@@ -2101,6 +2101,20 @@ const translations = {
       de: "Bestätigen",
       mixed: "Confirm",
     },
+    deleteComment: {
+      he: "מחיקת תגובה",
+      en: "Delete Comment",
+      ru: "Удалить комментарий",
+      de: "Kommentar löschen",
+      mixed: "Delete Comment",
+    },
+    deleteCommentMsg: {
+      he: "האם אתה בטוח שברצונך למחוק את התגובה? פעולה זו לא ניתנת לביטול.",
+      en: "Are you sure you want to delete this comment? This action cannot be undone.",
+      ru: "Вы уверены, что хотите удалить этот комментарий? Это действие нельзя отменить.",
+      de: "Möchten Sie diesen Kommentar wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden.",
+      mixed: "Are you sure you want to delete this comment? This action cannot be undone.",
+    },
     deleteCategory: {
       he: "מחיקת קטגוריה",
       en: "Delete Category",

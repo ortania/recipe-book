@@ -1099,7 +1099,6 @@ function AddRecipeWizard({
     try {
       await onAddRecipe(newRecipe);
       createdCategoriesRef.current = [];
-      setSaving(false);
       onSaved?.();
     } catch (err) {
       console.error("🍎 NUTRITION - Failed to save recipe:", err);

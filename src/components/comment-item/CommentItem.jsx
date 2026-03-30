@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Heart, Trash2 } from "lucide-react";
 import classes from "./comment-item.module.css";
+import { ConfirmDialog } from "../forms/confirm-dialog";
+import { useLanguage } from "../../context";
 
 function CommentItem({ comment, currentUserId, onLike, onUnlike, onDelete }) {
+  const { t } = useLanguage();
   const [animating, setAnimating] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const isOwner = currentUserId && comment.userId === currentUserId;
   const hasLiked = currentUserId && comment.likes?.includes(currentUserId);
   const likeCount = comment.likes?.length || 0;
@@ -68,13 +72,25 @@ function CommentItem({ comment, currentUserId, onLike, onUnlike, onDelete }) {
             <button
               type="button"
               className={classes.deleteBtn}
-              onClick={() => onDelete?.(comment.id)}
+              onClick={() => setShowDeleteConfirm(true)}
             >
               <Trash2 size={14} />
             </button>
           )}
         </div>
       </div>
+      {showDeleteConfirm && (
+        <ConfirmDialog
+          title={t("confirm", "deleteComment")}
+          message={t("confirm", "deleteCommentMsg")}
+          onConfirm={() => {
+            setShowDeleteConfirm(false);
+            onDelete?.(comment.id);
+          }}
+          onCancel={() => setShowDeleteConfirm(false)}
+          confirmText={t("confirm", "yesDelete")}
+        />
+      )}
     </div>
   );
 }

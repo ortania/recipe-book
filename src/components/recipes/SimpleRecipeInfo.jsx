@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { UtensilsCrossed } from "lucide-react";
+import { ConfirmDialog } from "../forms/confirm-dialog";
+import { useLanguage } from "../../context";
 import classes from "./simple-recipe-info.module.css";
 import { Button } from "../controls/button";
 
@@ -12,7 +14,9 @@ function SimpleRecipeInfo({
   onToggleFavorite,
 }) {
   const navigate = useNavigate();
+  const { t } = useLanguage();
   const [isFavorite, setIsFavorite] = useState(recipe.isFavorite || false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   // Update local state when recipe prop changes
   useEffect(() => {
@@ -27,10 +31,13 @@ function SimpleRecipeInfo({
     }
   };
 
-  const handleDelete = async () => {
-    if (window.confirm(`Are you sure you want to delete "${recipe.name}"?`)) {
-      await onDelete(recipe.id);
-    }
+  const handleDeleteClick = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    setShowDeleteConfirm(false);
+    await onDelete(recipe.id);
   };
 
   return (
@@ -47,8 +54,12 @@ function SimpleRecipeInfo({
           >
             {isFavorite ? "★" : "☆"}
           </Button>
-          {(recipe.image || recipe.image_src) ? (
-            <img src={recipe.image || recipe.image_src} alt="" className={classes.thumb} />
+          {recipe.image || recipe.image_src ? (
+            <img
+              src={recipe.image || recipe.image_src}
+              alt=""
+              className={classes.thumb}
+            />
           ) : (
             <span className={classes.thumbPlaceholder}>
               <UtensilsCrossed size={16} />
@@ -72,7 +83,7 @@ function SimpleRecipeInfo({
           </Button>
           <Button
             variant="danger"
-            onClick={handleDelete}
+            onClick={handleDeleteClick}
             className={classes.deleteButton}
             title="Delete recipe"
           >
@@ -80,6 +91,17 @@ function SimpleRecipeInfo({
           </Button>
         </div>
       </div>
+
+      {showDeleteConfirm && (
+        <ConfirmDialog
+          title={t("confirm", "deleteRecipe")}
+          message={`${t("confirm", "deleteRecipeMsg")} "${recipe.name}"? ${t("confirm", "cannotUndo")}.`}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setShowDeleteConfirm(false)}
+          confirmText={t("confirm", "yesDelete")}
+          cancelText={t("common", "cancel")}
+        />
+      )}
     </>
   );
 }

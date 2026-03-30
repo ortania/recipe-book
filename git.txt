@@ -43,6 +43,11 @@ LanbdaTest
 https://www.testmuai.com/test-on-iphone/?utm_source=chatgpt.com
 
 
+Claude code
+-----------
+
+npx @anthropic-ai/claude-code
+
 Capacitor
 -----------
 

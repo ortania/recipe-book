@@ -93,7 +93,7 @@
 .sectionBadge {
   font-size: var(--small-font);
   font-weight: var(--font-weight-primary);
-  color: var(--clr-text-muted);
+  color: var(--clr-text-primary);
   background: var(--clr-tertiary-200);
   border-radius: 50px;
   padding: 0.25em 0.75em;
@@ -140,11 +140,20 @@
   color: var(--clr-text-muted);
 }
 
+.itemDisabled {
+  opacity: var(--disabled-opacity);
+}
+
+.itemDisabled .itemText {
+  text-decoration: line-through;
+  color: var(--clr-text-muted);
+}
+
 /* ── Delete button (on every item, inline-start = right in RTL) ── */
 
 .deleteBtn {
   flex-shrink: 0;
-  background: none;
+  background: transparent;
   border: none;
   color: var(--clr-text-muted);
   cursor: pointer;
@@ -153,6 +162,47 @@
   align-items: center;
   justify-content: center;
   border-radius: 50%;
+  font-size: var(--basic-font);
+
+  padding: 0.3em;
+  border-radius: 6px;
+  transition: var(--transition-fast);
+}
+
+.deleteBtn svg {
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.deleteBtn:hover {
+  color: var(--clr-text-primary);
+  background: var(--clr-bg-hover);
+}
+
+/* ── Restore button (replaces delete when item is disabled) ── */
+
+.restoreBtn {
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  padding: 0.3em;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition-fast);
+}
+
+.restoreBtn svg {
+  width: 1.2em;
+  height: 1.2em;
+}
+
+.restoreBtn:hover {
+  color: var(--clr-brown-700);
+  background: var(--clr-bg-hover);
 }
 
 /* ── Item text ── */

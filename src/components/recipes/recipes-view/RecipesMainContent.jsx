@@ -1,3 +1,4 @@
+import { useState } from "react";
 import {
   History,
   UtensilsCrossed,
@@ -11,6 +12,7 @@ import Skeleton from "react-loading-skeleton";
 import { useRecipesView } from "../RecipesViewContext";
 import { RecipeInfo } from "../RecipeInfo";
 import { EditRecipe } from "../../forms/edit-recipe";
+import { ConfirmDialog } from "../../forms/confirm-dialog";
 
 export default function RecipesMainContent() {
   const {
@@ -55,6 +57,19 @@ export default function RecipesMainContent() {
     loadMoreRecipes,
     onSaved,
   } = useRecipesView();
+
+  const [recipeToDelete, setRecipeToDelete] = useState(null);
+
+  const handleCompactDeleteClick = (recipe) => {
+    setRecipeToDelete(recipe);
+  };
+
+  const handleConfirmDelete = () => {
+    if (recipeToDelete) {
+      onDeleteRecipe(recipeToDelete.id);
+      setRecipeToDelete(null);
+    }
+  };
 
   return (
     <div>
@@ -133,6 +148,7 @@ export default function RecipesMainContent() {
           onSave={handleSaveEdit}
           onCancel={() => setEditingRecipe(null)}
           onSaved={onSaved}
+          onDelete={onDeleteRecipe}
           groups={groups}
         />
       )}
@@ -272,7 +288,7 @@ export default function RecipesMainContent() {
                                 className={`${classes.compactActionBtn} ${classes.compactDanger}`}
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  onDeleteRecipe(recipe.id);
+                                  handleCompactDeleteClick(recipe);
                                 }}
                                 title="Delete"
                               >
@@ -303,7 +319,9 @@ export default function RecipesMainContent() {
             })}
           {(() => {
             const validGroupIds = new Set(
-              groups.filter((g) => g.id !== "all" && g.id !== "general").map((g) => g.id),
+              groups
+                .filter((g) => g.id !== "all" && g.id !== "general")
+                .map((g) => g.id),
             );
             const uncategorizedRecipes = filteredAndSortedRecipes.filter(
               (recipe) =>
@@ -370,7 +388,7 @@ export default function RecipesMainContent() {
                               className={`${classes.compactActionBtn} ${classes.compactDanger}`}
                               onClick={(e) => {
                                 e.stopPropagation();
-                                onDeleteRecipe(recipe.id);
+                                handleCompactDeleteClick(recipe);
                               }}
                               title="Delete"
                             >
@@ -466,7 +484,7 @@ export default function RecipesMainContent() {
                     className={`${classes.compactActionBtn} ${classes.compactDanger}`}
                     onClick={(e) => {
                       e.stopPropagation();
-                      onDeleteRecipe(recipe.id);
+                      handleCompactDeleteClick(recipe);
                     }}
                     title="Delete"
                   >
@@ -547,6 +565,17 @@ export default function RecipesMainContent() {
             {t("recipesView", "loadMore")}
           </button>
         </div>
+      )}
+
+      {recipeToDelete && (
+        <ConfirmDialog
+          title={t("confirm", "deleteRecipe")}
+          message={`${t("confirm", "deleteRecipeMsg")} "${recipeToDelete.name}"? ${t("confirm", "cannotUndo")}.`}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setRecipeToDelete(null)}
+          confirmText={t("confirm", "yesDelete")}
+          cancelText={t("common", "cancel")}
+        />
       )}
     </div>
   );

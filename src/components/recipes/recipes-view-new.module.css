@@ -262,14 +262,14 @@
   opacity: 0.7;
 }
 
-.clearChips {
+.clearChips { 
   background: none;
   border: none;
   color: var(--clr-text-primary);
   font-size: var(--basic-font);
   cursor: pointer;
   padding: 0.3em 0.5em;
-  transition: color 0.15s ease;
+  transition: var(--transition-fast);
   text-decoration: underline;
   text-decoration-color: currentColor;
 }
@@ -1076,7 +1076,7 @@
   align-items: center;
 }
 
-.compactActionBtn {
+.compactActionBtn, .compacDanger {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1084,29 +1084,21 @@
   height: auto;
   padding: 0.3em;
   border: none;
-  background: none;
+  background: transparent;
   color: var(--clr-text-muted);
   cursor: pointer;
   font-size: var(--basic-font);
   border-radius: 6px;
   transition:
-    var(--transition);
+    var(--transition-fast);
   border-bottom: none;
 }
 
-.compactActionBtn:hover {
+.compactActionBtn:hover, .compactDanger:hover {
   color: var(--clr-text-primary);
   background: var(--clr-bg-hover);
 }
 
-.compactDanger {
-  color: var(--clr-danger-500);
-}
-
-.compactDanger:hover {
-  color: var(--clr-danger-700);
-  background: rgba(231, 76, 60, 0.1);
-}
 
 .compactActionBtn svg, .compactDanger svg {
   width: 1.2em;
