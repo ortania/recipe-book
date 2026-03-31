@@ -154,6 +154,30 @@ const cleanHtml = (text) => {
   return tmp.textContent.replace(/\s+/g, " ").trim();
 };
 
+const TIPS_HEADING_RE =
+  /^(טיפים|טיפים ותחליפים|הערות|הערות המתכון|tips|tips & substitutions|notes|chef['']s?\s*(?:tips?|notes?))/i;
+
+const extractTipsFromHtml = (html) => {
+  const doc = new DOMParser().parseFromString(html, "text/html");
+  const headings = [...doc.querySelectorAll("h1, h2, h3, h4, h5, h6, strong, b")];
+  for (const h of headings) {
+    const text = (h.textContent || "").trim().replace(/[:\-–—]+$/, "").trim();
+    if (!TIPS_HEADING_RE.test(text)) continue;
+    const parts = [];
+    let el = h.tagName.match(/^H\d$/i)
+      ? h.nextElementSibling
+      : h.closest("p, div, li")?.nextElementSibling;
+    while (el) {
+      if (el.tagName.match(/^H[1-6]$/i)) break;
+      const t = (el.textContent || "").trim();
+      if (t) parts.push(t);
+      el = el.nextElementSibling;
+    }
+    if (parts.length > 0) return parts.join("\n");
+  }
+  return "";
+};
+
 const GROUP_LINE_PATTERNS = [
   /^(for|for the|לציפוי|למילוי|לבצק|לקרם|לרוטב|לסירופ|להגשה|לקישוט|לבלילת?|לתערובת|לגלזורה|לעיטור|לגנאש|לציפוי|לשכבה|לתבנית|ל)\s/i,
   /:$/,
@@ -271,6 +295,7 @@ export const parseRecipeFromUrl = async (url) => {
       prepTime: "",
       cookTime: "",
       servings: "",
+      notes: "",
       image_src: serverOgImage,
     };
 
@@ -444,6 +469,19 @@ export const parseRecipeFromUrl = async (url) => {
             }
           }
 
+          if (recipeData.description && !recipe.notes) {
+            const desc = cleanHtml(recipeData.description);
+            const lowerDesc = desc.toLowerCase();
+            if (
+              lowerDesc.includes("טיפ") ||
+              lowerDesc.includes("הערה") ||
+              lowerDesc.includes("tip") ||
+              lowerDesc.includes("note")
+            ) {
+              recipe.notes = desc;
+            }
+          }
+
           const jsonLdIngs = recipe.ingredients
             ? recipe.ingredients.split("\n").filter(Boolean)
             : [];
@@ -496,6 +534,7 @@ export const parseRecipeFromUrl = async (url) => {
                 if (aiResult.prepTime) recipe.prepTime = aiResult.prepTime;
                 if (aiResult.cookTime) recipe.cookTime = aiResult.cookTime;
                 if (aiResult.servings) recipe.servings = aiResult.servings;
+                if (aiResult.notes) recipe.notes = aiResult.notes;
               }
             } catch (aiErr) {
               console.warn("[recipeParser] OpenAI fallback failed:", aiErr);
@@ -547,6 +586,13 @@ export const parseRecipeFromUrl = async (url) => {
     if (!hadJsonLdRecipe && articleHeadline) recipe.name = articleHeadline;
     if (articleImage && !recipe.image_src) recipe.image_src = articleImage;
 
+    if (!recipe.notes && html) {
+      try {
+        const tipsFromHtml = extractTipsFromHtml(html);
+        if (tipsFromHtml) recipe.notes = tipsFromHtml;
+      } catch { /* ignore */ }
+    }
+
     let cleanText = articleBody || serverCleanText || "";
     cleanText = ensureMultiSectionFromHtml(html, cleanText, url);
     console.log(
@@ -583,6 +629,7 @@ export const parseRecipeFromUrl = async (url) => {
             recipe.cookTime = aiResult.cookTime || "";
             recipe.servings = aiResult.servings || "";
           }
+          if (aiResult.notes && !recipe.notes) recipe.notes = aiResult.notes;
           return recipe;
         }
       } catch (aiError) {
@@ -597,6 +644,7 @@ export const parseRecipeFromUrl = async (url) => {
           recipe.ingredients = textResult.ingredients.join("\n");
         if (!hadJsonLdRecipe && textResult.instructions.length > 0)
           recipe.instructions = textResult.instructions.join("\n");
+        if (textResult.notes && !recipe.notes) recipe.notes = textResult.notes;
         if (recipe.name && recipe.ingredients) return recipe;
       } catch (textError) {
         console.error("[recipeParser] Local text parsing failed:", textError);
@@ -654,6 +702,11 @@ const parseSpeechText = (text, recipe) => {
     { keyword: "קטגוריה", type: "category" },
     { keyword: "שיוך", type: "category" },
     { keyword: "category", type: "category" },
+    { keyword: "טיפים ותחליפים", type: "notes" },
+    { keyword: "טיפים", type: "notes" },
+    { keyword: "הערות", type: "notes" },
+    { keyword: "tips", type: "notes" },
+    { keyword: "notes", type: "notes" },
   ];
 
   // Helper: check if character at position is a word boundary (space, punctuation, start/end)
@@ -842,6 +895,9 @@ const parseSpeechText = (text, recipe) => {
         } else {
           recipe.category += ", " + content;
         }
+        break;
+      case "notes":
+        recipe.notes = (recipe.notes ? recipe.notes + "\n" : "") + content;
         break;
     }
   }
@@ -1034,6 +1090,15 @@ const parseStructuredText = (text, recipe) => {
     "זמן בישול",
   ];
   const servingsKeywords = ["servings", "serves", "yield", "מנות"];
+  const notesKeywords = [
+    "טיפים",
+    "טיפים ותחליפים",
+    "הערות",
+    "הערות המתכון",
+    "tips",
+    "notes",
+    "chef's tips",
+  ];
   let ingredientsStart = -1;
   let ingredientsEnd = -1;
   let instructionsStart = -1;
@@ -1080,6 +1145,18 @@ const parseStructuredText = (text, recipe) => {
       const servingsMatch = lines[i].match(/(\d+)/);
       if (servingsMatch) {
         recipe.servings = servingsMatch[1];
+      }
+      continue;
+    }
+
+    if (isSectionHeader(lowerLine, notesKeywords)) {
+      currentSection = "notes";
+      continue;
+    }
+
+    if (currentSection === "notes") {
+      if (lines[i].length > 3) {
+        recipe.notes += (recipe.notes ? "\n" : "") + lines[i];
       }
       continue;
     }
@@ -1143,6 +1220,7 @@ export const parseRecipeFromText = (text) => {
     prepTime: "",
     cookTime: "",
     servings: "",
+    notes: "",
     image_src: "https://source.unsplash.com/400x300/?food,recipe",
   };
 

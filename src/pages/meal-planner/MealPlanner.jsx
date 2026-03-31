@@ -84,6 +84,7 @@ function MealPlanner() {
   const todayIdx = new Date().getDay();
   const [selectedDay, setSelectedDay] = useState(DAYS[todayIdx]);
   const [picker, setPicker] = useState(null);
+  const [pickerKey, setPickerKey] = useState(0);
   const [showShopping, setShowShopping] = useState(false);
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
   const [globalCount, setGlobalCount] = useState(null);
@@ -101,7 +102,7 @@ function MealPlanner() {
         const parsed = JSON.parse(saved);
         sessionStorage.removeItem(PICKER_STORAGE_KEY);
         if (parsed.day) setSelectedDay(parsed.day);
-        setPicker({
+        openPicker({
           day: parsed.day,
           meal: parsed.meal,
           _savedCat: parsed.selectedCat,
@@ -150,6 +151,11 @@ function MealPlanner() {
     } else {
       addRecipeToDay(day, meal, recipeId);
     }
+  };
+
+  const openPicker = (pickerState) => {
+    setPicker(pickerState);
+    setPickerKey((k) => k + 1);
   };
 
   const dayPrefix = t("mealPlanner", "dayPrefix");
@@ -269,7 +275,7 @@ function MealPlanner() {
 
               <button
                 className={`${shared.addDashedBtn} ${classes.addMealArea}`}
-                onClick={() => setPicker({ day: selectedDay, meal })}
+                onClick={() => openPicker({ day: selectedDay, meal })}
               >
                 + {t("mealPlanner", "addMealAction")}
               </button>
@@ -305,6 +311,7 @@ function MealPlanner() {
       {/* ===== Recipe Picker Modal ===== */}
       {picker && (
         <MealPickerWrapper
+          key={pickerKey}
           picker={picker}
           setPicker={setPicker}
           MEALS={MEALS}

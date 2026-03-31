@@ -249,7 +249,8 @@ You MUST respond with valid JSON in this exact format:
   "instructions": ["step 1", "step 2"],
   "prepTime": "15" or "",
   "cookTime": "30" or "",
-  "servings": "4" or ""
+  "servings": "4" or "",
+  "notes": ""
 }
 - Extract ALL ingredients with their exact quantities as separate array items. Do NOT skip any ingredient. Scan the ENTIRE text from start to end.
 - Always write quantities as digits, not words. For example: "3 ביצים" not "שלוש ביצים", "2 cups" not "two cups". Always put the number BEFORE the ingredient.
@@ -261,6 +262,7 @@ You MUST respond with valid JSON in this exact format:
 - prepTime: preparation/hands-on time in minutes only (no units). Return "" if not found.
 - cookTime: cooking, baking, or oven time in minutes only (no units). This includes any time labeled as אפייה, בישול, זמן תנור, זמן אפייה, baking time, cooking time, oven time. For ranges like "45-55 דקות", return the higher value (e.g. "55"). Return "" if not found.
 - CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
+- notes: extract any tips, notes, serving suggestions, substitutions, or extra info found in sections labeled "טיפים", "הערות", "טיפים ותחליפים", "tips", "notes", or similar. Also include oven temperature details or cooling instructions if mentioned outside the main steps. Combine all tips into a single string separated by newlines. Return "" if none found.
 - IMPORTANT: ONLY extract the actual recipe content. Completely IGNORE any of these: advertisements, recommendations, "you might also like", related articles, comments, social media links, navigation, author bio, newsletter signup, or any other non-recipe content.
 - If you cannot find a recipe in the text, return: {"error": "No recipe found"}`;
 
@@ -342,7 +344,8 @@ You MUST respond with valid JSON in this exact format:
   "cookTime": "30" or "",
   "servings": "4" or "",
   "difficulty": "Easy" or "Medium" or "Hard" or "VeryEasy" or "",
-  "category": "category name or empty string"
+  "category": "category name or empty string",
+  "notes": ""
 }
 - Extract ALL ingredients with their exact quantities as separate array items.
 - IMPORTANT: Always write quantities as digits, not words. For example: "3 ביצים" instead of "שלוש ביצים", "2 cups flour" instead of "two cups flour". Always put the number BEFORE the ingredient.
@@ -353,6 +356,7 @@ You MUST respond with valid JSON in this exact format:
 - prepTime: preparation/hands-on time in minutes only (no units). Return "" if not found.
 - cookTime: cooking, baking, or oven time in minutes only (no units). This includes any time labeled as אפייה, בישול, זמן תנור, זמן אפייה, baking time, cooking time, oven time. For ranges like "45-55 דקות", return the higher value (e.g. "55"). Return "" if not found.
 - CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
+- notes: if the user mentioned any tips, notes, serving suggestions, or substitutions (e.g. "טיפ", "הערה", "אפשר גם"), include them here. Return "" if none.
 - If difficulty is mentioned, map it to: VeryEasy, Easy, Medium, or Hard.
 - Even if difficulty is NOT explicitly mentioned, try to estimate it from the recipe complexity.${categoriesHint}
 - If you cannot find a recipe in the text, return: {"error": "No recipe found"}`,

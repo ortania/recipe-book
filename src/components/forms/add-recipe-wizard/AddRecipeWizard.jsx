@@ -223,6 +223,7 @@ function AddRecipeWizard({
         images: parsed.image_src ? [parsed.image_src] : prev.images,
         sourceUrl: recipeUrl,
         author: recipeAuthor.trim() || prev.author,
+        notes: parsed.notes || prev.notes,
       }));
       setImportProgress(100);
       clearInterval(progressRef.current);
@@ -450,6 +451,7 @@ function AddRecipeWizard({
           cats.length > 0
             ? [...new Set([...prev.categories, ...cats])]
             : prev.categories,
+        notes: parsed.notes || prev.notes,
       }));
       needsTranslationRef.current = true;
       setCameFromRecording(true);
@@ -524,6 +526,7 @@ function AddRecipeWizard({
           cats.length > 0
             ? [...new Set([...prev.categories, ...cats])]
             : prev.categories,
+        notes: parsed.notes || prev.notes,
       }));
       needsTranslationRef.current = true;
       setCameFromRecording(true);
@@ -574,6 +577,7 @@ function AddRecipeWizard({
         cookTime: parsed.cookTime || prev.cookTime,
         servings: parsed.servings || prev.servings,
         image_src: parsed.image_src || prev.image_src,
+        notes: parsed.notes || prev.notes,
       }));
       needsTranslationRef.current = true;
       setScreen("manual");
