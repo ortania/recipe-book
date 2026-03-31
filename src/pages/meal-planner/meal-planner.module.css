@@ -76,7 +76,6 @@
   opacity: 0.85;
 }
 
-
 .badge {
   background: var(--clr-danger-500);
   color: var(--clr-white);
@@ -86,7 +85,6 @@
   border-radius: 10px;
   margin-inline-start: 0.25rem;
 }
-
 
 /* ===== Day Selector Strip ===== */
 .dayStrip {
@@ -182,7 +180,6 @@
   margin-top: 0.1rem;
 }
 
-
 /* ===== Meals Container ===== */
 .mealsContainer {
   display: flex;
@@ -261,7 +258,6 @@
   width: 100%;
   border-radius: var(--btn-border-radius);
 }
-
 
 /* ===== Shopping List Modal ===== */
 .shoppingModal {
@@ -503,7 +499,9 @@
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: background 0.15s, border-color 0.15s;
+  transition:
+    background 0.15s,
+    border-color 0.15s;
   color: transparent;
 }
 

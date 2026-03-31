@@ -87,7 +87,7 @@ export default function RecordingScreen() {
             {t("addWizard", "recordedText")}:
           </label>
           <textarea
-            className={shared.formTextareaPaste}
+            className={shared.formTextarea}
             value={recordingText}
             onChange={(e) => setRecordingText(e.target.value)}
             rows={6}

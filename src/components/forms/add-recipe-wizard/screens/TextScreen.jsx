@@ -45,7 +45,7 @@ export default function TextScreen() {
         {t("addWizard", "recipeTextLabel")}
       </label>
       <textarea
-        className={shared.formTextareaPaste}
+        className={shared.formTextarea}
         placeholder={t("addWizard", "textPlaceholder")}
         value={recipeText}
         onChange={(e) => setRecipeText(e.target.value)}

@@ -120,7 +120,7 @@
 
 .instructionRemoveBtn:hover,
 .removeItemBtn:hover {
-  color: var(--clr-clear-text-danger-hover);
+  color: var(--clr-text-primary-hover);
 }
 
 .removeItemBtn {

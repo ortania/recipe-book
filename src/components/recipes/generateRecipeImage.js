@@ -262,6 +262,16 @@ export async function generateRecipeImage(recipe, t, language) {
   const HEADER_BANNER_H = 120;
   totalHeight += imageHeight > 0 ? imageHeight : HEADER_BANNER_H;
 
+  const AUTHOR_FONT = `500 20px ${FONT_FAMILY}`;
+  const authorText = recipe.author?.trim() || "";
+  const sourceHost = !authorText && recipe.sourceUrl
+    ? (() => { try { return new URL(recipe.sourceUrl).hostname.replace(/^www\./, ""); } catch { return ""; } })()
+    : "";
+  const hasAuthor = Boolean(authorText || sourceHost);
+  if (hasAuthor) {
+    totalHeight += 36;
+  }
+
   // Title
   totalHeight += 60; // top padding
   ctx.font = TITLE_FONT;
@@ -373,6 +383,18 @@ export async function generateRecipeImage(recipe, t, language) {
       ctx.stroke();
     }
     y = HEADER_BANNER_H;
+  }
+
+  // ─── Author credit (below image) ───
+  if (hasAuthor) {
+    y += 26;
+    const authorLabel = t ? t("recipeDetails", "recipeBy") : "Recipe by";
+    const displayAuthor = authorText || sourceHost;
+    ctx.font = AUTHOR_FONT;
+    ctx.fillStyle = THEME.textMuted;
+    ctx.textAlign = "center";
+    ctx.fillText(`${authorLabel}: ${displayAuthor}`, WIDTH / 2, y);
+    y += 10;
   }
 
   // ─── Title ───

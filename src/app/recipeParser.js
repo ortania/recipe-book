@@ -159,9 +159,14 @@ const TIPS_HEADING_RE =
 
 const extractTipsFromHtml = (html) => {
   const doc = new DOMParser().parseFromString(html, "text/html");
-  const headings = [...doc.querySelectorAll("h1, h2, h3, h4, h5, h6, strong, b")];
+  const headings = [
+    ...doc.querySelectorAll("h1, h2, h3, h4, h5, h6, strong, b"),
+  ];
   for (const h of headings) {
-    const text = (h.textContent || "").trim().replace(/[:\-–—]+$/, "").trim();
+    const text = (h.textContent || "")
+      .trim()
+      .replace(/[:\-–—]+$/, "")
+      .trim();
     if (!TIPS_HEADING_RE.test(text)) continue;
     const parts = [];
     let el = h.tagName.match(/^H\d$/i)
@@ -327,31 +332,43 @@ export const parseRecipeFromUrl = async (url) => {
       const domDoc = domParser.parseFromString(html, "text/html");
       const domIngredients = [
         ...domDoc.querySelectorAll('[itemprop="recipeIngredient"]'),
-      ].map((el) => el.textContent.trim()).filter(Boolean);
+      ]
+        .map((el) => el.textContent.trim())
+        .filter(Boolean);
       if (domIngredients.length > 0) {
-        const domName = (
-          domDoc.querySelector('[itemprop="name"]') ||
-          domDoc.querySelector("h1")
-        )?.textContent?.trim() || "";
+        const domName =
+          (
+            domDoc.querySelector('[itemprop="name"]') ||
+            domDoc.querySelector("h1")
+          )?.textContent?.trim() || "";
         const domInstructions = [
           ...domDoc.querySelectorAll(
             '[itemprop="recipeInstructions"] [itemprop="text"], ' +
-            '[itemprop="recipeInstructions"] li, ' +
-            '[itemprop="step"] [itemprop="text"]'
+              '[itemprop="recipeInstructions"] li, ' +
+              '[itemprop="step"] [itemprop="text"]',
           ),
-        ].map((el) => el.textContent.trim()).filter(Boolean);
+        ]
+          .map((el) => el.textContent.trim())
+          .filter(Boolean);
         serverMicrodata = {
           name: domName,
           ingredients: domIngredients,
           instructions: domInstructions,
         };
-        console.log("[recipeParser] Extracted client-side microdata:", domIngredients.length, "ingredients");
+        console.log(
+          "[recipeParser] Extracted client-side microdata:",
+          domIngredients.length,
+          "ingredients",
+        );
       }
 
       if (serverMicrodata) {
         recipe.name = serverMicrodata.name || "";
         recipe.ingredients = serverMicrodata.ingredients.join("\n");
-        if (serverMicrodata.instructions && serverMicrodata.instructions.length > 0) {
+        if (
+          serverMicrodata.instructions &&
+          serverMicrodata.instructions.length > 0
+        ) {
           recipe.instructions = serverMicrodata.instructions.join("\n");
         }
         if (recipe.name && recipe.ingredients) return recipe;
@@ -590,7 +607,9 @@ export const parseRecipeFromUrl = async (url) => {
       try {
         const tipsFromHtml = extractTipsFromHtml(html);
         if (tipsFromHtml) recipe.notes = tipsFromHtml;
-      } catch { /* ignore */ }
+      } catch {
+        /* ignore */
+      }
     }
 
     let cleanText = articleBody || serverCleanText || "";
@@ -1103,6 +1122,10 @@ const parseStructuredText = (text, recipe) => {
   let ingredientsEnd = -1;
   let instructionsStart = -1;
   let currentSection = "none";
+  let ingredientsViaGroup = false;
+
+  const instructionVerbRe =
+    /^(לשים|לערבב|לבשל|לאפות|להוסיף|להכניס|לחמם|לקרר|להקציף|להפריד|לחתוך|לטגן|למזוג|לערום|לקפל|למרוח|לגרד|לסנן|ליצור|להגיש|לפזר|למלא|לכסות|לרדד|ללוש|לגלגל|לצקת|להמתין|לנקות|לשטוף|לקלף|לרסק|לטחון|למעוך|מוסיפים|מערבבים|שמים|מחממים|אופים|מבשלים|מחכים|יוצקים|מורחים|מכניסים|שופכים|מקציפים|חותכים|מטגנים|מגישים|מפזרים|ממלאים|מכסים|בקערה|כדי)\b/;
 
   const isSectionHeader = (line, keywords) => {
     const clean = line.replace(/[:\s\-–—]/g, "");
@@ -1116,12 +1139,27 @@ const parseStructuredText = (text, recipe) => {
     if (isSectionHeader(lowerLine, ingredientsKeywords)) {
       ingredientsStart = i + 1;
       currentSection = "ingredients";
+      ingredientsViaGroup = false;
       continue;
     }
 
     if (isSectionHeader(lowerLine, instructionsKeywords)) {
       instructionsStart = i + 1;
       currentSection = "instructions";
+      ingredientsViaGroup = false;
+      for (const kw of instructionsKeywords) {
+        const kwIdx = lowerLine.indexOf(kw);
+        if (kwIdx !== -1) {
+          const afterKw = lines[i]
+            .substring(kwIdx + kw.length)
+            .replace(/^[:\s\-–—]+/, "")
+            .trim();
+          if (afterKw.length > 10) {
+            recipe.instructions.push(afterKw);
+          }
+          break;
+        }
+      }
       continue;
     }
 
@@ -1158,6 +1196,45 @@ const parseStructuredText = (text, recipe) => {
       if (lines[i].length > 3) {
         recipe.notes += (recipe.notes ? "\n" : "") + lines[i];
       }
+      continue;
+    }
+
+    if (currentSection !== "ingredients") {
+      const groupClean = lines[i].replace(/[:\-–—]+\s*$/, "").trim();
+      const isKnownGroup =
+        GROUP_LINE_PATTERNS[0].test(groupClean + " ") ||
+        GROUP_LINE_PATTERNS[2].test(groupClean);
+      const isHebrewLGroup =
+        /^ל[\u0590-\u05FF]/.test(groupClean) &&
+        lines[i].trim().endsWith(":") &&
+        groupClean.length < 15;
+      if (
+        groupClean.length > 1 &&
+        groupClean.length <= 20 &&
+        groupClean.split(/\s+/).length <= 3 &&
+        (isKnownGroup || isHebrewLGroup)
+      ) {
+        if (ingredientsStart < 0) ingredientsStart = i;
+        currentSection = "ingredients";
+        ingredientsViaGroup = true;
+        recipe.ingredients.push("::" + groupClean);
+        continue;
+      }
+    }
+
+    if (
+      currentSection === "ingredients" &&
+      ingredientsViaGroup &&
+      ingredientsStart > 0 &&
+      instructionVerbRe.test(lines[i]) &&
+      lines[i].length > 20
+    ) {
+      currentSection = "instructions";
+      ingredientsViaGroup = false;
+      if (instructionsStart < 0) instructionsStart = i;
+      recipe.instructions.push(
+        lines[i].replace(/^(?:\d+[\.\)]\s+|[-•\*]\s*)/, ""),
+      );
       continue;
     }
 

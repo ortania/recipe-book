@@ -377,11 +377,11 @@ function MealPickerWrapper({
   const [globalRecipes, setGlobalRecipes] = useState([]);
   const [loadingGlobal, setLoadingGlobal] = useState(false);
 
-  const originalIds = useMemo(
+  const alreadyInMeal = useMemo(
     () => new Set(plan[picker.day]?.[selectedMeal] || []),
     [plan, picker.day, selectedMeal],
   );
-  const [selectedIds, setSelectedIds] = useState(() => new Set(originalIds));
+  const [selectedIds, setSelectedIds] = useState(() => new Set());
 
   useEffect(() => {
     if (selectedCat !== "global" || globalRecipes.length > 0) return;
@@ -417,10 +417,7 @@ function MealPickerWrapper({
 
   const handleDone = () => {
     for (const id of selectedIds) {
-      if (!originalIds.has(id)) onSelect(picker.day, selectedMeal, id);
-    }
-    for (const id of originalIds) {
-      if (!selectedIds.has(id)) onSelect(picker.day, selectedMeal, id);
+      if (!alreadyInMeal.has(id)) onSelect(picker.day, selectedMeal, id);
     }
     setPicker(null);
   };
@@ -447,7 +444,7 @@ function MealPickerWrapper({
     navigate(`/recipe/${recipeId}`);
   };
 
-  const newCount = [...selectedIds].filter((id) => !originalIds.has(id)).length;
+  const newCount = [...selectedIds].filter((id) => !alreadyInMeal.has(id)).length;
 
   return (
     <div className={classes.pickerOverlay} onClick={() => setPicker(null)}>
@@ -598,7 +595,7 @@ function MealPickerWrapper({
             <button
               className={classes.pickerDoneBtn}
               onClick={handleDone}
-              disabled={newCount === 0 && selectedIds.size === originalIds.size}
+              disabled={selectedIds.size === 0}
             >
               {t("mealPlanner", "addSelectedRecipes")}
               {newCount > 0 && ` (${newCount})`}
