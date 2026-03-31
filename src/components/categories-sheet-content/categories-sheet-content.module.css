@@ -104,28 +104,6 @@
   font-weight: var(--font-weight-primary);
 }
 
-.clearBtn {
-  color: var(--clr-text-primary);
-  cursor: pointer;
-  font-size: var(--basic-font);
-  font-weight: var(--font-weight-normal);
-  padding: 0.5em 1em;
-  transition: 0.2s ease;
-  /* background: var(--clr-bg-primary); */
-  /* border-radius: var(--btn-border-radius);
-  border: 2px solid var(--clr-border-light); */
-  background: none;
-  border: none;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  text-decoration: underline;
-  text-decoration-color: currentColor;
-}
-
-.clearBtn:hover {
-  color: var(--clr-text-primary-hover);
-}
 
 .list {
   display: flex;

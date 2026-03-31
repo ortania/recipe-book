@@ -1,36 +1,42 @@
 import { useState, useMemo, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { useNavigate } from "react-router-dom";
-import { IoAdd } from "react-icons/io5";
-import { FiPrinter, FiShoppingCart, FiCheck } from "react-icons/fi";
+import { FiPrinter, FiShoppingCart } from "react-icons/fi";
+import {
+  Coffee,
+  Salad,
+  CookingPot,
+  Plus,
+  Check,
+  Clock,
+  ShoppingCart,
+  ChevronLeft,
+} from "lucide-react";
 import { getCategoryIcon } from "../../utils/categoryIcons";
 import {
-  MdOutlineFreeBreakfast,
-  MdOutlineLunchDining,
-  MdOutlineDinnerDining,
-} from "react-icons/md";
+  fetchGlobalRecipesCount,
+  searchCommunityRecipes,
+} from "../../firebase/globalRecipeService";
 import { useRecipeBook, useLanguage } from "../../context";
 import { useMealPlanner } from "../../hooks/useMealPlanner";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { SearchBox } from "../../components/controls/search";
 import { CloseButton } from "../../components/controls/close-button";
+import BackButton from "../../components/controls/back-button/BackButton";
 import { ShoppingListView } from "../../components/shopping-list-view";
+import { hasTime, formatTime } from "../../components/recipes/utils";
 import classes from "./meal-planner.module.css";
+import shared from "../../styles/shared/form-shared.module.css";
+import btnClasses from "../../styles/shared/buttons.module.css";
 
-const DAY_COLORS = [
-  "#6366f1",
-  "#f59e0b",
-  "#10b981",
-  "#3b82f6",
-  "#8b5cf6",
-  "#ef4444",
-  "#ec4899",
-];
+const PICKER_STORAGE_KEY = "mealPlannerPickerState";
+const HEBREW_DAY_LETTERS = ["א", "ב", "ג", "ד", "ה", "ו", "ש"];
 
-const MEAL_ICONS = {
-  breakfast: MdOutlineFreeBreakfast,
-  lunch: MdOutlineLunchDining,
-  dinner: MdOutlineDinnerDining,
+const MEAL_ICONS = { breakfast: Coffee, lunch: Salad, dinner: CookingPot };
+const MEAL_FULL_KEYS = {
+  breakfast: "mealBreakfast",
+  lunch: "mealLunch",
+  dinner: "mealDinner",
 };
 
 function getWeekDates() {
@@ -51,12 +57,8 @@ function getWeekRange(dates) {
   const start = dates[0];
   const end = dates[6];
   const fmt = (d) =>
-    d.toLocaleDateString(undefined, { month: "short", day: "numeric" });
+    d.toLocaleDateString("he-IL", { month: "short", day: "numeric" });
   return `${fmt(start)} - ${fmt(end)}, ${end.getFullYear()}`;
-}
-
-function formatDayDate(date) {
-  return date.toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
 function MealPlanner() {
@@ -69,6 +71,7 @@ function MealPlanner() {
     MEALS,
     addRecipeToDay,
     removeRecipeFromDay,
+    clearDay,
     clearAll,
     shoppingList,
     checkedItems,
@@ -78,9 +81,37 @@ function MealPlanner() {
     totalPlanned,
   } = useMealPlanner(recipes, currentUser?.uid);
 
+  const todayIdx = new Date().getDay();
+  const [selectedDay, setSelectedDay] = useState(DAYS[todayIdx]);
   const [picker, setPicker] = useState(null);
   const [showShopping, setShowShopping] = useState(false);
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
+  const [globalCount, setGlobalCount] = useState(null);
+
+  useEffect(() => {
+    fetchGlobalRecipesCount()
+      .then((count) => setGlobalCount(count))
+      .catch(() => setGlobalCount(0));
+  }, []);
+
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(PICKER_STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        sessionStorage.removeItem(PICKER_STORAGE_KEY);
+        if (parsed.day) setSelectedDay(parsed.day);
+        setPicker({
+          day: parsed.day,
+          meal: parsed.meal,
+          _savedCat: parsed.selectedCat,
+          _savedSearch: parsed.search,
+        });
+      }
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     const mql = window.matchMedia("(max-width: 768px)");
@@ -103,109 +134,173 @@ function MealPlanner() {
   const weekDates = useMemo(() => getWeekDates(), []);
   const weekRange = useMemo(() => getWeekRange(weekDates), [weekDates]);
 
+  const dayMealCount = useMemo(
+    () =>
+      MEALS.reduce(
+        (sum, meal) => sum + (plan[selectedDay]?.[meal]?.length || 0),
+        0,
+      ),
+    [plan, selectedDay, MEALS],
+  );
+
   const handlePickRecipe = (day, meal, recipeId) => {
-    addRecipeToDay(day, meal, recipeId);
+    const mealList = plan[day]?.[meal] || [];
+    if (mealList.includes(recipeId)) {
+      removeRecipeFromDay(day, meal, recipeId);
+    } else {
+      addRecipeToDay(day, meal, recipeId);
+    }
   };
 
+  const dayPrefix = t("mealPlanner", "dayPrefix");
+  const fullDayName = dayPrefix
+    ? `${dayPrefix} ${t("mealPlanner", selectedDay)}`
+    : t("mealPlanner", selectedDay);
 
   return (
     <div className={classes.page}>
       {mobileTabsEl && createPortal(mobileTitle, mobileTabsEl)}
-      {/* ===== Header ===== */}
-      <div className={classes.header}>
-        <div>
-          {!mobileTabsEl && (
-            <h1 className={classes.title}>{t("mealPlanner", "title")}</h1>
-          )}
-          <span className={classes.dateRange}>{weekRange}</span>
-        </div>
-        <div className={classes.headerActions}>
-          <button
-            className={classes.headerBtn}
-            onClick={() => setShowShopping(true)}
-          >
-            <FiShoppingCart /> {t("mealPlanner", "shoppingList")}
-            {shoppingList.length > 0 && (
-              <span className={classes.badge}>{shoppingList.length}</span>
+
+      {/* ===== Sticky Top: Header + Day Strip ===== */}
+      <div className={classes.stickyTop}>
+        <div className={classes.header}>
+          <div>
+            {!mobileTabsEl && (
+              <h1 className={classes.title}>{t("mealPlanner", "title")}</h1>
             )}
-          </button>
-          <button className={classes.headerBtn} onClick={() => window.print()}>
-            <FiPrinter /> {t("mealPlanner", "print")}
-          </button>
-          {totalPlanned > 0 && (
-            <button className={classes.headerBtnOutline} onClick={clearAll}>
-              {t("mealPlanner", "clearAll")}
+            <span className={classes.dateRange}>{weekRange}</span>
+          </div>
+          <div className={classes.headerActions}>
+            <button
+              className={classes.headerBtn}
+              onClick={() => setShowShopping(true)}
+            >
+              <FiShoppingCart /> {t("mealPlanner", "shoppingList")}
+              {shoppingList.length > 0 && (
+                <span className={classes.badge}>{shoppingList.length}</span>
+              )}
             </button>
-          )}
+            <button
+              className={btnClasses.iconBtn}
+              onClick={() => window.print()}
+              title={t("mealPlanner", "print")}
+            >
+              <FiPrinter size={20} />
+            </button>
+            {totalPlanned > 0 && (
+              <button className={btnClasses.clearBtn} onClick={clearAll}>
+                {t("mealPlanner", "clearAll")}
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div className={classes.dayStrip}>
+          {DAYS.map((day, idx) => {
+            const isSelected = selectedDay === day;
+            const hasMeals = MEALS.some(
+              (m) => (plan[day]?.[m]?.length || 0) > 0,
+            );
+            return (
+              <button
+                key={day}
+                className={`${classes.dayChip} ${isSelected ? classes.dayChipActive : ""}`}
+                onClick={() => setSelectedDay(day)}
+              >
+                <span className={classes.dayChipLetter}>
+                  {HEBREW_DAY_LETTERS[idx]}׳
+                </span>
+                {hasMeals && <span className={classes.dayChipDot} />}
+              </button>
+            );
+          })}
         </div>
       </div>
 
-      {/* ===== Days Grid ===== */}
-      <div className={classes.daysGrid}>
-        {DAYS.map((day, dayIdx) => {
-          const color = DAY_COLORS[dayIdx % DAY_COLORS.length];
-          const initial = t("mealPlanner", day).charAt(0);
-          const dateStr = formatDayDate(weekDates[dayIdx]);
+      {/* ===== Selected Day Info ===== */}
+      <div className={classes.selectedDayBar}>
+        <div className={classes.selectedDayInfo}>
+          <h2 className={classes.selectedDayName}>{fullDayName}</h2>
+          <span className={classes.selectedDayCount}>
+            {dayMealCount} {t("mealPlanner", "plannedMeals")}
+          </span>
+        </div>
+        {dayMealCount > 0 && (
+          <button
+            className={btnClasses.clearBtn}
+            onClick={() => clearDay(selectedDay)}
+          >
+            {t("mealPlanner", "clearDay")}
+          </button>
+        )}
+      </div>
 
+      {/* ===== Meal Cards ===== */}
+      <div className={classes.mealsContainer}>
+        {MEALS.map((meal) => {
+          const mealRecipes = getRecipesForDay(selectedDay, meal);
+          const MealIcon = MEAL_ICONS[meal];
           return (
-            <div key={day} className={classes.dayCard}>
-              <div className={classes.dayHeader}>
-                <span
-                  className={classes.dayCircle}
-                  style={{ background: color }}
-                >
-                  {initial}
+            <div key={meal} className={classes.mealCard}>
+              <div className={classes.mealCardHeader}>
+                <MealIcon size={22} className={classes.mealIcon} />
+                <span className={classes.mealCardTitle}>
+                  {t("mealPlanner", MEAL_FULL_KEYS[meal])}
                 </span>
-                <div className={classes.dayInfo}>
-                  <span className={classes.dayName}>
-                    {t("mealPlanner", day)}
-                  </span>
-                  <span className={classes.dayDate}>{dateStr}</span>
-                </div>
               </div>
 
-              <div className={classes.dayBody}>
-                {MEALS.map((meal) => {
-                  const mealRecipes = getRecipesForDay(day, meal);
-                  const MealIcon = MEAL_ICONS[meal];
-                  return (
-                    <div key={meal} className={classes.mealBlock}>
-                      <div className={classes.mealLabel}>
-                        {MealIcon && <MealIcon className={classes.mealIcon} />}
-                        <span>{t("mealPlanner", meal)}</span>
-                      </div>
-                      {mealRecipes.map((recipe) => (
-                        <div key={recipe.id} className={classes.mealRecipeItem}>
-                          <span
-                            className={classes.recipeName}
-                            onClick={() => navigate(`/recipe/${recipe.id}`)}
-                          >
-                            {recipe.name}
-                          </span>
-                          <CloseButton
-                            className={classes.removeBtn}
-                            onClick={() =>
-                              removeRecipeFromDay(day, meal, recipe.id)
-                            }
-                            size={16}
-                          />
-                        </div>
-                      ))}
-                    </div>
-                  );
-                })}
-              </div>
+              {mealRecipes.map((recipe) => (
+                <div key={recipe.id} className={classes.mealRecipeItem}>
+                  <span
+                    className={classes.recipeName}
+                    onClick={() => navigate(`/recipe/${recipe.id}`)}
+                  >
+                    {recipe.name}
+                  </span>
+                  <CloseButton
+                    className={classes.removeBtn}
+                    onClick={() =>
+                      removeRecipeFromDay(selectedDay, meal, recipe.id)
+                    }
+                    size={16}
+                  />
+                </div>
+              ))}
 
               <button
-                className={classes.addMealBtn}
-                onClick={() => setPicker({ day, meal: MEALS[0] })}
+                className={`${shared.addDashedBtn} ${classes.addMealArea}`}
+                onClick={() => setPicker({ day: selectedDay, meal })}
               >
-                + {t("mealPlanner", "addMeal")}
+                + {t("mealPlanner", "addMealAction")}
               </button>
             </div>
           );
         })}
       </div>
+
+      {/* ===== Shopping Banner ===== */}
+      {shoppingList.length > 0 && (
+        <button
+          className={classes.shoppingBanner}
+          onClick={() => setShowShopping(true)}
+        >
+          <span className={classes.bannerIcon}>
+            <ShoppingCart size={20} />
+          </span>
+          <span className={classes.bannerText}>
+            <span className={classes.bannerTitle}>
+              {t("mealPlanner", "shoppingListUpdated")}
+            </span>
+            <span className={classes.bannerSub}>
+              {t("mealPlanner", "newItemsAdded").replace(
+                "{count}",
+                shoppingList.length,
+              )}
+            </span>
+          </span>
+          <ChevronLeft size={20} className={classes.bannerChevron} />
+        </button>
+      )}
 
       {/* ===== Recipe Picker Modal ===== */}
       {picker && (
@@ -218,6 +313,8 @@ function MealPlanner() {
           plan={plan}
           onSelect={handlePickRecipe}
           t={t}
+          globalCount={globalCount}
+          currentUserId={currentUser?.uid}
         />
       )}
 
@@ -262,14 +359,35 @@ function MealPickerWrapper({
   plan,
   onSelect,
   t,
+  globalCount,
+  currentUserId,
 }) {
+  const navigate = useNavigate();
   const { getTranslated } = useTranslatedList(categories, "name");
   const [selectedMeal, setSelectedMeal] = useState(picker.meal);
-  const [selectedCat, setSelectedCat] = useState(null);
-  const [search, setSearch] = useState("");
+  const [selectedCat, setSelectedCat] = useState(picker._savedCat || null);
+  const [search, setSearch] = useState(picker._savedSearch || "");
+  const [globalRecipes, setGlobalRecipes] = useState([]);
+  const [loadingGlobal, setLoadingGlobal] = useState(false);
+
+  const originalIds = useMemo(
+    () => new Set(plan[picker.day]?.[selectedMeal] || []),
+    [plan, picker.day, selectedMeal],
+  );
+  const [selectedIds, setSelectedIds] = useState(() => new Set(originalIds));
+
+  useEffect(() => {
+    if (selectedCat !== "global" || globalRecipes.length > 0) return;
+    setLoadingGlobal(true);
+    searchCommunityRecipes({ excludeUserId: currentUserId, pageSize: 9999 })
+      .then((result) => setGlobalRecipes(result.recipes || []))
+      .catch(() => {})
+      .finally(() => setLoadingGlobal(false));
+  }, [selectedCat, currentUserId, globalRecipes.length]);
 
   const getRecipesForCat = (catId) => {
     if (catId === "all") return recipes;
+    if (catId === "global") return globalRecipes;
     if (catId === "general")
       return recipes.filter((r) => !r.categories || r.categories.length === 0);
     return recipes.filter((r) => r.categories && r.categories.includes(catId));
@@ -281,14 +399,48 @@ function MealPickerWrapper({
       )
     : [];
 
-  const handleSelect = (recipeId) => {
-    onSelect(picker.day, selectedMeal, recipeId);
+  const handleToggle = (recipeId) => {
+    setSelectedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(recipeId)) next.delete(recipeId);
+      else next.add(recipeId);
+      return next;
+    });
+  };
+
+  const handleDone = () => {
+    for (const id of selectedIds) {
+      if (!originalIds.has(id)) onSelect(picker.day, selectedMeal, id);
+    }
+    for (const id of originalIds) {
+      if (!selectedIds.has(id)) onSelect(picker.day, selectedMeal, id);
+    }
+    setPicker(null);
   };
 
   const handleBack = () => {
     setSelectedCat(null);
     setSearch("");
   };
+
+  const handleViewRecipe = (recipeId) => {
+    try {
+      sessionStorage.setItem(
+        PICKER_STORAGE_KEY,
+        JSON.stringify({
+          day: picker.day,
+          meal: selectedMeal,
+          selectedCat,
+          search,
+        }),
+      );
+    } catch {
+      /* ignore */
+    }
+    navigate(`/recipe/${recipeId}`);
+  };
+
+  const newCount = [...selectedIds].filter((id) => !originalIds.has(id)).length;
 
   return (
     <div className={classes.pickerOverlay} onClick={() => setPicker(null)}>
@@ -309,6 +461,21 @@ function MealPickerWrapper({
 
         {!selectedCat ? (
           <div className={classes.pickerList}>
+            <button
+              className={classes.catListItem}
+              onClick={() => setSelectedCat("global")}
+            >
+              <span className={classes.catListIcon}>
+                {(() => {
+                  const IC = getCategoryIcon("users");
+                  return <IC size={16} />;
+                })()}
+              </span>
+              <span className={classes.catListName}>מתכוני קהילה</span>
+              <span className={classes.catListCount}>
+                {globalCount != null ? globalCount : ""}
+              </span>
+            </button>
             <button
               className={classes.catListItem}
               onClick={() => setSelectedCat("all")}
@@ -351,47 +518,40 @@ function MealPickerWrapper({
         ) : (
           <>
             <div className={classes.pickerSubHeader}>
-              <button className={classes.backBtn} onClick={handleBack}>
-                ← {t("mealPlanner", "chooseRecipe")}
-              </button>
+              <BackButton onClick={handleBack} />
               <span className={classes.pickerSubCount}>
                 {filtered.length} {t("recipesView", "recipesCount")}
               </span>
-              <button
-                className={classes.doneBtn}
-                onClick={() => {
-                  setSelectedCat(null);
-                  setSearch("");
-                }}
-              >
-                {t("common", "done") || "✓"}
-              </button>
             </div>
             <div className={classes.pickerSearch}>
               <SearchBox
                 searchTerm={search}
                 onSearchChange={setSearch}
                 placeholder={t("mealPlanner", "searchRecipes")}
-                size="small"
                 autoFocus
                 className={classes.pickerSearchBox}
               />
             </div>
             <div className={classes.pickerList}>
-              {filtered.length === 0 ? (
+              {loadingGlobal ? (
+                <div className={classes.pickerEmpty}>
+                  {t("common", "loading") || "טוען..."}
+                </div>
+              ) : filtered.length === 0 ? (
                 <div className={classes.pickerEmpty}>
                   {t("mealPlanner", "noRecipesFound")}
                 </div>
               ) : (
                 filtered.map((recipe) => {
-                  const isAdded = (
-                    plan[picker.day]?.[selectedMeal] || []
-                  ).includes(recipe.id);
+                  const isSelected = selectedIds.has(recipe.id);
+                  const prepStr = hasTime(recipe.prepTime)
+                    ? `${formatTime(recipe.prepTime, t("recipes", "minutes"))} ${t("recipes", "prepTime")}`
+                    : null;
                   return (
-                    <button
+                    <div
                       key={recipe.id}
-                      className={`${classes.pickerItem} ${isAdded ? classes.pickerItemAdded : ""}`}
-                      onClick={() => handleSelect(recipe.id)}
+                      className={`${classes.pickerItem} ${isSelected ? classes.pickerItemAdded : ""}`}
+                      onClick={() => handleToggle(recipe.id)}
                     >
                       {recipe.image_src ? (
                         <img
@@ -403,18 +563,40 @@ function MealPickerWrapper({
                       ) : (
                         <span className={classes.pickerItemEmoji}>🍽️</span>
                       )}
-                      <span className={classes.pickerItemName}>
-                        {recipe.name}
+                      <div className={classes.pickerItemInfo}>
+                        <span className={classes.pickerItemName}>
+                          {recipe.name}
+                        </span>
+                        {prepStr && (
+                          <span className={classes.pickerItemPrep}>
+                            {prepStr}
+                          </span>
+                        )}
+                      </div>
+                      <span
+                        className={`${classes.pickerCheck} ${isSelected ? classes.pickerCheckActive : ""}`}
+                      >
+                        {isSelected && <Check size={16} />}
                       </span>
-                      {isAdded && (
-                        <FiCheck className={classes.pickerItemCheck} />
-                      )}
-                    </button>
+                    </div>
                   );
                 })
               )}
             </div>
           </>
+        )}
+
+        {selectedCat && (
+          <div className={classes.pickerFooter}>
+            <button
+              className={classes.pickerDoneBtn}
+              onClick={handleDone}
+              disabled={newCount === 0 && selectedIds.size === originalIds.size}
+            >
+              {t("mealPlanner", "addSelectedRecipes")}
+              {newCount > 0 && ` (${newCount})`}
+            </button>
+          </div>
         )}
       </div>
     </div>

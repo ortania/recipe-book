@@ -252,37 +252,30 @@
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  margin-bottom: 1.5rem;
-}
-
-.mealDaysGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.2rem;
-}
-
-.mealDayCard {
-  background: var(--clr-bg-card);
-  border: 1px solid var(--clr-border-light);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
-}
-
-.mealDayHeader {
-  display: flex;
-  align-items: center;
-  gap: 0.7rem;
-  padding: 1rem 1.1rem 0.6rem;
-}
-
-.mealBlock {
   background: var(--clr-bg-tertiary);
   border: 1px solid var(--clr-border-light);
-  border-radius: 6px;
-  padding: 0.6rem 0.8rem;
+  border-radius: 12px;
+  padding: 1.4rem 1.8rem;
+  margin-bottom: 0.75rem;
+}
+
+.mealDayStrip {
+  display: flex;
+  gap: 0.5rem;
+  padding: 0.25rem 0 0.5rem;
+}
+
+.mealCardsCol {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.mealCardSkel {
+  background: var(--clr-bg-card);
+  border: 1px solid var(--clr-border-light);
+  border-radius: 16px;
+  padding: 1.2rem;
 }
 
 /* ═══════════ Shopping List Skeleton ═══════════ */

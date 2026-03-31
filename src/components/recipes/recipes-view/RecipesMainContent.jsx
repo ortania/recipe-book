@@ -13,6 +13,7 @@ import { useRecipesView } from "../RecipesViewContext";
 import { RecipeInfo } from "../RecipeInfo";
 import { EditRecipe } from "../../forms/edit-recipe";
 import { ConfirmDialog } from "../../forms/confirm-dialog";
+import btnClasses from "../../../styles/shared/buttons.module.css";
 
 export default function RecipesMainContent() {
   const {
@@ -134,7 +135,7 @@ export default function RecipesMainContent() {
               </button>
             ))}
             <button
-              className={classes.clearChips}
+              className={btnClasses.clearBtn}
               onClick={clearCategorySelection}
             >
               {t("categories", "clearAllFilters")}

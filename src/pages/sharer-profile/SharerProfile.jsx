@@ -222,7 +222,7 @@ function SharerProfile() {
         isMobile &&
         mobileActionsEl &&
         createPortal(
-          <BackButton onClick={() => navigate(-1)} size={22} />,
+          <BackButton onClick={() => navigate(-1)} />,
           mobileActionsEl,
         )}
 
@@ -231,7 +231,6 @@ function SharerProfile() {
         {!isPublic && isMobile && (
           <BackButton
             onClick={() => navigate(-1)}
-            size={24}
             className={classes.inlineBackBtn}
           />
         )}
@@ -240,7 +239,6 @@ function SharerProfile() {
         {!isMobile && (
           <BackButton
             onClick={() => navigate(-1)}
-            size={26}
             className={classes.desktopBackBtn}
           />
         )}

@@ -52,15 +52,6 @@ const MigratePage = React.lazy(() => import("../pages/migrate"));
 const Repair = React.lazy(() => import("../pages/repair/Repair"));
 
 const SKELETON_WIDTHS = [70, 85, 60, 78, 65, 80, 72, 58, 82, 66, 75, 62];
-const DAY_COLORS = [
-  "#e74c3c",
-  "#f39c12",
-  "#2ecc71",
-  "#3498db",
-  "#9b59b6",
-  "#1abc9c",
-  "#e67e22",
-];
 
 function RecipeCardSkeleton() {
   return (
@@ -197,6 +188,7 @@ function SettingsSkeleton() {
 function MealPlannerSkeleton() {
   return (
     <div className={classes.mealSkeleton}>
+      {/* Header card */}
       <div className={classes.mealTopRow}>
         <div>
           <Skeleton
@@ -207,48 +199,52 @@ function MealPlannerSkeleton() {
           <Skeleton width={120} height="0.75rem" />
         </div>
         <div style={{ display: "flex", gap: "0.5rem" }}>
-          <Skeleton width={100} height="2.2rem" borderRadius={8} />
-          <Skeleton width={100} height="2.2rem" borderRadius={8} />
+          <Skeleton width={120} height="2.2rem" borderRadius={8} />
+          <Skeleton width={36} height="2.2rem" borderRadius={8} />
         </div>
       </div>
-      <div className={classes.mealDaysGrid}>
+
+      {/* Day strip */}
+      <div className={classes.mealDayStrip}>
         {Array.from({ length: 7 }).map((_, i) => (
-          <div key={i} className={classes.mealDayCard}>
-            <div className={classes.mealDayHeader}>
-              <div
-                style={{
-                  width: 34,
-                  height: 34,
-                  borderRadius: "50%",
-                  background: DAY_COLORS[i],
-                  opacity: 0.4,
-                  flexShrink: 0,
-                }}
-              />
-              <div style={{ flex: 1 }}>
-                <Skeleton width="60%" height="0.85rem" />
-                <Skeleton width="40%" height="0.6rem" />
-              </div>
-            </div>
+          <Skeleton
+            key={i}
+            height={62}
+            borderRadius={8}
+            style={{ flex: "1 0 0", minWidth: 72 }}
+          />
+        ))}
+      </div>
+
+      {/* Selected day bar */}
+      <div style={{ padding: "0.5rem 0 1rem" }}>
+        <Skeleton
+          width={140}
+          height="1.3rem"
+          style={{ marginBottom: "0.3rem" }}
+        />
+        <Skeleton width={90} height="0.7rem" />
+      </div>
+
+      {/* 3 meal cards */}
+      <div className={classes.mealCardsCol}>
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className={classes.mealCardSkel}>
             <div
               style={{
-                padding: "0 1.1rem 0.5rem",
                 display: "flex",
-                flexDirection: "column",
+                alignItems: "center",
                 gap: "0.5rem",
-                flex: 1,
+                marginBottom: "0.8rem",
               }}
             >
-              {[45, 60, 75].map((w, j) => (
-                <div key={j} className={classes.mealBlock}>
-                  <Skeleton width={`${w}%`} height="0.75rem" />
-                </div>
-              ))}
+              <Skeleton width={22} height={22} circle />
+              <Skeleton width={80} height="0.9rem" />
             </div>
             <Skeleton
-              height="2rem"
-              borderRadius="0 0 12px 12px"
-              style={{ opacity: 0.4 }}
+              height="2.4rem"
+              borderRadius={8}
+              style={{ opacity: 0.35 }}
             />
           </div>
         ))}

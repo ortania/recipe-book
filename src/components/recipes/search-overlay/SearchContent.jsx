@@ -1,4 +1,5 @@
 import { Search } from "lucide-react";
+import btnClasses from "../../../styles/shared/buttons.module.css";
 import { RecipeInfo } from "../RecipeInfo";
 import { useSearchOverlay } from "./SearchOverlayContext";
 
@@ -28,7 +29,7 @@ export default function SearchContent() {
               </button>
             ))}
             <button
-              className={parentClasses.clearChips}
+              className={btnClasses.clearBtn}
               onClick={clearCategorySelection}
             >
               {t("categories", "clearAllFilters")}

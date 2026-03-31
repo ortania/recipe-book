@@ -232,6 +232,37 @@
   background: var(--clr-btn-icon-bg-active);
 }
 
+/* ── Clear / ghost text button (underline) ────────────────── */
+.clearBtn {
+  background: none;
+  border: none;
+  color: var(--clr-text-primary);
+  font-size: var(--basic-font);
+  cursor: pointer;
+  padding: 0.3em 0.5em;
+  transition: var(--transition-fast);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
+}
+.clearBtn:hover {
+  color: var(--clr-text-primary-hover);
+}
+
+/* ── Icon button (ghost, no border) ───────────────────────── */
+.iconBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  color: var(--clr-text-primary);
+  cursor: pointer;
+  padding: 0.2em;
+}
+.iconBtn:hover {
+  color: var(--clr-text-primary-hover);
+}
+
 /* ── Close button ──────────────────────────────────────────── */
 .closeBtn {
   background: none;

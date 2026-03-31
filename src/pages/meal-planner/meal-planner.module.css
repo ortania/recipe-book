@@ -12,6 +12,15 @@
   font-size: var(--basic-font);
 }
 
+/* ===== Sticky Top ===== */
+.stickyTop {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--clr-bg-primary);
+  padding-bottom: 0.25rem;
+}
+
 /* ===== Header ===== */
 .header {
   display: flex;
@@ -21,7 +30,7 @@
   border: 1px solid var(--clr-border-light);
   border-radius: 12px;
   padding: 1.4rem 1.8rem;
-  margin-bottom: 1.4rem;
+  margin-bottom: 0.75rem;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
@@ -60,11 +69,13 @@
   font-size: var(--basic-font);
   cursor: pointer;
   transition: opacity 0.15s;
+  display: none;
 }
 
 .headerBtn:hover {
   opacity: 0.85;
 }
+
 
 .badge {
   background: var(--clr-danger-500);
@@ -76,130 +87,157 @@
   margin-inline-start: 0.25rem;
 }
 
-.headerBtnOutline {
-  padding: 0.5em 1.2em;
-  border: 1px solid var(--clr-btn-main-border);
-  border-radius: 6px;
+
+/* ===== Day Selector Strip ===== */
+.dayStrip {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.25rem 0 0.5rem;
+  scrollbar-width: none;
+}
+
+.dayStrip::-webkit-scrollbar {
+  display: none;
+}
+
+.dayChip {
+  flex: 1 0 0;
+  min-width: 72px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  padding: 0.6rem 0.3rem 0.5rem;
+  border: 1px solid var(--clr-border-light);
+  border-radius: var(--btn-border-radius);
   background: var(--clr-bg-card);
-  color: var(--clr-text-secondary);
-  font-size: var(--basic-font);
   cursor: pointer;
   transition: var(--transition-fast);
+  position: relative;
 }
 
-.headerBtnOutline:hover {
+.dayChip:hover {
   background: var(--clr-bg-hover);
-  border-color: var(--clr-border-light);
 }
 
-/* ===== Days Grid ===== */
-.daysGrid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.2rem;
+.dayChipActive {
+  border-color: var(--clr-secondary-500);
+  box-shadow: 0 0 0 2px var(--clr-secondary-500);
 }
 
-/* ===== Day Card ===== */
-.dayCard {
+/* .dayChipActive::after {
+  content: "";
+  position: absolute;
+  top: -1px;
+  left: 20%;
+  right: 20%;
+  height: 3px;
+  border-radius: 0 0 3px 3px;
+  background: var(--clr-secondary-500);
+} */
+
+.dayChipDate {
+  font-size: var(--very-small-font);
+  color: var(--clr-text-muted);
+  white-space: nowrap;
+}
+
+.dayChipLetter {
+  font-size: var(--large-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+}
+
+.dayChipDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--clr-secondary-500);
+}
+
+/* ===== Selected Day Bar ===== */
+.selectedDayBar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 0.5rem 0 1rem;
+}
+
+.selectedDayInfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.selectedDayName {
+  font-size: var(--very-large-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  margin: 0;
+}
+
+.selectedDayCount {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+  margin-top: 0.1rem;
+}
+
+
+/* ===== Meals Container ===== */
+.mealsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* ===== Meal Card ===== */
+.mealCard {
   background: var(--clr-bg-card);
   border: 1px solid var(--clr-border-light);
-  border-radius: 12px;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+  border-radius: 16px;
+  padding: 1.2rem;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
-.dayHeader {
+.mealCardHeader {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 1rem 1.1rem 0.6rem;
-}
-
-.dayCircle {
-  width: 34px;
-  height: 34px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--clr-white);
-  font-weight: var(--font-weight-heading);
-  font-size: var(--basic-font);
-  flex-shrink: 0;
-}
-
-.dayInfo {
-  display: flex;
-  flex-direction: column;
-}
-
-.dayName {
-  font-size: var(--basic-font);
-  font-weight: var(--font-weight-heading);
-  color: var(--clr-text-primary);
-  line-height: 1.2;
-}
-
-.dayDate {
-  font-size: var(--basic-font);
-  color: var(--clr-text-muted);
-}
-
-.dayBody {
-  padding: 0 1.1rem 0.5rem;
-  flex: 1;
-}
-
-/* ===== Meal Block ===== */
-.mealBlock {
-  background: var(--clr-bg-tertiary);
-  border: 1px solid var(--clr-border-light);
-  border-radius: 6px;
-  padding: 0.6rem 0.8rem;
-  margin-bottom: 0.5rem;
-}
-
-.mealBlock:last-child {
-  margin-bottom: 0;
-}
-
-.mealLabel {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: var(--basic-font);
-  font-weight: var(--font-weight-heading);
-  color: var(--clr-text-primary);
-  margin-bottom: 0.15rem;
+  justify-content: flex-start;
+  gap: 0.5rem;
+  margin-bottom: 0.8rem;
 }
 
 .mealIcon {
-  font-size: var(--basic-font);
-  color: var(--clr-text-secondary);
+  color: var(--clr-secondary-500);
+  flex-shrink: 0;
+}
+
+.mealCardTitle {
+  font-size: var(--large-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
 }
 
 .mealRecipeItem {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.35rem 0;
+  padding: 0.5rem 0.3rem;
   border-bottom: 1px solid var(--clr-border-light);
 }
 
-.mealRecipeItem:last-child {
+.mealRecipeItem:last-of-type {
   border-bottom: none;
 }
 
 .recipeName {
   font-size: var(--basic-font);
-  color: var(--clr-text-secondary);
+  color: var(--clr-text-primary);
   cursor: pointer;
 }
 
 .recipeName:hover {
-  color: var(--clr-secondary-500);
+  color: var(--clr-text-primary-hover);
   text-decoration: underline;
 }
 
@@ -214,32 +252,16 @@
   transition: color 0.15s;
 }
 
-.removeBtn:hover {
+/* .removeBtn:hover {
   color: var(--clr-danger-500);
-}
+} */
 
-/* ===== Add Meal Button ===== */
-.addMealBtn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.3rem;
+/* ===== Add Meal Area (dashed) ===== */
+.addMealArea {
   width: 100%;
-  padding: 0.55em;
-  border: none;
-  border-radius: 0 0 12px 12px;
-  background: var(--clr-text-primary);
-  color: var(--clr-bg-primary);
-  font-size: var(--basic-font);
-  font-weight: var(--font-weight-heading);
-  cursor: pointer;
-  transition: opacity 0.15s;
-  margin-top: auto;
+  border-radius: var(--btn-border-radius);
 }
 
-.addMealBtn:hover {
-  opacity: 0.85;
-}
 
 /* ===== Shopping List Modal ===== */
 .shoppingModal {
@@ -382,30 +404,25 @@
 }
 
 .doneBtn {
-  padding: 0.3em 0.8em;
+  padding: 0.5em 1em;
   border: none;
-  border-radius: 6px;
-  background: var(--clr-text-primary);
-  color: var(--clr-bg-primary);
+  border-radius: var(--btn-very-small-border-radius);
+  background: var(--clr-btn-main-bg);
+  color: var(--clr-btn-main-text);
   font-size: var(--small-font);
-  font-weight: var(--font-weight-heading);
+  /* font-weight: var(--font-weight-heading); */
   cursor: pointer;
+  transition: var(--transition);
 }
 
 .doneBtn:hover {
-  opacity: 0.85;
+  background: var(--clr-btn-main-bg-hover);
+  border-color: var(--clr-btn-main-border-hover);
 }
 
-.pickerItemAdded {
+/* .pickerItemAdded {
   background: var(--clr-bg-tertiary);
-}
-
-.pickerItemCheck {
-  color: var(--clr-success-500);
-  font-size: 1.1rem;
-  flex-shrink: 0;
-  margin-inline-start: auto;
-}
+} */
 
 .pickerSearch {
   padding: 0.7rem 1.3rem;
@@ -425,16 +442,12 @@
 .pickerItem {
   display: flex;
   align-items: center;
-  gap: 0.7rem;
-  padding: 0.55rem 0.7rem;
-  border: none;
-  background: none;
-  width: 100%;
-  text-align: start;
-  cursor: pointer;
-  border-radius: 8px;
-  transition: background 0.15s;
+  gap: 0.75rem;
+  padding: 0.6rem 0.7rem;
+  border-radius: var(--btn-border-radius);
+  transition: var(--transition-fast);
   font-size: var(--basic-font);
+  cursor: pointer;
 }
 
 .pickerItem:hover {
@@ -442,30 +455,96 @@
 }
 
 .pickerItemImage {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
   object-fit: cover;
   background: var(--clr-bg-tertiary);
   flex-shrink: 0;
 }
 
 .pickerItemEmoji {
-  width: 40px;
-  height: 40px;
-  border-radius: 8px;
+  width: 52px;
+  height: 52px;
+  border-radius: 10px;
   background: var(--clr-bg-tertiary);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: var(--basic-font);
+  font-size: 1.3rem;
   flex-shrink: 0;
+}
+
+.pickerItemInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
 }
 
 .pickerItemName {
   font-size: var(--basic-font);
   color: var(--clr-text-primary);
-  font-weight: 500;
+  font-weight: var(--font-weight-heading);
+}
+
+.pickerItemPrep {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+}
+
+.pickerCheck {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: 2px solid var(--clr-border-light);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, border-color 0.15s;
+  color: transparent;
+}
+
+.pickerCheckActive {
+  background: var(--clr-secondary-500);
+  border-color: var(--clr-secondary-500);
+  color: var(--clr-white);
+}
+
+/* ===== Picker Footer (sticky done) ===== */
+.pickerFooter {
+  position: sticky;
+  bottom: 0;
+  padding: 0.75rem 1rem;
+  background: var(--clr-bg-card);
+  border-top: 1px solid var(--clr-border-light);
+}
+
+.pickerDoneBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.7em 1em;
+  border: none;
+  border-radius: 10px;
+  background: var(--clr-secondary-500);
+  color: var(--clr-white);
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.pickerDoneBtn:hover {
+  opacity: 0.9;
+}
+
+.pickerDoneBtn:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .pickerEmpty {
@@ -473,6 +552,73 @@
   padding: 2rem;
   color: var(--clr-text-muted);
   font-size: var(--basic-font);
+}
+
+/* ===== Shopping Banner ===== */
+.shoppingBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.8rem 1.2rem;
+  margin-top: 1.2rem;
+  border: none;
+  border-radius: 16px;
+  background: var(--clr-neutral-100);
+  color: var(--clr-text-primary);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: start;
+}
+
+.shoppingBanner svg {
+  cursor: pointer;
+}
+
+/* .shoppingBanner:hover {
+  background: var(--clr-neutral-200);
+} */
+
+.bannerIcon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--clr-neutral-500);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: var(--clr-white);
+}
+
+.bannerText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.bannerTitle {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+}
+
+.bannerSub {
+  font-size: var(--small-font);
+  opacity: 0.9;
+}
+
+.bannerChevron {
+  flex-shrink: 0;
+  opacity: 0.8;
+  transition: var(--transition);
+}
+
+.bannerChevron:hover {
+  flex-shrink: 0;
+  opacity: 1;
+  transform: scale(var(--scale));
 }
 
 .bottomSpacer {
@@ -500,12 +646,17 @@
     font-size: var(--large-font);
   }
 
-  .daysGrid {
-    grid-template-columns: 1fr;
-  }
-
   .headerActions {
     width: 100%;
     justify-content: center;
+  }
+
+  .dayChip {
+    min-width: 62px;
+    padding: 0.5rem 0.2rem 0.4rem;
+  }
+
+  .selectedDayName {
+    font-size: var(--large-font);
   }
 }

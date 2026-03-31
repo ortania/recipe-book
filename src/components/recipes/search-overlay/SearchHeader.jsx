@@ -5,6 +5,7 @@ import { CloseButton } from "../../controls/close-button";
 import { BackButton } from "../../controls/back-button";
 import { SortButton } from "../../controls/sort-button";
 import { useSearchOverlay } from "./SearchOverlayContext";
+import btnClasses from "../../../styles/shared/buttons.module.css";
 import SearchFilterContent from "./SearchFilterContent";
 
 const SORT_OPTIONS = [
@@ -35,7 +36,6 @@ export default function SearchHeader() {
     >
       <BackButton
         onClick={onClose}
-        size={isMobile ? 28 : 28}
         className={isMobile ? "" : parentClasses.desktopHeaderBtn}
       />
       <div
@@ -99,7 +99,8 @@ export default function SearchHeader() {
                   <div className={parentClasses.dropdownClose}>
                     {hasActiveFilters && (
                       <button
-                        className={parentClasses.clearFiltersBtn}
+                        className={btnClasses.clearBtn}
+                        style={{ marginInlineEnd: "auto" }}
                         onClick={clearAllFilters}
                       >
                         {t("recipesView", "clearFilters")}
@@ -135,7 +136,7 @@ export default function SearchHeader() {
           />
 
           {hasAnythingActive && !isMobile && (
-            <button className={classes.clearAllButton} onClick={clearSearch}>
+            <button className={btnClasses.clearBtn} onClick={clearSearch}>
               <RotateCcw size={14} />
               <span>
                 {t("categories", "clearAllFilters") || "נקה הכל"}

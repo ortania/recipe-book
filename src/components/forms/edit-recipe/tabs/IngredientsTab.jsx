@@ -121,14 +121,14 @@ export default function IngredientsTab() {
         <div className={`${shared.addItemRow} ${classes.addItemRow}`}>
           <button
             type="button"
-            className={`${shared.addItemBtn} ${classes.addItemBtn}`}
+            className={`${shared.addDashedBtn} ${shared.addItemBtn} ${classes.addItemBtn}`}
             onClick={addIngredient}
           >
             + {t("addWizard", "addIngredient")}
           </button>
           <button
             type="button"
-            className={`${shared.addGroupBtn} ${classes.addGroupBtn}`}
+            className={`${shared.addDashedBtn} ${shared.addGroupBtn} ${classes.addGroupBtn}`}
             onClick={addIngredientGroup}
           >
             + {t("addWizard", "addGroup")}

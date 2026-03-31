@@ -84,7 +84,7 @@ export default function InstructionsTab() {
         ))}
         <button
           type="button"
-          className={`${shared.addItemBtn} ${classes.addItemBtn}`}
+          className={`${shared.addDashedBtn} ${shared.addItemBtn} ${classes.addItemBtn}`}
           onClick={addInstruction}
         >
           + {t("addWizard", "addStep")}

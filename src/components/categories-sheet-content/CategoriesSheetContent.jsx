@@ -6,6 +6,7 @@ import { getCategoryIcon } from "../../utils/categoryIcons";
 import { SearchBox } from "../controls/search";
 import { CategoryCard } from "../category-card";
 import classes from "./categories-sheet-content.module.css";
+import btnClasses from "../../styles/shared/buttons.module.css";
 
 function CategoriesSheetContent({
   onManage,
@@ -155,7 +156,7 @@ function CategoriesSheetContent({
               {selectedCount} {t("categories", "selected")}
             </span>
             <button
-              className={classes.clearBtn}
+              className={btnClasses.clearBtn}
               onClick={clearCategorySelection}
             >
               {t("categories", "clearAll")}

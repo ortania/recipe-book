@@ -58,7 +58,6 @@ import { Fab } from "../controls/fab";
 import fabClasses from "../controls/fab/fab.module.css";
 import { BottomSheet } from "../controls/bottom-sheet";
 import { CloseButton } from "../controls/close-button";
-import { BackButton } from "../controls/back-button";
 import { SortButton } from "../controls/sort-button";
 import { SearchBox } from "../controls/search";
 import { SearchOverlay } from "./search-overlay";

@@ -262,21 +262,6 @@
   opacity: 0.7;
 }
 
-.clearChips { 
-  background: none;
-  border: none;
-  color: var(--clr-text-primary);
-  font-size: var(--basic-font);
-  cursor: pointer;
-  padding: 0.3em 0.5em;
-  transition: var(--transition-fast);
-  text-decoration: underline;
-  text-decoration-color: currentColor;
-}
-
-.clearChips:hover {
-  color: var(--clr-text-primary-hover);
-}
 
 .searchHeader {
   display: flex;
@@ -414,9 +399,6 @@
   background: none;
 }
 
-.dropdownClose .clearFiltersBtn {
-  margin-inline-end: auto;
-}
 
 .dropdownMenu button {
   width: 100%;
@@ -575,28 +557,6 @@
   color: var(--clr-text-primary) !important;
 }
 
-.clearFiltersBtn {
-  /* padding: 0.3em 0.7em !important; */
-
-  background: transparent !important;
-  /* border: 0.0625rem solid var(--clr-border-light) !important; */
-  border: none !important;
-  /* border-radius: var(--btn-border-radius); */
-  color: var(--clr-text-primary) !important;
-  padding: 0 !important;
-  text-decoration: underline;
-  text-decoration-color: currentColor;
-  text-align: center;
-  cursor: pointer;
-  font-size: var(--basic-font) !important;
-  transition: var(--transition);
-  width: auto !important;
-  white-space: nowrap;
-}
-
-.clearFiltersBtn:hover {
-  color: var(--clr-clear-text-danger-hover) !important;
-}
 
 .section {
   margin-bottom: 3rem;

@@ -111,7 +111,7 @@ export default function InstructionsStep() {
         ))}
         <button
           type="button"
-          className={shared.addItemBtn}
+          className={`${shared.addDashedBtn} ${shared.addItemBtn}`}
           onClick={handleAddInstruction}
         >
           + {t("addWizard", "addStep")}

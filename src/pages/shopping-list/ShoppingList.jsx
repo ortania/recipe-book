@@ -17,6 +17,7 @@ import { ShoppingListView } from "../../components/shopping-list-view";
 import Skeleton from "react-loading-skeleton";
 import { BackButton } from "../../components/controls/back-button";
 import classes from "./shopping-list.module.css";
+import btnClasses from "../../styles/shared/buttons.module.css";
 
 const STORAGE_KEY = "shoppingListState";
 
@@ -168,7 +169,7 @@ function ShoppingList() {
       <div className={classes.page}>
         {mobileTabsEl && createPortal(mobileTitle, mobileTabsEl)}
         <div className={classes.listHeader}>
-          <BackButton onClick={() => setShowList(false)} size={22} />
+          <BackButton onClick={() => setShowList(false)} />
           {!mobileTabsEl && (
             <h1 className={classes.title}>
               {t("mealPlanner", "shoppingList")}
@@ -176,13 +177,13 @@ function ShoppingList() {
           )}
           <div className={classes.listHeaderActions}>
             <button
-              className={classes.listHeaderIconBtn}
+              className={btnClasses.iconBtn}
               onClick={() => window.print()}
               aria-label="print"
             >
-              <FiPrinter size={18} />
+              <FiPrinter size={20} />
             </button>
-            <button className={classes.listHeaderTextBtn} onClick={handleClear}>
+            <button className={btnClasses.clearBtn} onClick={handleClear}>
               {t("mealPlanner", "clearAll")}
             </button>
           </div>
@@ -309,7 +310,6 @@ function ShoppingList() {
                 setSelectedCat(null);
                 setFolderSearch("");
               }}
-              size={22}
             />
             <span className={classes.subTitle}>
               {selectedCat === "community"

@@ -377,6 +377,7 @@ Variables
   /* button other */
   --btn-border-radius: 2rem;
   --btn-small-border-radius: 12px;
+  --btn-very-small-border-radius: 12px;
   --btn-box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
 
   /* skeleton */

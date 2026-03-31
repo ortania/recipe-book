@@ -141,14 +141,14 @@ export default function IngredientsStep() {
         <div className={shared.addItemRow}>
           <button
             type="button"
-            className={shared.addItemBtn}
+            className={`${shared.addDashedBtn} ${shared.addItemBtn}`}
             onClick={handleAddIngredient}
           >
             + {t("addWizard", "addIngredient")}
           </button>
           <button
             type="button"
-            className={shared.addGroupBtn}
+            className={`${shared.addDashedBtn} ${shared.addGroupBtn}`}
             onClick={handleAddIngredientGroup}
           >
             + {t("addWizard", "addGroup")}

@@ -1,4 +1,5 @@
 import { useSearchOverlay } from "./SearchOverlayContext";
+import btnClasses from "../../../styles/shared/buttons.module.css";
 
 export default function SearchFilterContent() {
   const {
@@ -19,7 +20,7 @@ export default function SearchFilterContent() {
         <>
           <div className={parentClasses.filterSection}>
             <button
-              className={parentClasses.clearFiltersBtn}
+              className={btnClasses.clearBtn}
               onClick={clearAllFilters}
             >
               {t("recipesView", "clearFilters")}
