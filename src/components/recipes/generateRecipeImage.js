@@ -30,21 +30,24 @@ function loadImage(src) {
   }
 
   // 1) Try Vite proxy (works in dev on desktop)
-  // 2) If proxy fails, try crossOrigin img (works in production & mobile)
+  // 2) Try direct fetch → data URL (works on mobile, bypasses browser image cache/taint)
+  // 3) Last resort: crossOrigin img
   const proxyAttempt = proxyUrl
     ? fetchAsDataUrl(proxyUrl).then(loadAsImg)
     : Promise.reject(new Error("no proxy"));
 
-  return proxyAttempt.catch(() => {
-    const cb = src.includes("?") ? `&_cb=${Date.now()}` : `?_cb=${Date.now()}`;
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.crossOrigin = "anonymous";
-      img.onload = () => resolve(img);
-      img.onerror = reject;
-      img.src = src + cb;
+  return proxyAttempt
+    .catch(() => fetchAsDataUrl(src).then(loadAsImg))
+    .catch(() => {
+      const cb = src.includes("?") ? `&_cb=${Date.now()}` : `?_cb=${Date.now()}`;
+      return new Promise((resolve, reject) => {
+        const img = new Image();
+        img.crossOrigin = "anonymous";
+        img.onload = () => resolve(img);
+        img.onerror = reject;
+        img.src = src + cb;
+      });
     });
-  });
 }
 
 function wrapText(ctx, text, maxWidth) {
@@ -215,14 +218,15 @@ export async function generateRecipeImage(recipe, t, language) {
         .filter((item) => item && item.length > 10) || [];
 
   // Pre-load recipe image
+  const recipeImageSrc = recipe.image_src || recipe.image || null;
   let loadedImg = null;
-  if (recipe.image_src) {
+  if (recipeImageSrc) {
     try {
       console.log(
         "[ExportImage] Loading image:",
-        recipe.image_src.substring(0, 80) + "...",
+        recipeImageSrc.substring(0, 80) + "...",
       );
-      loadedImg = await loadImage(recipe.image_src);
+      loadedImg = await loadImage(recipeImageSrc);
       console.log(
         "[ExportImage] Image loaded successfully:",
         loadedImg.width,
