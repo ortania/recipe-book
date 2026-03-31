@@ -1,9 +1,41 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 
+function imageProxyPlugin() {
+  return {
+    name: "image-proxy",
+    configureServer(server) {
+      server.middlewares.use("/img-proxy", async (req, res) => {
+        const urlParam = new URL(req.url, "http://localhost").searchParams.get(
+          "url",
+        );
+        if (!urlParam) {
+          res.statusCode = 400;
+          return res.end("Missing url param");
+        }
+        try {
+          const response = await fetch(urlParam);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const buffer = await response.arrayBuffer();
+          res.setHeader(
+            "Content-Type",
+            response.headers.get("content-type") || "image/jpeg",
+          );
+          res.setHeader("Access-Control-Allow-Origin", "*");
+          res.setHeader("Cache-Control", "public, max-age=86400");
+          res.end(Buffer.from(buffer));
+        } catch (e) {
+          res.statusCode = 502;
+          res.end("Proxy error: " + e.message);
+        }
+      });
+    },
+  };
+}
+
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [react(), imageProxyPlugin()],
   build: {
     chunkSizeWarningLimit: 800,
     rollupOptions: {

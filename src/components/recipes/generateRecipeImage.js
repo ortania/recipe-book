@@ -29,14 +29,28 @@ function loadImage(src) {
     });
   }
 
-  // 1) Try Vite proxy (works in dev on desktop)
-  // 2) Try direct fetch → data URL (works on mobile, bypasses browser image cache/taint)
-  // 3) Last resort: crossOrigin img
+  // Dev image proxy: routes any URL through Vite's Node server (no CORS restriction)
+  const devProxyUrl =
+    typeof window !== "undefined" &&
+    window.location.hostname !== "localhost" &&
+    window.location.hostname !== "127.0.0.1"
+      ? null // only works when Vite dev server is reachable
+      : `/img-proxy?url=${encodeURIComponent(src)}`;
+
+  // 1) Firebase Storage proxy (Vite dev, works on desktop + mobile on local network)
+  // 2) Dev image proxy (any URL, works in dev via Node.js fetch – no CORS)
+  // 3) Direct fetch → data URL (works in production for CORS-friendly servers)
+  // 4) Last resort: crossOrigin img
   const proxyAttempt = proxyUrl
     ? fetchAsDataUrl(proxyUrl).then(loadAsImg)
     : Promise.reject(new Error("no proxy"));
 
   return proxyAttempt
+    .catch(() =>
+      devProxyUrl
+        ? fetchAsDataUrl(devProxyUrl).then(loadAsImg)
+        : Promise.reject(new Error("no dev proxy")),
+    )
     .catch(() => fetchAsDataUrl(src).then(loadAsImg))
     .catch(() => {
       const cb = src.includes("?") ? `&_cb=${Date.now()}` : `?_cb=${Date.now()}`;
