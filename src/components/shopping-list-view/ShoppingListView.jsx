@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import {
   Plus,
   Trash2,
@@ -16,9 +16,11 @@ export default function ShoppingListView({
   checkedItems,
   onToggleChecked,
   onClearChecked,
+  onManualItemsChange,
+  manualItems: initialManualItems = [],
 }) {
   const { t } = useLanguage();
-  const [manualItems, setManualItems] = useState([]);
+  const [manualItems, setManualItems] = useState(initialManualItems);
   const [newItemText, setNewItemText] = useState("");
   const [editingKey, setEditingKey] = useState(null);
   const [editText, setEditText] = useState("");
@@ -26,11 +28,27 @@ export default function ShoppingListView({
   const [mustBuyOpen, setMustBuyOpen] = useState(true);
   const [pantryOpen, setPantryOpen] = useState(true);
   const [disabledKeys, setDisabledKeys] = useState(new Set());
+  const [permanentlyDeletedKeys, setPermanentlyDeletedKeys] = useState(
+    new Set(),
+  );
+
+  useEffect(() => {
+    onManualItemsChange?.(manualItems);
+  }, [manualItems, onManualItemsChange]);
+
+  useEffect(() => {
+    setManualItems(initialManualItems);
+  }, [initialManualItems]);
 
   const { mustBuyList, pantryList } = useMemo(() => {
-    const buyable = (shoppingList || []).filter(
-      (item) => item.shouldBuy !== false,
-    );
+    const buyable = (shoppingList || [])
+      .filter((item) => item.shouldBuy !== false)
+      .filter(
+        (item) =>
+          !permanentlyDeletedKeys.has(
+            (item.normalizedName || item.name).toLowerCase(),
+          ),
+      );
     const toItem = (item) => {
       const key = (item.normalizedName || item.name).toLowerCase();
       return {
@@ -55,7 +73,7 @@ export default function ShoppingListView({
       mustBuyList: allMust,
       pantryList: allPantry,
     };
-  }, [shoppingList, manualItems, editedItems]);
+  }, [shoppingList, manualItems, editedItems, permanentlyDeletedKeys]);
 
   const totalCount = mustBuyList.length + pantryList.length;
   const checkedCount = [...mustBuyList, ...pantryList].filter(
@@ -74,6 +92,19 @@ export default function ShoppingListView({
   };
 
   const handleRestoreItem = (key) => {
+    setDisabledKeys((prev) => {
+      const next = new Set(prev);
+      next.delete(key);
+      return next;
+    });
+  };
+
+  const handlePermanentDelete = (key, isManual) => {
+    if (isManual) {
+      setManualItems((prev) => prev.filter((m) => m.id !== key));
+    } else {
+      setPermanentlyDeletedKeys((prev) => new Set(prev).add(key));
+    }
     setDisabledKeys((prev) => {
       const next = new Set(prev);
       next.delete(key);
@@ -151,14 +182,26 @@ export default function ShoppingListView({
           </button>
         )}
 
-        {!isEditing && (
-          isDisabled ? (
-            <button
-              className={classes.restoreBtn}
-              onClick={() => handleRestoreItem(item.key)}
-            >
-              <RotateCcw size={14} />
-            </button>
+        {!isEditing &&
+          (isDisabled ? (
+            <div className={classes.disabledActions}>
+              <button
+                className={classes.restoreBtn}
+                onClick={() => handleRestoreItem(item.key)}
+                title="שחזר"
+              >
+                <RotateCcw size={14} />
+              </button>
+              <button
+                className={classes.permanentDeleteBtn}
+                onClick={() => handlePermanentDelete(item.key, item.isManual)}
+              >
+                <Trash2 size={13} />
+                <span className={classes.permanentDeleteLabel}>
+                  {t("mealPlanner", "deletePermanently")}
+                </span>
+              </button>
+            </div>
           ) : (
             <button
               className={classes.deleteBtn}
@@ -166,8 +209,7 @@ export default function ShoppingListView({
             >
               <Trash2 size={14} />
             </button>
-          )
-        )}
+          ))}
       </div>
     );
   };

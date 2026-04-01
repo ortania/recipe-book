@@ -179,7 +179,16 @@
   background: var(--clr-bg-hover);
 }
 
-/* ── Restore button (replaces delete when item is disabled) ── */
+/* ── Disabled actions: restore + permanent delete ── */
+
+.disabledActions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+/* ── Restore button ── */
 
 .restoreBtn {
   flex-shrink: 0;
@@ -203,6 +212,36 @@
 .restoreBtn:hover {
   color: var(--clr-brown-700);
   background: var(--clr-bg-hover);
+}
+
+/* ── Permanent delete button (red, only when disabled) ── */
+
+.permanentDeleteBtn {
+  flex-shrink: 0;
+  background: var(--clr-danger-bg);
+  border: 1px solid var(--clr-danger-border);
+  color: var(--clr-danger-text);
+  font-weight: var(--danger-text-font-weight);
+  cursor: pointer;
+  padding: 0.2em 0.5em;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  transition: var(--transition-fast);
+}
+.permanentDeleteBtn span {
+  font-size: var(--basic-font);
+}
+
+.permanentDeleteBtn:hover {
+  background: var(--clr-danger-bg-hover);
+}
+
+.permanentDeleteLabel {
+  font-size: 0.7rem;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
 /* ── Item text ── */

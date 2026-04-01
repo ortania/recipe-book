@@ -154,7 +154,6 @@ Variables
   --clr-danger-border: var(--clr-danger-500);
 
   --clr-clear-text-danger-hover: var(--clr-danger-700);
-  --clr-bg-danger-hover: var(--clr-danger-100);
   --clr-error-message: var(--clr-primary-700);
 
   --danger-text-font-weight: 600;

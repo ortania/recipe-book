@@ -219,23 +219,45 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.5rem 0.3rem;
+  padding: 0.5rem 0.6rem;
   border-bottom: 1px solid var(--clr-border-light);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.mealRecipeItem svg {
+  opacity: 1;
 }
 
 .mealRecipeItem:last-of-type {
   border-bottom: none;
 }
 
+.mealRecipeItem:hover {
+  background-color: var(--clr-bg-hover);
+}
+
+.mealRecipeItem:hover .recipeNavArrow {
+  opacity: 1;
+}
+
+.mealRecipeItem:active {
+  background-color: var(--clr-bg-active);
+}
+
 .recipeName {
   font-size: var(--basic-font);
   color: var(--clr-text-primary);
-  cursor: pointer;
+  flex: 1;
 }
 
-.recipeName:hover {
-  color: var(--clr-text-primary-hover);
-  text-decoration: underline;
+.recipeNavArrow {
+  color: var(--clr-text-muted);
+  opacity: 0.4;
+  flex-shrink: 0;
+  margin-inline-end: 6px;
+  transition: opacity 0.15s;
 }
 
 .removeBtn {
@@ -286,6 +308,9 @@
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 /* ===== Recipe Picker Modal ===== */
@@ -645,8 +670,8 @@
   }
 
   .headerActions {
-    width: 100%;
-    justify-content: center;
+    /* width: 100%; */
+    /* justify-content: flex-end; */
   }
 
   .dayChip {

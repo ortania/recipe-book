@@ -4408,6 +4408,13 @@ const translations = {
       de: "Alles löschen",
       mixed: "Clear all",
     },
+    deletePermanently: {
+      he: "מחק",
+      en: "Delete",
+      ru: "Удалить",
+      de: "Löschen",
+      mixed: "מחק",
+    },
     uncheckAll: {
       he: "בטל סימונים",
       en: "Uncheck all",

@@ -88,6 +88,7 @@ function MealPlanner() {
   const [showShopping, setShowShopping] = useState(false);
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
   const [globalCount, setGlobalCount] = useState(null);
+  const [manualItems, setManualItems] = useState([]);
 
   useEffect(() => {
     fetchGlobalRecipesCount()
@@ -256,18 +257,19 @@ function MealPlanner() {
               </div>
 
               {mealRecipes.map((recipe) => (
-                <div key={recipe.id} className={classes.mealRecipeItem}>
-                  <span
-                    className={classes.recipeName}
-                    onClick={() => navigate(`/recipe/${recipe.id}`)}
-                  >
-                    {recipe.name}
-                  </span>
+                <div
+                  key={recipe.id}
+                  className={classes.mealRecipeItem}
+                  onClick={() => navigate(`/recipe/${recipe.id}`)}
+                >
+                  <ChevronLeft size={16} className={classes.recipeNavArrow} />
+                  <span className={classes.recipeName}>{recipe.name}</span>
                   <CloseButton
                     className={classes.removeBtn}
-                    onClick={() =>
-                      removeRecipeFromDay(selectedDay, meal, recipe.id)
-                    }
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      removeRecipeFromDay(selectedDay, meal, recipe.id);
+                    }}
                     size={16}
                   />
                 </div>
@@ -339,7 +341,8 @@ function MealPlanner() {
           >
             <div className={classes.shoppingModalHeader}>
               <h3 className={classes.shoppingModalTitle}>
-                🛒 {t("mealPlanner", "shoppingList")}
+                <ShoppingCart size={18} style={{ marginRight: "0.5rem" }} />
+                {t("mealPlanner", "shoppingList")}
               </h3>
               <CloseButton onClick={() => setShowShopping(false)} />
             </div>
@@ -349,6 +352,8 @@ function MealPlanner() {
               checkedItems={checkedItems}
               onToggleChecked={toggleChecked}
               onClearChecked={clearChecked}
+              onManualItemsChange={setManualItems}
+              manualItems={manualItems}
             />
           </div>
         </div>
@@ -444,7 +449,9 @@ function MealPickerWrapper({
     navigate(`/recipe/${recipeId}`);
   };
 
-  const newCount = [...selectedIds].filter((id) => !alreadyInMeal.has(id)).length;
+  const newCount = [...selectedIds].filter(
+    (id) => !alreadyInMeal.has(id),
+  ).length;
 
   return (
     <div className={classes.pickerOverlay} onClick={() => setPicker(null)}>

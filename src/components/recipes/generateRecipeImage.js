@@ -53,7 +53,9 @@ function loadImage(src) {
     )
     .catch(() => fetchAsDataUrl(src).then(loadAsImg))
     .catch(() => {
-      const cb = src.includes("?") ? `&_cb=${Date.now()}` : `?_cb=${Date.now()}`;
+      const cb = src.includes("?")
+        ? `&_cb=${Date.now()}`
+        : `?_cb=${Date.now()}`;
       return new Promise((resolve, reject) => {
         const img = new Image();
         img.crossOrigin = "anonymous";
@@ -282,9 +284,16 @@ export async function generateRecipeImage(recipe, t, language) {
 
   const AUTHOR_FONT = `500 20px ${FONT_FAMILY}`;
   const authorText = recipe.author?.trim() || "";
-  const sourceHost = !authorText && recipe.sourceUrl
-    ? (() => { try { return new URL(recipe.sourceUrl).hostname.replace(/^www\./, ""); } catch { return ""; } })()
-    : "";
+  const sourceHost =
+    !authorText && recipe.sourceUrl
+      ? (() => {
+          try {
+            return new URL(recipe.sourceUrl).hostname.replace(/^www\./, "");
+          } catch {
+            return "";
+          }
+        })()
+      : "";
   const hasAuthor = Boolean(authorText || sourceHost);
   if (hasAuthor) {
     totalHeight += 36;
@@ -330,6 +339,7 @@ export async function generateRecipeImage(recipe, t, language) {
     ctx.font = NOTES_FONT;
     const notesLines = wrapText(ctx, recipe.notes, CONTENT_WIDTH - 40);
     totalHeight += notesLines.length * LINE_HEIGHT + 16;
+    totalHeight += 40; // extra bottom spacing after notes
   }
 
   // Footer
@@ -697,6 +707,9 @@ export async function generateRecipeImage(recipe, t, language) {
   ctx.fillStyle = THEME.footerText;
   ctx.textAlign = "center";
   ctx.fillText("CookiPal", WIDTH / 2, y);
+
+  // Add extra bottom spacing
+  y += 40;
 
   // ─── Export ───
   return new Promise((resolve) => {

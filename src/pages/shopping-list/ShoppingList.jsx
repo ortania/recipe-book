@@ -52,6 +52,9 @@ function ShoppingList() {
   const [checkedItems, setCheckedItems] = useState(
     saved.current?.checkedItems || {},
   );
+  const [manualItems, setManualItems] = useState(
+    saved.current?.manualItems || [],
+  );
   const [showList, setShowList] = useState(saved.current?.showList || false);
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
   const [globalRecipes, setGlobalRecipes] = useState([]);
@@ -67,9 +70,9 @@ function ShoppingList() {
       didMount.current = true;
       return;
     }
-    const data = { selectedRecipes, checkedItems, showList };
+    const data = { selectedRecipes, checkedItems, manualItems, showList };
     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [selectedRecipes, checkedItems, showList]);
+  }, [selectedRecipes, checkedItems, manualItems, showList]);
 
   const shoppingSortOptions = [
     { field: "name", defaultDir: "asc" },
@@ -192,6 +195,8 @@ function ShoppingList() {
           shoppingList={shoppingList}
           checkedItems={checkedItems}
           onToggleChecked={toggleChecked}
+          onManualItemsChange={setManualItems}
+          manualItems={manualItems}
         />
         <div className={classes.bottomSpacer} />
       </div>
@@ -209,21 +214,30 @@ function ShoppingList() {
             {selectedRecipes.length} {t("recipesView", "recipesCount")}{" "}
             {t("mealPlanner", "selected")}
           </span>
-          <button
-            className={classes.headerBtn}
-            onClick={() => setShowList(true)}
-          >
-            <FiShoppingCart />
-            {t("mealPlanner", "shoppingList")} ({shoppingList.length})
-          </button>
+          <div className={classes.cartAction}>
+            <button className={btnClasses.clearBtn} onClick={handleClear}>
+              {t("mealPlanner", "clearAll")}
+            </button>
+            <button
+              className={classes.cartCircleBtn}
+              onClick={() => setShowList(true)}
+              aria-label={t("mealPlanner", "shoppingList")}
+            >
+              <FiShoppingCart size={20} />
+            </button>
+            {shoppingList.length > 0 && (
+              <span className={classes.cartCount}>{shoppingList.length}</span>
+            )}
+          </div>
         </div>
       ) : (
         <div
           className={`${classes.header} ${!headerHasContent ? classes.headerEmpty : ""}`}
         >
-          <div>
+          <div className={classes.titleContainer}>
             {!mobileTabsEl && (
               <h1 className={classes.title}>
+                <FiShoppingCart size={24} style={{ marginRight: "0.5rem" }} />
                 {t("mealPlanner", "shoppingList")}
               </h1>
             )}
@@ -305,22 +319,26 @@ function ShoppingList() {
       ) : (
         <>
           <div className={classes.subHeader}>
-            <BackButton
-              onClick={() => {
-                setSelectedCat(null);
-                setFolderSearch("");
-              }}
-            />
-            <span className={classes.subTitle}>
-              {selectedCat === "community"
-                ? t("nav", "globalRecipesFull")
-                : selectedCat === "all"
-                  ? t("mealPlanner", "myRecipes")
-                  : (() => {
-                      const cat = categories.find((c) => c.id === selectedCat);
-                      return cat ? getTranslated(cat) : "";
-                    })()}
-            </span>
+            <div className={classes.titleWithBack}>
+              <BackButton
+                onClick={() => {
+                  setSelectedCat(null);
+                  setFolderSearch("");
+                }}
+              />
+              <span className={classes.subTitle}>
+                {selectedCat === "community"
+                  ? t("nav", "globalRecipesFull")
+                  : selectedCat === "all"
+                    ? t("mealPlanner", "myRecipes")
+                    : (() => {
+                        const cat = categories.find(
+                          (c) => c.id === selectedCat,
+                        );
+                        return cat ? getTranslated(cat) : "";
+                      })()}
+              </span>
+            </div>
             <span className={classes.subCount}>
               {selectedCat === "community"
                 ? loadingGlobal
