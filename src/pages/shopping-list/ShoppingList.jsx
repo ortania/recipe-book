@@ -220,45 +220,48 @@ function ShoppingList() {
 
     return (
       <div className={classes.page}>
-        {mobileTabsEl && createPortal(mobileTitle, mobileTabsEl)}
-        <div className={classes.listHeader}>
-          <BackButton onClick={() => setShowSelectedRecipes(false)} />
-          {!mobileTabsEl && (
-            <h1 className={classes.title}>
-              {t("mealPlanner", "selectedRecipesList")}
-            </h1>
-          )}
-          <div className={classes.listHeaderActions}>
-            <span className={classes.selectionCount}>
-              {selectedRecipeObjects.length} {t("recipesView", "recipesCount")}
-            </span>
-          </div>
-        </div>
-        <div className={classes.recipeList}>
-          {selectedRecipeObjects.map((recipe) => (
-            <div key={recipe.id} className={classes.selectedRecipeRow}>
-              {recipe.image_src ? (
-                <img
-                  className={classes.recipeItemImage}
-                  src={recipe.image_src}
-                  alt=""
-                  loading="lazy"
-                />
-              ) : (
-                <span className={classes.recipeItemEmoji}>🍽️</span>
-              )}
-              <span className={classes.recipeItemName}>{recipe.name}</span>
-              <button
-                className={btnClasses.iconBtn}
-                onClick={() => removeSelectedRecipe(recipe.id)}
-                aria-label="remove"
-              >
-                <Trash2 size={16} />
-              </button>
+        <div className={classes.container}>
+          {mobileTabsEl && createPortal(mobileTitle, mobileTabsEl)}
+          <div className={classes.listHeader}>
+            <BackButton onClick={() => setShowSelectedRecipes(false)} />
+            {!mobileTabsEl && (
+              <h1 className={classes.title}>
+                {t("mealPlanner", "selectedRecipesList")}
+              </h1>
+            )}
+            <div className={classes.listHeaderActions}>
+              <span className={classes.selectionCount}>
+                {selectedRecipeObjects.length}{" "}
+                {t("recipesView", "recipesCount")}
+              </span>
             </div>
-          ))}
+          </div>
+          <div className={classes.recipeList}>
+            {selectedRecipeObjects.map((recipe) => (
+              <div key={recipe.id} className={classes.selectedRecipeRow}>
+                {recipe.image_src ? (
+                  <img
+                    className={classes.recipeItemImage}
+                    src={recipe.image_src}
+                    alt=""
+                    loading="lazy"
+                  />
+                ) : (
+                  <span className={classes.recipeItemEmoji}>🍽️</span>
+                )}
+                <span className={classes.recipeItemName}>{recipe.name}</span>
+                <button
+                  className={btnClasses.iconBtn}
+                  onClick={() => removeSelectedRecipe(recipe.id)}
+                  aria-label="remove"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
+            ))}
+          </div>
+          <div className={classes.bottomSpacer} />
         </div>
-        <div className={classes.bottomSpacer} />
       </div>
     );
   }
@@ -314,177 +317,179 @@ function ShoppingList() {
         </p>
       )}
 
-      {!selectedCat ? (
-        <div className={classes.catList}>
-          <button
-            className={classes.catListItem}
-            onClick={handleSelectCommunity}
-          >
-            <span className={classes.catListIcon}>
-              <Globe size={20} />
-            </span>
-            <span className={classes.catListName}>
-              {t("nav", "globalRecipesFull")}
-            </span>
-            <span className={classes.catListCount}>
-              {globalCount != null ? globalCount : ""}
-            </span>
-          </button>
-          {recipes.length > 0 && (
+      <div className={classes.container}>
+        {!selectedCat ? (
+          <div className={classes.catList}>
             <button
               className={classes.catListItem}
-              onClick={() => {
-                setSelectedCat("all");
-                setFolderSearch("");
-              }}
+              onClick={handleSelectCommunity}
             >
               <span className={classes.catListIcon}>
-                {(() => {
-                  const IC = getCategoryIcon("restaurant");
-                  return <IC size={16} />;
-                })()}
+                <Globe size={20} />
               </span>
               <span className={classes.catListName}>
-                {t("mealPlanner", "myRecipes")}
+                {t("nav", "globalRecipesFull")}
               </span>
-              <span className={classes.catListCount}>{recipes.length}</span>
+              <span className={classes.catListCount}>
+                {globalCount != null ? globalCount : ""}
+              </span>
             </button>
-          )}
-          {recipes.length > 0 &&
-            categories
-              .filter((c) => c.id !== "all")
-              .filter((c) => getRecipesForCat(c.id).length > 0)
-              .map((cat) => {
-                const count = getRecipesForCat(cat.id).length;
-                return (
-                  <button
-                    key={cat.id}
-                    className={classes.catListItem}
-                    onClick={() => {
-                      setSelectedCat(cat.id);
-                      setFolderSearch("");
-                    }}
-                  >
-                    <span className={classes.catListIcon}>
-                      {(() => {
-                        const IC = getCategoryIcon(cat.icon);
-                        return <IC size={16} />;
-                      })()}
-                    </span>
-                    <span className={classes.catListName}>
-                      {getTranslated(cat)}
-                    </span>
-                    <span className={classes.catListCount}>{count}</span>
-                  </button>
-                );
-              })}
-        </div>
-      ) : (
-        <>
-          <div className={classes.subHeader}>
-            <div className={classes.titleWithBack}>
-              <BackButton
+            {recipes.length > 0 && (
+              <button
+                className={classes.catListItem}
                 onClick={() => {
-                  setSelectedCat(null);
+                  setSelectedCat("all");
                   setFolderSearch("");
                 }}
-              />
-              <span className={classes.subTitle}>
+              >
+                <span className={classes.catListIcon}>
+                  {(() => {
+                    const IC = getCategoryIcon("restaurant");
+                    return <IC size={16} />;
+                  })()}
+                </span>
+                <span className={classes.catListName}>
+                  {t("mealPlanner", "myRecipes")}
+                </span>
+                <span className={classes.catListCount}>{recipes.length}</span>
+              </button>
+            )}
+            {recipes.length > 0 &&
+              categories
+                .filter((c) => c.id !== "all")
+                .filter((c) => getRecipesForCat(c.id).length > 0)
+                .map((cat) => {
+                  const count = getRecipesForCat(cat.id).length;
+                  return (
+                    <button
+                      key={cat.id}
+                      className={classes.catListItem}
+                      onClick={() => {
+                        setSelectedCat(cat.id);
+                        setFolderSearch("");
+                      }}
+                    >
+                      <span className={classes.catListIcon}>
+                        {(() => {
+                          const IC = getCategoryIcon(cat.icon);
+                          return <IC size={16} />;
+                        })()}
+                      </span>
+                      <span className={classes.catListName}>
+                        {getTranslated(cat)}
+                      </span>
+                      <span className={classes.catListCount}>{count}</span>
+                    </button>
+                  );
+                })}
+          </div>
+        ) : (
+          <>
+            <div className={classes.subHeader}>
+              <div className={classes.titleWithBack}>
+                <BackButton
+                  onClick={() => {
+                    setSelectedCat(null);
+                    setFolderSearch("");
+                  }}
+                />
+                <span className={classes.subTitle}>
+                  {selectedCat === "community"
+                    ? t("nav", "globalRecipesFull")
+                    : selectedCat === "all"
+                      ? t("mealPlanner", "myRecipes")
+                      : (() => {
+                          const cat = categories.find(
+                            (c) => c.id === selectedCat,
+                          );
+                          return cat ? getTranslated(cat) : "";
+                        })()}
+                </span>
+              </div>
+              <span className={classes.subCount}>
                 {selectedCat === "community"
-                  ? t("nav", "globalRecipesFull")
-                  : selectedCat === "all"
-                    ? t("mealPlanner", "myRecipes")
-                    : (() => {
-                        const cat = categories.find(
-                          (c) => c.id === selectedCat,
-                        );
-                        return cat ? getTranslated(cat) : "";
-                      })()}
+                  ? loadingGlobal
+                    ? ""
+                    : `${globalRecipes.length} ${t("recipesView", "recipesCount")}`
+                  : `${getRecipesForCat(selectedCat).length} ${t("recipesView", "recipesCount")}`}
               </span>
             </div>
-            <span className={classes.subCount}>
-              {selectedCat === "community"
-                ? loadingGlobal
-                  ? ""
-                  : `${globalRecipes.length} ${t("recipesView", "recipesCount")}`
-                : `${getRecipesForCat(selectedCat).length} ${t("recipesView", "recipesCount")}`}
-            </span>
-          </div>
 
-          <div className={classes.folderSearchRow}>
-            <SearchBox
-              searchTerm={folderSearch}
-              onSearchChange={setFolderSearch}
-              placeholder={t("globalRecipes", "search")}
-              examples={[
-                t("recipesView", "searchExample1"),
-                t("recipesView", "searchExample2"),
-                t("recipesView", "searchExample3"),
-              ]}
-              className={classes.folderSearchBox}
-            />
-            <SortButton
-              sortField={sortField}
-              sortDirection={sortDirection}
-              onSortChange={handleSortChange}
-              options={shoppingSortOptions}
-            />
-          </div>
-
-          {selectedCat === "community" && loadingGlobal ? (
-            <div className={classes.recipeList}>
-              {Array.from({ length: 8 }).map((_, i) => (
-                <div
-                  key={i}
-                  className={classes.recipeItem}
-                  style={{ pointerEvents: "none" }}
-                >
-                  <Skeleton circle width={40} height={40} />
-                  <Skeleton width="60%" height={18} />
-                </div>
-              ))}
+            <div className={classes.folderSearchRow}>
+              <SearchBox
+                searchTerm={folderSearch}
+                onSearchChange={setFolderSearch}
+                placeholder={t("globalRecipes", "search")}
+                examples={[
+                  t("recipesView", "searchExample1"),
+                  t("recipesView", "searchExample2"),
+                  t("recipesView", "searchExample3"),
+                ]}
+                className={classes.folderSearchBox}
+              />
+              <SortButton
+                sortField={sortField}
+                sortDirection={sortDirection}
+                onSortChange={handleSortChange}
+                options={shoppingSortOptions}
+              />
             </div>
-          ) : (
-            <div className={classes.recipeList}>
-              {search(
-                selectedCat === "community"
-                  ? globalRecipes
-                  : getRecipesForCat(selectedCat),
-                folderSearch,
-                sortField,
-                sortDirection,
-              ).map((recipe) => {
-                const isSelected = selectedRecipes.includes(recipe.id);
-                return (
-                  <button
-                    key={recipe.id}
-                    className={`${classes.recipeItem} ${isSelected ? classes.recipeItemSelected : ""}`}
-                    onClick={() => toggleRecipe(recipe.id)}
+
+            {selectedCat === "community" && loadingGlobal ? (
+              <div className={classes.recipeList}>
+                {Array.from({ length: 8 }).map((_, i) => (
+                  <div
+                    key={i}
+                    className={classes.recipeItem}
+                    style={{ pointerEvents: "none" }}
                   >
-                    {recipe.image_src ? (
-                      <img
-                        className={classes.recipeItemImage}
-                        src={recipe.image_src}
-                        alt=""
-                        loading="lazy"
-                      />
-                    ) : (
-                      <span className={classes.recipeItemEmoji}>🍽️</span>
-                    )}
-                    <span className={classes.recipeItemName}>
-                      {recipe.name}
-                    </span>
-                    {isSelected && (
-                      <FiCheck className={classes.recipeItemCheck} />
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          )}
-        </>
-      )}
-      <div className={classes.bottomSpacer} />
+                    <Skeleton circle width={40} height={40} />
+                    <Skeleton width="60%" height={18} />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className={classes.recipeList}>
+                {search(
+                  selectedCat === "community"
+                    ? globalRecipes
+                    : getRecipesForCat(selectedCat),
+                  folderSearch,
+                  sortField,
+                  sortDirection,
+                ).map((recipe) => {
+                  const isSelected = selectedRecipes.includes(recipe.id);
+                  return (
+                    <button
+                      key={recipe.id}
+                      className={`${classes.recipeItem} ${isSelected ? classes.recipeItemSelected : ""}`}
+                      onClick={() => toggleRecipe(recipe.id)}
+                    >
+                      {recipe.image_src ? (
+                        <img
+                          className={classes.recipeItemImage}
+                          src={recipe.image_src}
+                          alt=""
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className={classes.recipeItemEmoji}>🍽️</span>
+                      )}
+                      <span className={classes.recipeItemName}>
+                        {recipe.name}
+                      </span>
+                      {isSelected && (
+                        <FiCheck className={classes.recipeItemCheck} />
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </>
+        )}
+        <div className={classes.bottomSpacer} />
+      </div>
     </div>
   );
 }

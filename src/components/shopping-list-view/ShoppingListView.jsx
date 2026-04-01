@@ -98,9 +98,9 @@ export default function ShoppingListView({
       groups[cat].push(item);
     }
 
-    return SHOPPING_CATEGORIES
-      .filter((cat) => groups[cat]?.length > 0)
-      .map((cat) => ({ category: cat, items: groups[cat] }));
+    return SHOPPING_CATEGORIES.filter((cat) => groups[cat]?.length > 0).map(
+      (cat) => ({ category: cat, items: groups[cat] }),
+    );
   }, [shoppingList, manualItems, editedItems, permanentlyDeletedKeys]);
 
   const allItemsFlat = categorizedGroups.flatMap((g) => g.items);
@@ -273,41 +273,39 @@ export default function ShoppingListView({
         />
       </div>
 
-      {categorizedGroups.map(({ category, items }) => {
-        const isOpen = openCategories.has(category);
-        const i18nKey = CATEGORY_I18N_KEYS[category];
-        return (
-          <div key={category}>
-            <button
-              className={classes.sectionHead}
-              onClick={() => toggleCategoryOpen(category)}
-            >
-              <span className={classes.sectionLabel}>
-                {i18nKey ? t("mealPlanner", i18nKey) : category}
-              </span>
-              <span className={classes.sectionEnd}>
-                <span className={classes.sectionBadge}>
-                  {items.length} {t("mealPlanner", "items")}
+      <div className={classes.listCard}>
+        {categorizedGroups.map(({ category, items }) => {
+          const isOpen = openCategories.has(category);
+          const i18nKey = CATEGORY_I18N_KEYS[category];
+          return (
+            <div key={category}>
+              <button
+                className={classes.sectionHead}
+                onClick={() => toggleCategoryOpen(category)}
+              >
+                <span className={classes.sectionLabel}>
+                  {i18nKey ? t("mealPlanner", i18nKey) : category}
                 </span>
-                {isOpen ? (
-                  <ChevronUp size={16} />
-                ) : (
-                  <ChevronDown size={16} />
-                )}
-              </span>
-            </button>
-            {isOpen && (
-              <div className={classes.itemList}>{items.map(renderItem)}</div>
-            )}
-          </div>
-        );
-      })}
+                <span className={classes.sectionEnd}>
+                  <span className={classes.sectionBadge}>
+                    {items.length} {t("mealPlanner", "items")}
+                  </span>
+                  {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+                </span>
+              </button>
+              {isOpen && (
+                <div className={classes.itemList}>{items.map(renderItem)}</div>
+              )}
+            </div>
+          );
+        })}
 
-      {onClearChecked && checkedCount > 0 && (
-        <button className={classes.uncheckBtn} onClick={onClearChecked}>
-          {t("mealPlanner", "uncheckAll")}
-        </button>
-      )}
+        {onClearChecked && checkedCount > 0 && (
+          <button className={classes.uncheckBtn} onClick={onClearChecked}>
+            {t("mealPlanner", "uncheckAll")}
+          </button>
+        )}
+      </div>
     </div>
   );
 }
