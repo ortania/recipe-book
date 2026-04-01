@@ -8,6 +8,7 @@ import {
   mergeQuantities,
   unitsCompatible,
   classifyIngredient,
+  resolveCategory,
   displayUnit,
   formatQty,
   PREP_STRIP_RE,
@@ -142,7 +143,12 @@ const junkPatterns =
   /related\s*articles|advertisement|sponsored|click\s*here|read\s*more|sign\s*up|subscribe|newsletter|copyright|©|http|www\.|ראה בקישור|לחצ[וי] כאן|see link|see recipe/i;
 
 const nonIngredientWords =
-  /^(יבשים|רטובים|לקישוט|להגשה|לציפוי|לבצק|למילוי|לעיטור|לבלילה|למלית|לסירופ|לקרם|לקוביות|לתערובת|לשכבה|לשטרוייזל|לרוטב|לתבלינים|לטיגון|לאפייה|למרינדה|לגרנולה|לדבש|לזיגוג|לטופינג|אופציונלי|optional|for garnish|for serving|for decoration|for the|מים|water)$/i;
+  /^(יבשים|רטובים|לקישוט|להגשה|לציפוי|לבצק|למילוי|לעיטור|לבלילה|למלית|לסירופ|לקרם|לקוביות|לתערובת|לשכבה|לשטרוייזל|לרוטב|לתבלינים|לטיגון|לאפייה|למרינדה|לגרנולה|לדבש|לזיגוג|לטופינג|אופציונלי|optional|for garnish|for serving|for decoration|for the|מים|water|מכל|תבנית|תבניות|נייר אפייה|קערה|קערות|סיר|מחבת|תנור)$/i;
+
+const NON_INGREDIENT_KEYS = new Set([
+  "מכל", "תבנית", "תבניות", "נייר אפייה", "קערה", "קערות",
+  "סיר", "מחבת", "תנור", "מים", "water",
+]);
 
 // General catch: lines starting with "ל" + description + no digits = section headers
 const SECTION_LIKE_LINE = /^ל\S+\s+\S/;
@@ -470,6 +476,7 @@ export function buildShoppingList(selectedIds, recipes) {
       if (/^\d+$/.test(rawKey)) return;
       if (!/[א-תa-zA-Z]/.test(rawKey)) return;
       if (!/[א-ת]/.test(rawKey) && rawKey.length < 3) return;
+      if (NON_INGREDIENT_KEYS.has(rawKey)) return;
 
       const normalizedName = normalizeIngredientName(rawKey);
       const rawUnit = extractUnit(raw);
@@ -513,6 +520,7 @@ export function buildShoppingList(selectedIds, recipes) {
           shouldBuy: classification.shouldBuy,
           isPantry: classification.isPantry,
           excludeReason: classification.excludeReason,
+          category: resolveCategory(normalizedName),
         };
       }
     });

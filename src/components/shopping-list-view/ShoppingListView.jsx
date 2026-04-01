@@ -4,11 +4,17 @@ import {
   Trash2,
   RotateCcw,
   Check,
-  ShoppingCart,
   ChevronDown,
   ChevronUp,
 } from "lucide-react";
 import { useLanguage } from "../../context";
+import {
+  SHOPPING_CATEGORIES,
+  CATEGORY_I18N_KEYS,
+  resolveCategory,
+  normalizeIngredientName,
+} from "../../utils/ingredientCalc";
+import { normalizeKey } from "../../utils/ingredientUtils";
 import classes from "./shopping-list-view.module.css";
 
 export default function ShoppingListView({
@@ -25,8 +31,9 @@ export default function ShoppingListView({
   const [editingKey, setEditingKey] = useState(null);
   const [editText, setEditText] = useState("");
   const [editedItems, setEditedItems] = useState({});
-  const [mustBuyOpen, setMustBuyOpen] = useState(true);
-  const [pantryOpen, setPantryOpen] = useState(true);
+  const [openCategories, setOpenCategories] = useState(
+    () => new Set(SHOPPING_CATEGORIES),
+  );
   const [disabledKeys, setDisabledKeys] = useState(new Set());
   const [permanentlyDeletedKeys, setPermanentlyDeletedKeys] = useState(
     new Set(),
@@ -40,7 +47,16 @@ export default function ShoppingListView({
     setManualItems(initialManualItems);
   }, [initialManualItems]);
 
-  const { mustBuyList, pantryList } = useMemo(() => {
+  const toggleCategoryOpen = (cat) => {
+    setOpenCategories((prev) => {
+      const next = new Set(prev);
+      if (next.has(cat)) next.delete(cat);
+      else next.add(cat);
+      return next;
+    });
+  };
+
+  const categorizedGroups = useMemo(() => {
     const buyable = (shoppingList || [])
       .filter((item) => item.shouldBuy !== false)
       .filter(
@@ -49,6 +65,7 @@ export default function ShoppingListView({
             (item.normalizedName || item.name).toLowerCase(),
           ),
       );
+
     const toItem = (item) => {
       const key = (item.normalizedName || item.name).toLowerCase();
       return {
@@ -56,27 +73,39 @@ export default function ShoppingListView({
         text: editedItems[key] || item.displayText,
         isManual: false,
         isPantry: !!item.isPantry,
+        category: item.category || "אחר",
       };
     };
-    const manual = manualItems.map((m) => ({
-      key: m.id,
-      text: m.text,
-      isManual: true,
-      isPantry: false,
-    }));
-    const allMust = [
-      ...buyable.filter((i) => !i.isPantry).map(toItem),
-      ...manual,
-    ];
-    const allPantry = buyable.filter((i) => i.isPantry).map(toItem);
-    return {
-      mustBuyList: allMust,
-      pantryList: allPantry,
-    };
+
+    const manual = manualItems.map((m) => {
+      const ingKey = normalizeKey(m.text) || m.text.trim().toLowerCase();
+      const norm = normalizeIngredientName(ingKey);
+      return {
+        key: m.id,
+        text: m.text,
+        isManual: true,
+        isPantry: false,
+        category: resolveCategory(norm),
+      };
+    });
+
+    const allItems = [...buyable.map(toItem), ...manual];
+
+    const groups = {};
+    for (const item of allItems) {
+      const cat = item.category;
+      if (!groups[cat]) groups[cat] = [];
+      groups[cat].push(item);
+    }
+
+    return SHOPPING_CATEGORIES
+      .filter((cat) => groups[cat]?.length > 0)
+      .map((cat) => ({ category: cat, items: groups[cat] }));
   }, [shoppingList, manualItems, editedItems, permanentlyDeletedKeys]);
 
-  const totalCount = mustBuyList.length + pantryList.length;
-  const checkedCount = [...mustBuyList, ...pantryList].filter(
+  const allItemsFlat = categorizedGroups.flatMap((g) => g.items);
+  const totalCount = allItemsFlat.length;
+  const checkedCount = allItemsFlat.filter(
     (item) => checkedItems[item.key],
   ).length;
 
@@ -244,60 +273,35 @@ export default function ShoppingListView({
         />
       </div>
 
-      {/* ── Must Buy ── */}
-      <button
-        className={classes.sectionHead}
-        onClick={() => setMustBuyOpen((v) => !v)}
-      >
-        <span className={classes.sectionLabel}>
-          {t("mealPlanner", "mustBuy")}
-        </span>
-        <span className={classes.sectionEnd}>
-          <span className={classes.sectionBadge}>
-            {mustBuyList.length} {t("mealPlanner", "items")}
-          </span>
-          {mustBuyOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-        </span>
-      </button>
-
-      {mustBuyOpen && (
-        <div className={classes.itemList}>
-          {mustBuyList.length > 0 ? (
-            mustBuyList.map(renderItem)
-          ) : (
-            <div className={classes.emptySection}>
-              <ShoppingCart size={20} />
-              <span>{t("mealPlanner", "noItemsInSection")}</span>
-            </div>
-          )}
-        </div>
-      )}
-
-      {/* ── Maybe At Home ── */}
-      <button
-        className={classes.sectionHead}
-        onClick={() => setPantryOpen((v) => !v)}
-      >
-        <span className={classes.sectionLabel}>
-          {t("mealPlanner", "maybeAtHome")}
-        </span>
-        <span className={classes.sectionEnd}>
-          {pantryOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-        </span>
-      </button>
-
-      {pantryOpen && (
-        <div className={classes.itemList}>
-          {pantryList.length > 0 ? (
-            pantryList.map(renderItem)
-          ) : (
-            <div className={classes.emptySection}>
-              <ShoppingCart size={20} />
-              <span>{t("mealPlanner", "noItemsInSection")}</span>
-            </div>
-          )}
-        </div>
-      )}
+      {categorizedGroups.map(({ category, items }) => {
+        const isOpen = openCategories.has(category);
+        const i18nKey = CATEGORY_I18N_KEYS[category];
+        return (
+          <div key={category}>
+            <button
+              className={classes.sectionHead}
+              onClick={() => toggleCategoryOpen(category)}
+            >
+              <span className={classes.sectionLabel}>
+                {i18nKey ? t("mealPlanner", i18nKey) : category}
+              </span>
+              <span className={classes.sectionEnd}>
+                <span className={classes.sectionBadge}>
+                  {items.length} {t("mealPlanner", "items")}
+                </span>
+                {isOpen ? (
+                  <ChevronUp size={16} />
+                ) : (
+                  <ChevronDown size={16} />
+                )}
+              </span>
+            </button>
+            {isOpen && (
+              <div className={classes.itemList}>{items.map(renderItem)}</div>
+            )}
+          </div>
+        );
+      })}
 
       {onClearChecked && checkedCount > 0 && (
         <button className={classes.uncheckBtn} onClick={onClearChecked}>
