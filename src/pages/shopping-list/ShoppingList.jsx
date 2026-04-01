@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
 import { FiCheck, FiShoppingCart, FiPrinter } from "react-icons/fi";
-import { Globe } from "lucide-react";
+import { Globe, Trash2 } from "lucide-react";
 import SearchBox from "../../components/controls/search/SearchBox";
 import { SortButton } from "../../components/controls/sort-button";
 import { search } from "../../components/recipes/utils";
@@ -56,6 +56,7 @@ function ShoppingList() {
     saved.current?.manualItems || [],
   );
   const [showList, setShowList] = useState(saved.current?.showList || false);
+  const [showSelectedRecipes, setShowSelectedRecipes] = useState(false);
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
   const [globalRecipes, setGlobalRecipes] = useState([]);
   const [loadingGlobal, setLoadingGlobal] = useState(false);
@@ -164,7 +165,16 @@ function ShoppingList() {
     setSelectedRecipes([]);
     setCheckedItems({});
     setShowList(false);
+    setShowSelectedRecipes(false);
     localStorage.removeItem(STORAGE_KEY);
+  };
+
+  const removeSelectedRecipe = (id) => {
+    setSelectedRecipes((prev) => {
+      const next = prev.filter((r) => r !== id);
+      if (next.length === 0) setShowSelectedRecipes(false);
+      return next;
+    });
   };
 
   if (showList && selectedRecipes.length > 0) {
@@ -203,6 +213,56 @@ function ShoppingList() {
     );
   }
 
+  if (showSelectedRecipes && selectedRecipes.length > 0) {
+    const selectedRecipeObjects = selectedRecipes
+      .map((id) => allAvailableRecipes.find((r) => r.id === id))
+      .filter(Boolean);
+
+    return (
+      <div className={classes.page}>
+        {mobileTabsEl && createPortal(mobileTitle, mobileTabsEl)}
+        <div className={classes.listHeader}>
+          <BackButton onClick={() => setShowSelectedRecipes(false)} />
+          {!mobileTabsEl && (
+            <h1 className={classes.title}>
+              {t("mealPlanner", "selectedRecipesList")}
+            </h1>
+          )}
+          <div className={classes.listHeaderActions}>
+            <span className={classes.selectionCount}>
+              {selectedRecipeObjects.length} {t("recipesView", "recipesCount")}
+            </span>
+          </div>
+        </div>
+        <div className={classes.recipeList}>
+          {selectedRecipeObjects.map((recipe) => (
+            <div key={recipe.id} className={classes.selectedRecipeRow}>
+              {recipe.image_src ? (
+                <img
+                  className={classes.recipeItemImage}
+                  src={recipe.image_src}
+                  alt=""
+                  loading="lazy"
+                />
+              ) : (
+                <span className={classes.recipeItemEmoji}>🍽️</span>
+              )}
+              <span className={classes.recipeItemName}>{recipe.name}</span>
+              <button
+                className={btnClasses.iconBtn}
+                onClick={() => removeSelectedRecipe(recipe.id)}
+                aria-label="remove"
+              >
+                <Trash2 size={16} />
+              </button>
+            </div>
+          ))}
+        </div>
+        <div className={classes.bottomSpacer} />
+      </div>
+    );
+  }
+
   const headerHasContent = !mobileTabsEl || selectedRecipes.length > 0;
 
   return (
@@ -210,10 +270,13 @@ function ShoppingList() {
       {mobileTabsEl && createPortal(mobileTitle, mobileTabsEl)}
       {selectedRecipes.length > 0 ? (
         <div className={classes.selectionBar}>
-          <span className={classes.selectionCount}>
+          <button
+            className={classes.selectionCountBtn}
+            onClick={() => setShowSelectedRecipes(true)}
+          >
             {selectedRecipes.length} {t("recipesView", "recipesCount")}{" "}
             {t("mealPlanner", "selected")}
-          </span>
+          </button>
           <div className={classes.cartAction}>
             <button className={btnClasses.clearBtn} onClick={handleClear}>
               {t("mealPlanner", "clearAll")}

@@ -4639,6 +4639,13 @@ const translations = {
       de: "Ausgewählte Rezepte hinzufügen",
       mixed: "Add Selected Recipes",
     },
+    selectedRecipesList: {
+      he: "מתכונים שנבחרו",
+      en: "Selected Recipes",
+      ru: "Выбранные рецепты",
+      de: "Ausgewählte Rezepte",
+      mixed: "Selected Recipes",
+    },
     shoppingListUpdated: {
       he: "רשימת קניות מעודכנת",
       en: "Shopping list updated",

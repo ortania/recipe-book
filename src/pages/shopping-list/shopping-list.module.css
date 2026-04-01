@@ -167,6 +167,35 @@
   font-weight: 500;
 }
 
+.selectionCountBtn {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.3em 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.selectionCountBtn:hover {
+  color: var(--clr-text-primary-hover);
+}
+
+/* ===== Selected Recipes View ===== */
+.selectedRecipeRow {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding: 0.6rem 0.8rem;
+  border-bottom: 1px solid var(--clr-border-light);
+  font-size: var(--basic-font);
+}
+
+.selectedRecipeRow:last-child {
+  border-bottom: none;
+}
+
 /* ===== Sub Header ===== */
 .subHeader {
   display: flex;
