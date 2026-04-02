@@ -1,5 +1,5 @@
-import React, { useRef } from "react";
-import { X, Camera, Upload, Loader2, Sparkles, Clipboard } from "lucide-react";
+import React, { useRef, useState, useEffect } from "react";
+import { X, Camera, Upload, Loader2, Sparkles, Clipboard, GripVertical } from "lucide-react";
 import imgClasses from "../../styles/shared/image-upload.module.css";
 import shared from "../../styles/shared/form-shared.module.css";
 
@@ -49,6 +49,7 @@ export default function RecipeImageUpload({
   onDrop,
   onPasteImage,
   onGenerateAiImage,
+  onReorderImages,
   fileInputRef,
   isMobile,
   hideHint = false,
@@ -56,6 +57,81 @@ export default function RecipeImageUpload({
 }) {
   const pasteAreaRef = useRef(null);
   const cameraInputRef = useRef(null);
+  const gridRef = useRef(null);
+  const [dragIdx, setDragIdx] = useState(null);
+  const [overIdx, setOverIdx] = useState(null);
+  const isReorderingRef = useRef(false);
+  const touchDragIdxRef = useRef(null);
+
+  // Non-passive touchmove on the grid to prevent scroll during touch-reorder
+  useEffect(() => {
+    const grid = gridRef.current;
+    if (!grid || !onReorderImages) return;
+
+    const onTouchMove = (e) => {
+      if (touchDragIdxRef.current === null) return;
+      e.preventDefault();
+      const touch = e.touches[0];
+      const el = document.elementFromPoint(touch.clientX, touch.clientY);
+      const item = el?.closest("[data-img-idx]");
+      if (item) {
+        const idx = parseInt(item.dataset.imgIdx, 10);
+        if (!isNaN(idx)) setOverIdx(idx);
+      }
+    };
+
+    grid.addEventListener("touchmove", onTouchMove, { passive: false });
+    return () => grid.removeEventListener("touchmove", onTouchMove);
+  }, [onReorderImages]);
+
+  // Mouse drag handlers
+  const handleItemDragStart = (e, i) => {
+    isReorderingRef.current = true;
+    setDragIdx(i);
+    e.dataTransfer.effectAllowed = "move";
+  };
+
+  const handleItemDragOver = (e, i) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (overIdx !== i) setOverIdx(i);
+  };
+
+  const handleItemDrop = (e, i) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (dragIdx !== null && dragIdx !== i) {
+      onReorderImages?.(dragIdx, i);
+    }
+    setDragIdx(null);
+    setOverIdx(null);
+    isReorderingRef.current = false;
+  };
+
+  const handleItemDragEnd = () => {
+    setDragIdx(null);
+    setOverIdx(null);
+    isReorderingRef.current = false;
+  };
+
+  // Touch drag handlers
+  const handleTouchStart = (i) => {
+    touchDragIdxRef.current = i;
+    setDragIdx(i);
+    setOverIdx(null);
+  };
+
+  const handleTouchEnd = () => {
+    const from = touchDragIdxRef.current;
+    setOverIdx((currentOver) => {
+      if (from !== null && currentOver !== null && from !== currentOver) {
+        onReorderImages?.(from, currentOver);
+      }
+      return null;
+    });
+    touchDragIdxRef.current = null;
+    setDragIdx(null);
+  };
 
   const handlePasteFromArea = (e) => {
     const imageItem = Array.from(e.clipboardData?.items || []).find((item) =>
@@ -156,13 +232,35 @@ export default function RecipeImageUpload({
 
       {hasImages && (
         <div
+          ref={gridRef}
           className={`${shared.imageGrid} ${isDragOver ? shared.dropActive : ""}`}
-          onDragOver={(e) => { e.preventDefault(); setIsDragOver(true); }}
-          onDragLeave={() => setIsDragOver(false)}
-          onDrop={onDrop}
+          onDragOver={(e) => {
+            if (isReorderingRef.current) return;
+            e.preventDefault();
+            setIsDragOver(true);
+          }}
+          onDragLeave={() => {
+            if (isReorderingRef.current) return;
+            setIsDragOver(false);
+          }}
+          onDrop={(e) => {
+            if (isReorderingRef.current) return;
+            onDrop(e);
+          }}
         >
           {images.map((url, i) => (
-            <div key={i} className={shared.imageGridItem}>
+            <div
+              key={i}
+              data-img-idx={i}
+              className={`${shared.imageGridItem} ${dragIdx === i ? shared.imageGridItemDragging : ""} ${overIdx === i && dragIdx !== i ? shared.imageGridItemOver : ""}`}
+              draggable={!!onReorderImages}
+              onDragStart={(e) => handleItemDragStart(e, i)}
+              onDragOver={(e) => handleItemDragOver(e, i)}
+              onDrop={(e) => handleItemDrop(e, i)}
+              onDragEnd={handleItemDragEnd}
+              onTouchStart={() => onReorderImages && handleTouchStart(i)}
+              onTouchEnd={() => onReorderImages && handleTouchEnd()}
+            >
               <img src={url} alt={`${i + 1}`} className={shared.imageGridPreview} />
               <button
                 type="button"
@@ -171,6 +269,11 @@ export default function RecipeImageUpload({
               >
                 <X size={14} />
               </button>
+              {onReorderImages && (
+                <div className={imgClasses.imageDragHandle}>
+                  <GripVertical size={16} />
+                </div>
+              )}
             </div>
           ))}
         </div>

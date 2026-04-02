@@ -248,6 +248,16 @@
   background: rgba(46, 204, 113, 0.06);
 }
 
+.imageGridItemDragging {
+  opacity: 0.35;
+  cursor: grabbing;
+}
+
+.imageGridItemOver {
+  outline: 3px solid var(--clr-brown-500);
+  outline-offset: -3px;
+}
+
 /* ========== Category Cards Grid ========== */
 /* .categoryCardsGrid {
   display: grid;

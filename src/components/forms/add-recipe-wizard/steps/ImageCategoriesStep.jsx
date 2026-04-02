@@ -12,6 +12,7 @@ export default function ImageCategoriesStep() {
     setImageDragOver,
     handleImageUpload,
     handleRemoveImage,
+    handleReorderImages,
     handleImageDrop,
     handlePasteImage,
     handleGenerateAiImage,
@@ -52,6 +53,7 @@ export default function ImageCategoriesStep() {
           setIsDragOver={setImageDragOver}
           onImageUpload={handleImageUpload}
           onRemoveImage={handleRemoveImage}
+          onReorderImages={handleReorderImages}
           onDrop={handleImageDrop}
           onPasteImage={handlePasteImage}
           onGenerateAiImage={handleGenerateAiImage}

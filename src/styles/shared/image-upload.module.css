@@ -52,6 +52,21 @@
   right: 0.35rem;
 }
 
+.imageDragHandle {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to bottom, transparent, rgba(0, 0, 0, 0.55));
+  color: var(--clr-white);
+  padding: 1.2rem 0 0.3rem;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  cursor: grab;
+  pointer-events: none;
+}
+
 /* ========== Action Row (compact upload / paste / AI buttons) ========== */
 
 .imageActionRow {

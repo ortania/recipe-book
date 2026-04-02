@@ -12,6 +12,7 @@ export default function ImageTab() {
     setEditImageDragOver,
     handleImageUpload,
     handleRemoveImage,
+    handleReorderImages,
     handleEditImageDrop,
     handleGenerateAiImage,
     handlePasteImage,
@@ -31,6 +32,7 @@ export default function ImageTab() {
         setIsDragOver={setEditImageDragOver}
         onImageUpload={handleImageUpload}
         onRemoveImage={handleRemoveImage}
+        onReorderImages={handleReorderImages}
         onDrop={handleEditImageDrop}
         onPasteImage={handlePasteImage}
         onGenerateAiImage={handleGenerateAiImage}

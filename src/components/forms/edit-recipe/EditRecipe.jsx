@@ -72,10 +72,16 @@ const TABS = [
   },
 ];
 
-function EditRecipe({ recipe, onSave, onCancel, onSaved, onDelete, groups = [] }) {
+function EditRecipe({
+  recipe,
+  onSave,
+  onCancel,
+  onSaved,
+  onDelete,
+  groups = [],
+}) {
   const { t } = useLanguage();
-  const { currentUser, addCategory, deleteCategory } = useRecipeBook();
-  const createdCategoriesRef = useRef([]);
+  const { currentUser, addCategory } = useRecipeBook();
   const { getTranslated: getTranslatedGroup } = useTranslatedList(
     groups,
     "name",
@@ -298,6 +304,15 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, onDelete, groups = [] }
     setEditedRecipe((prev) => {
       const updated = (prev.images || []).filter((_, i) => i !== index);
       return { ...prev, images: updated, image_src: updated[0] || "" };
+    });
+  };
+
+  const handleReorderImages = (fromIndex, toIndex) => {
+    setEditedRecipe((prev) => {
+      const imgs = [...(prev.images || [])];
+      const [moved] = imgs.splice(fromIndex, 1);
+      imgs.splice(toIndex, 0, moved);
+      return { ...prev, images: imgs, image_src: imgs[0] || "" };
     });
   };
 
@@ -628,7 +643,6 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, onDelete, groups = [] }
       );
       return;
     }
-    createdCategoriesRef.current = [];
     onCancel();
     onSaved?.();
   };
@@ -638,12 +652,8 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, onDelete, groups = [] }
   const [showNewCategoryInput, setShowNewCategoryInput] = useState(false);
 
   const handleCancel = useCallback(() => {
-    for (const catId of createdCategoriesRef.current) {
-      deleteCategory(catId).catch(() => {});
-    }
-    createdCategoriesRef.current = [];
     onCancel();
-  }, [onCancel, deleteCategory]);
+  }, [onCancel]);
 
   const handleDeleteClick = () => {
     setShowDeleteConfirm(true);
@@ -679,7 +689,6 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, onDelete, groups = [] }
         color,
       });
       if (newCat) {
-        createdCategoriesRef.current.push(newCat.id);
         setEditedRecipe((prev) => ({
           ...prev,
           categories: [...prev.categories, newCat.id],
@@ -722,6 +731,7 @@ function EditRecipe({ recipe, onSave, onCancel, onSaved, onDelete, groups = [] }
     handleServingsChange,
     handleImageUpload,
     handleRemoveImage,
+    handleReorderImages,
     handleEditImageDrop,
     handleGenerateAiImage,
     handlePasteImage,

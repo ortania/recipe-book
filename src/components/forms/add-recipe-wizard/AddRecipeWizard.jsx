@@ -91,8 +91,7 @@ function AddRecipeWizard({
   initialScreen = "method",
 }) {
   const { language, t } = useLanguage();
-  const { currentUser, addCategory, deleteCategory } = useRecipeBook();
-  const createdCategoriesRef = useRef([]);
+  const { currentUser, addCategory } = useRecipeBook();
   const { getTranslated: getTranslatedGroup } = useTranslatedList(
     groups,
     "name",
@@ -139,15 +138,10 @@ function AddRecipeWizard({
   const instructionsListRef = useRef(null);
 
   const handleClose = useCallback(() => {
-    // Delete any categories created during this session
-    for (const catId of createdCategoriesRef.current) {
-      deleteCategory(catId).catch(() => {});
-    }
-    createdCategoriesRef.current = [];
     onCancel(
       screen === "recording" || cameFromRecording ? "recording" : undefined,
     );
-  }, [onCancel, screen, cameFromRecording, deleteCategory]);
+  }, [onCancel, screen, cameFromRecording]);
 
   const handleTouchReorder = useCallback((fromIndex, toIndex, field) => {
     setRecipe((prev) => {
@@ -644,7 +638,7 @@ function AddRecipeWizard({
       const base64Images = await Promise.all(files.map((f) => resizeImage(f)));
       const parsed = await extractRecipeFromImage(base64Images);
       if (parsed.error) {
-        setImportError(parsed.error);
+        setImportError(t("addWizard", "photoFailed"));
         return;
       }
       setRecipe((prev) => ({
@@ -741,6 +735,15 @@ function AddRecipeWizard({
         images: updated,
         image_src: updated[0] || "",
       };
+    });
+  };
+
+  const handleReorderImages = (fromIndex, toIndex) => {
+    setRecipe((prev) => {
+      const imgs = [...(prev.images || [])];
+      const [moved] = imgs.splice(fromIndex, 1);
+      imgs.splice(toIndex, 0, moved);
+      return { ...prev, images: imgs, image_src: imgs[0] || "" };
     });
   };
 
@@ -891,7 +894,10 @@ function AddRecipeWizard({
   };
 
   const handlePastePhotoImage = (file) => {
-    handleImportFromPhoto({ target: { files: [file] }, preventDefault: () => {} });
+    handleImportFromPhoto({
+      target: { files: [file] },
+      preventDefault: () => {},
+    });
   };
 
   const preventDragDefault = (e) => e.preventDefault();
@@ -1007,7 +1013,6 @@ function AddRecipeWizard({
         color,
       });
       if (newCat) {
-        createdCategoriesRef.current.push(newCat.id);
         setRecipe((prev) => ({
           ...prev,
           categories: [...prev.categories, newCat.id],
@@ -1102,7 +1107,6 @@ function AddRecipeWizard({
     );
     try {
       await onAddRecipe(newRecipe);
-      createdCategoriesRef.current = [];
       onSaved?.();
     } catch (err) {
       console.error("🍎 NUTRITION - Failed to save recipe:", err);
@@ -1272,6 +1276,7 @@ function AddRecipeWizard({
     handlePastePhotoImage,
     handleImageUpload,
     handleRemoveImage,
+    handleReorderImages,
     handleImageDrop,
     handlePasteImage,
     handleGenerateAiImage,

@@ -150,29 +150,43 @@ export const extractRecipeFromImage = async (base64Images, language = "he") => {
   return extractRecipeDirectFromImage(images);
 };
 
-async function extractRecipeDirectFromImage(images) {
-  // Pass 1: Google Cloud Vision OCR — pure pixel reading, zero AI knowledge
-  const ocrResponse = await fetch(CLOUD_OCR_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      ...(await getAuthHeaders()),
-    },
-    body: JSON.stringify({ images }),
-  });
+const IMAGE_RECIPE_SYSTEM_PROMPT = `You are a recipe extraction expert specialized in reading handwritten and printed recipes in any language, especially Hebrew.
 
-  if (!ocrResponse.ok) {
-    throw new Error(`OCR failed (${ocrResponse.status})`);
-  }
+CRITICAL: The image may contain HANDWRITTEN text. You MUST read it carefully, even if messy or hard to read. Do your best to decipher every word. Handwritten Hebrew recipes are common — look for ingredient lists (often marked with *, -, or •) and instructions (often marked with <, >, numbers, or written as steps).
 
-  const { text: rawText } = await ocrResponse.json();
+Return valid JSON in this exact format:
+{
+  "name": "recipe name",
+  "ingredients": ["ingredient 1 with quantity", "ingredient 2"],
+  "instructions": ["step 1", "step 2"],
+  "prepTime": "15",
+  "cookTime": "30",
+  "servings": "4",
+  "notes": ""
+}
 
-  if (!rawText?.trim()) {
-    return { error: "No text found in image" };
-  }
+ABSOLUTE RULE — NO HALLUCINATION:
+- Extract ONLY text that is ACTUALLY VISIBLE and WRITTEN in the image.
+- NEVER invent, generate, complete, or add ANY content from your own knowledge.
+- If the instructions in the image are brief or incomplete, return them exactly as written — do NOT expand, elaborate, or add steps.
+- If only a few words of instructions are readable, return only those few words. An empty instructions array is better than invented steps.
+- If you are unsure about a word, write your best guess but NEVER make up entire sentences.
 
-  // Pass 2: GPT structures the raw OCR text — no image, no hallucination risk
-  const structureSystemPrompt = `You are a recipe formatter. You receive raw text extracted by an OCR scanner from a recipe image.
+Rules:
+- Read ALL text in the image thoroughly. Spend extra effort on handwritten text.
+- If the recipe is partially readable, extract whatever you CAN read. Do NOT return an error just because some words are unclear.
+- ingredients: include only items that appear to be ingredients. One item per array element.
+- Always write quantities as digits, not words. For example: "3 ביצים" not "שלוש ביצים". Put the number BEFORE the ingredient.
+- ONLY use "::" group prefixes for clearly labeled sub-sections (e.g. "::לבלילה", "::למלית"). Do NOT create groups for generic labels like "מרכיבים".
+- instructions: include ONLY steps that are ACTUALLY WRITTEN in the image. One step per array element. If instructions are hard to read, include only what you can decipher.
+- prepTime: return "" if not explicitly written in the image.
+- cookTime: return "" if not explicitly written in the image.
+- servings: return "" if not explicitly written in the image.
+- notes: include oven temperature or tips ONLY if written in the image. Return "" if none visible.
+- Keep the entire recipe in its original language. Do NOT translate.
+- ONLY return {"error": "No recipe found"} if the image clearly contains NO recipe at all (e.g. a photo of a landscape).`;
+
+const OCR_STRUCTURE_SYSTEM_PROMPT = `You are a recipe formatter. You receive raw text extracted by an OCR scanner from a recipe image.
 Your job is to structure it into JSON. Use ONLY the text provided — do NOT add, infer, or complete anything from your own knowledge.
 
 Return valid JSON in this exact format:
@@ -197,28 +211,111 @@ Rules:
 - Keep the entire recipe in its original language. Do NOT translate.
 - If no recipe is found, return: {"error": "No recipe found"}`;
 
-  const result = await callOpenAI({
-    model: "gpt-4o",
-    messages: [
-      { role: "system", content: structureSystemPrompt },
-      {
-        role: "user",
-        content: `Structure this recipe text into JSON:\n\n${rawText}`,
-      },
-    ],
-    temperature: 0,
-    max_tokens: 4096,
-    response_format: { type: "json_object" },
-  });
+function parseRecipeJSON(raw) {
+  const cleaned = raw
+    .replace(/```json\n?/g, "")
+    .replace(/```\n?/g, "")
+    .trim();
+  return JSON.parse(cleaned);
+}
+
+async function extractRecipeWithVision(images) {
+  const imageContent = images.map((img) => ({
+    type: "image_url",
+    image_url: { url: img, detail: "high" },
+  }));
 
   try {
-    const cleaned = result
-      .replace(/```json\n?/g, "")
-      .replace(/```\n?/g, "")
-      .trim();
-    return JSON.parse(cleaned);
-  } catch {
+    console.log("[ImageImport] Sending", images.length, "image(s) to GPT-4o vision");
+    const result = await callOpenAI({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: IMAGE_RECIPE_SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: [
+            { type: "text", text: "This image contains a recipe (possibly handwritten in Hebrew). Read all the text carefully and extract the recipe into JSON. If it's handwritten, do your best to read every word." },
+            ...imageContent,
+          ],
+        },
+      ],
+      temperature: 0.2,
+      max_tokens: 4096,
+      response_format: { type: "json_object" },
+    });
+    console.log("[ImageImport] Vision response:", result?.substring(0, 200));
+    return parseRecipeJSON(result);
+  } catch (e) {
+    console.error("[ImageImport] Vision extraction failed:", e.message);
     return { error: "Failed to parse recipe from image" };
+  }
+}
+
+async function extractRecipeDirectFromImage(images) {
+  let rawText = "";
+
+  // Pass 1: Try Google Cloud Vision OCR
+  try {
+    const ocrResponse = await fetch(CLOUD_OCR_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        ...(await getAuthHeaders()),
+      },
+      body: JSON.stringify({ images }),
+    });
+
+    if (ocrResponse.ok) {
+      const data = await ocrResponse.json();
+      rawText = data.text || "";
+    }
+  } catch (e) {
+    console.warn("[ImageImport] OCR failed:", e.message);
+  }
+
+  console.log("[ImageImport] OCR text length:", rawText?.trim().length || 0);
+
+  // If OCR returned very little text (e.g. handwriting), go straight to vision
+  if (!rawText?.trim() || rawText.trim().length < 30) {
+    console.log("[ImageImport] OCR insufficient, using GPT-4o vision");
+    return extractRecipeWithVision(images);
+  }
+
+  // Pass 2: GPT structures the raw OCR text
+  try {
+    const result = await callOpenAI({
+      model: "gpt-4o",
+      messages: [
+        { role: "system", content: OCR_STRUCTURE_SYSTEM_PROMPT },
+        {
+          role: "user",
+          content: `Structure this recipe text into JSON:\n\n${rawText}`,
+        },
+      ],
+      temperature: 0,
+      max_tokens: 4096,
+      response_format: { type: "json_object" },
+    });
+
+    const parsed = parseRecipeJSON(result);
+
+    // If OCR text produced garbage that GPT couldn't structure, try vision
+    if (parsed.error) {
+      console.log("[ImageImport] OCR structuring failed, trying vision fallback");
+      return extractRecipeWithVision(images);
+    }
+
+    // Sanity check: if OCR produced very few ingredients, vision might do better
+    if ((!parsed.ingredients || parsed.ingredients.length < 2) &&
+        (!parsed.instructions || parsed.instructions.length < 1)) {
+      console.log("[ImageImport] OCR result too sparse, trying vision fallback");
+      return extractRecipeWithVision(images);
+    }
+
+    return parsed;
+  } catch {
+    console.log("[ImageImport] OCR structuring threw, trying vision fallback");
+    return extractRecipeWithVision(images);
   }
 }
 
