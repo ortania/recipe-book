@@ -143,7 +143,7 @@ const junkPatterns =
   /related\s*articles|advertisement|sponsored|click\s*here|read\s*more|sign\s*up|subscribe|newsletter|copyright|©|http|www\.|ראה בקישור|לחצ[וי] כאן|see link|see recipe/i;
 
 const nonIngredientWords =
-  /^(יבשים|רטובים|לקישוט|להגשה|לציפוי|לבצק|למילוי|לעיטור|לבלילה|למלית|לסירופ|לקרם|לקוביות|לתערובת|לשכבה|לשטרוייזל|לרוטב|לתבלינים|לטיגון|לאפייה|למרינדה|לגרנולה|לדבש|לזיגוג|לטופינג|אופציונלי|optional|for garnish|for serving|for decoration|for the|מים|water|מכל|תבנית|תבניות|נייר אפייה|קערה|קערות|סיר|מחבת|תנור)$/i;
+  /^(יבשים|רטובים|לקישוט|להגשה|לציפוי|לבצק|למילוי|לעיטור|לבלילה|למלית|לסירופ|לקרם|לקוביות|לתערובת|לשכבה|לשטרוייזל|לרוטב|לתבלינים|לטיגון|לאפייה|למרינדה|לגרנולה|לדבש|לזיגוג|לטופינג|אופציונלי|optional|for garnish|for serving|for decoration|for the|מים|water|מכל|תבנית|תבניות|נייר אפייה|קערה|קערות|סיר|מחבת|תנור|שמן לטיגון|שמן לריסוס|שמן לסיכה|שמן לצליה)$/i;
 
 const NON_INGREDIENT_KEYS = new Set([
   "מכל", "תבנית", "תבניות", "נייר אפייה", "קערה", "קערות",
@@ -156,7 +156,7 @@ const SECTION_LIKE_LINE = /^ל\S+\s+\S/;
 
 // Common Hebrew measurement words to skip when extracting the key word
 const measurementWords =
-  /^(כוס|כוסות|כף|כפות|כפית|כפיות|גרם|ק"ג|קילו|ליטר|מ"ל|מל|חבילה|חבילות|שקית|שקיות|יח'|יחידה|יחידות|קורט|קמצוץ|גביע|גביעים|גדושה|גדושות|גדוש|שטוחה|שטוחות|שטוח|cup|cups|tbsp|tsp|tablespoon|teaspoon|gram|grams|kg|liter|ml|oz|ounce|ounces|pound|pounds|lb|lbs|piece|pieces|bunch|can|cans|clove|cloves|slice|slices|pinch|dash|handful|heaped|rounded|level|packed)$/i;
+  /^(כוס|כוסות|כף|כפות|כפית|כפיות|גרם|ק"ג|קילו|ליטר|מ"ל|מל|חבילה|חבילות|שקית|שקיות|סלסלה|סלסלת|קופסה|קופסת|קופסא|יח'|יחידה|יחידות|קורט|קמצוץ|גביע|גביעים|גדושה|גדושות|גדוש|שטוחה|שטוחות|שטוח|קליפה|קליפת|חצאי|חצאים|פרוסה|פרוסות|נתח|נתחי|cup|cups|tbsp|tsp|tablespoon|teaspoon|gram|grams|kg|liter|ml|oz|ounce|ounces|pound|pounds|lb|lbs|piece|pieces|bunch|can|cans|clove|cloves|slice|slices|pinch|dash|handful|heaped|rounded|level|packed)$/i;
 
 // Quantity adverbs, fractions, and Hebrew number words to skip when extracting the key
 const quantityAdverbs = /^(קצת|מעט|הרבה|שפע|כמה|חצי|וחצי|רבע|שליש|רביע|אחד|אחת|שניים|שנים|שתיים|שתי|שלוש|שלושה|ארבע|ארבעה|חמש|חמישה|שש|שישה|שבע|שבעה|שמונה|תשע|תשעה|עשר|עשרה|ושליש|ורבע|little|some|few|lots|half|quarter|third)$/i;
@@ -207,6 +207,7 @@ export function normalizeKey(s) {
     if (
       !measurementWords.test(word) &&
       !quantityAdverbs.test(word) &&
+      !_prepSet.has(word) &&
       word.length > 1
     ) {
       // Check if this word starts a compound name

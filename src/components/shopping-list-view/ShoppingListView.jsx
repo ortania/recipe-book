@@ -6,6 +6,7 @@ import {
   Check,
   ChevronDown,
   ChevronUp,
+  Pencil,
 } from "lucide-react";
 import { useLanguage } from "../../context";
 import {
@@ -207,7 +208,7 @@ export default function ShoppingListView({
             className={classes.saveBtn}
             onClick={() => handleSaveEdit(item.key)}
           >
-            <Check size={14} />
+            <Pencil size={14} />
           </button>
         )}
 

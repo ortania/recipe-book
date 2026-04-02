@@ -283,34 +283,55 @@
 
 /* ===== Shopping List Modal ===== */
 .shoppingModal {
-  background: var(--clr-bg-card);
-  border-radius: 14px;
+  background: var(--clr-bg-primary);
   width: 100%;
-  max-width: 460px;
-  max-height: 80vh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   overflow-y: auto;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
-  padding: 1rem 2rem 4rem;
+  padding: 1rem 1.5rem 6rem;
+  max-width: 600px;
 }
 
 .shoppingModalHeader {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  padding: 1.1rem 0;
+  padding: 1.1rem 0 1rem;
   border-bottom: 1px solid var(--clr-border-light);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+}
+
+.shoppingModalTitleGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
 }
 
 .shoppingModalTitle {
-  font-size: var(--basic-font);
+  font-size: var(--large-font);
   font-weight: var(--font-weight-heading);
   margin: 0;
   display: flex;
   align-items: center;
   gap: 0.5rem;
+}
+
+.shoppingModalSubtitle {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+  margin: 0;
+}
+
+/* ===== Shopping List Full-screen Overlay ===== */
+.shoppingOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  background: var(--clr-bg-primary);
+  display: flex;
+  justify-content: center;
+  overflow-y: auto;
 }
 
 /* ===== Recipe Picker Modal ===== */

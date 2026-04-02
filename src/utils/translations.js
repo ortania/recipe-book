@@ -4352,6 +4352,13 @@ const translations = {
       de: "Einkaufsliste",
       mixed: "Shopping List",
     },
+    shoppingListFromPlanner: {
+      he: "מתוך התכנון השבועי",
+      en: "From weekly planner",
+      ru: "Из недельного плана",
+      de: "Aus dem Wochenplan",
+      mixed: "From weekly planner",
+    },
     chooseRecipe: {
       he: "בחרו מתכונים",
       en: "Choose recipes",

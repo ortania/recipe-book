@@ -87,6 +87,15 @@ function MealPlanner() {
   const [pickerKey, setPickerKey] = useState(0);
   const [showShopping, setShowShopping] = useState(false);
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
+
+  useEffect(() => {
+    if (showShopping) {
+      document.body.classList.add("modal-open");
+    } else {
+      document.body.classList.remove("modal-open");
+    }
+    return () => document.body.classList.remove("modal-open");
+  }, [showShopping]);
   const [globalCount, setGlobalCount] = useState(null);
   const [manualItems, setManualItems] = useState([]);
 
@@ -329,21 +338,20 @@ function MealPlanner() {
 
       <div className={classes.bottomSpacer} />
 
-      {/* ===== Shopping List Modal ===== */}
-      {showShopping && (
-        <div
-          className={classes.pickerOverlay}
-          onClick={() => setShowShopping(false)}
-        >
-          <div
-            className={classes.shoppingModal}
-            onClick={(e) => e.stopPropagation()}
-          >
+      {/* ===== Shopping List Full-screen ===== */}
+      {showShopping && createPortal(
+        <div className={classes.shoppingOverlay}>
+          <div className={classes.shoppingModal}>
             <div className={classes.shoppingModalHeader}>
-              <h3 className={classes.shoppingModalTitle}>
-                <ShoppingCart size={18} style={{ marginRight: "0.5rem" }} />
-                {t("mealPlanner", "shoppingList")}
-              </h3>
+              <div className={classes.shoppingModalTitleGroup}>
+                <h3 className={classes.shoppingModalTitle}>
+                  <ShoppingCart size={20} />
+                  {t("mealPlanner", "shoppingList")}
+                </h3>
+                <p className={classes.shoppingModalSubtitle}>
+                  {t("mealPlanner", "shoppingListFromPlanner")}
+                </p>
+              </div>
               <CloseButton onClick={() => setShowShopping(false)} />
             </div>
 
@@ -356,7 +364,8 @@ function MealPlanner() {
               manualItems={manualItems}
             />
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );

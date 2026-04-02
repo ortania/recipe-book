@@ -95,6 +95,8 @@
   font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
+  text-decoration: underline;
+  text-decoration-color: currentColor;
 }
 
 .sectionEnd {
@@ -128,8 +130,9 @@
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  background: var(--clr-bg-tertiary);
-  border-radius: var(--input-border-radius);
+  border-bottom: 1px solid var(--clr-border-medium);
+  /* background: var(--clr-bg-tertiary);
+  border-radius: var(--input-border-radius); */
   padding: 0.65rem 0.7rem 0.65rem 0.9rem;
   color: var(--clr-text-primary);
   font-size: var(--basic-font);
@@ -145,9 +148,13 @@
   font-weight: var(--font-weight-secondary);
 }
 
-.itemChecked {
+.itemChecked .itemText {
   opacity: var(--disabled-opacity);
 }
+
+/* .itemChecked {
+  opacity: var(--disabled-opacity);
+} */
 
 .itemChecked .itemText {
   text-decoration: line-through;
@@ -155,7 +162,7 @@
 }
 
 .itemDisabled {
-  opacity: var(--disabled-opacity);
+  /* opacity: var(--disabled-opacity); */
 }
 
 .itemDisabled .itemText {
