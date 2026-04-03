@@ -337,9 +337,7 @@
 }
 
 .recipeChooserOption {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  display: block;
   width: 100%;
   padding: 0.65rem 1rem;
   border: none;
@@ -350,6 +348,20 @@
   cursor: pointer;
   transition: var(--transition-fast);
   text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.spinnerIcon {
+  display: inline-block;
+  vertical-align: middle;
+  margin-inline-start: 0.4rem;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .recipeChooserOption + .recipeChooserOption {

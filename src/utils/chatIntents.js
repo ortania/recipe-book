@@ -220,11 +220,17 @@ export function extractRecipeNames(text) {
   const names = [];
   for (const line of text.split("\n")) {
     const trimmed = line.trim();
-    const m = trimmed.match(
-      /^(?:\d+[.)]\s*|\-\s+|•\s+)\s*\*{0,2}(.+?)(?:\*{0,2})\s*$/
-    );
+    if (!/^(?:\d+[.)]\s*|-\s+|•\s+)/.test(trimmed)) continue;
+
+    const boldMatch = trimmed.match(/\*\*(.+?)\*\*/);
+    if (boldMatch) {
+      const name = boldMatch[1].trim();
+      if (name.length >= 3 && name.length <= 60) { names.push(name); continue; }
+    }
+
+    const m = trimmed.match(/^(?:\d+[.)]\s*|-\s+|•\s+)\s*(.+)$/);
     if (m) {
-      const raw = m[1].replace(/\*+/g, "").replace(/\s*[-–:].*$/, "").trim();
+      const raw = m[1].replace(/\*+/g, "").replace(/\s*[-–:]\s.*$/, "").trim();
       if (raw.length >= 3 && raw.length <= 60) names.push(raw);
     }
   }

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lightbulb, Info, BookOpen, ChevronLeft, Plus } from "lucide-react";
+import { Lightbulb, Info, BookOpen, ChevronLeft, Plus, Loader2 } from "lucide-react";
 import { useChatWindow } from "./ChatWindowContext";
 import { getFollowUpActions } from "../../utils/chatIntents";
 
@@ -42,7 +42,7 @@ export default function ChatWindowMessages() {
     customUpdateText, setCustomUpdateText,
     appliedFields, userInitial,
     handleApplyUpdate, handleChipClick,
-    handleCreateRecipeFromName,
+    handleCreateRecipeFromName, loadingRecipeName,
     messagesEndRef, messagesAreaRef,
     recipe, recipeContext,
     classes, t,
@@ -227,6 +227,9 @@ export default function ChatWindowMessages() {
                               disabled={isLoading}
                             >
                               {name}
+                              {loadingRecipeName === name && (
+                                <Loader2 size={14} className={classes.spinnerIcon} />
+                              )}
                             </button>
                           ))}
                         </>
