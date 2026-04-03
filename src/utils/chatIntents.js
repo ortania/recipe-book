@@ -201,3 +201,69 @@ export function findRelevantRecipes(userMessage, recipes, maxResults = 3) {
     return { id: r.id, name, ...(hint && { hint }) };
   });
 }
+
+/* ── Create-recipe-from-chat helpers ── */
+
+const CREATE_RECIPE_INTENTS = new Set([
+  "recipe_idea", "ingredients_based", "meal_goal",
+]);
+
+export function shouldOfferCreateRecipe(intent, assistantMessage) {
+  if (!assistantMessage || assistantMessage.length < 40) return false;
+  if (CREATE_RECIPE_INTENTS.has(intent)) return true;
+  if (extractRecipeNames(assistantMessage).length > 0) return true;
+  return false;
+}
+
+export function extractRecipeNames(text) {
+  if (!text) return [];
+  const names = [];
+  for (const line of text.split("\n")) {
+    const trimmed = line.trim();
+    const m = trimmed.match(
+      /^(?:\d+[.)]\s*|\-\s+|•\s+)\s*\*{0,2}(.+?)(?:\*{0,2})\s*$/
+    );
+    if (m) {
+      const raw = m[1].replace(/\*+/g, "").replace(/\s*[-–:].*$/, "").trim();
+      if (raw.length >= 3 && raw.length <= 60) names.push(raw);
+    }
+  }
+  return names;
+}
+
+export function buildRecipeDraftFromChat(text) {
+  if (!text) return null;
+  const lines = text.split("\n").map((l) => l.trim()).filter(Boolean);
+  let name = "";
+  const ingredients = [];
+  const instructions = [];
+  let section = "";
+
+  for (const line of lines) {
+    if (/^#{1,3}\s|^[*]*מרכיבים|^[*]*מצרכים|^[*]*חומרים|^[*]*ingredients/i.test(line)) {
+      section = "ingredients";
+      continue;
+    }
+    if (/^[*]*הוראות|^[*]*אופן הכנה|^[*]*שלבים|^[*]*instructions|^[*]*steps|^[*]*directions/i.test(line)) {
+      section = "steps";
+      continue;
+    }
+    const clean = line.replace(/^[\d.)\-*•–—]+\s*/, "").replace(/\*+/g, "").trim();
+    if (!name && clean.length >= 3 && clean.length <= 80 && section === "") {
+      name = clean;
+      continue;
+    }
+    if (section === "ingredients" && clean.length >= 2) {
+      ingredients.push(clean);
+    } else if (section === "steps" && clean.length >= 5) {
+      instructions.push(clean);
+    }
+  }
+
+  if (!name && lines.length > 0) name = lines[0].replace(/\*+/g, "").trim().slice(0, 60);
+
+  const draft = { name };
+  if (ingredients.length > 0) draft.ingredients = ingredients;
+  if (instructions.length > 0) draft.instructions = instructions;
+  return draft;
+}

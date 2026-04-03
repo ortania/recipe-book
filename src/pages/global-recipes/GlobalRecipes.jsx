@@ -39,6 +39,7 @@ function GlobalRecipes() {
   });
   const [showAddRecipe, setShowAddRecipe] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
+  const [chatRecipeDraft, setChatRecipeDraft] = useState(null);
   const [saveToastOpen, setSaveToastOpen] = useState(false);
   const handleSaveToastClose = useCallback(() => {
     setSaveToastOpen(false);
@@ -137,16 +138,27 @@ function GlobalRecipes() {
           onAddRecipe={addRecipe}
           onCancel={(lastScreen) => {
             setShowAddRecipe(false);
+            setChatRecipeDraft(null);
             if (lastScreen) setAddMethod(lastScreen);
           }}
           onSaved={() => setSaveToastOpen(true)}
           groups={categories}
           initialScreen={addMethod}
+          initialRecipe={chatRecipeDraft}
         />
       )}
 
       <RecipesView
         onAddRecipe={(method) => {
+          try {
+            const draft = sessionStorage.getItem("chatRecipeDraft");
+            if (draft) {
+              sessionStorage.removeItem("chatRecipeDraft");
+              setChatRecipeDraft(JSON.parse(draft));
+            } else {
+              setChatRecipeDraft(null);
+            }
+          } catch { setChatRecipeDraft(null); }
           setAddMethod(method || "method");
           setShowAddRecipe(true);
         }}

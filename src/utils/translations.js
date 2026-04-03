@@ -2941,6 +2941,27 @@ const translations = {
       de: "Schnelle Ideen",
       mixed: "Quick ideas",
     },
+    createRecipeFromChat: {
+      he: "צרי מתכון",
+      en: "Create recipe",
+      ru: "Создать рецепт",
+      de: "Rezept erstellen",
+      mixed: "Create recipe",
+    },
+    chooseRecipeToCreate: {
+      he: "בחרי מתכון ליצירה",
+      en: "Choose a recipe to create",
+      ru: "Выберите рецепт для создания",
+      de: "Rezept zum Erstellen wählen",
+      mixed: "Choose a recipe to create",
+    },
+    chooseRecipeHint: {
+      he: "לחצי על רעיון כדי לפתוח אותו כטיוטת מתכון לעריכה",
+      en: "Tap an idea to open it as a recipe draft for editing",
+      ru: "Нажмите на идею, чтобы открыть как черновик рецепта",
+      de: "Tippe auf eine Idee, um sie als Rezeptentwurf zu öffnen",
+      mixed: "Tap an idea to open it as a recipe draft for editing",
+    },
   },
 
   // ===================== CONVERSIONS =====================

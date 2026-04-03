@@ -7,6 +7,8 @@ import {
 } from "../../services/openai";
 import {
   detectIntent, COMPACT_QUICK_SUGGESTIONS, findRelevantRecipes,
+  shouldOfferCreateRecipe, buildRecipeDraftFromChat,
+  extractRecipeNames,
 } from "../../utils/chatIntents";
 import { normalizeImageDataUrl } from "../../firebase/imageService";
 import { useLanguage, useRecipeBook } from "../../context";
@@ -17,6 +19,7 @@ import classes from "./chat-window.module.css";
 
 import { ChatWindowContext } from "./ChatWindowContext";
 import ChatWindowMessages from "./ChatWindowMessages";
+import { useRecipesView } from "../recipes/RecipesViewContext";
 
 const IDEA_CHIPS = [
   "ideaChip1", "ideaChip2", "ideaChip3", "ideaChip4",
@@ -165,6 +168,11 @@ function ChatWindow({
       const assistantMsg = { role: "assistant", content: response };
       if (intent) assistantMsg.intent = intent;
       if (matched.length > 0) assistantMsg.matchedRecipes = matched;
+      if (!isRecipeMode && shouldOfferCreateRecipe(intent, response)) {
+        assistantMsg.offerCreate = true;
+        const names = extractRecipeNames(response);
+        if (names.length > 0) assistantMsg.recipeNames = names;
+      }
       setMessages([...updatedMessages, assistantMsg]);
     } catch (err) {
       if (err.name === "AbortError") return;
@@ -281,6 +289,43 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
   };
 
   const handleChipClick = (text) => { if (text) sendMessage(text); };
+
+  const recipesView = useRecipesView();
+
+  const handleCreateRecipeFromName = useCallback(async (recipeName) => {
+    if (!recipesView?.onAddRecipe || isLoading) return;
+    setIsLoading(true);
+    setError("");
+    const askMsg = { role: "user", content: `כתוב לי מתכון מלא ל${recipeName} עם רשימת מרכיבים מדויקת ואופן הכנה צעד אחר צעד` };
+    const updated = [...messages, askMsg];
+    setMessages(updated);
+    abortRef.current = new AbortController();
+    try {
+      const { callOpenAI } = await import("../../services/openai");
+      const response = await callOpenAI({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: `You are a recipe assistant. Write a complete recipe in the user's language. Format:\nFirst line: recipe name\nThen a section titled מרכיבים: with one ingredient per line (use - prefix).\nThen a section titled אופן הכנה: with numbered steps.` },
+          ...updated.slice(-6).map(({ role, content }) => ({ role, content })),
+        ],
+        temperature: 0.7,
+        max_tokens: 800,
+      }, { signal: abortRef.current.signal });
+      const assistantMsg = { role: "assistant", content: response, offerCreate: true, _singleRecipe: true };
+      setMessages([...updated, assistantMsg]);
+      const draft = buildRecipeDraftFromChat(response);
+      if (draft && draft.name) {
+        try { sessionStorage.setItem("chatRecipeDraft", JSON.stringify(draft)); } catch {}
+        recipesView.onAddRecipe("manual");
+      }
+    } catch (err) {
+      if (err.name === "AbortError") return;
+      setError(err.message || "Failed to get recipe details");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [recipesView, isLoading, messages, setMessages, setIsLoading, setError]);
+
   const isEmpty = messages.length === 0 && !isRecipeMode;
 
   const hasMessages = messages.length > 0;
@@ -292,6 +337,7 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
     appliedFields, userInitial,
     handleApplyUpdate: onUpdateRecipe ? handleApplyUpdate : null,
     handleChipClick,
+    handleCreateRecipeFromName,
     messagesEndRef, messagesAreaRef,
     recipe, recipeContext,
     classes, t,

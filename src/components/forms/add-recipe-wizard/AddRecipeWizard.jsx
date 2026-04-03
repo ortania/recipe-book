@@ -89,6 +89,7 @@ function AddRecipeWizard({
   groups = [],
   defaultGroup = null,
   initialScreen = "method",
+  initialRecipe = null,
 }) {
   const { language, t } = useLanguage();
   const { currentUser, addCategory } = useRecipeBook();
@@ -99,9 +100,35 @@ function AddRecipeWizard({
   const [screen, setScreen] = useState(initialScreen); // method | url | text | photo | manual | recording
   const [cameFromRecording, setCameFromRecording] = useState(false);
   const [manualStep, setManualStep] = useState(0);
-  const [recipe, setRecipe] = useState({
-    ...INITIAL_RECIPE,
-    categories: defaultGroup ? [defaultGroup] : [],
+  const [recipe, setRecipe] = useState(() => {
+    const base = {
+      ...INITIAL_RECIPE,
+      categories: defaultGroup ? [defaultGroup] : [],
+    };
+    let draft = initialRecipe;
+    if (!draft) {
+      try {
+        const stored = sessionStorage.getItem("chatRecipeDraft");
+        if (stored) {
+          draft = JSON.parse(stored);
+          sessionStorage.removeItem("chatRecipeDraft");
+        }
+      } catch {}
+    }
+    if (draft) {
+      return {
+        ...base,
+        ...draft,
+        categories: draft.categories || base.categories,
+        ingredients: draft.ingredients?.length
+          ? draft.ingredients
+          : base.ingredients,
+        instructions: draft.instructions?.length
+          ? draft.instructions
+          : base.instructions,
+      };
+    }
+    return base;
   });
   const [recipeUrl, setRecipeUrl] = useState("");
   const [recipeAuthor, setRecipeAuthor] = useState("");

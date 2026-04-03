@@ -48,6 +48,7 @@ function Categories() {
 
   const [showAddRecipe, setShowAddRecipe] = useState(false);
   const [addMethod, setAddMethod] = useState("method");
+  const [chatRecipeDraft, setChatRecipeDraft] = useState(null);
   const [showChat, setShowChat] = useState(false);
   const [saveToastOpen, setSaveToastOpen] = useState(false);
   const handleSaveToastClose = useCallback(() => {
@@ -96,12 +97,14 @@ function Categories() {
           onAddRecipe={addRecipe}
           onCancel={(lastScreen) => {
             setShowAddRecipe(false);
+            setChatRecipeDraft(null);
             if (lastScreen) setAddMethod(lastScreen);
           }}
           onSaved={() => setSaveToastOpen(true)}
           defaultGroup={defaultGroup}
           groups={categories}
           initialScreen={addMethod}
+          initialRecipe={chatRecipeDraft}
         />
       )}
 
@@ -111,6 +114,15 @@ function Categories() {
         onEditRecipe={editRecipe}
         onDeleteRecipe={deleteRecipe}
         onAddRecipe={(method) => {
+          try {
+            const draft = sessionStorage.getItem("chatRecipeDraft");
+            if (draft) {
+              sessionStorage.removeItem("chatRecipeDraft");
+              setChatRecipeDraft(JSON.parse(draft));
+            } else {
+              setChatRecipeDraft(null);
+            }
+          } catch { setChatRecipeDraft(null); }
           setAddMethod(method || "method");
           setShowAddRecipe(true);
         }}

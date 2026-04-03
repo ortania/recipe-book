@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lightbulb, Info, BookOpen, ChevronLeft } from "lucide-react";
+import { Lightbulb, Info, BookOpen, ChevronLeft, Plus } from "lucide-react";
 import { useChatWindow } from "./ChatWindowContext";
 import { getFollowUpActions } from "../../utils/chatIntents";
 
@@ -42,6 +42,7 @@ export default function ChatWindowMessages() {
     customUpdateText, setCustomUpdateText,
     appliedFields, userInitial,
     handleApplyUpdate, handleChipClick,
+    handleCreateRecipeFromName,
     messagesEndRef, messagesAreaRef,
     recipe, recipeContext,
     classes, t,
@@ -110,77 +111,169 @@ export default function ChatWindowMessages() {
             message.role === "user" ? classes.userMessage : classes.assistantMessage
           }`}
         >
-          <div className={classes.bubble}>
-            {message.image && (
-              <img src={message.image} alt="Uploaded food" className={classes.chatImage} />
-            )}
-            {message.content}
+          {message.role === "assistant" ? (
+            <div className={classes.assistantBubbleGroup}>
+              <div className={classes.bubble}>
+                {message.image && (
+                  <img src={message.image} alt="Uploaded food" className={classes.chatImage} />
+                )}
+                {message.content}
 
-            {message.role === "assistant" && handleApplyUpdate && (
-              <div className={classes.applySection}>
-                {appliedFields[index] ? (
-                  <div className={classes.updateSummary}>
-                    {appliedFields[index]}
-                    <div className={classes.autoUpdateNote}>
-                      <Info size={14} />
-                      {t("recipeChat", "autoUpdateNote")}
-                    </div>
-                  </div>
-                ) : (
-                  <div className={classes.applyActions}>
-                    {customUpdateIdx !== index && (
-                      <button
-                        className={classes.applyBtn}
-                        onClick={() => handleApplyUpdate(message.content, index)}
-                        disabled={applyingIdx !== null}
-                      >
-                        {applyingIdx === index
-                          ? t("recipeChat", "updating")
-                          : t("recipeChat", "applyToRecipe")}
-                      </button>
-                    )}
-                    {customUpdateIdx === index ? (
-                      <div className={classes.customUpdateWrap}>
-                        <input
-                          className={classes.customUpdateInput}
-                          value={customUpdateText}
-                          onChange={(e) => setCustomUpdateText(e.target.value)}
-                          placeholder={t("recipeChat", "customUpdatePlaceholder")}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter" && customUpdateText.trim()) {
-                              handleApplyUpdate(message.content, index, customUpdateText.trim());
-                            }
-                          }}
-                          disabled={applyingIdx !== null}
-                        />
-                        <button
-                          className={classes.customUpdateBtn}
-                          onClick={() => handleApplyUpdate(message.content, index, customUpdateText.trim())}
-                          disabled={applyingIdx !== null || !customUpdateText.trim()}
-                        >
-                          {t("recipeChat", "applyCustom")}
-                        </button>
-                        <button
-                          className={classes.customCancelBtn}
-                          onClick={() => { setCustomUpdateIdx(null); setCustomUpdateText(""); }}
-                        >
-                          ✕
-                        </button>
+                {handleApplyUpdate && (
+                  <div className={classes.applySection}>
+                    {appliedFields[index] ? (
+                      <div className={classes.updateSummary}>
+                        {appliedFields[index]}
+                        <div className={classes.autoUpdateNote}>
+                          <Info size={14} />
+                          {t("recipeChat", "autoUpdateNote")}
+                        </div>
                       </div>
                     ) : (
-                      <button
-                        className={classes.customChooseBtn}
-                        onClick={() => { setCustomUpdateIdx(index); setCustomUpdateText(""); }}
-                        disabled={applyingIdx !== null}
-                      >
-                        {t("recipeChat", "customUpdate")}
-                      </button>
+                      <div className={classes.applyActions}>
+                        {customUpdateIdx !== index && (
+                          <button
+                            className={classes.applyBtn}
+                            onClick={() => handleApplyUpdate(message.content, index)}
+                            disabled={applyingIdx !== null}
+                          >
+                            {applyingIdx === index
+                              ? t("recipeChat", "updating")
+                              : t("recipeChat", "applyToRecipe")}
+                          </button>
+                        )}
+                        {customUpdateIdx === index ? (
+                          <div className={classes.customUpdateWrap}>
+                            <input
+                              className={classes.customUpdateInput}
+                              value={customUpdateText}
+                              onChange={(e) => setCustomUpdateText(e.target.value)}
+                              placeholder={t("recipeChat", "customUpdatePlaceholder")}
+                              onKeyDown={(e) => {
+                                if (e.key === "Enter" && customUpdateText.trim()) {
+                                  handleApplyUpdate(message.content, index, customUpdateText.trim());
+                                }
+                              }}
+                              disabled={applyingIdx !== null}
+                            />
+                            <button
+                              className={classes.customUpdateBtn}
+                              onClick={() => handleApplyUpdate(message.content, index, customUpdateText.trim())}
+                              disabled={applyingIdx !== null || !customUpdateText.trim()}
+                            >
+                              {t("recipeChat", "applyCustom")}
+                            </button>
+                            <button
+                              className={classes.customCancelBtn}
+                              onClick={() => { setCustomUpdateIdx(null); setCustomUpdateText(""); }}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        ) : (
+                          <button
+                            className={classes.customChooseBtn}
+                            onClick={() => { setCustomUpdateIdx(index); setCustomUpdateText(""); }}
+                            disabled={applyingIdx !== null}
+                          >
+                            {t("recipeChat", "customUpdate")}
+                          </button>
+                        )}
+                      </div>
                     )}
                   </div>
                 )}
               </div>
-            )}
-          </div>
+              {!isRecipeMode && (() => {
+                const hasChooser = message.offerCreate && !message._singleRecipe && handleCreateRecipeFromName;
+                const hasResults = message.matchedRecipes && message.matchedRecipes.length > 0;
+                if (!hasChooser && !hasResults) return null;
+
+                const chooserNames = hasChooser
+                  ? (message.recipeNames?.length
+                      ? message.recipeNames
+                      : (() => {
+                          const fl = message.content.split("\n").find(l => l.trim().length >= 3);
+                          const n = fl ? fl.replace(/^[\d.)\-*•]+\s*/, "").replace(/\*+/g, "").trim().slice(0, 50) : "";
+                          return n ? [n] : [];
+                        })())
+                  : [];
+
+                if (hasChooser && chooserNames.length === 0) {
+                  if (!hasResults) return null;
+                }
+
+                const showChooser = chooserNames.length > 0;
+                return (
+                  <>
+                    <div className={classes.sectionDivider} />
+                    <div className={classes.assistantFollowUp}>
+                      {showChooser && (
+                        <>
+                          <div className={classes.recipeChooserHeading}>
+                            <span className={classes.recipeChooserTitle}>
+                              <Plus size={14} />
+                              {t("chat", "chooseRecipeToCreate")}
+                            </span>
+                            <span className={classes.recipeChooserSubtitle}>
+                              {t("chat", "chooseRecipeHint")}
+                            </span>
+                          </div>
+                          {chooserNames.map((name) => (
+                            <button
+                              key={name}
+                              className={classes.recipeChooserOption}
+                              onClick={() => handleCreateRecipeFromName(name)}
+                              disabled={isLoading}
+                            >
+                              {name}
+                            </button>
+                          ))}
+                        </>
+                      )}
+                      {showChooser && hasResults && (
+                        <div className={classes.sectionDivider} />
+                      )}
+                      {hasResults && (
+                        <>
+                          <span className={classes.recipeResultsLabel}>
+                            <BookOpen size={15} />
+                            {t("chat", "matchingRecipes")}
+                          </span>
+                          {message.matchedRecipes.map((r) => (
+                            <button
+                              key={r.id}
+                              className={classes.recipeResultItem}
+                              onClick={() => navigate(`/recipe/${r.id}`)}
+                            >
+                              <span className={classes.recipeResultInfo}>
+                                <span className={classes.recipeResultName}>{r.name}</span>
+                                {r.hint && (
+                                  <span className={classes.recipeResultHint}>
+                                    {t("chat", r.hint)}
+                                  </span>
+                                )}
+                              </span>
+                              <span className={classes.recipeResultAction}>
+                                {t("chat", "openRecipe")} <ChevronLeft size={14} />
+                              </span>
+                            </button>
+                          ))}
+                        </>
+                      )}
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+          ) : (
+            <div className={classes.bubble}>
+              {message.image && (
+                <img src={message.image} alt="Uploaded food" className={classes.chatImage} />
+              )}
+              {message.content}
+            </div>
+          )}
           {message.role === "assistant" &&
             !isRecipeMode &&
             message.intent &&
@@ -194,36 +287,6 @@ export default function ChatWindowMessages() {
                     disabled={isLoading}
                   >
                     {t("chat", action.labelKey)}
-                  </button>
-                ))}
-              </div>
-            )}
-          {message.role === "assistant" &&
-            !isRecipeMode &&
-            message.matchedRecipes &&
-            message.matchedRecipes.length > 0 && (
-              <div className={classes.recipeResults}>
-                <span className={classes.recipeResultsLabel}>
-                  <BookOpen size={15} />
-                  {t("chat", "matchingRecipes")}
-                </span>
-                {message.matchedRecipes.map((r) => (
-                  <button
-                    key={r.id}
-                    className={classes.recipeResultItem}
-                    onClick={() => navigate(`/recipe/${r.id}`)}
-                  >
-                    <span className={classes.recipeResultInfo}>
-                      <span className={classes.recipeResultName}>{r.name}</span>
-                      {r.hint && (
-                        <span className={classes.recipeResultHint}>
-                          {t("chat", r.hint)}
-                        </span>
-                      )}
-                    </span>
-                    <span className={classes.recipeResultAction}>
-                      {t("chat", "openRecipe")} <ChevronLeft size={14} />
-                    </span>
                   </button>
                 ))}
               </div>
