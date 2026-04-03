@@ -1,8 +1,13 @@
 import { useMemo } from "react";
-import { Lightbulb, Info } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Lightbulb, Info, BookOpen, ChevronLeft } from "lucide-react";
 import { useChatWindow } from "./ChatWindowContext";
+import { getFollowUpActions } from "../../utils/chatIntents";
 
-const IDEA_CHIPS = ["ideaChip1", "ideaChip2", "ideaChip3", "ideaChip4", "ideaChip5", "ideaChip6"];
+const IDEA_CHIPS = [
+  "ideaChip1", "ideaChip2", "ideaChip3", "ideaChip4",
+  "ideaChip5", "ideaChip6", "ideaChip7", "ideaChip8",
+];
 
 function buildRecipeChips(recipe, recipeContext, t) {
   if (!recipeContext) return [];
@@ -41,6 +46,7 @@ export default function ChatWindowMessages() {
     recipe, recipeContext,
     classes, t,
   } = useChatWindow();
+  const navigate = useNavigate();
 
   const recipeChips = useMemo(
     () => (isRecipeMode ? buildRecipeChips(recipe, recipeContext, t) : []),
@@ -175,6 +181,53 @@ export default function ChatWindowMessages() {
               </div>
             )}
           </div>
+          {message.role === "assistant" &&
+            !isRecipeMode &&
+            message.intent &&
+            getFollowUpActions(message.intent).length > 0 && (
+              <div className={classes.followUpChips}>
+                {getFollowUpActions(message.intent).map((action) => (
+                  <button
+                    key={action.labelKey}
+                    className={classes.followUpChip}
+                    onClick={() => handleChipClick(t("chat", action.promptKey))}
+                    disabled={isLoading}
+                  >
+                    {t("chat", action.labelKey)}
+                  </button>
+                ))}
+              </div>
+            )}
+          {message.role === "assistant" &&
+            !isRecipeMode &&
+            message.matchedRecipes &&
+            message.matchedRecipes.length > 0 && (
+              <div className={classes.recipeResults}>
+                <span className={classes.recipeResultsLabel}>
+                  <BookOpen size={15} />
+                  {t("chat", "matchingRecipes")}
+                </span>
+                {message.matchedRecipes.map((r) => (
+                  <button
+                    key={r.id}
+                    className={classes.recipeResultItem}
+                    onClick={() => navigate(`/recipe/${r.id}`)}
+                  >
+                    <span className={classes.recipeResultInfo}>
+                      <span className={classes.recipeResultName}>{r.name}</span>
+                      {r.hint && (
+                        <span className={classes.recipeResultHint}>
+                          {t("chat", r.hint)}
+                        </span>
+                      )}
+                    </span>
+                    <span className={classes.recipeResultAction}>
+                      {t("chat", "openRecipe")} <ChevronLeft size={14} />
+                    </span>
+                  </button>
+                ))}
+              </div>
+            )}
           {message.role === "user" && <div className={classes.avatar}>{userInitial}</div>}
         </div>
       ))}

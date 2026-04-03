@@ -1,10 +1,13 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
-import { Trash2 } from "lucide-react";
+import { Trash2, Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
 import {
   sendChatMessage,
   analyzeImageForNutrition,
   calculateNutrition,
 } from "../../services/openai";
+import {
+  detectIntent, COMPACT_QUICK_SUGGESTIONS, findRelevantRecipes,
+} from "../../utils/chatIntents";
 import { normalizeImageDataUrl } from "../../firebase/imageService";
 import { useLanguage, useRecipeBook } from "../../context";
 import { Greeting } from "../greeting";
@@ -15,7 +18,10 @@ import classes from "./chat-window.module.css";
 import { ChatWindowContext } from "./ChatWindowContext";
 import ChatWindowMessages from "./ChatWindowMessages";
 
-const IDEA_CHIPS = ["ideaChip1", "ideaChip2", "ideaChip3", "ideaChip4", "ideaChip5", "ideaChip6"];
+const IDEA_CHIPS = [
+  "ideaChip1", "ideaChip2", "ideaChip3", "ideaChip4",
+  "ideaChip5", "ideaChip6", "ideaChip7", "ideaChip8",
+];
 
 function ChatWindow({
   recipeContext: externalRecipeContext = null,
@@ -30,7 +36,7 @@ function ChatWindow({
   showGreeting,
 }) {
   const { t, language } = useLanguage();
-  const { currentUser } = useRecipeBook();
+  const { currentUser, recipes: allRecipes } = useRecipeBook();
 
   const [internalMessages, setInternalMessages] = useState(() => {
     if (externalMessages !== undefined) return [];
@@ -50,6 +56,7 @@ function ChatWindow({
   const [applyingIdx, setApplyingIdx] = useState(null);
   const [customUpdateIdx, setCustomUpdateIdx] = useState(null);
   const [customUpdateText, setCustomUpdateText] = useState("");
+  const [showBroadChips, setShowBroadChips] = useState(false);
   const messagesEndRef = useRef(null);
   const messagesAreaRef = useRef(null);
   const abortRef = useRef(null);
@@ -77,7 +84,16 @@ function ChatWindow({
     return externalRecipeContext;
   }, [recipe, servings, externalRecipeContext]);
 
-  const scrollToBottom = () => { messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }); };
+  const scrollToBottom = useCallback(() => {
+    setTimeout(() => {
+      if (messagesAreaRef.current) {
+        messagesAreaRef.current.scrollTo({
+          top: messagesAreaRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }, 150);
+  }, []);
 
   useEffect(() => {
     if (messages.length > 0) scrollToBottom();
@@ -141,8 +157,15 @@ function ChatWindow({
     setError("");
     abortRef.current = new AbortController();
     try {
+      const intent = !isRecipeMode ? detectIntent(text) : undefined;
+      const matched = !isRecipeMode
+        ? findRelevantRecipes(text, allRecipes)
+        : [];
       const response = await sendChatMessage(updatedMessages, recipeContext, language, { signal: abortRef.current.signal });
-      setMessages([...updatedMessages, { role: "assistant", content: response }]);
+      const assistantMsg = { role: "assistant", content: response };
+      if (intent) assistantMsg.intent = intent;
+      if (matched.length > 0) assistantMsg.matchedRecipes = matched;
+      setMessages([...updatedMessages, assistantMsg]);
     } catch (err) {
       if (err.name === "AbortError") return;
       setError(err.message || "Failed to get response. Please try again.");
@@ -260,6 +283,8 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
   const handleChipClick = (text) => { if (text) sendMessage(text); };
   const isEmpty = messages.length === 0 && !isRecipeMode;
 
+  const hasMessages = messages.length > 0;
+
   const contextValue = {
     messages, isLoading, error, isRecipeMode, isEmpty,
     applyingIdx, customUpdateIdx, setCustomUpdateIdx,
@@ -301,6 +326,44 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
         <ChatWindowMessages />
 
         <div className={isEmpty ? classes.centeredInputWrapper : isRecipeMode ? classes.embeddedInputWrapper : classes.fixedInputWrapper}>
+          {!isRecipeMode && hasMessages && (
+            <>
+              <div className={classes.bottomQuickActions}>
+                {COMPACT_QUICK_SUGGESTIONS.map((s) => (
+                  <button
+                    key={s.labelKey}
+                    className={classes.bottomQuickChip}
+                    onClick={() => handleChipClick(t("chat", s.promptKey))}
+                    disabled={isLoading}
+                  >
+                    {t("chat", s.labelKey)}
+                  </button>
+                ))}
+              </div>
+              <button
+                className={classes.broadChipsToggle}
+                onClick={() => setShowBroadChips((v) => !v)}
+              >
+                <Lightbulb size={14} />
+                {t("chat", "quickIdeasToggle")}
+                {showBroadChips ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
+              </button>
+              {showBroadChips && (
+                <div className={classes.broadChipsPanel}>
+                  {IDEA_CHIPS.map((chipKey) => (
+                    <button
+                      key={chipKey}
+                      className={classes.bottomQuickChip}
+                      onClick={() => { handleChipClick(t("chat", chipKey)); setShowBroadChips(false); }}
+                      disabled={isLoading}
+                    >
+                      {t("chat", chipKey)}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </>
+          )}
           <ChatInput
             value={input}
             onChange={setInput}

@@ -165,10 +165,15 @@ function RecipesView({
   const [selectedStepCount, setSelectedStepCount] = useState("all");
   const [filterIngredients, setFilterIngredients] = useState([]);
   const [ingredientInput, setIngredientInput] = useState("");
-  const [activeView, setActiveView] = useState(
-    readOnlyCategories ? "categories" : "recipes",
-  );
-  const [showChat, setShowChat] = useState(false);
+  const [activeView, setActiveView] = useState(() => {
+    if (readOnlyCategories) return "categories";
+    try {
+      const saved = sessionStorage.getItem("recipesActiveView");
+      if (saved === "chat" || saved === "recipes" || saved === "categories") return saved;
+    } catch {}
+    return "recipes";
+  });
+  const [showChat, setShowChat] = useState(() => activeView === "chat");
   const [showFavoritesOnly, setShowFavoritesOnly] = useState(false);
   const [showSavedOnly, setShowSavedOnly] = useState(false);
   const [showSearch, setShowSearch] = useState(() => {
@@ -329,6 +334,7 @@ function RecipesView({
 
   const handleViewChange = (view) => {
     setActiveView(view);
+    try { sessionStorage.setItem("recipesActiveView", view); } catch {}
     setShowSearch(false);
     if (view === "chat") {
       setShowChat(true);

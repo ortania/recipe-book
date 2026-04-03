@@ -815,7 +815,19 @@ Help the user with questions about THIS recipe - substitutions, adjustments, tec
     content: `You are a helpful cooking assistant. You help users with recipe questions, ingredient substitutions, cooking techniques, and adjusting recipe quantities. Always be friendly, concise, and practical in your responses. Always respond in ${langName}.${contextBlock}`,
   };
 
-  const recentMessages = messages.slice(-5).map(({ image, ...msg }) => msg);
+  if (!recipeContext) {
+    const lastUserMsg = messages.filter((m) => m.role === "user").pop();
+    if (lastUserMsg) {
+      const { detectIntent, getIntentPromptHint } = await import("../utils/chatIntents");
+      const intent = detectIntent(lastUserMsg.content);
+      const hint = getIntentPromptHint(intent);
+      if (hint) systemMessage.content += `\n\n${hint}`;
+    }
+  }
+
+  const recentMessages = messages
+    .slice(-5)
+    .map(({ image, intent, ...msg }) => msg);
 
   return callOpenAI(
     {
