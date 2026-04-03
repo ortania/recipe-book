@@ -288,9 +288,7 @@ export default function ShoppingListView({
                   {i18nKey ? t("mealPlanner", i18nKey) : category}
                 </span>
                 <span className={classes.sectionEnd}>
-                  <span className={classes.sectionBadge}>
-                    {items.length} {t("mealPlanner", "items")}
-                  </span>
+                  <span className={classes.sectionBadge}>{items.length}</span>
                   {isOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
                 </span>
               </button>
