@@ -108,6 +108,51 @@ export function getFollowUpActions(intent) {
   return FOLLOW_UP_MAP[intent] || [];
 }
 
+const ACTION_HEALTHIER   = { key: "healthier",   labelKey: "healthierVersion",  icon: "Heart" };
+const ACTION_PROTEIN     = { key: "protein",     labelKey: "addProtein",        icon: "Dumbbell" };
+const ACTION_QUICK       = { key: "quick",       labelKey: "quickerVersion",    icon: "Zap" };
+const ACTION_KIDS        = { key: "kids",        labelKey: "kidFriendly",       icon: "Baby" };
+const ACTION_VEGAN       = { key: "vegan",       labelKey: "veganVersion",      icon: "Leaf" };
+const ACTION_GLUTEN_FREE = { key: "glutenFree",  labelKey: "glutenFreeVersion", icon: "WheatOff" };
+
+const KEYWORD_ACTION_RULES = [
+  { test: /בריא.*חלבון|חלבון.*בריא|healthy.*protein|protein.*healthy/i,  actions: [ACTION_HEALTHIER, ACTION_PROTEIN] },
+  { test: /בריא|דיאט|קלור|low[- ]?cal|healthy|diet|lighter/i,           actions: [ACTION_HEALTHIER] },
+  { test: /חלבון|high[- ]?protein|protein/i,                             actions: [ACTION_PROTEIN] },
+  { test: /לילדים|ילדים|for kids|kids/i,                                 actions: [ACTION_KIDS, ACTION_HEALTHIER] },
+  { test: /טבעוני|צמחוני|vegan|vegetarian/i,                             actions: [ACTION_VEGAN] },
+  { test: /ללא\s*גלוטן|בלי\s*גלוטן|gluten[- ]?free/i,                  actions: [ACTION_GLUTEN_FREE] },
+  { test: /מהיר|קל|פשוט|quick|easy|fast|simple/i,                        actions: [ACTION_QUICK] },
+];
+
+export function getRecipeResultActions(userMessage) {
+  const text = typeof userMessage === "string" ? userMessage : "";
+  for (const rule of KEYWORD_ACTION_RULES) {
+    if (rule.test.test(text)) return rule.actions;
+  }
+  return [ACTION_HEALTHIER, ACTION_PROTEIN];
+}
+
+const REDUNDANCY_CHECKS = {
+  vegan:      (t) => /\bטבעוני\b|\bvegan\b/i.test(t),
+  glutenFree: (t) => /ללא\s*גלוטן|\bgluten.?free\b/i.test(t),
+  kids:       (t) => /\bלילדים\b|\bfor\s+kids\b/i.test(t),
+};
+
+export function filterRedundantActions(actions, recipe) {
+  if (!recipe || actions.length === 0) return actions;
+  const text = [
+    ...(Array.isArray(recipe.categories) ? recipe.categories : []),
+    ...(Array.isArray(recipe.tags) ? recipe.tags : []),
+  ].join(" ").toLowerCase();
+
+  const filtered = actions.filter((action) => {
+    const check = REDUNDANCY_CHECKS[action.key];
+    return !check || !check(text);
+  });
+  return filtered.length > 0 ? filtered : actions;
+}
+
 export const COMPACT_QUICK_SUGGESTIONS = [
   { labelKey: "quickSnack", promptKey: "quickSnack" },
   { labelKey: "quickDessert", promptKey: "quickDessert" },

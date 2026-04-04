@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lightbulb, Info, BookOpen, ChevronLeft, Plus, Loader2 } from "lucide-react";
+import { Lightbulb, Info, BookOpen, ChevronLeft, Plus, Loader2, Heart, Dumbbell, Zap, Baby, Leaf, WheatOff, Copy } from "lucide-react";
 import { useChatWindow } from "./ChatWindowContext";
-import { getFollowUpActions } from "../../utils/chatIntents";
+import { getFollowUpActions, getRecipeResultActions, filterRedundantActions } from "../../utils/chatIntents";
 
 const IDEA_CHIPS = [
   "ideaChip1", "ideaChip2", "ideaChip3", "ideaChip4",
@@ -41,8 +41,9 @@ export default function ChatWindowMessages() {
     applyingIdx, customUpdateIdx, setCustomUpdateIdx,
     customUpdateText, setCustomUpdateText,
     appliedFields, userInitial,
-    handleApplyUpdate, handleChipClick,
+    handleApplyUpdate, handleCreateVariation, handleChipClick,
     handleCreateRecipeFromName, loadingRecipeName,
+    handleRecipeVariation, allRecipes,
     messagesEndRef, messagesAreaRef,
     recipe, recipeContext,
     classes, t,
@@ -131,38 +132,15 @@ export default function ChatWindowMessages() {
                       </div>
                     ) : (
                       <div className={classes.applyActions}>
-                        {customUpdateIdx !== index && (
-                          <button
-                            className={classes.applyBtn}
-                            onClick={() => handleApplyUpdate(message.content, index)}
-                            disabled={applyingIdx !== null}
-                          >
-                            {applyingIdx === index
-                              ? t("recipeChat", "updating")
-                              : t("recipeChat", "applyToRecipe")}
-                          </button>
-                        )}
-                        {customUpdateIdx === index ? (
+                        {customUpdateIdx === index && (
                           <div className={classes.customUpdateWrap}>
                             <input
                               className={classes.customUpdateInput}
                               value={customUpdateText}
                               onChange={(e) => setCustomUpdateText(e.target.value)}
                               placeholder={t("recipeChat", "customUpdatePlaceholder")}
-                              onKeyDown={(e) => {
-                                if (e.key === "Enter" && customUpdateText.trim()) {
-                                  handleApplyUpdate(message.content, index, customUpdateText.trim());
-                                }
-                              }}
                               disabled={applyingIdx !== null}
                             />
-                            <button
-                              className={classes.customUpdateBtn}
-                              onClick={() => handleApplyUpdate(message.content, index, customUpdateText.trim())}
-                              disabled={applyingIdx !== null || !customUpdateText.trim()}
-                            >
-                              {t("recipeChat", "applyCustom")}
-                            </button>
                             <button
                               className={classes.customCancelBtn}
                               onClick={() => { setCustomUpdateIdx(null); setCustomUpdateText(""); }}
@@ -170,15 +148,45 @@ export default function ChatWindowMessages() {
                               ✕
                             </button>
                           </div>
-                        ) : (
-                          <button
-                            className={classes.customChooseBtn}
-                            onClick={() => { setCustomUpdateIdx(index); setCustomUpdateText(""); }}
-                            disabled={applyingIdx !== null}
-                          >
-                            {t("recipeChat", "customUpdate")}
-                          </button>
                         )}
+                        <div className={classes.applyBtnRow}>
+                          <button
+                            className={classes.applyBtn}
+                            onClick={() => handleApplyUpdate(
+                              message.content, index,
+                              customUpdateIdx === index && customUpdateText.trim() ? customUpdateText.trim() : undefined
+                            )}
+                            disabled={applyingIdx !== null || (customUpdateIdx === index && !customUpdateText.trim())}
+                          >
+                            {applyingIdx === index
+                              ? t("recipeChat", "updating")
+                              : t("recipeChat", "applyToRecipe")}
+                          </button>
+                          {handleCreateVariation && (
+                            <button
+                              className={classes.variationBtn}
+                              onClick={() => handleCreateVariation(
+                                message.content, index,
+                                customUpdateIdx === index && customUpdateText.trim() ? customUpdateText.trim() : undefined
+                              )}
+                              disabled={applyingIdx !== null || (customUpdateIdx === index && !customUpdateText.trim())}
+                            >
+                              <Copy size={14} />
+                              {applyingIdx === index
+                                ? t("recipeChat", "updating")
+                                : t("recipeChat", "createVariation")}
+                            </button>
+                          )}
+                          {customUpdateIdx !== index && (
+                            <button
+                              className={classes.customChooseBtn}
+                              onClick={() => { setCustomUpdateIdx(index); setCustomUpdateText(""); }}
+                              disabled={applyingIdx !== null}
+                            >
+                              {t("recipeChat", "customUpdate")}
+                            </button>
+                          )}
+                        </div>
                       </div>
                     )}
                   </div>
@@ -244,11 +252,7 @@ export default function ChatWindowMessages() {
                             {t("chat", "matchingRecipes")}
                           </span>
                           {message.matchedRecipes.map((r) => (
-                            <button
-                              key={r.id}
-                              className={classes.recipeResultItem}
-                              onClick={() => navigate(`/recipe/${r.id}`)}
-                            >
+                            <div key={r.id} className={classes.recipeResultItem}>
                               <span className={classes.recipeResultInfo}>
                                 <span className={classes.recipeResultName}>{r.name}</span>
                                 {r.hint && (
@@ -257,10 +261,37 @@ export default function ChatWindowMessages() {
                                   </span>
                                 )}
                               </span>
-                              <span className={classes.recipeResultAction}>
-                                {t("chat", "openRecipe")} <ChevronLeft size={14} />
-                              </span>
-                            </button>
+                              <div className={classes.recipeResultActions}>
+                                <button
+                                  className={classes.recipeResultActionBtn}
+                                  onClick={() => navigate(`/recipe/${r.id}`)}
+                                >
+                                  <ChevronLeft size={13} />
+                                  {t("chat", "openRecipe")}
+                                </button>
+                                {handleRecipeVariation && filterRedundantActions(
+                                  getRecipeResultActions(
+                                    (messages[index - 1]?.role === "user" && messages[index - 1]?.content) || ""
+                                  ),
+                                  allRecipes?.find((full) => full.id === r.id)
+                                ).map((action) => (
+                                  <button
+                                    key={action.key}
+                                    className={classes.recipeResultChip}
+                                    onClick={() => handleRecipeVariation(r.id, action.key)}
+                                    disabled={isLoading}
+                                  >
+                                    {action.icon === "Heart" && <Heart size={12} />}
+                                    {action.icon === "Dumbbell" && <Dumbbell size={12} />}
+                                    {action.icon === "Zap" && <Zap size={12} />}
+                                    {action.icon === "Baby" && <Baby size={12} />}
+                                    {action.icon === "Leaf" && <Leaf size={12} />}
+                                    {action.icon === "WheatOff" && <WheatOff size={12} />}
+                                    {t("chat", action.labelKey)}
+                                  </button>
+                                ))}
+                              </div>
+                            </div>
                           ))}
                         </>
                       )}

@@ -34,7 +34,6 @@ function Categories() {
   } = useRecipeBook();
   const { t } = useLanguage();
 
-  // When navigating here from a recipe's category tag, select that category.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   useEffect(() => {
     try {
@@ -42,6 +41,19 @@ function Categories() {
       if (cat) {
         sessionStorage.removeItem("pendingCategorySelect");
         selectCategory(cat);
+      }
+      const pendingAdd = sessionStorage.getItem("openAddRecipe");
+      if (pendingAdd) {
+        sessionStorage.removeItem("openAddRecipe");
+        try {
+          const draft = sessionStorage.getItem("chatRecipeDraft");
+          if (draft) {
+            sessionStorage.removeItem("chatRecipeDraft");
+            setChatRecipeDraft(JSON.parse(draft));
+          }
+        } catch { /* ignore */ }
+        setAddMethod(pendingAdd);
+        setShowAddRecipe(true);
       }
     } catch {}
   }, []);

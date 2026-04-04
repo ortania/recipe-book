@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
+import { useNavigate } from "react-router-dom";
 import { Trash2, Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
 import {
   sendChatMessage,
@@ -39,6 +40,7 @@ function ChatWindow({
 }) {
   const { t, language } = useLanguage();
   const { currentUser, recipes: allRecipes } = useRecipeBook();
+  const navigate = useNavigate();
 
   const [internalMessages, setInternalMessages] = useState(() => {
     if (externalMessages !== undefined) return [];
@@ -323,6 +325,101 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
     }
   }, [recipesView, isLoading]);
 
+  const handleRecipeVariation = useCallback(async (recipeId, variationType) => {
+    if (!recipesView?.onAddRecipe || isLoading) return;
+    const source = allRecipes.find((r) => r.id === recipeId);
+    if (!source) return;
+    setIsLoading(true);
+    setError("");
+    abortRef.current = new AbortController();
+    try {
+      const { callOpenAI } = await import("../../services/openai");
+      const ings = Array.isArray(source.ingredients) ? source.ingredients.join("\n") : "";
+      const steps = Array.isArray(source.instructions) ? source.instructions.join("\n") : "";
+      const base = `הנה מתכון קיים:\nשם: ${source.name}\nמרכיבים:\n${ings}\nאופן הכנה:\n${steps}\n\n`;
+      const fmt = "שמור על אותו פורמט: שורה ראשונה שם, אח\"כ מרכיבים: עם - לפני כל מרכיב, אח\"כ אופן הכנה: עם מספור.";
+      const variationPrompts = {
+        healthier:  `כתוב גרסה בריאה יותר של המתכון. ${fmt}`,
+        protein:    `כתוב גרסה עם יותר חלבון של המתכון. ${fmt}`,
+        quick:      `כתוב גרסה מהירה ופשוטה יותר של המתכון עם פחות שלבים. ${fmt}`,
+        kids:       `כתוב גרסה מותאמת לילדים של המתכון - טעמים עדינים, ללא חריף. ${fmt}`,
+        vegan:      `כתוב גרסה טבעונית של המתכון - ללא מוצרים מן החי. ${fmt}`,
+        glutenFree: `כתוב גרסה ללא גלוטן של המתכון - החלף מרכיבים עם גלוטן בתחליפים. ${fmt}`,
+      };
+      const prompt = base + (variationPrompts[variationType] || variationPrompts.healthier);
+      const response = await callOpenAI({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: "You are a recipe assistant. Return a complete recipe in the user's language.\nFormat:\nFirst line: recipe name\nThen מרכיבים: with - prefix per ingredient.\nThen אופן הכנה: with numbered steps." },
+          { role: "user", content: prompt },
+        ],
+        temperature: 0.7,
+        max_tokens: 800,
+      }, { signal: abortRef.current.signal });
+      const draft = buildRecipeDraftFromChat(response);
+      if (draft && draft.name) {
+        try { sessionStorage.setItem("chatRecipeDraft", JSON.stringify(draft)); } catch {}
+        recipesView.onAddRecipe("manual");
+      }
+    } catch (err) {
+      if (err.name === "AbortError") return;
+      setError(err.message || "Failed to create variation");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [recipesView, isLoading, allRecipes]);
+
+  const handleCreateVariation = useCallback(async (aiResponse, msgIndex, userInstruction) => {
+    if (!recipeContext || applyingIdx !== null) return;
+    setApplyingIdx(msgIndex);
+    setError("");
+    try {
+      const { callOpenAI } = await import("../../services/openai");
+      const instruction = userInstruction ? `\n\nUser's specific instruction: ${userInstruction}` : "";
+      const result = await callOpenAI({
+        model: "gpt-4o-mini",
+        messages: [
+          { role: "system", content: `You are a recipe update assistant. Given the original recipe and an AI suggestion, apply the suggested changes and return the updated recipe.
+Return ONLY valid JSON: { "name": "...", "ingredients": [...], "instructions": [...] }
+Include the COMPLETE ingredients and instructions arrays with changes applied. Keep the original language.` },
+          { role: "user", content: `Original recipe:\nName: ${recipeContext.name}\nIngredients: ${JSON.stringify(recipeContext.ingredients)}\nInstructions: ${JSON.stringify(recipeContext.instructions)}\n\nAI suggestion to apply:\n${aiResponse}${instruction}\n\nReturn the COMPLETE updated recipe as JSON.` },
+        ],
+        temperature: 0.1,
+        max_tokens: 2000,
+      });
+      const cleaned = result.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
+      const parsed = JSON.parse(cleaned);
+      const src = recipe || {};
+      const draft = {
+        name: parsed.name || `${src.name || ""} (${t("recipeChat", "variation")})`,
+        ingredients: Array.isArray(parsed.ingredients) ? parsed.ingredients : recipeContext.ingredients,
+        instructions: Array.isArray(parsed.instructions) ? parsed.instructions : recipeContext.instructions,
+        prepTime: src.prepTime || "",
+        cookTime: parsed.cookTime || src.cookTime || "",
+        servings: src.servings || "",
+        difficulty: src.difficulty || "Unknown",
+        categories: Array.isArray(src.categories) ? src.categories : [],
+        notes: src.notes || "",
+        author: src.author || "",
+        sourceUrl: src.sourceUrl || "",
+        nutrition: parsed.nutrition || src.nutrition || {},
+        isFavorite: false,
+      };
+      try { sessionStorage.setItem("chatRecipeDraft", JSON.stringify(draft)); } catch (e) { console.error("Failed to save draft:", e); }
+      if (recipesView?.onAddRecipe) {
+        recipesView.onAddRecipe("manual");
+      } else {
+        sessionStorage.setItem("openAddRecipe", "manual");
+        navigate("/categories");
+      }
+    } catch (err) {
+      console.error("Failed to create variation:", err);
+      setError(t("recipeChat", "updateFailed"));
+    } finally {
+      setApplyingIdx(null);
+    }
+  }, [recipesView, recipeContext, recipe, applyingIdx, t, navigate]);
+
   const isEmpty = messages.length === 0 && !isRecipeMode;
 
   const hasMessages = messages.length > 0;
@@ -333,8 +430,10 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
     customUpdateText, setCustomUpdateText,
     appliedFields, userInitial,
     handleApplyUpdate: onUpdateRecipe ? handleApplyUpdate : null,
+    handleCreateVariation: onUpdateRecipe ? handleCreateVariation : null,
     handleChipClick,
     handleCreateRecipeFromName, loadingRecipeName,
+    handleRecipeVariation, allRecipes,
     messagesEndRef, messagesAreaRef,
     recipe, recipeContext,
     classes, t,
