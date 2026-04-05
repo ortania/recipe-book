@@ -13,32 +13,31 @@
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.55rem 0.85rem;
+  padding: 0.55rem 0;
   margin: 0.5rem 1rem;
   border-radius: 8px;
-  background: var(--clr-accent-light, #eef2ff);
-  font-size: 0.82rem;
-  color: var(--clr-text-secondary);
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
 }
+
 
 .variationBanner svg {
   flex-shrink: 0;
-  color: var(--clr-accent, #4f46e5);
+  color: var(--clr-text-primary);
 }
 
 .baseRecipeLink {
   background: none;
   border: none;
-  color: var(--clr-accent, #4f46e5);
+  color: var(--clr-link);
   cursor: pointer;
-  font-size: inherit;
-  font-weight: 500;
+  font-size: var(--basic-font);
   padding: 0;
   text-decoration: underline;
 }
 
 .baseRecipeLink:hover {
-  opacity: 0.8;
+  opacity: var(--clr-link-hover);
 }
 
 .ratingSection {

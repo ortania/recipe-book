@@ -372,6 +372,17 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
     }
   }, [recipesView, isLoading, allRecipes]);
 
+  const detectVariationType = (text) => {
+    const t = (text || "").toLowerCase();
+    if (/בריא|healthy|healthier|קל(ה|ות)?\s*יותר/.test(t)) return "healthier";
+    if (/חלבון|protein/.test(t)) return "protein";
+    if (/מהיר|quick|פשוט|קל\b/.test(t)) return "quick";
+    if (/ילד|kids|child|תינוק/.test(t)) return "kids";
+    if (/טבעונ|vegan/.test(t)) return "vegan";
+    if (/גלוטן|gluten/.test(t)) return "glutenFree";
+    return "custom";
+  };
+
   const handleCreateVariation = useCallback(async (aiResponse, msgIndex, userInstruction) => {
     if (!recipeContext || applyingIdx !== null) return;
     setApplyingIdx(msgIndex);
@@ -410,7 +421,7 @@ Include the COMPLETE ingredients and instructions arrays with changes applied. K
         isFavorite: false,
         parentRecipeId: src.id || null,
         parentRecipeName: src.name || "",
-        variationType: "custom",
+        variationType: detectVariationType(`${aiResponse} ${userInstruction || ""}`),
       };
       try { sessionStorage.setItem("chatRecipeDraft", JSON.stringify(draft)); } catch (e) { console.error("Failed to save draft:", e); }
       if (recipesView?.onAddRecipe) {

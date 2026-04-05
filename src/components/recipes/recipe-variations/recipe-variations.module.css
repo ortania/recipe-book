@@ -11,31 +11,31 @@
   position: absolute;
   top: 0;
   inset-inline-end: 0;
-  background: none;
+  /* background: none;
   border: none;
   color: var(--clr-text-muted);
   cursor: pointer;
   padding: 0.2rem;
   display: flex;
-  align-items: center;
+  align-items: center; */
 }
 
-.closeBtn:hover {
+/* .closeBtn:hover {
   color: var(--clr-text-primary);
-}
+} */
 
 .title {
   display: flex;
   align-items: center;
   gap: 0.4rem;
-  font-size: 1.1rem;
-  font-weight: 600;
+  font-size: var(--large-font);
+  font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
   margin: 0 0 0.25rem;
 }
 
 .baseName {
-  font-size: 0.85rem;
+  font-size: var(--basic-font);
   color: var(--clr-text-muted);
   margin: 0;
 }
@@ -47,12 +47,13 @@
 }
 
 .empty p {
+  font-size: var(--basic-font);
   margin: 0 0 0.3rem;
 }
 
 .emptyHint {
-  font-size: 0.8rem;
-  opacity: 0.7;
+  font-size: var(--basic-font);
+  opacity: var(--text-muted);
 }
 
 .list {
@@ -78,7 +79,7 @@
   border-radius: 10px;
   background: var(--clr-bg-card);
   cursor: pointer;
-  transition: background 0.15s;
+  transition: var(--transition-fast);
   text-align: start;
 }
 
@@ -94,8 +95,7 @@
 }
 
 .itemName {
-  font-size: 0.95rem;
-  font-weight: 500;
+  font-size: var(--basic-font);
   color: var(--clr-text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
@@ -104,11 +104,10 @@
 
 .typeTag {
   display: inline-block;
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: var(--clr-accent, #4f46e5);
-  background: var(--clr-accent-light, #eef2ff);
+  font-size: var(--small-font);
+  color: var(--clr-text-primary);
   padding: 0.15em 0.5em;
+  padding-inline-start: 0;
   border-radius: 4px;
   width: fit-content;
 }
@@ -118,34 +117,8 @@
   color: var(--clr-text-muted);
 }
 
-.variationBanner {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 0.85rem;
-  margin: 0.5rem 0;
-  border-radius: 8px;
-  background: var(--clr-accent-light, #eef2ff);
-  font-size: 0.82rem;
-  color: var(--clr-text-secondary);
-}
-
-.variationBanner svg {
-  flex-shrink: 0;
-  color: var(--clr-accent, #4f46e5);
-}
-
-.baseLink {
-  background: none;
-  border: none;
-  color: var(--clr-accent, #4f46e5);
-  cursor: pointer;
-  font-size: inherit;
-  font-weight: 500;
+.list {
+  list-style: none;
   padding: 0;
-  text-decoration: underline;
-}
-
-.baseLink:hover {
-  opacity: 0.8;
+  margin: 0;
 }

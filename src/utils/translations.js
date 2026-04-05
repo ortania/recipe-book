@@ -1182,11 +1182,11 @@ const translations = {
       mixed: "אין וריאציות שמורות",
     },
     noVariationsHint: {
-      he: "אפשר ליצור וריאציה מהצ׳אט של המתכון",
+      he: "אפשר ליצור וריאציה מהצ׳אט של המתכון או מתוך המתכון",
       en: "You can create a variation from the recipe chat",
       ru: "Вы можете создать вариацию из чата рецепта",
       de: "Sie können eine Variation aus dem Rezept-Chat erstellen",
-      mixed: "אפשר ליצור וריאציה מהצ׳אט של המתכון",
+      mixed: "אפשר ליצור וריאציה מהצ׳אט של המתכון או מתוך המתכון",
     },
     variationOf: {
       he: "וריאציה של",

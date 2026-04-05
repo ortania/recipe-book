@@ -184,11 +184,11 @@
   height: 1.3em;
   padding: 0 0.3em;
   margin-inline-start: 0.4em;
-  border-radius: 999px;
-  background: var(--clr-accent, #4f46e5);
-  color: #fff;
-  font-size: 0.75rem;
-  font-weight: 600;
+  border-radius: 50%;
+  background: var(--clr-btn-main-bg);
+  color: var(--clr-white);
+  font-size: var(--small-font);
+  font-weight: var(--fon  );
   line-height: 1;
 }
 
