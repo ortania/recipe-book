@@ -1128,6 +1128,11 @@ function AddRecipeWizard({
       showMyName: recipe.shareToGlobal ? recipe.showMyName : false,
       nutrition,
     };
+    if (recipe.parentRecipeId) {
+      newRecipe.parentRecipeId = recipe.parentRecipeId;
+      newRecipe.parentRecipeName = recipe.parentRecipeName || "";
+      newRecipe.variationType = recipe.variationType || "custom";
+    }
     console.log(
       "🍎 NUTRITION - Saving new recipe with nutrition:",
       newRecipe.nutrition,

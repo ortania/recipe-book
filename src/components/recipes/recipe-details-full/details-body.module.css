@@ -9,6 +9,38 @@
   margin: 0 auto;
 }
 
+.variationBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 0.85rem;
+  margin: 0.5rem 1rem;
+  border-radius: 8px;
+  background: var(--clr-accent-light, #eef2ff);
+  font-size: 0.82rem;
+  color: var(--clr-text-secondary);
+}
+
+.variationBanner svg {
+  flex-shrink: 0;
+  color: var(--clr-accent, #4f46e5);
+}
+
+.baseRecipeLink {
+  background: none;
+  border: none;
+  color: var(--clr-accent, #4f46e5);
+  cursor: pointer;
+  font-size: inherit;
+  font-weight: 500;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.baseRecipeLink:hover {
+  opacity: 0.8;
+}
+
 .ratingSection {
   margin: 0.5rem 0;
 }

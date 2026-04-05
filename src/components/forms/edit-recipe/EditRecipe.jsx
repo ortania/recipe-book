@@ -627,6 +627,11 @@ function EditRecipe({
       showMyName: editedRecipe.shareToGlobal ? editedRecipe.showMyName : false,
       nutrition,
     };
+    if (updatedRecipe.parentRecipeId === updatedRecipe.id) {
+      delete updatedRecipe.parentRecipeId;
+      delete updatedRecipe.parentRecipeName;
+      delete updatedRecipe.variationType;
+    }
     console.log(
       "🍎 NUTRITION - Saving recipe with nutrition:",
       updatedRecipe.nutrition,

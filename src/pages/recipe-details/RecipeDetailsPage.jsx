@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import RecipeDetailsFull from "../../components/recipes/RecipeDetailsFull";
 import RecipeDetailsCookingMode from "../../components/recipes/RecipeDetailsCookingMode";
@@ -129,6 +129,12 @@ function RecipeDetailsPage() {
     categories,
     "name",
   );
+
+  const variations = useMemo(
+    () => recipe ? recipes.filter((r) => r.parentRecipeId === recipe.id && r.id !== recipe.id) : [],
+    [recipes, recipe],
+  );
+  const [showVariations, setShowVariations] = useState(false);
 
   const [cookingMode, setCookingMode] = useState(false);
   const [editingRecipe, setEditingRecipe] = useState(null);
@@ -275,6 +281,38 @@ function RecipeDetailsPage() {
     }
   };
 
+  const handleCreateVariation = () => {
+    if (!recipe) return;
+    const draft = {
+      name: `${recipe.name} – ${t("recipes", "variationCustom")}`,
+      ingredients: [...(recipe.ingredients || [])],
+      instructions: [...(recipe.instructions || [])],
+      prepTime: recipe.prepTime || "",
+      cookTime: recipe.cookTime || "",
+      servings: recipe.servings || "",
+      difficulty: recipe.difficulty || "Unknown",
+      sourceUrl: recipe.sourceUrl || "",
+      author: recipe.author || "",
+      image_src: recipe.image_src || "",
+      images: recipe.images ? [...recipe.images] : [],
+      categories: [...(recipe.categories || [])],
+      isFavorite: false,
+      notes: recipe.notes || "",
+      rating: 0,
+      nutrition: recipe.nutrition ? { ...recipe.nutrition } : null,
+      parentRecipeId: recipe.id,
+      parentRecipeName: recipe.name,
+      variationType: "custom",
+    };
+    try {
+      sessionStorage.setItem("chatRecipeDraft", JSON.stringify(draft));
+    } catch (e) {
+      console.error("Failed to save variation draft:", e);
+    }
+    sessionStorage.setItem("openAddRecipe", "manual");
+    navigate("/categories");
+  };
+
   const handleCookingModeToggle = () => {
     setCookingMode((prev) => !prev);
   };
@@ -327,6 +365,7 @@ function RecipeDetailsPage() {
         onEdit={isOwner ? handleEdit : undefined}
         onDelete={isOwner ? handleDelete : undefined}
         onDuplicate={isOwner ? handleDuplicate : undefined}
+        onCreateVariation={isOwner ? handleCreateVariation : undefined}
         onSaveRecipe={isOwner ? editRecipe : undefined}
         getCategoryName={getCategoryName}
         onCategoryClick={handleCategoryClick}
@@ -365,6 +404,10 @@ function RecipeDetailsPage() {
         }
         onActiveTabChange={setDetailActiveTab}
         hideRating={isOwner || !!fromSharerProfile}
+        variations={variations}
+        showVariations={showVariations}
+        onShowVariations={() => setShowVariations(true)}
+        onHideVariations={() => setShowVariations(false)}
       />
 
       {editingRecipe && (

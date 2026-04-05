@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   ChefHat,
   Clock,
@@ -18,12 +19,14 @@ import {
   Atom,
   Info,
   MessageSquare,
+  GitBranch,
 } from "lucide-react";
 import { AddButton } from "../../controls/add-button";
 import { useRecipeDetails } from "../RecipeDetailsContext";
 import { hasTime, formatTime } from "../utils";
 
 export default function RecipeInfoSection() {
+  const navigate = useNavigate();
   const {
     hideRating,
     onRate,
@@ -47,6 +50,20 @@ export default function RecipeInfoSection() {
 
   return (
     <>
+      {recipe.parentRecipeId && recipe.parentRecipeId !== recipe.id && (
+        <div className={classes.variationBanner}>
+          <GitBranch size={15} />
+          <span>
+            {t("recipes", "variationOf")}{" "}
+            <button
+              className={classes.baseRecipeLink}
+              onClick={() => navigate(`/recipe/${recipe.parentRecipeId}`)}
+            >
+              {recipe.parentRecipeName || t("recipes", "baseRecipe")}
+            </button>
+          </span>
+        </div>
+      )}
       {!hideRating && (
         <>
           {onRate ? (

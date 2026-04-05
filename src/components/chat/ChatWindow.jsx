@@ -358,6 +358,9 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
       }, { signal: abortRef.current.signal });
       const draft = buildRecipeDraftFromChat(response);
       if (draft && draft.name) {
+        draft.parentRecipeId = source.id;
+        draft.parentRecipeName = source.name;
+        draft.variationType = variationType || "custom";
         try { sessionStorage.setItem("chatRecipeDraft", JSON.stringify(draft)); } catch {}
         recipesView.onAddRecipe("manual");
       }
@@ -379,8 +382,9 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
       const result = await callOpenAI({
         model: "gpt-4o-mini",
         messages: [
-          { role: "system", content: `You are a recipe update assistant. Given the original recipe and an AI suggestion, apply the suggested changes and return the updated recipe.
+          { role: "system", content: `You are a recipe update assistant. Given the original recipe and an AI suggestion, apply the suggested changes and return the updated recipe as a VARIATION.
 Return ONLY valid JSON: { "name": "...", "ingredients": [...], "instructions": [...] }
+IMPORTANT: The "name" must describe the variation, e.g. "Original Name – healthier version" or "Original Name – more protein". Do NOT return the original name unchanged.
 Include the COMPLETE ingredients and instructions arrays with changes applied. Keep the original language.` },
           { role: "user", content: `Original recipe:\nName: ${recipeContext.name}\nIngredients: ${JSON.stringify(recipeContext.ingredients)}\nInstructions: ${JSON.stringify(recipeContext.instructions)}\n\nAI suggestion to apply:\n${aiResponse}${instruction}\n\nReturn the COMPLETE updated recipe as JSON.` },
         ],
@@ -391,7 +395,7 @@ Include the COMPLETE ingredients and instructions arrays with changes applied. K
       const parsed = JSON.parse(cleaned);
       const src = recipe || {};
       const draft = {
-        name: parsed.name || `${src.name || ""} (${t("recipeChat", "variation")})`,
+        name: parsed.name || `${src.name || ""} – ${t("recipeChat", "variation")}`,
         ingredients: Array.isArray(parsed.ingredients) ? parsed.ingredients : recipeContext.ingredients,
         instructions: Array.isArray(parsed.instructions) ? parsed.instructions : recipeContext.instructions,
         prepTime: src.prepTime || "",
@@ -404,6 +408,9 @@ Include the COMPLETE ingredients and instructions arrays with changes applied. K
         sourceUrl: src.sourceUrl || "",
         nutrition: parsed.nutrition || src.nutrition || {},
         isFavorite: false,
+        parentRecipeId: src.id || null,
+        parentRecipeName: src.name || "",
+        variationType: "custom",
       };
       try { sessionStorage.setItem("chatRecipeDraft", JSON.stringify(draft)); } catch (e) { console.error("Failed to save draft:", e); }
       if (recipesView?.onAddRecipe) {

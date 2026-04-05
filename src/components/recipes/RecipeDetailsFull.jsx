@@ -25,6 +25,7 @@ import RecipeImageSection from "./recipe-details-full/RecipeImageSection";
 import RecipeActionBar from "./recipe-details-full/RecipeActionBar";
 import RecipeInfoSection from "./recipe-details-full/RecipeInfoSection";
 import RecipeTabsSection from "./recipe-details-full/RecipeTabsSection";
+import { RecipeVariationsList } from "./recipe-variations";
 
 function RecipeDetailsFull({
   recipe,
@@ -34,6 +35,7 @@ function RecipeDetailsFull({
   onEdit,
   onDelete,
   onDuplicate,
+  onCreateVariation,
   onSaveRecipe,
   getCategoryName,
   onCategoryClick,
@@ -48,6 +50,10 @@ function RecipeDetailsFull({
   hideRating = false,
   servings,
   setServings,
+  variations = [],
+  showVariations = false,
+  onShowVariations,
+  onHideVariations,
 }) {
   const { t, language } = useLanguage();
   const navigate = useNavigate();
@@ -324,6 +330,7 @@ function RecipeDetailsFull({
     onEdit,
     onDelete,
     onDuplicate,
+    onCreateVariation,
     onSaveRecipe,
     getCategoryName,
     onCategoryClick,
@@ -388,6 +395,11 @@ function RecipeDetailsFull({
     toggleInstruction,
     scale,
     scaleNutrition,
+    // variations
+    variations,
+    showVariations,
+    onShowVariations,
+    onHideVariations,
     // css + i18n
     classes,
     buttonClasses,
@@ -404,6 +416,14 @@ function RecipeDetailsFull({
             currentUserId={currentUserId}
             onCopy={(targetUserId) => onCopyRecipe(recipe, targetUserId)}
             onCancel={() => setShowCopyDialog(false)}
+          />
+        )}
+
+        {showVariations && (
+          <RecipeVariationsList
+            variations={variations}
+            recipeName={recipe.name}
+            onClose={onHideVariations}
           />
         )}
 

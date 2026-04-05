@@ -1,6 +1,6 @@
 import {
   EllipsisVertical, FilePenLine, Link, Files, Forward,
-  Printer, Trash2, Heart, Share2, MonitorSmartphone, ChefHat,
+  Printer, Trash2, Heart, Share2, MonitorSmartphone, ChefHat, GitBranch, Copy,
 } from "lucide-react";
 import { ExportImageButton } from "../export-image-button";
 import { useRecipeDetails } from "../RecipeDetailsContext";
@@ -9,10 +9,12 @@ export default function RecipeActionBar() {
   const {
     actionBarRef,
     moreMenuRef, showMoreMenu, setShowMoreMenu, copyToMySuccess,
-    onEdit, recipe, onDuplicate, onCopyRecipe, handleCopyClick,
+    onEdit, recipe, onDuplicate, onCreateVariation, onCopyRecipe, handleCopyClick,
     onCopyToMyRecipes, setCopyToMySuccess, onDelete, handleDeleteClick,
     onToggleFavorite, handleShare, wakeLockWrapperRef, wakeLockActive,
-    toggleWakeLock, wakeLockToast, onEnterCookingMode, classes, t,
+    toggleWakeLock, wakeLockToast, onEnterCookingMode,
+    variations, onShowVariations,
+    classes, t,
   } = useRecipeDetails();
 
   return (
@@ -80,6 +82,41 @@ export default function RecipeActionBar() {
                     </span>
                     <span className={classes.moreMenuIcon}>
                       <Files size={18} />
+                    </span>
+                  </button>
+                )}
+                {onCreateVariation && (
+                  <button
+                    className={classes.moreMenuItem}
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      onCreateVariation();
+                    }}
+                  >
+                    <span className={classes.moreMenuLabel}>
+                      {t("recipeChat", "createVariation")}
+                    </span>
+                    <span className={classes.moreMenuIcon}>
+                      <Copy size={18} />
+                    </span>
+                  </button>
+                )}
+                {onShowVariations && (!recipe.parentRecipeId || recipe.parentRecipeId === recipe.id) && (
+                  <button
+                    className={classes.moreMenuItem}
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      onShowVariations();
+                    }}
+                  >
+                    <span className={classes.moreMenuLabel}>
+                      {t("recipes", "variations")}
+                      {variations?.length > 0 && (
+                        <span className={classes.variationsBadge}>{variations.length}</span>
+                      )}
+                    </span>
+                    <span className={classes.moreMenuIcon}>
+                      <GitBranch size={18} />
                     </span>
                   </button>
                 )}

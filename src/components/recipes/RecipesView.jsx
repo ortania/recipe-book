@@ -147,7 +147,7 @@ function RecipesView({
     setSaveToastOpen(false);
     setEditingRecipe(null);
   }, []);
-  const [localRecipes, setLocalRecipes] = useState(recipesProp);
+  const [localRecipes, setLocalRecipes] = useState(() => recipesProp.filter((r) => !r.parentRecipeId));
   const [isSimpleView, setIsSimpleView] = useState(() => {
     // For categories view, always default to grid with images (false)
     if (readOnlyCategories) return false;
@@ -361,9 +361,8 @@ function RecipesView({
     return () => document.body.classList.remove("chat-open");
   }, [showChat]);
 
-  // Update local recipes when the prop changes
   useEffect(() => {
-    setLocalRecipes(recipes);
+    setLocalRecipes(recipes.filter((r) => !r.parentRecipeId));
   }, [recipes]);
 
   const calcDropdownPos = (ref) => {
@@ -705,24 +704,29 @@ function RecipesView({
     [categories],
   );
 
+  const baseRecipes = useMemo(
+    () => recipes.filter((r) => !r.parentRecipeId),
+    [recipes],
+  );
+
   const getGroupContacts = (groupId) => {
     if (groupId === "all") {
       const seen = new Set();
-      return recipes.filter((r) => {
+      return baseRecipes.filter((r) => {
         if (seen.has(r.id)) return false;
         seen.add(r.id);
         return true;
       });
     }
     if (groupId === "general") {
-      return recipes.filter(
+      return baseRecipes.filter(
         (r) =>
           !r.categories ||
           r.categories.length === 0 ||
           !r.categories.some((catId) => validGroupIds.has(catId)),
       );
     }
-    return recipes.filter(
+    return baseRecipes.filter(
       (r) => r.categories && r.categories.includes(groupId),
     );
   };

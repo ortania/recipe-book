@@ -59,7 +59,13 @@ export const fetchRecipes = async (
 
     const recipes = [];
     querySnapshot.forEach((doc) => {
-      recipes.push({ id: doc.id, ...doc.data() });
+      const data = { id: doc.id, ...doc.data() };
+      if (data.parentRecipeId && data.parentRecipeId === data.id) {
+        delete data.parentRecipeId;
+        delete data.parentRecipeName;
+        delete data.variationType;
+      }
+      recipes.push(data);
     });
 
     recipes.sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -79,7 +85,13 @@ export const getRecipeById = async (recipeId) => {
     const docRef = doc(db, RECIPES_COLLECTION, recipeId);
     const snap = await getDoc(docRef);
     if (!snap.exists()) return null;
-    return { id: snap.id, ...snap.data() };
+    const data = { id: snap.id, ...snap.data() };
+    if (data.parentRecipeId && data.parentRecipeId === data.id) {
+      delete data.parentRecipeId;
+      delete data.parentRecipeName;
+      delete data.variationType;
+    }
+    return data;
   } catch (error) {
     console.error("Error fetching recipe by ID:", error);
     return null;
