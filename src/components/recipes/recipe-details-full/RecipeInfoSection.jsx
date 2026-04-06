@@ -44,6 +44,8 @@ export default function RecipeInfoSection() {
     setShowNutrition,
     scaleNutrition,
     onSaveRecipe,
+    variations,
+    onShowVariations,
     classes,
     t,
   } = useRecipeDetails();
@@ -63,6 +65,13 @@ export default function RecipeInfoSection() {
             </button>
           </span>
         </div>
+      )}
+      {onShowVariations && variations?.length > 0 &&
+        (!recipe.parentRecipeId || recipe.parentRecipeId === recipe.id) && (
+        <button className={classes.variationsIndicator} onClick={onShowVariations}>
+          <GitBranch size={14} />
+          <span>{variations.length} {t("recipes", "variations")}</span>
+        </button>
       )}
       {!hideRating && (
         <>

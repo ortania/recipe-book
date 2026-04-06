@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import classes from "./modal.module.css";
 
-function Modal({ children, onClose, className, fullscreen, maxWidth }) {
+function Modal({ children, onClose, className, fullscreen, maxWidth, bottomSheet }) {
   const overlayRef = useRef(null);
   const contentRef = useRef(null);
 
@@ -88,7 +88,7 @@ function Modal({ children, onClose, className, fullscreen, maxWidth }) {
     <div ref={overlayRef} className={classes.modalOverlay} onClick={handleOverlayClick}>
       <div
         ref={contentRef}
-        className={`${classes.modalContent} ${className || ""} ${fullscreen ? classes.fullscreen : ""}`}
+        className={`${classes.modalContent} ${className || ""} ${fullscreen ? classes.fullscreen : ""} ${bottomSheet ? classes.bottomSheet : ""}`}
         style={maxWidth ? { maxWidth } : undefined}
         onClick={(e) => e.stopPropagation()}
       >

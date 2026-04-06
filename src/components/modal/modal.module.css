@@ -43,6 +43,30 @@
     overscroll-behavior: contain;
   }
 
+  .modalOverlay:has(.bottomSheet) {
+    background-color: var(--clr-overlay-strong);
+    align-items: flex-end;
+  }
+
+  .modalContent.bottomSheet {
+    width: 100%;
+    max-width: 100%;
+    height: auto;
+    max-height: 70vh;
+    max-height: 70dvh;
+    border-radius: 1.2rem 1.2rem 0 0;
+    padding: 0;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    animation: slideUp 0.25s ease-out;
+  }
+
+  @keyframes slideUp {
+    from { transform: translateY(100%); }
+    to { transform: translateY(0); }
+  }
+
   /*
     Centered popup (same as desktop): use on Modal className, e.g. delete confirm.
     Overrides fullscreen mobile rules above.

@@ -29,7 +29,7 @@ export default function RecipeVariationsList({
   };
 
   return (
-    <Modal onClose={onClose} maxWidth="480px">
+    <Modal onClose={onClose} maxWidth="480px" bottomSheet>
       <div className={classes.container}>
         <div className={classes.header}>
           {/* <button className={classes.closeBtn} onClick={onClose}>

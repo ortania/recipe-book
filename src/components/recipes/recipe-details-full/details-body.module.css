@@ -36,6 +36,28 @@
   text-decoration: underline;
 }
 
+.variationsIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin: 0.25rem 1rem 0.25rem;
+  padding: 0.35rem 0;
+  background: none;
+  border: none;
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+}
+
+.variationsIndicator:hover {
+  color: var(--clr-text-primary-hover);
+}
+
+.variationsIndicator svg {
+  flex-shrink: 0;
+}
+
 .baseRecipeLink:hover {
   opacity: var(--clr-link-hover);
 }
