@@ -5745,6 +5745,43 @@ const translations = {
       mixed: "comments",
     },
   },
+  premium: {
+    upgradeTitle: {
+      he: "תכונת פרימיום",
+      en: "Premium Feature",
+      ru: "Премиум-функция",
+      de: "Premium-Funktion",
+      mixed: "תכונת פרימיום",
+    },
+    limitReached: {
+      he: "הגעת למגבלת השימוש החינמי לתכונה זו",
+      en: "You've reached the free usage limit for this feature",
+      ru: "Вы достигли лимита бесплатного использования",
+      de: "Sie haben das kostenlose Nutzungslimit erreicht",
+      mixed: "הגעת למגבלת השימוש החינמי לתכונה זו",
+    },
+    premiumOnly: {
+      he: "תכונה זו זמינה למשתמשי פרימיום",
+      en: "This feature is available for Premium users",
+      ru: "Эта функция доступна для пользователей Premium",
+      de: "Diese Funktion ist für Premium-Nutzer verfügbar",
+      mixed: "תכונה זו זמינה למשתמשי פרימיום",
+    },
+    learnMore: {
+      he: "מידע נוסף על פרימיום",
+      en: "Learn more about Premium",
+      ru: "Узнать больше о Premium",
+      de: "Mehr über Premium erfahren",
+      mixed: "מידע נוסף על פרימיום",
+    },
+    noUsesLeft: {
+      he: "נוצל",
+      en: "Used up",
+      ru: "Исчерпано",
+      de: "Aufgebraucht",
+      mixed: "נוצל",
+    },
+  },
 };
 
 export const LANGUAGES = [

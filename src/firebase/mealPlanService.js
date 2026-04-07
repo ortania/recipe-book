@@ -60,3 +60,32 @@ export const saveShoppingChecked = async (userId, checked) => {
     throw error;
   }
 };
+
+export const fetchShoppingList = async (userId) => {
+  try {
+    const docRef = doc(db, MEAL_PLANS_COLLECTION, `${userId}_shoppingList`);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+      return docSnap.data();
+    }
+    return null;
+  } catch (error) {
+    console.error("Error fetching shopping list:", error);
+    return null;
+  }
+};
+
+export const saveShoppingList = async (userId, data) => {
+  try {
+    const docRef = doc(db, MEAL_PLANS_COLLECTION, `${userId}_shoppingList`);
+    await setDoc(docRef, {
+      selectedRecipes: data.selectedRecipes || [],
+      checkedItems: data.checkedItems || {},
+      manualItems: data.manualItems || [],
+      updatedAt: new Date().toISOString(),
+    });
+  } catch (error) {
+    console.error("Error saving shopping list:", error);
+    throw error;
+  }
+};

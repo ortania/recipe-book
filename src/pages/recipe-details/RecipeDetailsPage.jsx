@@ -8,6 +8,8 @@ import { Toast } from "../../components/controls";
 import { CircleCheck } from "lucide-react";
 import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
+import { FEATURES } from "../../config/entitlements";
+import useEntitlements from "../../hooks/useEntitlements";
 import { getRecipeById } from "../../firebase/recipeService";
 import { copyRecipeToUser as copyRecipeToUserGlobal } from "../../firebase/globalRecipeService";
 import { getUserRating, setUserRating } from "../../firebase/ratingService";
@@ -21,6 +23,7 @@ function RecipeDetailsPage() {
   const location = useLocation();
   const fromSharerProfile = location.state?.fromSharerProfile;
   const { language, t } = useLanguage();
+  const { canUse, incrementUsage } = useEntitlements();
   const {
     recipes,
     categories,
@@ -143,6 +146,7 @@ function RecipeDetailsPage() {
     setSaveToastOpen(false);
     setEditingRecipe(null);
   }, []);
+  const [gateToastOpen, setGateToastOpen] = useState(false);
   const [detailActiveTab, setDetailActiveTab] = useState("ingredients");
   const [servings, setServings] = useState(recipe?.servings || 4);
 
@@ -281,8 +285,13 @@ function RecipeDetailsPage() {
     }
   };
 
-  const handleCreateVariation = () => {
+  const handleCreateVariation = async () => {
     if (!recipe) return;
+    const variationCheck = canUse(FEATURES.CREATE_VARIATION);
+    if (!variationCheck.allowed) {
+      setGateToastOpen(true);
+      return;
+    }
     const draft = {
       name: `${recipe.name} – ${t("recipes", "variationCustom")}`,
       ingredients: [...(recipe.ingredients || [])],
@@ -309,6 +318,7 @@ function RecipeDetailsPage() {
     } catch (e) {
       console.error("Failed to save variation draft:", e);
     }
+    await incrementUsage(FEATURES.CREATE_VARIATION);
     sessionStorage.setItem("openAddRecipe", "manual");
     navigate("/categories");
   };
@@ -428,6 +438,14 @@ function RecipeDetailsPage() {
       >
         <CircleCheck size={18} aria-hidden />
         <span>{t("recipes", "saved")}</span>
+      </Toast>
+      <Toast
+        open={gateToastOpen}
+        onClose={() => setGateToastOpen(false)}
+        variant="error"
+        duration={3000}
+      >
+        <span>{t("premium", "limitReached")}</span>
       </Toast>
     </div>
   );

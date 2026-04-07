@@ -3,6 +3,8 @@ import { Mic, MicOff } from "lucide-react";
 import { sendCookingChatMessage } from "../../services/openai";
 import { useLanguage, useRadio } from "../../context";
 import { auth } from "../../firebase/config";
+import { FEATURES } from "../../config/entitlements";
+import useEntitlements from "../../hooks/useEntitlements";
 import classes from "./cooking-voice-chat.module.css";
 
 const SPEECH_LANG_MAP = {
@@ -104,8 +106,9 @@ function CookingVoiceChat({
   isTimerRunning,
   radioRef,
 }) {
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
   const { showRadio, openRadio, minimizeRadio } = useRadio();
+  const { canUse } = useEntitlements();
   const lang = language || "he";
   const speechLang = SPEECH_LANG_MAP[lang] || "he-IL";
 
@@ -650,6 +653,12 @@ function CookingVoiceChat({
       setLastResponse("");
       $.current.radioRef?.current?.unmuteForMic();
     } else {
+      const voiceCheck = canUse(FEATURES.COOKING_VOICE);
+      if (!voiceCheck.allowed) {
+        setStatusText(t("premium", "premiumOnly"));
+        setTimeout(() => setStatusText(""), 3000);
+        return;
+      }
       isActiveRef.current = true;
       setIsActive(true);
       ensureAudioContext();
@@ -681,7 +690,7 @@ function CookingVoiceChat({
         {isActive ? <Mic size={20} /> : <MicOff size={20} />}
       </button>
 
-      {isActive && (
+      {(isActive || statusText) && (
         <div
           className={classes.statusArea}
           onClick={(e) => e.stopPropagation()}

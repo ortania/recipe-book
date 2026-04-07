@@ -17,6 +17,8 @@ import {
 } from "../../../services/openai";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
+import { FEATURES } from "../../../config/entitlements";
+import useEntitlements from "../../../hooks/useEntitlements";
 import buttonClasses from "../../../styles/shared/buttons.module.css";
 import catShared from "../../../styles/shared/category-chips.module.css";
 import shared from "../../../styles/shared/form-shared.module.css";
@@ -93,6 +95,7 @@ function AddRecipeWizard({
 }) {
   const { language, t } = useLanguage();
   const { currentUser, addCategory } = useRecipeBook();
+  const { canUse, incrementUsage } = useEntitlements();
   const { getTranslated: getTranslatedGroup } = useTranslatedList(
     groups,
     "name",
@@ -221,7 +224,10 @@ function AddRecipeWizard({
       });
     }, 400);
     try {
-      const parsed = await parseRecipeFromUrl(recipeUrl);
+      const aiFallbackCheck = canUse(FEATURES.AI_URL_FALLBACK);
+      const parsed = await parseRecipeFromUrl(recipeUrl, {
+        canUseAiFallback: aiFallbackCheck.allowed,
+      });
       setRecipe((prev) => ({
         ...prev,
         name: parsed.name || prev.name,
@@ -486,6 +492,11 @@ function AddRecipeWizard({
   };
 
   const doImportWithAI = async () => {
+    const voiceCheck = canUse(FEATURES.IMPORT_VOICE);
+    if (!voiceCheck.allowed) {
+      setImportError(t("premium", "premiumOnly"));
+      return;
+    }
     const text =
       recordingText.trim() ||
       recordingTextRef.current?.trim() ||
@@ -569,6 +580,11 @@ function AddRecipeWizard({
       setImportError(t("addWizard", "enterText"));
       return;
     }
+    const textCheck = canUse(FEATURES.IMPORT_TEXT);
+    if (!textCheck.allowed) {
+      setImportError(t("premium", "limitReached"));
+      return;
+    }
     setIsImporting(true);
     setImportError("");
     try {
@@ -600,6 +616,7 @@ function AddRecipeWizard({
         image_src: parsed.image_src || prev.image_src,
         notes: parsed.notes || prev.notes,
       }));
+      incrementUsage(FEATURES.IMPORT_TEXT);
       needsTranslationRef.current = true;
       setScreen("manual");
       setManualStep(0);
@@ -614,6 +631,14 @@ function AddRecipeWizard({
     const inputEl = e.target;
     const files = Array.from(inputEl.files || []);
     if (files.length === 0) return;
+
+    const photoCheck = canUse(FEATURES.IMPORT_PHOTO);
+    if (!photoCheck.allowed) {
+      setImportError(t("premium", "limitReached"));
+      try { inputEl.value = ""; } catch {}
+      if (photoFileInputRef.current) photoFileInputRef.current.value = "";
+      return;
+    }
 
     const resetPhotoInputs = () => {
       try {
@@ -663,7 +688,10 @@ function AddRecipeWizard({
           reader.readAsDataURL(file);
         });
       const base64Images = await Promise.all(files.map((f) => resizeImage(f)));
-      const parsed = await extractRecipeFromImage(base64Images);
+      const ocrCheck = canUse(FEATURES.OCR);
+      const parsed = await extractRecipeFromImage(base64Images, {
+        canUseOcr: ocrCheck.allowed,
+      });
       if (parsed.error) {
         setImportError(t("addWizard", "photoFailed"));
         return;
@@ -685,6 +713,7 @@ function AddRecipeWizard({
         difficulty: parsed.difficulty || prev.difficulty,
         notes: parsed.notes || prev.notes,
       }));
+      await incrementUsage(FEATURES.IMPORT_PHOTO);
       needsTranslationRef.current = true;
       setScreen("manual");
       setManualStep(0);
@@ -825,6 +854,16 @@ function AddRecipeWizard({
   }, [screen, manualStep, handlePasteImage]);
 
   const handleGenerateAiImage = async () => {
+    const dalleCheck = canUse(FEATURES.DALLE_IMAGE);
+    if (!dalleCheck.allowed) {
+      setImageToast({
+        open: true,
+        message: t("premium", "premiumOnly"),
+        variant: "error",
+        duration: 3000,
+      });
+      return;
+    }
     if (!recipe.name?.trim()) {
       setImageToast({
         open: true,

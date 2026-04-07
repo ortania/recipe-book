@@ -257,7 +257,8 @@ const ensureMultiSectionFromHtml = (html, currentText, pageUrl) => {
   return currentText + "\n\n" + text;
 };
 
-export const parseRecipeFromUrl = async (url) => {
+export const parseRecipeFromUrl = async (url, options = {}) => {
+  const { canUseAiFallback = true } = options;
   try {
     console.log("[recipeParser] Parsing URL:", url);
     // Validate URL
@@ -524,9 +525,11 @@ export const parseRecipeFromUrl = async (url) => {
               jsonLdIngCount,
               "with quantities:",
               ingsWithQty,
-              "- trying OpenAI...",
+              canUseAiFallback ? "- trying OpenAI..." : "- AI fallback blocked (premium)",
             );
-            try {
+            if (!canUseAiFallback) {
+              console.log("[recipeParser] Skipping AI fallback (not entitled)");
+            } else try {
               const { extractRecipeFromText: aiExtract } =
                 await import("../services/openai");
               const aiResult = await aiExtract(textForAI);
@@ -624,7 +627,9 @@ export const parseRecipeFromUrl = async (url) => {
     );
 
     if (cleanText.length > 100) {
-      try {
+      if (!canUseAiFallback) {
+        console.log("[recipeParser] Skipping main OpenAI extraction (not entitled)");
+      } else try {
         console.log("[recipeParser] Trying OpenAI extraction...");
         const { extractRecipeFromText: aiExtract } =
           await import("../services/openai");

@@ -1,8 +1,10 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lightbulb, Info, BookOpen, ChevronLeft, Plus, Loader2, Heart, Dumbbell, Zap, Baby, Leaf, WheatOff, Copy } from "lucide-react";
+import { Lightbulb, Info, BookOpen, ChevronLeft, Plus, Loader2, Heart, Dumbbell, Zap, Baby, Leaf, WheatOff, Copy, Crown } from "lucide-react";
 import { useChatWindow } from "./ChatWindowContext";
 import { getFollowUpActions, getRecipeResultActions, filterRedundantActions } from "../../utils/chatIntents";
+import { FEATURES } from "../../config/entitlements";
+import useEntitlements from "../../hooks/useEntitlements";
 
 const IDEA_CHIPS = [
   "ideaChip1", "ideaChip2", "ideaChip3", "ideaChip4",
@@ -49,6 +51,17 @@ export default function ChatWindowMessages() {
     classes, t,
   } = useChatWindow();
   const navigate = useNavigate();
+  const { canUse } = useEntitlements();
+  const [applyGateIdx, setApplyGateIdx] = useState(null);
+
+  const handleGatedApply = (content, index, instruction) => {
+    const check = canUse(FEATURES.APPLY_AI_SUGGESTION);
+    if (!check.allowed) {
+      setApplyGateIdx(index);
+      return;
+    }
+    handleApplyUpdate(content, index, instruction);
+  };
 
   const recipeChips = useMemo(
     () => (isRecipeMode ? buildRecipeChips(recipe, recipeContext, t) : []),
@@ -152,7 +165,7 @@ export default function ChatWindowMessages() {
                         <div className={classes.applyBtnRow}>
                           <button
                             className={classes.applyBtn}
-                            onClick={() => handleApplyUpdate(
+                            onClick={() => handleGatedApply(
                               message.content, index,
                               customUpdateIdx === index && customUpdateText.trim() ? customUpdateText.trim() : undefined
                             )}
@@ -187,6 +200,18 @@ export default function ChatWindowMessages() {
                             </button>
                           )}
                         </div>
+                        {applyGateIdx === index && (
+                          <div className={classes.applyGateHint}>
+                            <Crown size={14} />
+                            <span>{t("premium", "premiumOnly")}</span>
+                            <button
+                              className={classes.applyGateDismiss}
+                              onClick={() => setApplyGateIdx(null)}
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        )}
                       </div>
                     )}
                   </div>

@@ -1,0 +1,22 @@
+.indicator {
+  display: inline-flex;
+  align-items: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--clr-text-muted);
+  padding: 0.15em 0.45em;
+  border-radius: 6px;
+  background: var(--clr-bg-hover);
+  white-space: nowrap;
+  user-select: none;
+}
+
+.low {
+  color: var(--clr-warning, #d97706);
+  background: var(--clr-warning-light, #fef3c7);
+}
+
+.depleted {
+  color: var(--clr-danger-600, #dc2626);
+  background: var(--clr-danger-light, #fee2e2);
+}

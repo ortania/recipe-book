@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect, useRef } from "react";
+import { useState, useMemo, useEffect, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
 import { FiCheck, FiShoppingCart, FiPrinter } from "react-icons/fi";
 import { Globe, Trash2 } from "lucide-react";
@@ -10,6 +10,10 @@ import {
   searchCommunityRecipes,
   fetchGlobalRecipesCount,
 } from "../../firebase/globalRecipeService";
+import {
+  fetchShoppingList,
+  saveShoppingList,
+} from "../../firebase/mealPlanService";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { buildShoppingList } from "../../utils/ingredientUtils";
 import { getCategoryIcon } from "../../utils/categoryIcons";
@@ -19,43 +23,18 @@ import { BackButton } from "../../components/controls/back-button";
 import classes from "./shopping-list.module.css";
 import btnClasses from "../../styles/shared/buttons.module.css";
 
-const STORAGE_KEY = "shoppingListState";
-
-function loadSaved() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : null;
-    console.log(
-      "[ShoppingList] loadSaved:",
-      parsed
-        ? {
-            selectedRecipes: parsed.selectedRecipes?.length,
-            showList: parsed.showList,
-          }
-        : "null",
-    );
-    return parsed;
-  } catch {
-    return null;
-  }
-}
+const LOCAL_STORAGE_KEY = "shoppingListState";
+const DEBOUNCE_MS = 1500;
 
 function ShoppingList() {
   const { t } = useLanguage();
   const { recipes, categories, currentUser } = useRecipeBook();
   const { getTranslated } = useTranslatedList(categories, "name");
-  const saved = useRef(loadSaved());
-  const [selectedRecipes, setSelectedRecipes] = useState(
-    saved.current?.selectedRecipes || [],
-  );
+  const [selectedRecipes, setSelectedRecipes] = useState([]);
   const [selectedCat, setSelectedCat] = useState(null);
-  const [checkedItems, setCheckedItems] = useState(
-    saved.current?.checkedItems || {},
-  );
-  const [manualItems, setManualItems] = useState(
-    saved.current?.manualItems || [],
-  );
-  const [showList, setShowList] = useState(saved.current?.showList || false);
+  const [checkedItems, setCheckedItems] = useState({});
+  const [manualItems, setManualItems] = useState([]);
+  const [showList, setShowList] = useState(false);
   const [showSelectedRecipes, setShowSelectedRecipes] = useState(false);
   const [mobileTabsEl, setMobileTabsEl] = useState(null);
   const [globalRecipes, setGlobalRecipes] = useState([]);
@@ -65,15 +44,66 @@ function ShoppingList() {
   const [sortField, setSortField] = useState("name");
   const [sortDirection, setSortDirection] = useState("asc");
 
+  const loadedRef = useRef(false);
+  const debounceRef = useRef(null);
+
+  useEffect(() => {
+    if (!currentUser?.uid || loadedRef.current) return;
+    loadedRef.current = true;
+    (async () => {
+      const remote = await fetchShoppingList(currentUser.uid);
+      if (remote) {
+        setSelectedRecipes(remote.selectedRecipes || []);
+        setCheckedItems(remote.checkedItems || {});
+        setManualItems(remote.manualItems || []);
+        return;
+      }
+      try {
+        const raw = localStorage.getItem(LOCAL_STORAGE_KEY);
+        const local = raw ? JSON.parse(raw) : null;
+        if (local && (local.selectedRecipes?.length || local.manualItems?.length)) {
+          setSelectedRecipes(local.selectedRecipes || []);
+          setCheckedItems(local.checkedItems || {});
+          setManualItems(local.manualItems || []);
+          setShowList(local.showList || false);
+          await saveShoppingList(currentUser.uid, {
+            selectedRecipes: local.selectedRecipes || [],
+            checkedItems: local.checkedItems || {},
+            manualItems: local.manualItems || [],
+          });
+          localStorage.removeItem(LOCAL_STORAGE_KEY);
+        }
+      } catch {
+        /* localStorage read/migration failed — start empty */
+      }
+    })();
+  }, [currentUser?.uid]);
+
+  const persistToFirestore = useCallback(() => {
+    if (!currentUser?.uid) return;
+    clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(async () => {
+      try {
+        await saveShoppingList(currentUser.uid, {
+          selectedRecipes,
+          checkedItems,
+          manualItems,
+        });
+      } catch (err) {
+        console.error("[ShoppingList] Firestore save failed:", err);
+      }
+    }, DEBOUNCE_MS);
+  }, [currentUser?.uid, selectedRecipes, checkedItems, manualItems]);
+
   const didMount = useRef(false);
   useEffect(() => {
     if (!didMount.current) {
       didMount.current = true;
       return;
     }
-    const data = { selectedRecipes, checkedItems, manualItems, showList };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  }, [selectedRecipes, checkedItems, manualItems, showList]);
+    if (!loadedRef.current) return;
+    persistToFirestore();
+  }, [selectedRecipes, checkedItems, manualItems, persistToFirestore]);
 
   const shoppingSortOptions = [
     { field: "name", defaultDir: "asc" },
@@ -161,12 +191,24 @@ function ShoppingList() {
     setCheckedItems((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
     setSelectedRecipes([]);
     setCheckedItems({});
+    setManualItems([]);
     setShowList(false);
     setShowSelectedRecipes(false);
-    localStorage.removeItem(STORAGE_KEY);
+    clearTimeout(debounceRef.current);
+    if (currentUser?.uid) {
+      try {
+        await saveShoppingList(currentUser.uid, {
+          selectedRecipes: [],
+          checkedItems: {},
+          manualItems: [],
+        });
+      } catch (err) {
+        console.error("[ShoppingList] Firestore clear failed:", err);
+      }
+    }
   };
 
   const removeSelectedRecipe = (id) => {

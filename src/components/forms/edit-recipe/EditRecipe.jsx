@@ -17,6 +17,8 @@ import { useLanguage, useRecipeBook } from "../../../context";
 import { uploadRecipeImage } from "../../../firebase/imageService";
 import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
+import { FEATURES } from "../../../config/entitlements";
+import useEntitlements from "../../../hooks/useEntitlements";
 import buttonClasses from "../../../styles/shared/buttons.module.css";
 import catShared from "../../../styles/shared/category-chips.module.css";
 import shared from "../../../styles/shared/form-shared.module.css";
@@ -82,6 +84,7 @@ function EditRecipe({
 }) {
   const { t } = useLanguage();
   const { currentUser, addCategory } = useRecipeBook();
+  const { canUse, incrementUsage } = useEntitlements();
   const { getTranslated: getTranslatedGroup } = useTranslatedList(
     groups,
     "name",
@@ -352,6 +355,16 @@ function EditRecipe({
   );
 
   const handleGenerateAiImage = async () => {
+    const dalleCheck = canUse(FEATURES.DALLE_IMAGE);
+    if (!dalleCheck.allowed) {
+      setImageToast({
+        open: true,
+        message: t("premium", "premiumOnly"),
+        variant: "error",
+        duration: 3000,
+      });
+      return;
+    }
     if (!editedRecipe.name?.trim()) {
       setImageToast({
         open: true,
@@ -565,42 +578,49 @@ function EditRecipe({
       origIngredients !== newIngredients || origServings !== newServings;
 
     if (filledIngredients.length > 0 && ingredientsChanged) {
-      try {
-        setSavedMessage(
-          <>
-            <Loader size={18} className={classes.spinIcon} /> מחשב ערכים
-            תזונתיים...
-          </>,
-        );
-        const result = await calculateNutrition(
-          filledIngredients,
-          editedRecipe.servings,
-        );
-        if (result && !result.error) {
-          for (const key of Object.keys(result)) {
-            nutrition[key] = result[key];
+      const nutritionCheck = canUse(FEATURES.NUTRITION_CALC);
+      if (!nutritionCheck.allowed) {
+        setSavedMessage(t("premium", "limitReached"));
+        await new Promise((r) => setTimeout(r, 2000));
+      } else {
+        try {
+          setSavedMessage(
+            <>
+              <Loader size={18} className={classes.spinIcon} /> מחשב ערכים
+              תזונתיים...
+            </>,
+          );
+          const result = await calculateNutrition(
+            filledIngredients,
+            editedRecipe.servings,
+          );
+          if (result && !result.error) {
+            for (const key of Object.keys(result)) {
+              nutrition[key] = result[key];
+            }
+            await incrementUsage(FEATURES.NUTRITION_CALC);
+          } else {
+            console.warn("Nutrition calculation returned error:", result?.error);
+            const msg =
+              result?.error === "QUOTA_EXCEEDED" ? (
+                t("recipes", "nutritionQuotaError")
+              ) : (
+                <>
+                  <AlertTriangle size={18} /> {t("recipes", "nutritionError")}
+                </>
+              );
+            setSavedMessage(msg);
+            await new Promise((r) => setTimeout(r, 3000));
           }
-        } else {
-          console.warn("Nutrition calculation returned error:", result?.error);
-          const msg =
-            result?.error === "QUOTA_EXCEEDED" ? (
-              t("recipes", "nutritionQuotaError")
-            ) : (
-              <>
-                <AlertTriangle size={18} /> {t("recipes", "nutritionError")}
-              </>
-            );
-          setSavedMessage(msg);
+        } catch (err) {
+          console.error("Nutrition calculation failed:", err);
+          setSavedMessage(
+            <>
+              <AlertTriangle size={18} /> {t("recipes", "nutritionError")}
+            </>,
+          );
           await new Promise((r) => setTimeout(r, 3000));
         }
-      } catch (err) {
-        console.error("Nutrition calculation failed:", err);
-        setSavedMessage(
-          <>
-            <AlertTriangle size={18} /> {t("recipes", "nutritionError")}
-          </>,
-        );
-        await new Promise((r) => setTimeout(r, 3000));
       }
     }
     const updatedRecipe = {

@@ -141,13 +141,11 @@ export const analyzeImageForNutrition = async (base64Image, options = {}) => {
   );
 };
 
-export const extractRecipeFromImage = async (base64Images, language = "he") => {
+export const extractRecipeFromImage = async (base64Images, options = {}) => {
+  const { canUseOcr = true } = options;
   const images = Array.isArray(base64Images) ? base64Images : [base64Images];
 
-  // Always use GPT-4o direct image extraction.
-  // GPT-4o vision handles both printed and handwritten text reliably,
-  // whereas Google Cloud Vision OCR fails on handwriting.
-  return extractRecipeDirectFromImage(images);
+  return extractRecipeDirectFromImage(images, canUseOcr);
 };
 
 const IMAGE_RECIPE_SYSTEM_PROMPT = `You are a recipe extraction expert specialized in reading handwritten and printed recipes in any language, especially Hebrew.
@@ -251,8 +249,13 @@ async function extractRecipeWithVision(images) {
   }
 }
 
-async function extractRecipeDirectFromImage(images) {
+async function extractRecipeDirectFromImage(images, canUseOcr = true) {
   let rawText = "";
+
+  if (!canUseOcr) {
+    console.log("[ImageImport] OCR skipped (entitlement), using GPT-4o vision");
+    return extractRecipeWithVision(images);
+  }
 
   // Pass 1: Try Google Cloud Vision OCR
   try {

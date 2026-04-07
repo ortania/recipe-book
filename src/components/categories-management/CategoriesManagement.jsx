@@ -14,6 +14,8 @@ import useTranslatedList from "../../hooks/useTranslatedList";
 import { useTouchDragDrop } from "../../hooks/useTouchDragDrop";
 import { uploadRecipeImage } from "../../firebase/imageService";
 import { generateRecipeImageDataUrl } from "../../services/openai";
+import { FEATURES } from "../../config/entitlements";
+import useEntitlements from "../../hooks/useEntitlements";
 import {
   CATEGORY_ICONS,
   DEFAULT_ICON_ID,
@@ -60,6 +62,7 @@ function CategoriesManagement({
 }) {
   const { t } = useLanguage();
   const { currentUser } = useRecipeBook();
+  const { canUse } = useEntitlements();
   const { getTranslated } = useTranslatedList(categories, "name");
   const isMobile = window.innerWidth < 768;
 
@@ -179,6 +182,15 @@ function CategoriesManagement({
   };
 
   const handleGenerateAiImage = async () => {
+    const dalleCheck = canUse(FEATURES.DALLE_IMAGE);
+    if (!dalleCheck.allowed) {
+      setImageToast({
+        open: true,
+        message: t("premium", "premiumOnly"),
+        variant: "error",
+      });
+      return;
+    }
     if (!formName.trim()) {
       setImageToast({
         open: true,

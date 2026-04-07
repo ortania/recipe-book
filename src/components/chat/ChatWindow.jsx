@@ -15,6 +15,9 @@ import { useLanguage, useRecipeBook } from "../../context";
 import { Greeting } from "../greeting";
 import { ChatHelpButton } from "../controls/chat-help-button";
 import { ChatInput } from "../controls/chat-input";
+import { FEATURES } from "../../config/entitlements";
+import useEntitlements from "../../hooks/useEntitlements";
+import { UsageIndicator } from "../usage-indicator";
 import classes from "./chat-window.module.css";
 
 import { ChatWindowContext } from "./ChatWindowContext";
@@ -41,6 +44,7 @@ function ChatWindow({
   const { t, language } = useLanguage();
   const { currentUser, recipes: allRecipes } = useRecipeBook();
   const navigate = useNavigate();
+  const { canUse, incrementUsage } = useEntitlements();
 
   const [internalMessages, setInternalMessages] = useState(() => {
     if (externalMessages !== undefined) return [];
@@ -126,6 +130,11 @@ function ChatWindow({
 
   const handleImageFile = (file) => {
     if (!file) return;
+    const photoCheck = canUse(FEATURES.NUTRITION_PHOTO);
+    if (!photoCheck.allowed) {
+      setError(t("premium", "premiumOnly"));
+      return;
+    }
     if (!file.type.startsWith("image/") && !/\.jfif$/i.test(file.name)) {
       setError(t("chat", "selectImageFile"));
       return;
@@ -152,8 +161,12 @@ function ChatWindow({
     }
   };
 
+  const chatFeatureKey = isRecipeMode ? FEATURES.RECIPE_CHAT : FEATURES.GENERAL_CHAT;
+
   const sendMessage = async (text) => {
     if (isLoading || !text.trim()) return;
+    const check = canUse(chatFeatureKey);
+    if (!check.allowed) return;
     const userMessage = { role: "user", content: text };
     const updatedMessages = [...messages, userMessage];
     setMessages(updatedMessages);
@@ -176,6 +189,7 @@ function ChatWindow({
         if (names.length > 0) assistantMsg.recipeNames = names;
       }
       setMessages([...updatedMessages, assistantMsg]);
+      await incrementUsage(chatFeatureKey);
     } catch (err) {
       if (err.name === "AbortError") return;
       setError(err.message || "Failed to get response. Please try again.");
@@ -385,6 +399,11 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
 
   const handleCreateVariation = useCallback(async (aiResponse, msgIndex, userInstruction) => {
     if (!recipeContext || applyingIdx !== null) return;
+    const variationCheck = canUse(FEATURES.CREATE_VARIATION);
+    if (!variationCheck.allowed) {
+      setError(t("premium", "limitReached"));
+      return;
+    }
     setApplyingIdx(msgIndex);
     setError("");
     try {
@@ -424,6 +443,7 @@ Include the COMPLETE ingredients and instructions arrays with changes applied. K
         variationType: detectVariationType(`${aiResponse} ${userInstruction || ""}`),
       };
       try { sessionStorage.setItem("chatRecipeDraft", JSON.stringify(draft)); } catch (e) { console.error("Failed to save draft:", e); }
+      await incrementUsage(FEATURES.CREATE_VARIATION);
       if (recipesView?.onAddRecipe) {
         recipesView.onAddRecipe("manual");
       } else {
@@ -436,7 +456,7 @@ Include the COMPLETE ingredients and instructions arrays with changes applied. K
     } finally {
       setApplyingIdx(null);
     }
-  }, [recipesView, recipeContext, recipe, applyingIdx, t, navigate]);
+  }, [recipesView, recipeContext, recipe, applyingIdx, t, navigate, canUse, incrementUsage]);
 
   const isEmpty = messages.length === 0 && !isRecipeMode;
 
@@ -524,12 +544,15 @@ Include the COMPLETE ingredients and instructions arrays with changes applied. K
               )}
             </>
           )}
+          <div className={classes.inputMeta}>
+            <UsageIndicator featureKey={chatFeatureKey} />
+          </div>
           <ChatInput
             value={input}
             onChange={setInput}
             onSubmit={(text) => sendMessage(text)}
             placeholder={isRecipeMode ? t("recipeChat", "placeholder") : t("chat", "placeholder")}
-            disabled={isLoading}
+            disabled={isLoading || !canUse(chatFeatureKey).allowed}
             isLoading={isLoading}
             onStop={handleStop}
             showImageButton={showImageButton}

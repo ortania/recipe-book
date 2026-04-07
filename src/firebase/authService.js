@@ -3,7 +3,6 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signInWithRedirect,
-  getRedirectResult,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -23,6 +22,7 @@ import {
   where,
 } from "firebase/firestore";
 import { auth, db } from "./config";
+import { DEFAULT_USAGE } from "../config/entitlements";
 
 const USERS_COLLECTION = "users";
 
@@ -39,6 +39,9 @@ export const signupUser = async (email, password, displayName) => {
       email: user.email,
       displayName: displayName || email.split("@")[0],
       isAdmin: true,
+      accessRole: "normal",
+      plan: "free",
+      usage: { ...DEFAULT_USAGE },
       createdAt: new Date().toISOString(),
     });
 
@@ -79,6 +82,9 @@ export const ensureGoogleUserDoc = async (user) => {
       email: user.email,
       displayName: user.displayName || user.email.split("@")[0],
       isAdmin: true,
+      accessRole: "normal",
+      plan: "free",
+      usage: { ...DEFAULT_USAGE },
       createdAt: new Date().toISOString(),
     });
   }
@@ -105,21 +111,6 @@ export const signInWithGoogle = async () => {
     }
     console.error("Error signing in with Google:", error);
     throw error;
-  }
-};
-
-export const handleGoogleRedirect = async () => {
-  try {
-    const result = await getRedirectResult(auth);
-    if (result?.user) {
-      await ensureGoogleUserDoc(result.user);
-      console.log("✅ Google sign-in (redirect):", result.user.uid);
-      return result.user;
-    }
-    return null;
-  } catch (error) {
-    console.error("Error handling Google redirect:", error);
-    return null;
   }
 };
 
