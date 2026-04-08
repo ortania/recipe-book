@@ -287,6 +287,18 @@ export default function ChatWindowMessages() {
                             </div>
                           )}
                           <div className={classes.applyBtnRow}>
+                            {customUpdateIdx !== index && (
+                              <button
+                                className={classes.customChooseBtn}
+                                onClick={() => {
+                                  setCustomUpdateIdx(index);
+                                  setCustomUpdateText("");
+                                }}
+                                disabled={applyingIdx !== null}
+                              >
+                                {t("recipeChat", "customUpdate")}
+                              </button>
+                            )}
                             <button
                               className={classes.applyBtn}
                               onClick={() =>
@@ -332,18 +344,6 @@ export default function ChatWindowMessages() {
                                 {applyingIdx === index
                                   ? t("recipeChat", "updating")
                                   : t("recipeChat", "createVariation")}
-                              </button>
-                            )}
-                            {customUpdateIdx !== index && (
-                              <button
-                                className={classes.customChooseBtn}
-                                onClick={() => {
-                                  setCustomUpdateIdx(index);
-                                  setCustomUpdateText("");
-                                }}
-                                disabled={applyingIdx !== null}
-                              >
-                                {t("recipeChat", "customUpdate")}
                               </button>
                             )}
                           </div>
