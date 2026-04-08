@@ -40,6 +40,7 @@ export default function useEntitlements() {
   const hasFullAccess = useCallback(() => {
     if (!currentUser) return false;
     if (FULL_ACCESS_ROLES.includes(currentUser.accessRole)) return true;
+    if (currentUser.isAdmin && !currentUser.accessRole) return true;
     if (
       currentUser.plan === "premium" &&
       currentUser.premiumUntil &&

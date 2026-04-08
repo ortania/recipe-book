@@ -108,37 +108,59 @@ export const callOpenAI = async (requestBody, options = {}) => {
 };
 
 export const analyzeImageForNutrition = async (base64Image, options = {}) => {
-  return callOpenAI(
+  const identifyResult = await callOpenAI(
     {
       model: "gpt-4o",
       messages: [
         {
           role: "system",
-          content:
-            "You are a nutrition expert. When shown an image of food, analyze it and provide detailed nutritional information including estimated calories, protein, carbs, fat, fiber, and notable vitamins or minerals. Be concise and practical. If you cannot identify the food, say so politely. Always respond in Hebrew.",
+          content: `אתה מומחה לזיהוי מזון. זהה כל פריט מזון שנראה בתמונה.
+לכל פריט, העריך את המשקל הכולל בגרמים עבור כל הכמות הנראית.
+כתוב כל פריט בעברית עם המשקל בגרמים.
+החזר רק אובייקט JSON, בלי markdown, בלי הסבר:
+{"items":["<משקל>g <שם המזון בעברית>", ...], "servings": <מספר>, "description": "<תיאור קצר בעברית של מה שבתמונה>"}
+כללים:
+- רשום כל פריט מזון נפרד שנראה.
+- תמיד העריך את המשקל הכולל בגרמים של כל הפריט (למשל: עוגה שלמה = המשקל הכולל של כל העוגה, צלחת אורז = סה"כ גרמים בצלחת).
+- אם מוצג מאכל שלם (כמו עוגה שלמה, פאי שלם, סיר שלם), העריך את המשקל הכולל וקבע את servings למספר המנות המשוער.
+- כל הטקסט חייב להיות בעברית.
+- אם לא ניתן לזהות את המזון, החזר {"items":[], "servings":1, "error":"לא ניתן לזהות את המזון"}.`,
         },
         {
           role: "user",
           content: [
-            {
-              type: "text",
-              text: "Please analyze this food image and provide its estimated nutritional values per serving.",
-            },
-            {
-              type: "image_url",
-              image_url: {
-                url: base64Image,
-                detail: "high",
-              },
-            },
+            { type: "text", text: "זהה את כל פריטי המזון בתמונה. העריך משקל כולל בגרמים לכל מה שנראה. כתוב בעברית." },
+            { type: "image_url", image_url: { url: base64Image, detail: "high" } },
           ],
         },
       ],
-      temperature: 0.5,
-      max_tokens: 800,
+      temperature: 0.3,
+      max_tokens: 400,
     },
     options,
   );
+
+  let parsed;
+  try {
+    let cleaned = identifyResult.replace(/```json\s*/gi, "").replace(/```\s*/g, "").trim();
+    const objMatch = cleaned.match(/\{[\s\S]*\}/);
+    if (objMatch) cleaned = objMatch[0];
+    parsed = JSON.parse(cleaned);
+  } catch {
+    return { items: [], nutrition: null, error: "parse_failed", raw: identifyResult };
+  }
+
+  if (!parsed.items?.length || parsed.error) {
+    return { items: [], nutrition: null, error: parsed.error || "no_items", servings: 1 };
+  }
+
+  const nutrition = await calculateNutrition(parsed.items, parsed.servings || 1);
+  return {
+    items: parsed.items,
+    servings: parsed.servings || 1,
+    description: parsed.description || "",
+    nutrition,
+  };
 };
 
 export const extractRecipeFromImage = async (base64Images, options = {}) => {

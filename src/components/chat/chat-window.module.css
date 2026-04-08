@@ -519,7 +519,7 @@
   color: var(--clr-error-message);
   padding: 0.6rem 1rem;
   border-radius: 8px;
-  font-size: var(--very-small-font);
+  font-size: var(--basic-font);
   text-align: center;
 }
 

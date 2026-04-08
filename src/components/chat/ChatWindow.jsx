@@ -145,14 +145,61 @@ function ChatWindow({
     reader.readAsDataURL(file);
   };
 
+  const formatNutritionResult = (result) => {
+    if (result.error || !result.nutrition || result.nutrition.error) {
+      return t("chat", "analyzeImageError");
+    }
+    const n = result.nutrition;
+    const LABELS = {
+      calories: "קלוריות",
+      protein: "חלבון",
+      fat: "שומן",
+      carbs: "פחמימות",
+      sugars: "סוכרים",
+      fiber: "סיבים תזונתיים",
+      sodium: "נתרן",
+      calcium: "סידן",
+      iron: "ברזל",
+      cholesterol: "כולסטרול",
+      saturatedFat: "שומן רווי",
+    };
+    const units = { sodium: "mg", calcium: "mg", iron: "mg", cholesterol: "mg" };
+    const lines = [];
+    if (result.description) {
+      lines.push(`**${result.description}**`);
+      lines.push("");
+    }
+    if (result.items?.length) {
+      lines.push(result.items.map((item) => `• ${item}`).join("\n"));
+      lines.push("");
+    }
+    const header = result.servings > 1
+      ? `**ערכים תזונתיים (למנה)** (${result.servings} מנות)`
+      : "**ערכים תזונתיים (למנה)**";
+    lines.push(header);
+    for (const [key, label] of Object.entries(LABELS)) {
+      const val = parseInt(n[key], 10) || 0;
+      if (val === 0 && key !== "calories") continue;
+      const unit = units[key] || (key === "calories" ? "" : "g");
+      if (key === "sugars" && val > 0) {
+        const tsp = Math.round(val / 4 * 10) / 10;
+        lines.push(`${label}: ${val}${unit} (≈ ${tsp} כפיות סוכר)`);
+      } else {
+        lines.push(`${label}: ${val}${unit}`);
+      }
+    }
+    return lines.join("\n");
+  };
+
   const handleImageAnalysis = async (imageBase64) => {
     setMessages((prev) => [...prev, { role: "user", content: t("chat", "analyzeImageLabel"), image: imageBase64 }]);
     setIsLoading(true);
     setError("");
     abortRef.current = new AbortController();
     try {
-      const response = await analyzeImageForNutrition(imageBase64, { signal: abortRef.current.signal });
-      setMessages((prev) => [...prev, { role: "assistant", content: response }]);
+      const result = await analyzeImageForNutrition(imageBase64, { signal: abortRef.current.signal });
+      const formatted = formatNutritionResult(result);
+      setMessages((prev) => [...prev, { role: "assistant", content: formatted }]);
     } catch (err) {
       if (err.name === "AbortError") return;
       setError(err.message || t("chat", "analyzeImageError"));
