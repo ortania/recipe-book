@@ -846,13 +846,22 @@ Help the user with questions about THIS recipe - substitutions, adjustments, tec
       const { detectIntent, getIntentPromptHint } = await import("../utils/chatIntents");
       const intent = detectIntent(lastUserMsg.content);
       const hint = getIntentPromptHint(intent);
-      if (hint) systemMessage.content += `\n\n${hint}`;
+
+      const prevAssistantMsgs = messages.filter((m) => m.role === "assistant");
+      const lastAssistant = prevAssistantMsgs[prevAssistantMsgs.length - 1];
+      const hadRecipeSuggestions = lastAssistant && (lastAssistant.recipeNames?.length > 0 || lastAssistant.offerCreate);
+
+      if (hadRecipeSuggestions && intent !== "general_food_question") {
+        systemMessage.content += `\n\nIMPORTANT: The user is refining or narrowing the previous recipe suggestions from the conversation. Answer the user's question based on the recipes you already suggested — for example, pick the best match, recommend one, or compare them. Do NOT generate a new list of recipes. Give a short, direct answer (1–2 sentences), then on a NEW line at the end write ONLY the recommended recipe name in this exact format:\n1. Recipe Name\nOnly if the user explicitly asks for completely new/different ideas should you provide a new numbered list of exactly 3 recipe names.`;
+      } else if (hint) {
+        systemMessage.content += `\n\n${hint}`;
+      }
     }
   }
 
   const recentMessages = messages
     .slice(-5)
-    .map(({ image, intent, ...msg }) => msg);
+    .map((msg) => ({ role: msg.role, content: msg.content }));
 
   return callOpenAI(
     {

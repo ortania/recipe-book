@@ -62,11 +62,11 @@ export function detectIntent(message) {
 
 const INTENT_HINTS = {
   recipe_idea:
-    "The user wants recipe ideas. Suggest 3–5 concrete, practical recipe ideas. For each idea give the name and one short sentence describing it. Keep it concise and inspiring.",
+    "The user wants recipe ideas. Return ONLY a numbered list of exactly 3 recipe names. No descriptions, no explanations, no extra text — just the recipe names.",
   ingredients_based:
-    "The user has specific ingredients and wants to know what to cook. Suggest 3–5 practical dishes they can make with those ingredients. Prioritize simple, realistic options.",
+    "The user has specific ingredients and wants to know what to cook. Return ONLY a numbered list of exactly 3 dish names they can make. No descriptions, no explanations — just the names.",
   meal_goal:
-    "The user is looking for recipes that match a specific goal (healthy, quick, for kids, high protein, etc.). Suggest 3–5 options tailored to that goal. Be practical and specific.",
+    "The user is looking for recipes matching a specific goal. Return ONLY a numbered list of exactly 3 recipe names. No descriptions, no explanations — just the names.",
   recipe_improvement:
     "The user wants to improve or modify a recipe. Give clear, actionable suggestions: what to change and how. Be specific rather than generic.",
   general_food_question: "",
@@ -255,8 +255,8 @@ const CREATE_RECIPE_INTENTS = new Set([
 
 export function shouldOfferCreateRecipe(intent, assistantMessage) {
   if (!assistantMessage || assistantMessage.length < 40) return false;
-  if (CREATE_RECIPE_INTENTS.has(intent)) return true;
-  if (extractRecipeNames(assistantMessage).length > 0) return true;
+  const names = extractRecipeNames(assistantMessage);
+  if (names.length > 0) return true;
   return false;
 }
 

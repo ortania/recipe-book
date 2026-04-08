@@ -304,9 +304,10 @@
 /* ── Shared follow-up container (chooser + recipe results) ── */
 
 .assistantFollowUp {
-  border: 1.5px solid var(--clr-border-light);
+  /* border: 1.5px solid var(--clr-border-light); */
   /* border-radius: 14px; */
   overflow: hidden;
+  background: var(--clr-bubble-assistant-bg);
 }
 
 /* ── Recipe-idea chooser (section inside assistantFollowUp) ── */
@@ -337,13 +338,11 @@
 }
 
 .recipeChooserOption {
-  display: block;
   width: 100%;
   padding: 0.65rem 1rem;
   border: none;
   background: transparent;
-  font-size: var(--small-font);
-  font-weight: 500;
+  font-size: var(--basic-font);
   color: var(--clr-text-primary);
   cursor: pointer;
   transition: var(--transition-fast);
@@ -351,6 +350,9 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1;
+  display: flex;
+  align-items: center;
 }
 
 .spinnerIcon {
@@ -361,7 +363,9 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .recipeChooserOption + .recipeChooserOption {
@@ -974,4 +978,127 @@
   padding: 0 0.15rem;
   font-size: 0.8rem;
   line-height: 1;
+}
+
+.recipeChooserCompact {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0.3rem 0;
+}
+
+.recipeChooserCompact .recipeChooserOption {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45em 0.9em;
+  border-radius: 20px;
+  border: 1.5px solid var(--clr-btn-outline-border);
+  background: var(--clr-btn-outline-bg);
+  color: var(--clr-btn-outline-text);
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-primary);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  white-space: nowrap;
+}
+
+.recipeChooserCompact .recipeChooserOption:hover {
+  background: var(--clr-btn-outline-bg-hover);
+  color: var(--clr-btn-outline-text-hover);
+}
+
+.matchedRecipesLabel {
+  display: block;
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-secondary);
+  color: var(--clr-text-primary);
+  margin-top: 0.5rem;
+  margin-bottom: 0.1rem;
+  padding: 1rem;
+}
+
+/* .recipeChooserCompact .matchedOption {
+  border-color: var(--clr-accent, #ff9800);
+  color: var(--clr-accent, #ff9800);
+}
+
+.recipeChooserCompact .matchedOption:hover {
+  background: var(--clr-accent, #ff9800);
+  color: #fff;
+} */
+
+.previewLoading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 2.5rem 1rem;
+  color: var(--clr-text-muted);
+  font-size: var(--small-font);
+}
+
+.previewError {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: var(--clr-error, #d32f2f);
+  font-size: 0.95rem;
+}
+
+.previewContent {
+  padding: 0.5rem 0.25rem 1rem;
+}
+
+.previewSection {
+  margin-bottom: 1.2rem;
+}
+
+.previewSectionTitle {
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  margin: 0 0 0.5rem;
+  color: var(--clr-text-primary);
+}
+
+.previewList {
+  margin: 0;
+  padding-inline-start: 1.3rem;
+  list-style: disc;
+  font-size: var(--small-font);
+  line-height: 1.7;
+  color: var(--clr-text-primary);
+}
+
+.previewSteps {
+  margin: 0;
+  padding-inline-start: 1.4rem;
+  font-size: var(--small-font);
+  line-height: 1.8;
+  color: var(--clr-text-primary);
+}
+
+.previewActions {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1.5rem;
+  justify-content: center;
+}
+
+.previewCreateBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.65em 1.5em;
+  border-radius: var(--btn-border-radius);
+  border: none;
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-primary);
+  cursor: pointer;
+  background: var(--clr-btn-main-bg);
+  color: var(--clr-btn-main-text);
+  transition: var(--transituin-fast);
+}
+
+.previewCreateBtn:hover {
+  background: var(--clr-btn-main-bg-hover);
 }

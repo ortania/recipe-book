@@ -223,7 +223,8 @@ function ChatWindow({
     abortRef.current = new AbortController();
     try {
       const intent = !isRecipeMode ? detectIntent(text) : undefined;
-      const matched = !isRecipeMode
+      const RECIPE_INTENTS = ["recipe_idea", "ingredients_based", "meal_goal"];
+      const matched = !isRecipeMode && RECIPE_INTENTS.includes(intent)
         ? findRelevantRecipes(text, allRecipes)
         : [];
       const response = await sendChatMessage(updatedMessages, recipeContext, language, { signal: abortRef.current.signal });
@@ -509,6 +510,12 @@ Include the COMPLETE ingredients and instructions arrays with changes applied. K
 
   const hasMessages = messages.length > 0;
 
+  const openWizardWithDraft = useCallback((draft) => {
+    if (!recipesView?.onAddRecipe || !draft?.name) return;
+    try { sessionStorage.setItem("chatRecipeDraft", JSON.stringify(draft)); } catch {}
+    recipesView.onAddRecipe("manual");
+  }, [recipesView]);
+
   const contextValue = {
     messages, isLoading, error, isRecipeMode, isEmpty,
     applyingIdx, customUpdateIdx, setCustomUpdateIdx,
@@ -519,6 +526,7 @@ Include the COMPLETE ingredients and instructions arrays with changes applied. K
     handleChipClick,
     handleCreateRecipeFromName, loadingRecipeName,
     handleRecipeVariation, allRecipes,
+    openWizardWithDraft,
     messagesEndRef, messagesAreaRef,
     recipe, recipeContext,
     classes, t,

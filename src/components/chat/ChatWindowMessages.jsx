@@ -1,14 +1,41 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Lightbulb, Info, BookOpen, ChevronLeft, Plus, Loader2, Heart, Dumbbell, Zap, Baby, Leaf, WheatOff, Copy, Crown } from "lucide-react";
+import {
+  Lightbulb,
+  Info,
+  Plus,
+  Loader2,
+  Heart,
+  Dumbbell,
+  Zap,
+  Baby,
+  Leaf,
+  WheatOff,
+  Copy,
+  Crown,
+  Eye,
+  PenLine,
+} from "lucide-react";
 import { useChatWindow } from "./ChatWindowContext";
-import { getFollowUpActions, getRecipeResultActions, filterRedundantActions } from "../../utils/chatIntents";
+import {
+  getFollowUpActions,
+  getRecipeResultActions,
+  filterRedundantActions,
+  buildRecipeDraftFromChat,
+} from "../../utils/chatIntents";
 import { FEATURES } from "../../config/entitlements";
 import useEntitlements from "../../hooks/useEntitlements";
+import { BottomSheet } from "../../components/controls/bottom-sheet";
 
 const IDEA_CHIPS = [
-  "ideaChip1", "ideaChip2", "ideaChip3", "ideaChip4",
-  "ideaChip5", "ideaChip6", "ideaChip7", "ideaChip8",
+  "ideaChip1",
+  "ideaChip2",
+  "ideaChip3",
+  "ideaChip4",
+  "ideaChip5",
+  "ideaChip6",
+  "ideaChip7",
+  "ideaChip8",
 ];
 
 function buildRecipeChips(recipe, recipeContext, t) {
@@ -17,12 +44,16 @@ function buildRecipeChips(recipe, recipeContext, t) {
   const name = recipeContext.name || "";
   const ings = recipeContext.ingredients || [];
 
-  const pick = (arr) => arr.length > 0 ? arr[Math.floor(arr.length / 2)] : null;
+  const pick = (arr) =>
+    arr.length > 0 ? arr[Math.floor(arr.length / 2)] : null;
   const randomIng = pick(ings.filter((x) => typeof x === "string" && x.trim()));
 
   if (randomIng) {
     const clean = randomIng.replace(/^[\d\s½¼¾⅓⅔.,/\-–]+/, "").trim();
-    if (clean) chips.push(t("recipeChat", "suggestSubstituteFor").replace("{ing}", clean));
+    if (clean)
+      chips.push(
+        t("recipeChat", "suggestSubstituteFor").replace("{ing}", clean),
+      );
   }
   if (!chips.length) chips.push(t("recipeChat", "suggestSubstitute"));
 
@@ -39,16 +70,31 @@ function buildRecipeChips(recipe, recipeContext, t) {
 
 export default function ChatWindowMessages() {
   const {
-    messages, isLoading, error, isRecipeMode,
-    applyingIdx, customUpdateIdx, setCustomUpdateIdx,
-    customUpdateText, setCustomUpdateText,
-    appliedFields, userInitial,
-    handleApplyUpdate, handleCreateVariation, handleChipClick,
-    handleCreateRecipeFromName, loadingRecipeName,
-    handleRecipeVariation, allRecipes,
-    messagesEndRef, messagesAreaRef,
-    recipe, recipeContext,
-    classes, t,
+    messages,
+    isLoading,
+    error,
+    isRecipeMode,
+    applyingIdx,
+    customUpdateIdx,
+    setCustomUpdateIdx,
+    customUpdateText,
+    setCustomUpdateText,
+    appliedFields,
+    userInitial,
+    handleApplyUpdate,
+    handleCreateVariation,
+    handleChipClick,
+    handleCreateRecipeFromName,
+    loadingRecipeName,
+    handleRecipeVariation,
+    allRecipes,
+    openWizardWithDraft,
+    messagesEndRef,
+    messagesAreaRef,
+    recipe,
+    recipeContext,
+    classes,
+    t,
   } = useChatWindow();
   const navigate = useNavigate();
   const { canUse } = useEntitlements();
@@ -62,6 +108,49 @@ export default function ChatWindowMessages() {
     }
     handleApplyUpdate(content, index, instruction);
   };
+
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [previewName, setPreviewName] = useState("");
+  const [previewData, setPreviewData] = useState(null);
+  const [previewLoading, setPreviewLoading] = useState(false);
+
+  const handlePreviewRecipe = useCallback(async (name) => {
+    setPreviewName(name);
+    setPreviewData(null);
+    setPreviewOpen(true);
+    setPreviewLoading(true);
+    try {
+      const { callOpenAI } = await import("../../services/openai");
+      const response = await callOpenAI({
+        model: "gpt-4o-mini",
+        messages: [
+          {
+            role: "system",
+            content:
+              "You are a recipe assistant. Write a complete recipe in Hebrew.\nFormat:\nFirst line: recipe name\nThen a section titled מרכיבים: with one ingredient per line (use - prefix).\nThen a section titled אופן הכנה: with numbered steps.",
+          },
+          {
+            role: "user",
+            content: `כתוב לי מתכון מלא ל${name} עם רשימת מרכיבים מדויקת ואופן הכנה צעד אחר צעד`,
+          },
+        ],
+        temperature: 0.7,
+        max_tokens: 800,
+      });
+      const draft = buildRecipeDraftFromChat(response);
+      setPreviewData({ raw: response, draft });
+    } catch {
+      setPreviewData({ raw: "", draft: null, error: true });
+    } finally {
+      setPreviewLoading(false);
+    }
+  }, []);
+
+  const handleCreateFromPreview = useCallback(() => {
+    if (!previewData?.draft?.name || !openWizardWithDraft) return;
+    setPreviewOpen(false);
+    openWizardWithDraft(previewData.draft);
+  }, [previewData, openWizardWithDraft]);
 
   const recipeChips = useMemo(
     () => (isRecipeMode ? buildRecipeChips(recipe, recipeContext, t) : []),
@@ -77,7 +166,10 @@ export default function ChatWindowMessages() {
               t("recipeChat", "emptyMessage")
             ) : (
               <>
-                <Lightbulb size={18} style={{ verticalAlign: "middle", marginInlineEnd: "0.3rem" }} />
+                <Lightbulb
+                  size={18}
+                  style={{ verticalAlign: "middle", marginInlineEnd: "0.3rem" }}
+                />
                 {t("chat", "ideaTitle")}
               </>
             )}
@@ -85,7 +177,10 @@ export default function ChatWindowMessages() {
           <p className={classes.ideasSubtitle}>
             {isRecipeMode ? (
               <>
-                <Lightbulb size={18} style={{ verticalAlign: "middle", marginInlineEnd: "0.3rem" }} />
+                <Lightbulb
+                  size={18}
+                  style={{ verticalAlign: "middle", marginInlineEnd: "0.3rem" }}
+                />
                 {t("recipeChat", "updateHint")}
               </>
             ) : (
@@ -122,213 +217,217 @@ export default function ChatWindowMessages() {
         <div
           key={index}
           className={`${classes.message} ${
-            message.role === "user" ? classes.userMessage : classes.assistantMessage
+            message.role === "user"
+              ? classes.userMessage
+              : classes.assistantMessage
           }`}
         >
           {message.role === "assistant" ? (
             <div className={classes.assistantBubbleGroup}>
-              <div className={classes.bubble}>
-                {message.image && (
-                  <img src={message.image} alt="Uploaded food" className={classes.chatImage} />
-                )}
-                {message.content}
+              {(() => {
+                let bubbleText = message.content;
+                if (message.recipeNames?.length > 0) {
+                  bubbleText = message.content
+                    .split("\n")
+                    .filter((l) => !/^\s*(?:\d+[.)]\s*|-\s+|•\s+)/.test(l))
+                    .join("\n")
+                    .trim();
+                }
+                if (!bubbleText && !message.image) return null;
+                return (
+                <div className={classes.bubble}>
+                  {message.image && (
+                    <img
+                      src={message.image}
+                      alt="Uploaded food"
+                      className={classes.chatImage}
+                    />
+                  )}
+                  {bubbleText}
 
-                {handleApplyUpdate && (
-                  <div className={classes.applySection}>
-                    {appliedFields[index] ? (
-                      <div className={classes.updateSummary}>
-                        {appliedFields[index]}
-                        <div className={classes.autoUpdateNote}>
-                          <Info size={14} />
-                          {t("recipeChat", "autoUpdateNote")}
-                        </div>
-                      </div>
-                    ) : (
-                      <div className={classes.applyActions}>
-                        {customUpdateIdx === index && (
-                          <div className={classes.customUpdateWrap}>
-                            <input
-                              className={classes.customUpdateInput}
-                              value={customUpdateText}
-                              onChange={(e) => setCustomUpdateText(e.target.value)}
-                              placeholder={t("recipeChat", "customUpdatePlaceholder")}
-                              disabled={applyingIdx !== null}
-                            />
-                            <button
-                              className={classes.customCancelBtn}
-                              onClick={() => { setCustomUpdateIdx(null); setCustomUpdateText(""); }}
-                            >
-                              ✕
-                            </button>
+                  {handleApplyUpdate && (
+                    <div className={classes.applySection}>
+                      {appliedFields[index] ? (
+                        <div className={classes.updateSummary}>
+                          {appliedFields[index]}
+                          <div className={classes.autoUpdateNote}>
+                            <Info size={14} />
+                            {t("recipeChat", "autoUpdateNote")}
                           </div>
-                        )}
-                        <div className={classes.applyBtnRow}>
-                          <button
-                            className={classes.applyBtn}
-                            onClick={() => handleGatedApply(
-                              message.content, index,
-                              customUpdateIdx === index && customUpdateText.trim() ? customUpdateText.trim() : undefined
-                            )}
-                            disabled={applyingIdx !== null || (customUpdateIdx === index && !customUpdateText.trim())}
-                          >
-                            {applyingIdx === index
-                              ? t("recipeChat", "updating")
-                              : t("recipeChat", "applyToRecipe")}
-                          </button>
-                          {handleCreateVariation && (
+                        </div>
+                      ) : (
+                        <div className={classes.applyActions}>
+                          {customUpdateIdx === index && (
+                            <div className={classes.customUpdateWrap}>
+                              <input
+                                className={classes.customUpdateInput}
+                                value={customUpdateText}
+                                onChange={(e) =>
+                                  setCustomUpdateText(e.target.value)
+                                }
+                                placeholder={t(
+                                  "recipeChat",
+                                  "customUpdatePlaceholder",
+                                )}
+                                disabled={applyingIdx !== null}
+                              />
+                              <button
+                                className={classes.customCancelBtn}
+                                onClick={() => {
+                                  setCustomUpdateIdx(null);
+                                  setCustomUpdateText("");
+                                }}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          )}
+                          <div className={classes.applyBtnRow}>
                             <button
-                              className={classes.variationBtn}
-                              onClick={() => handleCreateVariation(
-                                message.content, index,
-                                customUpdateIdx === index && customUpdateText.trim() ? customUpdateText.trim() : undefined
-                              )}
-                              disabled={applyingIdx !== null || (customUpdateIdx === index && !customUpdateText.trim())}
+                              className={classes.applyBtn}
+                              onClick={() =>
+                                handleGatedApply(
+                                  message.content,
+                                  index,
+                                  customUpdateIdx === index &&
+                                    customUpdateText.trim()
+                                    ? customUpdateText.trim()
+                                    : undefined,
+                                )
+                              }
+                              disabled={
+                                applyingIdx !== null ||
+                                (customUpdateIdx === index &&
+                                  !customUpdateText.trim())
+                              }
                             >
-                              <Copy size={14} />
                               {applyingIdx === index
                                 ? t("recipeChat", "updating")
-                                : t("recipeChat", "createVariation")}
+                                : t("recipeChat", "applyToRecipe")}
                             </button>
-                          )}
-                          {customUpdateIdx !== index && (
-                            <button
-                              className={classes.customChooseBtn}
-                              onClick={() => { setCustomUpdateIdx(index); setCustomUpdateText(""); }}
-                              disabled={applyingIdx !== null}
-                            >
-                              {t("recipeChat", "customUpdate")}
-                            </button>
+                            {handleCreateVariation && (
+                              <button
+                                className={classes.variationBtn}
+                                onClick={() =>
+                                  handleCreateVariation(
+                                    message.content,
+                                    index,
+                                    customUpdateIdx === index &&
+                                      customUpdateText.trim()
+                                      ? customUpdateText.trim()
+                                      : undefined,
+                                  )
+                                }
+                                disabled={
+                                  applyingIdx !== null ||
+                                  (customUpdateIdx === index &&
+                                    !customUpdateText.trim())
+                                }
+                              >
+                                <Copy size={14} />
+                                {applyingIdx === index
+                                  ? t("recipeChat", "updating")
+                                  : t("recipeChat", "createVariation")}
+                              </button>
+                            )}
+                            {customUpdateIdx !== index && (
+                              <button
+                                className={classes.customChooseBtn}
+                                onClick={() => {
+                                  setCustomUpdateIdx(index);
+                                  setCustomUpdateText("");
+                                }}
+                                disabled={applyingIdx !== null}
+                              >
+                                {t("recipeChat", "customUpdate")}
+                              </button>
+                            )}
+                          </div>
+                          {applyGateIdx === index && (
+                            <div className={classes.applyGateHint}>
+                              <Crown size={14} />
+                              <span>{t("premium", "premiumOnly")}</span>
+                              <button
+                                className={classes.applyGateDismiss}
+                                onClick={() => setApplyGateIdx(null)}
+                              >
+                                ✕
+                              </button>
+                            </div>
                           )}
                         </div>
-                        {applyGateIdx === index && (
-                          <div className={classes.applyGateHint}>
-                            <Crown size={14} />
-                            <span>{t("premium", "premiumOnly")}</span>
-                            <button
-                              className={classes.applyGateDismiss}
-                              onClick={() => setApplyGateIdx(null)}
-                            >
-                              ✕
-                            </button>
-                          </div>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                )}
-              </div>
-              {!isRecipeMode && (() => {
-                const hasChooser = message.offerCreate && !message._singleRecipe && handleCreateRecipeFromName;
-                const hasResults = message.matchedRecipes && message.matchedRecipes.length > 0;
-                if (!hasChooser && !hasResults) return null;
+                      )}
+                    </div>
+                  )}
+                </div>
+              );})()}
+              {!isRecipeMode &&
+                (() => {
+                  const hasChooser =
+                    message.offerCreate &&
+                    !message._singleRecipe &&
+                    handleCreateRecipeFromName;
+                  const hasResults =
+                    message.matchedRecipes && message.matchedRecipes.length > 0;
+                  if (!hasChooser && !hasResults) return null;
 
-                const chooserNames = hasChooser
-                  ? (message.recipeNames?.length
-                      ? message.recipeNames
-                      : (() => {
-                          const fl = message.content.split("\n").find(l => l.trim().length >= 3);
-                          const n = fl ? fl.replace(/^[\d.)\-*•]+\s*/, "").replace(/\*+/g, "").trim().slice(0, 50) : "";
-                          return n ? [n] : [];
-                        })())
-                  : [];
+                  const chooserNames = hasChooser && message.recipeNames?.length
+                    ? message.recipeNames
+                    : [];
 
-                if (hasChooser && chooserNames.length === 0) {
-                  if (!hasResults) return null;
-                }
+                  if (hasChooser && chooserNames.length === 0 && !hasResults)
+                    return null;
 
-                const showChooser = chooserNames.length > 0;
-                return (
-                  <>
-                    <div className={classes.sectionDivider} />
+                  const showChooser = chooserNames.length > 0;
+                  return (
                     <div className={classes.assistantFollowUp}>
                       {showChooser && (
-                        <>
-                          <div className={classes.recipeChooserHeading}>
-                            <span className={classes.recipeChooserTitle}>
-                              <Plus size={14} />
-                              {t("chat", "chooseRecipeToCreate")}
-                            </span>
-                            <span className={classes.recipeChooserSubtitle}>
-                              {t("chat", "chooseRecipeHint")}
-                            </span>
-                          </div>
+                        <div className={classes.recipeChooserCompact}>
                           {chooserNames.map((name) => (
                             <button
                               key={name}
                               className={classes.recipeChooserOption}
-                              onClick={() => handleCreateRecipeFromName(name)}
+                              onClick={() => handlePreviewRecipe(name)}
                               disabled={isLoading}
                             >
+                              <Eye size={14} />
                               {name}
-                              {loadingRecipeName === name && (
-                                <Loader2 size={14} className={classes.spinnerIcon} />
-                              )}
                             </button>
                           ))}
-                        </>
-                      )}
-                      {showChooser && hasResults && (
-                        <div className={classes.sectionDivider} />
+                        </div>
                       )}
                       {hasResults && (
                         <>
-                          <span className={classes.recipeResultsLabel}>
-                            <BookOpen size={15} />
-                            {t("chat", "matchingRecipes")}
+                          <span className={classes.matchedRecipesLabel}>
+                            {t("chat", "matchingRecipes") ||
+                              "נמצא בספר המתכונים שלך"}
                           </span>
-                          {message.matchedRecipes.map((r) => (
-                            <div key={r.id} className={classes.recipeResultItem}>
-                              <span className={classes.recipeResultInfo}>
-                                <span className={classes.recipeResultName}>{r.name}</span>
-                                {r.hint && (
-                                  <span className={classes.recipeResultHint}>
-                                    {t("chat", r.hint)}
-                                  </span>
-                                )}
-                              </span>
-                              <div className={classes.recipeResultActions}>
-                                <button
-                                  className={classes.recipeResultActionBtn}
-                                  onClick={() => navigate(`/recipe/${r.id}`)}
-                                >
-                                  <ChevronLeft size={13} />
-                                  {t("chat", "openRecipe")}
-                                </button>
-                                {handleRecipeVariation && filterRedundantActions(
-                                  getRecipeResultActions(
-                                    (messages[index - 1]?.role === "user" && messages[index - 1]?.content) || ""
-                                  ),
-                                  allRecipes?.find((full) => full.id === r.id)
-                                ).map((action) => (
-                                  <button
-                                    key={action.key}
-                                    className={classes.recipeResultChip}
-                                    onClick={() => handleRecipeVariation(r.id, action.key)}
-                                    disabled={isLoading}
-                                  >
-                                    {action.icon === "Heart" && <Heart size={12} />}
-                                    {action.icon === "Dumbbell" && <Dumbbell size={12} />}
-                                    {action.icon === "Zap" && <Zap size={12} />}
-                                    {action.icon === "Baby" && <Baby size={12} />}
-                                    {action.icon === "Leaf" && <Leaf size={12} />}
-                                    {action.icon === "WheatOff" && <WheatOff size={12} />}
-                                    {t("chat", action.labelKey)}
-                                  </button>
-                                ))}
-                              </div>
-                            </div>
-                          ))}
+                          <div className={classes.recipeChooserCompact}>
+                            {message.matchedRecipes.map((r) => (
+                              <button
+                                key={r.id}
+                                className={`${classes.recipeChooserOption} ${classes.matchedOption}`}
+                                onClick={() => navigate(`/recipe/${r.id}`)}
+                              >
+                                <Eye size={14} />
+                                {r.name}
+                              </button>
+                            ))}
+                          </div>
                         </>
                       )}
                     </div>
-                  </>
-                );
-              })()}
+                  );
+                })()}
             </div>
           ) : (
             <div className={classes.bubble}>
               {message.image && (
-                <img src={message.image} alt="Uploaded food" className={classes.chatImage} />
+                <img
+                  src={message.image}
+                  alt="Uploaded food"
+                  className={classes.chatImage}
+                />
               )}
               {message.content}
             </div>
@@ -350,7 +449,9 @@ export default function ChatWindowMessages() {
                 ))}
               </div>
             )}
-          {message.role === "user" && <div className={classes.avatar}>{userInitial}</div>}
+          {message.role === "user" && (
+            <div className={classes.avatar}>{userInitial}</div>
+          )}
         </div>
       ))}
 
@@ -367,6 +468,56 @@ export default function ChatWindowMessages() {
       )}
       {error && <div className={classes.errorMessage}>{error}</div>}
       <div ref={messagesEndRef} />
+
+      <BottomSheet
+        open={previewOpen}
+        onClose={() => setPreviewOpen(false)}
+        title={previewName}
+        fullHeight
+      >
+        {previewLoading ? (
+          <div className={classes.previewLoading}>
+            <Loader2 size={24} className={classes.spinnerIcon} />
+            <span>טוען מתכון...</span>
+          </div>
+        ) : previewData?.error ? (
+          <div className={classes.previewError}>
+            {t("chat", "analyzeImageError")}
+          </div>
+        ) : previewData?.draft ? (
+          <div className={classes.previewContent}>
+            {previewData.draft.ingredients?.length > 0 && (
+              <div className={classes.previewSection}>
+                <h4 className={classes.previewSectionTitle}>מרכיבים</h4>
+                <ul className={classes.previewList}>
+                  {previewData.draft.ingredients.map((ing, i) => (
+                    <li key={i}>{ing}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {previewData.draft.instructions?.length > 0 && (
+              <div className={classes.previewSection}>
+                <h4 className={classes.previewSectionTitle}>אופן הכנה</h4>
+                <ol className={classes.previewSteps}>
+                  {previewData.draft.instructions.map((step, i) => (
+                    <li key={i}>{step}</li>
+                  ))}
+                </ol>
+              </div>
+            )}
+            <div className={classes.previewActions}>
+              <button
+                className={classes.previewCreateBtn}
+                onClick={handleCreateFromPreview}
+              >
+                <PenLine size={16} />
+                צור מתכון
+              </button>
+            </div>
+          </div>
+        ) : null}
+      </BottomSheet>
     </div>
   );
 }
