@@ -171,17 +171,27 @@ export function shouldSearchRecipes(intent) {
 
 const SEARCH_STOP = new Set([
   "של", "את", "עם", "מה", "יש", "לי", "אני", "רוצה", "אפשר",
-  "משהו", "תני", "תן", "רעיון",
+  "משהו", "תני", "תן", "רעיון", "רעיונות", "תציע", "תציעי", "הצע", "הציעי",
   "או", "גם", "כמו", "איזה", "כל", "הכי", "יותר", "מאוד",
   "זה", "זאת", "הוא", "היא", "כמה", "איך", "למה",
   "כי", "אם", "אבל", "אז", "עוד", "רק", "כן", "לא", "בלי", "ללא",
-  "ערב", "בוקר", "צהריים",
+  "ערב", "בוקר", "צהריים", "ארוחה", "ארוחת",
   "אוכל", "בישול", "מתכון", "מתכונים", "שאלה", "כללית", "כללי", "תשאל", "תשאלי",
   "על", "אותי", "אותו", "אותה", "אותם", "שלי", "שלך", "שלו", "שלה",
   "טוב", "טובה", "יפה", "נחמד", "סתם", "פשוט", "בבקשה", "תודה",
+  // goal/descriptive words — not useful for matching recipe names or ingredients
+  "בריא", "בריאה", "בריאים", "קל", "קלה", "קלים", "קלות",
+  "מהיר", "מהירה", "מהירים", "מהירות", "פשוטה", "פשוטים",
+  "טבעוני", "טבעונית", "טבעונים", "טבעוניות",
+  "צמחוני", "צמחונית", "צמחונים", "צמחוניות",
+  "דיאטטי", "דיאטטית", "דיאטה", "דיאט",
+  "להכנה", "להכין", "לבשל", "לאפות",
+  "חלבון", "חלבונים", "קלוריות", "שומן",
+  "לילדים", "ילדים", "משפחה", "משפחתי",
   "i", "me", "my", "have", "the", "a", "an", "and", "or", "but",
   "what", "can", "to", "make", "cook", "bake", "want", "give", "some",
   "for", "with", "from", "that", "this", "is", "are", "it", "do", "how",
+  "healthy", "easy", "quick", "simple", "vegan", "vegetarian", "light",
 ]);
 
 function stripHebrewPrefix(word) {
@@ -216,13 +226,13 @@ function getRecipeHint(recipe) {
 export function findRelevantRecipes(userMessage, recipes, maxResults = 3) {
   if (!userMessage || !recipes || recipes.length === 0) return [];
 
-  const raw = userMessage.toLowerCase().replace(/[.,!?;:"'()]/g, "").split(/\s+/).filter((w) => w.length > 1);
+  const raw = userMessage.toLowerCase().replace(/[.,!?;:"'()]/g, "").split(/\s+/).filter((w) => w.length > 2);
   const words = [];
   for (const w of raw) {
     if (SEARCH_STOP.has(w)) continue;
     words.push(w);
     const stripped = stripHebrewPrefix(w);
-    if (stripped !== w && !SEARCH_STOP.has(stripped)) words.push(stripped);
+    if (stripped !== w && stripped.length > 2 && !SEARCH_STOP.has(stripped)) words.push(stripped);
   }
   if (words.length === 0) return [];
 
@@ -237,7 +247,7 @@ export function findRelevantRecipes(userMessage, recipes, maxResults = 3) {
       if (name.includes(w)) score += 3;
       if (ings.includes(w)) score += 1;
     }
-    if (score > 0) scored.push({ recipe, name: recipe.name, score });
+    if (score >= 3) scored.push({ recipe, name: recipe.name, score });
   }
 
   scored.sort((a, b) => b.score - a.score);
@@ -260,24 +270,44 @@ export function shouldOfferCreateRecipe(intent, assistantMessage) {
   return false;
 }
 
+const SECTION_HEADERS = /^(מרכיבים|מצרכים|הכנה|אופן הכנה|הוראות|הוראות הכנה|ingredients|instructions|directions|preparation)/i;
+const INGREDIENT_HINT = /\d+\s*(גרם|מ"ל|כוס|כפ|כף|יח'|ק"ג|ליטר|ml|g|kg|cup|tbsp|tsp|oz)\b/i;
+
 export function extractRecipeNames(text) {
   if (!text) return [];
+  const lines = text.split("\n");
   const names = [];
-  for (const line of text.split("\n")) {
+  let seenSection = false;
+
+  for (const line of lines) {
     const trimmed = line.trim();
+
+    if (SECTION_HEADERS.test(trimmed.replace(/[*:#\-]/g, "").trim())) {
+      seenSection = true;
+      continue;
+    }
+    if (seenSection) continue;
+
     if (!/^(?:\d+[.)]\s*|-\s+|•\s+)/.test(trimmed)) continue;
 
     const boldMatch = trimmed.match(/\*\*(.+?)\*\*/);
     if (boldMatch) {
       const name = boldMatch[1].trim();
-      if (name.length >= 3 && name.length <= 60) { names.push(name); continue; }
+      if (name.length >= 3 && name.length <= 60 && !INGREDIENT_HINT.test(name)) {
+        names.push(name);
+        continue;
+      }
     }
 
     const m = trimmed.match(/^(?:\d+[.)]\s*|-\s+|•\s+)\s*(.+)$/);
     if (m) {
       const raw = m[1].replace(/\*+/g, "").replace(/\s*[-–:]\s.*$/, "").trim();
-      if (raw.length >= 3 && raw.length <= 60) names.push(raw);
+      if (raw.length >= 3 && raw.length <= 60 && !INGREDIENT_HINT.test(raw)) {
+        names.push(raw);
+      }
     }
+
+    if (names.length >= 5) break;
   }
   return names;
 }

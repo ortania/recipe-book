@@ -231,10 +231,19 @@ function ChatWindow({
       const assistantMsg = { role: "assistant", content: response };
       if (intent) assistantMsg.intent = intent;
       if (matched.length > 0) assistantMsg.matchedRecipes = matched;
-      if (!isRecipeMode && shouldOfferCreateRecipe(intent, response)) {
-        assistantMsg.offerCreate = true;
-        const names = extractRecipeNames(response);
-        if (names.length > 0) assistantMsg.recipeNames = names;
+      if (!isRecipeMode) {
+        let names = extractRecipeNames(response);
+        if (names.length === 0) {
+          const headerMatch = response.match(/^#{1,4}\s+(.+?)[:：]?\s*$/m);
+          if (headerMatch) {
+            const title = headerMatch[1].replace(/\*+/g, "").trim();
+            if (title.length >= 2 && title.length <= 60) names = [title];
+          }
+        }
+        if (names.length > 0 || shouldOfferCreateRecipe(intent, response)) {
+          assistantMsg.offerCreate = true;
+          if (names.length > 0) assistantMsg.recipeNames = names;
+        }
       }
       setMessages([...updatedMessages, assistantMsg]);
       await incrementUsage(chatFeatureKey);

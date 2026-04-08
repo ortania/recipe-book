@@ -227,11 +227,15 @@ export default function ChatWindowMessages() {
               {(() => {
                 let bubbleText = message.content;
                 if (message.recipeNames?.length > 0) {
-                  bubbleText = message.content
-                    .split("\n")
-                    .filter((l) => !/^\s*(?:\d+[.)]\s*|-\s+|•\s+)/.test(l))
-                    .join("\n")
-                    .trim();
+                  const sectionRe = /^(מרכיבים|מצרכים|הכנה|אופן הכנה|הוראות|הוראות הכנה|ingredients|instructions|directions|preparation)\s*[:：]?\s*$/i;
+                  const lines = message.content.split("\n");
+                  const kept = [];
+                  for (const l of lines) {
+                    if (sectionRe.test(l.replace(/[*#\-]/g, "").trim())) break;
+                    if (/^\s*(?:\d+[.)]\s*|-\s+|•\s+)/.test(l)) continue;
+                    kept.push(l);
+                  }
+                  bubbleText = kept.join("\n").trim();
                 }
                 if (!bubbleText && !message.image) return null;
                 return (

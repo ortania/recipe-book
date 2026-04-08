@@ -835,9 +835,13 @@ ${notes ? `\nNotes: ${notes}` : ""}
 Help the user with questions about THIS recipe - substitutions, adjustments, technique tips, etc. Keep answers concise and practical.`;
   }
 
+  const noRecipeRule = !recipeContext
+    ? `\n\nCRITICAL FORMAT RULE: When the user asks for recipe ideas or a specific recipe, respond ONLY with recipe names as a numbered list (e.g. "1. Recipe Name"). NEVER write out full recipes with ingredients or instructions. NEVER include sections like "מרכיבים", "הכנה", "Ingredients", or "Instructions". The user will click on a recipe name to see its details separately.`
+    : "";
+
   const systemMessage = {
     role: "system",
-    content: `You are a helpful cooking assistant. You help users with recipe questions, ingredient substitutions, cooking techniques, and adjusting recipe quantities. Always be friendly, concise, and practical in your responses. Always respond in ${langName}.${contextBlock}`,
+    content: `You are a helpful cooking assistant. You help users with recipe questions, ingredient substitutions, cooking techniques, and adjusting recipe quantities. Always be friendly, concise, and practical in your responses. Always respond in ${langName}.${contextBlock}${noRecipeRule}`,
   };
 
   if (!recipeContext) {
@@ -850,9 +854,11 @@ Help the user with questions about THIS recipe - substitutions, adjustments, tec
       const prevAssistantMsgs = messages.filter((m) => m.role === "assistant");
       const lastAssistant = prevAssistantMsgs[prevAssistantMsgs.length - 1];
       const hadRecipeSuggestions = lastAssistant && (lastAssistant.recipeNames?.length > 0 || lastAssistant.offerCreate);
+      const isShortFollowUp = lastUserMsg.content.trim().split(/\s+/).length <= 8;
+      const isRefinement = hadRecipeSuggestions && (intent !== "general_food_question" || isShortFollowUp);
 
-      if (hadRecipeSuggestions && intent !== "general_food_question") {
-        systemMessage.content += `\n\nIMPORTANT: The user is refining or narrowing the previous recipe suggestions from the conversation. Answer the user's question based on the recipes you already suggested — for example, pick the best match, recommend one, or compare them. Do NOT generate a new list of recipes. Give a short, direct answer (1–2 sentences), then on a NEW line at the end write ONLY the recommended recipe name in this exact format:\n1. Recipe Name\nOnly if the user explicitly asks for completely new/different ideas should you provide a new numbered list of exactly 3 recipe names.`;
+      if (isRefinement) {
+        systemMessage.content += `\n\nIMPORTANT: The user is refining or narrowing the previous recipe suggestions. Answer based on the recipes you already suggested — pick the best match or recommend one. Give a SHORT answer (1–2 sentences maximum), then on a NEW line write ONLY the recipe name like this:\n1. Recipe Name\nDo NOT write ingredients, instructions, or any recipe details. Do NOT include sections like "מרכיבים" or "הכנה". ONLY the recipe name. If the user explicitly asks for new/different ideas, provide a new list of exactly 3 recipe names.`;
       } else if (hint) {
         systemMessage.content += `\n\n${hint}`;
       }
