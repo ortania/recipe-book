@@ -473,7 +473,6 @@ export default function ChatWindowMessages() {
         open={previewOpen}
         onClose={() => setPreviewOpen(false)}
         title={previewName}
-        fullHeight
       >
         {previewLoading ? (
           <div className={classes.previewLoading}>
