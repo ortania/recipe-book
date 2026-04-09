@@ -1,9 +1,25 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import classes from "./modal.module.css";
 
 function Modal({ children, onClose, className, fullscreen, maxWidth, bottomSheet }) {
   const overlayRef = useRef(null);
   const contentRef = useRef(null);
+  const stableClose = useCallback(() => onClose(), [onClose]);
+
+  /* ── Android back button (history) ───────────────────── */
+  useEffect(() => {
+    window.history.pushState({ modal: true }, "");
+    const onPop = () => stableClose();
+    window.addEventListener("popstate", onPop);
+    return () => window.removeEventListener("popstate", onPop);
+  }, [stableClose]);
+
+  /* ── Escape key ──────────────────────────────────────── */
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === "Escape") stableClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [stableClose]);
 
   useEffect(() => {
     document.body.classList.add("modal-open");

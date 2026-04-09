@@ -10,6 +10,7 @@ import { auth } from "../../firebase/config";
 import { Navigation, Header, Footer } from "../../components";
 import { RadioPlayer } from "../../components/radio-player";
 import TimerWidget from "../../components/timer-widget/TimerWidget";
+import useNetworkStatus from "../../hooks/useNetworkStatus";
 
 import { links } from "../data/navLinks";
 import classes from "../app.module.css";
@@ -41,6 +42,7 @@ function ProtectedLayout() {
   const { isLoggedIn, logout } = useRecipeBook();
   const { pathname } = useLocation();
   const hideFooter = HIDE_FOOTER_ROUTES.includes(pathname);
+  const isOnline = useNetworkStatus();
   useEffect(() => {
     document.body.classList.remove("sidebar-open", "modal-open");
   }, []);
@@ -63,6 +65,11 @@ function ProtectedLayout() {
           <Navigation onLogout={logout} links={links} />
 
           <div className={classes.contentWrapper}>
+            {!isOnline && (
+              <div className={classes.offlineBanner}>
+                אין חיבור לאינטרנט — חלק מהתכונות לא זמינות
+              </div>
+            )}
             <main className={classes.main}>
               <Outlet />
             </main>
