@@ -21,6 +21,7 @@ export default function ManualScreen() {
     recipe,
     handleManualBack,
     cameFromRecording,
+    cameFromChatDraft,
     handleClose,
     manualStep,
     visitedSteps,
@@ -91,15 +92,17 @@ export default function ManualScreen() {
         <button
           type="button"
           className={classes.backLink}
-          onClick={handleManualBack}
+          onClick={cameFromChatDraft ? handleClose : handleManualBack}
         >
           <ChevronRight />{" "}
           {cameFromRecording
             ? t("addWizard", "backToRecording")
-            : t("addWizard", "backToMethod")}
+            : cameFromChatDraft
+              ? t("addWizard", "backToChat") || "חזרה לצ׳אט"
+              : t("addWizard", "backToMethod")}
         </button>
         <CloseButton
-          onClick={cameFromRecording ? handleManualBack : handleClose}
+          onClick={cameFromChatDraft ? handleClose : cameFromRecording ? handleManualBack : handleClose}
         />
       </div>
 

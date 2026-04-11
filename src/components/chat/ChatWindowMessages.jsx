@@ -127,11 +127,11 @@ export default function ChatWindowMessages() {
           {
             role: "system",
             content:
-              "You are a recipe assistant. Write a complete recipe in Hebrew.\nFormat:\nFirst line: recipe name\nThen a section titled מרכיבים: with one ingredient per line (use - prefix).\nThen a section titled אופן הכנה: with numbered steps.",
+              "אתה עוזר מתכונים. כתוב את כל התשובה בעברית בלבד — כולל שמות מרכיבים, כמויות, הוראות ושם המתכון.\nפורמט:\nשורה ראשונה: שם המתכון\nלאחר מכן כותרת מרכיבים: עם מרכיב אחד בכל שורה (עם תחילית -).\nלאחר מכן כותרת אופן הכנה: עם צעדים ממוספרים.\nחשוב: אל תכתוב מילים באנגלית כלל.",
           },
           {
             role: "user",
-            content: `כתוב לי מתכון מלא ל${name} עם רשימת מרכיבים מדויקת ואופן הכנה צעד אחר צעד`,
+            content: `כתוב לי מתכון מלא ל${name} בעברית בלבד — רשימת מרכיבים מדויקת ואופן הכנה צעד אחר צעד. הכל בעברית, בלי מילים באנגלית.`,
           },
         ],
         temperature: 0.7,

@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { Trash2, Lightbulb, ChevronDown, ChevronUp } from "lucide-react";
+import { Trash2, Lightbulb } from "lucide-react";
+import { BottomSheet } from "../controls/bottom-sheet";
 import {
   sendChatMessage,
   analyzeImageForNutrition,
@@ -586,26 +587,11 @@ Include the COMPLETE ingredients and instructions arrays with changes applied. K
               </div>
               <button
                 className={classes.broadChipsToggle}
-                onClick={() => setShowBroadChips((v) => !v)}
+                onClick={() => setShowBroadChips(true)}
               >
                 <Lightbulb size={14} />
                 {t("chat", "quickIdeasToggle")}
-                {showBroadChips ? <ChevronUp size={14} /> : <ChevronDown size={14} />}
               </button>
-              {showBroadChips && (
-                <div className={classes.broadChipsPanel}>
-                  {IDEA_CHIPS.map((chipKey) => (
-                    <button
-                      key={chipKey}
-                      className={classes.bottomQuickChip}
-                      onClick={() => { handleChipClick(t("chat", chipKey)); setShowBroadChips(false); }}
-                      disabled={isLoading}
-                    >
-                      {t("chat", chipKey)}
-                    </button>
-                  ))}
-                </div>
-              )}
             </>
           )}
           <div className={classes.inputMeta}>
@@ -625,6 +611,25 @@ Include the COMPLETE ingredients and instructions arrays with changes applied. K
           <p className={classes.aiDisclaimer}>תשובות AI הן להכוונה בלבד ויתכנו טעויות.</p>
         </div>
       </div>
+
+      <BottomSheet
+        open={showBroadChips}
+        onClose={() => setShowBroadChips(false)}
+        title={t("chat", "quickIdeasToggle")}
+      >
+        <div className={classes.broadChipsPanel}>
+          {IDEA_CHIPS.map((chipKey) => (
+            <button
+              key={chipKey}
+              className={classes.bottomQuickChip}
+              onClick={() => { handleChipClick(t("chat", chipKey)); setShowBroadChips(false); }}
+              disabled={isLoading}
+            >
+              {t("chat", chipKey)}
+            </button>
+          ))}
+        </div>
+      </BottomSheet>
     </ChatWindowContext.Provider>
   );
 }

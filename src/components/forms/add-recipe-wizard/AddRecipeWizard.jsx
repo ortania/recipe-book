@@ -1262,10 +1262,14 @@ function AddRecipeWizard({
     window.scrollTo({ top: 0 });
   };
 
+  const cameFromChatDraft = initialScreen === "manual" && initialRecipe != null;
+
   const handleManualBack = () => {
     if (cameFromRecording) {
       setCameFromRecording(false);
       setScreen("recording");
+    } else if (cameFromChatDraft) {
+      handleClose();
     } else {
       setRecipe({
         ...INITIAL_RECIPE,
@@ -1314,6 +1318,7 @@ function AddRecipeWizard({
     setPhotoDragOver,
     importProgress,
     cameFromRecording,
+    cameFromChatDraft,
     saving,
     newCategoryName,
     setNewCategoryName,

@@ -1,5 +1,17 @@
 import { auth } from "../firebase/config";
 
+const DEBUG = import.meta.env.DEV;
+
+async function batchedMap(items, fn, concurrency = 5) {
+  const results = [];
+  for (let i = 0; i < items.length; i += concurrency) {
+    const batch = items.slice(i, i + concurrency);
+    const batchResults = await Promise.all(batch.map(fn));
+    results.push(...batchResults);
+  }
+  return results;
+}
+
 const CLOUD_CHAT_URL =
   "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiChat";
 const CLOUD_TTS_URL =
@@ -79,8 +91,16 @@ export async function generateRecipeImageDataUrl({
   return `data:${mimeType || "image/png"};base64,${imageBase64}`;
 }
 
+const DEFAULT_TIMEOUT_MS = 60_000;
+
 export const callOpenAI = async (requestBody, options = {}) => {
-  const { signal } = options;
+  const { signal: callerSignal, timeoutMs = DEFAULT_TIMEOUT_MS } = options;
+
+  const timeout = AbortSignal.timeout(timeoutMs);
+  const signal = callerSignal
+    ? AbortSignal.any([callerSignal, timeout])
+    : timeout;
+
   const response = await fetch(CLOUD_CHAT_URL, {
     method: "POST",
     headers: {
@@ -104,6 +124,12 @@ export const callOpenAI = async (requestBody, options = {}) => {
   if (!data.choices?.[0]?.message?.content) {
     throw new Error("Unexpected API response format");
   }
+
+  const finishReason = data.choices[0].finish_reason;
+  if (finishReason === "length") {
+    throw new Error("Response was truncated (output too long). Try a shorter request.");
+  }
+
   return data.choices[0].message.content;
 };
 
@@ -136,6 +162,7 @@ export const analyzeImageForNutrition = async (base64Image, options = {}) => {
       ],
       temperature: 0.3,
       max_tokens: 400,
+      response_format: { type: "json_object" },
     },
     options,
   );
@@ -246,7 +273,7 @@ async function extractRecipeWithVision(images) {
   }));
 
   try {
-    console.log("[ImageImport] Sending", images.length, "image(s) to GPT-4o vision");
+    if (DEBUG) console.log("[ImageImport] Sending", images.length, "image(s) to GPT-4o vision");
     const result = await callOpenAI({
       model: "gpt-4o",
       messages: [
@@ -263,7 +290,7 @@ async function extractRecipeWithVision(images) {
       max_tokens: 4096,
       response_format: { type: "json_object" },
     });
-    console.log("[ImageImport] Vision response:", result?.substring(0, 200));
+    if (DEBUG) console.log("[ImageImport] Vision response:", result?.substring(0, 200));
     return parseRecipeJSON(result);
   } catch (e) {
     console.error("[ImageImport] Vision extraction failed:", e.message);
@@ -275,7 +302,7 @@ async function extractRecipeDirectFromImage(images, canUseOcr = true) {
   let rawText = "";
 
   if (!canUseOcr) {
-    console.log("[ImageImport] OCR skipped (entitlement), using GPT-4o vision");
+    if (DEBUG) console.log("[ImageImport] OCR skipped (entitlement), using GPT-4o vision");
     return extractRecipeWithVision(images);
   }
 
@@ -298,11 +325,11 @@ async function extractRecipeDirectFromImage(images, canUseOcr = true) {
     console.warn("[ImageImport] OCR failed:", e.message);
   }
 
-  console.log("[ImageImport] OCR text length:", rawText?.trim().length || 0);
+  if (DEBUG) console.log("[ImageImport] OCR text length:", rawText?.trim().length || 0);
 
   // If OCR returned very little text (e.g. handwriting), go straight to vision
   if (!rawText?.trim() || rawText.trim().length < 30) {
-    console.log("[ImageImport] OCR insufficient, using GPT-4o vision");
+    if (DEBUG) console.log("[ImageImport] OCR insufficient, using GPT-4o vision");
     return extractRecipeWithVision(images);
   }
 
@@ -326,20 +353,20 @@ async function extractRecipeDirectFromImage(images, canUseOcr = true) {
 
     // If OCR text produced garbage that GPT couldn't structure, try vision
     if (parsed.error) {
-      console.log("[ImageImport] OCR structuring failed, trying vision fallback");
+      if (DEBUG) console.log("[ImageImport] OCR structuring failed, trying vision fallback");
       return extractRecipeWithVision(images);
     }
 
     // Sanity check: if OCR produced very few ingredients, vision might do better
     if ((!parsed.ingredients || parsed.ingredients.length < 2) &&
         (!parsed.instructions || parsed.instructions.length < 1)) {
-      console.log("[ImageImport] OCR result too sparse, trying vision fallback");
+      if (DEBUG) console.log("[ImageImport] OCR result too sparse, trying vision fallback");
       return extractRecipeWithVision(images);
     }
 
     return parsed;
   } catch {
-    console.log("[ImageImport] OCR structuring threw, trying vision fallback");
+    if (DEBUG) console.log("[ImageImport] OCR structuring threw, trying vision fallback");
     return extractRecipeWithVision(images);
   }
 }
@@ -405,6 +432,7 @@ You MUST respond with valid JSON in this exact format:
     ],
     temperature: 0,
     max_tokens: 3000,
+    response_format: { type: "json_object" },
   });
 
   let data;
@@ -429,6 +457,7 @@ You MUST respond with valid JSON in this exact format:
         ],
         temperature: 0,
         max_tokens: 3000,
+        response_format: { type: "json_object" },
       });
       const retryData = parseResponse(retryResult);
       const retryIngCount = Array.isArray(retryData.ingredients)
@@ -457,7 +486,7 @@ export const parseFreeSpeechRecipe = async (text, categoryNames = []) => {
         role: "system",
         content: `You are a recipe extraction expert. The user dictated a recipe using free speech (no special keywords).
 Parse the spoken text and extract the recipe information.
-You MUST respond with valid JSON in this exact format:
+Respond with valid JSON in this exact format:
 {
   "name": "recipe name",
   "ingredients": ["::group name", "ingredient 1 with quantity", "ingredient 2", "::another group", "ingredient 3"],
@@ -490,6 +519,7 @@ You MUST respond with valid JSON in this exact format:
     ],
     temperature: 0.1,
     max_tokens: 2000,
+    response_format: { type: "json_object" },
   });
 
   try {
@@ -541,7 +571,7 @@ const parseIngredientWithGPT = async (ingredient) => {
       {
         role: "system",
         content: `You translate food ingredients to English and estimate their total weight in grams.
-Return ONLY a JSON object, no markdown:
+Return a JSON object:
 {"english":"<USDA search term in English>","grams":<total weight in grams as number>}
 
 Rules:
@@ -558,6 +588,7 @@ Rules:
     temperature: 0,
     seed: 42,
     max_tokens: 100,
+    response_format: { type: "json_object" },
   });
 
   let cleaned = result
@@ -595,7 +626,7 @@ const lookupWithGPTFallback = async (ingredient) => {
       {
         role: "system",
         content: `You are a nutrition database. Return the TOTAL nutritional values for the EXACT quantity of the given ingredient.
-Return ONLY a JSON object, no markdown, no explanation:
+Return a JSON object:
 {"calories":<n>,"protein":<n>,"fat":<n>,"carbs":<n>,"sugars":<n>,"fiber":<n>,"sodium":<n>,"calcium":<n>,"iron":<n>,"cholesterol":<n>,"saturatedFat":<n>}
 
 Rules:
@@ -609,6 +640,7 @@ Rules:
     temperature: 0,
     seed: 42,
     max_tokens: 150,
+    response_format: { type: "json_object" },
   });
 
   let cleaned = result
@@ -659,9 +691,7 @@ export const calculateNutrition = async (ingredients, servings) => {
   }
 
   try {
-    const results = await Promise.all(
-      ingredientArray.map((ing) => lookupSingleIngredient(ing)),
-    );
+    const results = await batchedMap(ingredientArray, lookupSingleIngredient, 5);
 
     const totals = {};
     for (const f of NUTRITION_FIELDS) totals[f] = 0;
@@ -781,6 +811,7 @@ Rules:
     messages: [systemMessage, { role: "user", content: userText }],
     temperature: 0.1,
     max_tokens: 200,
+    response_format: { type: "json_object" },
   });
 
   try {

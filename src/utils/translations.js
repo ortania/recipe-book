@@ -4028,6 +4028,13 @@ const translations = {
       de: "Zurück zur Aufnahme",
       mixed: "חזור להקלטה",
     },
+    backToChat: {
+      he: "חזרה לצ׳אט",
+      en: "Back to chat",
+      ru: "Назад к чату",
+      de: "Zurück zum Chat",
+      mixed: "חזרה לצ׳אט",
+    },
     fromUrlTitle: {
       he: "הוספה מקישור",
       en: "Add from URL",

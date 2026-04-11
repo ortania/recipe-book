@@ -162,10 +162,14 @@ exports.fetchUrl = onRequest(
   { cors: true, region: "us-central1" },
   async (req, res) => {
     if (setCors(req, res)) return;
+
+    const user = await verifyFirebaseToken(req, res);
+    if (!user) return;
+
     const url = getRequestUrl(req);
 
-    if (!url) {
-      res.status(400).json({ error: "Missing url parameter" });
+    if (!url || !(url.startsWith("http://") || url.startsWith("https://"))) {
+      res.status(400).json({ error: "Missing or invalid url parameter" });
       return;
     }
 
@@ -239,9 +243,13 @@ exports.fetchUrlBrowser = onRequest(
   },
   async (req, res) => {
     if (setCors(req, res)) return;
+
+    const user = await verifyFirebaseToken(req, res);
+    if (!user) return;
+
     const url = getRequestUrl(req);
-    if (!url) {
-      res.status(400).json({ error: "Missing url parameter" });
+    if (!url || !(url.startsWith("http://") || url.startsWith("https://"))) {
+      res.status(400).json({ error: "Missing or invalid url parameter" });
       return;
     }
 
@@ -414,6 +422,12 @@ exports.ocrImage = onRequest(
 );
 
 // ── OpenAI chat completions proxy ──
+const ALLOWED_CHAT_MODELS = ["gpt-4o-mini", "gpt-4o"];
+const MAX_CHAT_TOKENS = 4096;
+const ALLOWED_CHAT_FIELDS = [
+  "model", "messages", "temperature", "max_tokens", "response_format", "seed",
+];
+
 exports.openaiChat = onRequest(
   { cors: true, region: "us-central1" },
   async (req, res) => {
@@ -425,6 +439,31 @@ exports.openaiChat = onRequest(
 
     const user = await verifyFirebaseToken(req, res);
     if (!user) return;
+
+    const { model, messages, temperature, max_tokens, response_format, seed } =
+      req.body || {};
+
+    if (!model || !ALLOWED_CHAT_MODELS.includes(model)) {
+      res.status(400).json({ error: `Model not allowed. Use: ${ALLOWED_CHAT_MODELS.join(", ")}` });
+      return;
+    }
+    if (!Array.isArray(messages) || messages.length === 0) {
+      res.status(400).json({ error: "messages must be a non-empty array" });
+      return;
+    }
+    if (temperature !== undefined && (typeof temperature !== "number" || temperature < 0 || temperature > 2)) {
+      res.status(400).json({ error: "temperature must be 0-2" });
+      return;
+    }
+
+    const sanitized = { model, messages };
+    sanitized.max_tokens = Math.min(
+      typeof max_tokens === "number" && max_tokens > 0 ? max_tokens : MAX_CHAT_TOKENS,
+      MAX_CHAT_TOKENS,
+    );
+    if (typeof temperature === "number") sanitized.temperature = temperature;
+    if (response_format && typeof response_format === "object") sanitized.response_format = response_format;
+    if (seed !== undefined && typeof seed === "number") sanitized.seed = seed;
 
     const key = process.env.OPENAI_API_KEY;
     if (!key) {
@@ -441,7 +480,7 @@ exports.openaiChat = onRequest(
             Authorization: `Bearer ${key}`,
             "Content-Type": "application/json",
           },
-          body: JSON.stringify(req.body),
+          body: JSON.stringify(sanitized),
         },
       );
 
@@ -460,6 +499,11 @@ exports.openaiChat = onRequest(
 );
 
 // ── OpenAI TTS proxy (returns audio binary) ──
+const ALLOWED_TTS_MODELS = ["tts-1", "tts-1-hd"];
+const ALLOWED_TTS_VOICES = ["alloy", "echo", "fable", "onyx", "nova", "shimmer"];
+const ALLOWED_TTS_FORMATS = ["mp3", "opus", "aac", "flac", "wav", "pcm"];
+const MAX_TTS_INPUT_LENGTH = 2000;
+
 exports.openaiTts = onRequest(
   { cors: true, region: "us-central1" },
   async (req, res) => {
@@ -471,6 +515,33 @@ exports.openaiTts = onRequest(
 
     const user = await verifyFirebaseToken(req, res);
     if (!user) return;
+
+    const { model, input, voice, response_format } = req.body || {};
+
+    if (!model || !ALLOWED_TTS_MODELS.includes(model)) {
+      res.status(400).json({ error: `Model not allowed. Use: ${ALLOWED_TTS_MODELS.join(", ")}` });
+      return;
+    }
+    if (typeof input !== "string" || input.length === 0) {
+      res.status(400).json({ error: "input is required" });
+      return;
+    }
+    if (input.length > MAX_TTS_INPUT_LENGTH) {
+      res.status(400).json({ error: `input too long (max ${MAX_TTS_INPUT_LENGTH} chars)` });
+      return;
+    }
+    if (voice && !ALLOWED_TTS_VOICES.includes(voice)) {
+      res.status(400).json({ error: `Voice not allowed. Use: ${ALLOWED_TTS_VOICES.join(", ")}` });
+      return;
+    }
+    if (response_format && !ALLOWED_TTS_FORMATS.includes(response_format)) {
+      res.status(400).json({ error: `Format not allowed. Use: ${ALLOWED_TTS_FORMATS.join(", ")}` });
+      return;
+    }
+
+    const sanitized = { model, input: input.slice(0, MAX_TTS_INPUT_LENGTH) };
+    if (voice) sanitized.voice = voice;
+    if (response_format) sanitized.response_format = response_format;
 
     const key = process.env.OPENAI_API_KEY;
     if (!key) {
@@ -485,7 +556,7 @@ exports.openaiTts = onRequest(
           Authorization: `Bearer ${key}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(req.body),
+        body: JSON.stringify(sanitized),
       });
 
       if (!response.ok) {

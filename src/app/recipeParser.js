@@ -1,7 +1,18 @@
+import { auth } from "../firebase/config";
+
+const DEBUG = import.meta.env.DEV;
+
 const CLOUD_FUNCTION_URL =
   "https://us-central1-recipe-book-82d57.cloudfunctions.net/fetchUrl";
 const CLOUD_FUNCTION_BROWSER_URL =
   "https://us-central1-recipe-book-82d57.cloudfunctions.net/fetchUrlBrowser";
+
+async function getAuthHeaders() {
+  const user = auth.currentUser;
+  if (!user) return {};
+  const token = await user.getIdToken();
+  return { Authorization: `Bearer ${token}` };
+}
 
 const isBotBlocked = (html) => {
   const lower = html.toLowerCase();
@@ -42,16 +53,18 @@ const hasRecipeJsonLd = (jsonLd) => {
 const fetchWithProxy = async (url) => {
   let regularResult = null;
 
+  const authHeaders = await getAuthHeaders();
+
   // Try Firebase Cloud Function first — returns html + cleanText + jsonLd + ogImage
   try {
-    console.log("[fetchProxy] Trying Cloud Function...");
+    if (DEBUG) console.log("[fetchProxy] Trying Cloud Function...");
     const cfUrl = `${CLOUD_FUNCTION_URL}?url=${encodeURIComponent(url)}`;
-    const cfResponse = await fetch(cfUrl);
-    console.log("[fetchProxy] CF status:", cfResponse.status);
+    const cfResponse = await fetch(cfUrl, { headers: authHeaders });
+    if (DEBUG) console.log("[fetchProxy] CF status:", cfResponse.status);
     if (cfResponse.ok) {
       const data = await cfResponse.json();
       const cleanLen = (data.cleanText || "").length;
-      console.log(
+      if (DEBUG) console.log(
         "[fetchProxy] CF html length:",
         (data.contents || "").length,
         "cleanText length:",
@@ -65,7 +78,7 @@ const fetchWithProxy = async (url) => {
         if (hasRecipeJsonLd(data.jsonLd) || cleanLen > 2000) {
           return data;
         }
-        console.log(
+        if (DEBUG) console.log(
           "[fetchProxy] CF content seems thin, will try browser CF...",
         );
         regularResult = data;
@@ -77,13 +90,13 @@ const fetchWithProxy = async (url) => {
 
   // Try headless browser Cloud Function (bypasses bot protection + renders JS)
   try {
-    console.log("[fetchProxy] Trying browser-based Cloud Function...");
+    if (DEBUG) console.log("[fetchProxy] Trying browser-based Cloud Function...");
     const cfUrl = `${CLOUD_FUNCTION_BROWSER_URL}?url=${encodeURIComponent(url)}`;
-    const cfResponse = await fetch(cfUrl);
-    console.log("[fetchProxy] Browser CF status:", cfResponse.status);
+    const cfResponse = await fetch(cfUrl, { headers: authHeaders });
+    if (DEBUG) console.log("[fetchProxy] Browser CF status:", cfResponse.status);
     if (cfResponse.ok) {
       const data = await cfResponse.json();
-      console.log(
+      if (DEBUG) console.log(
         "[fetchProxy] Browser CF html length:",
         (data.contents || "").length,
         "cleanText length:",
@@ -103,7 +116,7 @@ const fetchWithProxy = async (url) => {
 
   // If we got partial content from regular CF, use it
   if (regularResult) {
-    console.log("[fetchProxy] Using partial regular CF result as fallback");
+    if (DEBUG) console.log("[fetchProxy] Using partial regular CF result as fallback");
     return regularResult;
   }
 
@@ -260,7 +273,7 @@ const ensureMultiSectionFromHtml = (html, currentText, pageUrl) => {
 export const parseRecipeFromUrl = async (url, options = {}) => {
   const { canUseAiFallback = true } = options;
   try {
-    console.log("[recipeParser] Parsing URL:", url);
+    if (DEBUG) console.log("[recipeParser] Parsing URL:", url);
     // Validate URL
     try {
       const parsed = new URL(url);
@@ -281,7 +294,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
     let serverMicrodata = fetchResult.microdata || null;
     let hadJsonLdRecipe = false;
 
-    console.log(
+    if (DEBUG) console.log(
       "[recipeParser] html:",
       html.length,
       "cleanText:",
@@ -311,7 +324,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
       serverMicrodata.ingredients &&
       serverMicrodata.ingredients.length > 0
     ) {
-      console.log(
+      if (DEBUG) console.log(
         "[recipeParser] Using microdata:",
         serverMicrodata.ingredients.length,
         "ingredients",
@@ -356,7 +369,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
           ingredients: domIngredients,
           instructions: domInstructions,
         };
-        console.log(
+        if (DEBUG) console.log(
           "[recipeParser] Extracted client-side microdata:",
           domIngredients.length,
           "ingredients",
@@ -407,7 +420,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
 
         if (recipeData) {
           hadJsonLdRecipe = true;
-          console.log(
+          if (DEBUG) console.log(
             "[recipeParser] Found Recipe in JSON-LD:",
             recipeData.name,
           );
@@ -520,7 +533,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
             textForAI.length > 500;
 
           if (shouldTryAI) {
-            console.log(
+            if (DEBUG) console.log(
               "[recipeParser] JSON-LD ingredients:",
               jsonLdIngCount,
               "with quantities:",
@@ -528,7 +541,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
               canUseAiFallback ? "- trying OpenAI..." : "- AI fallback blocked (premium)",
             );
             if (!canUseAiFallback) {
-              console.log("[recipeParser] Skipping AI fallback (not entitled)");
+              if (DEBUG) console.log("[recipeParser] Skipping AI fallback (not entitled)");
             } else try {
               const { extractRecipeFromText: aiExtract } =
                 await import("../services/openai");
@@ -539,7 +552,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
                 Array.isArray(aiResult.ingredients) &&
                 aiResult.ingredients.length >= jsonLdIngCount
               ) {
-                console.log(
+                if (DEBUG) console.log(
                   "[recipeParser] OpenAI found:",
                   aiResult.ingredients.length,
                   "ingredients",
@@ -565,7 +578,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
             ? recipe.ingredients.split("\n").filter(Boolean).length
             : 0;
           if (finalIngCount >= 6) return recipe;
-          console.log(
+          if (DEBUG) console.log(
             "[recipeParser] JSON-LD ingredients insufficient (" +
               finalIngCount +
               "), trying other methods...",
@@ -617,7 +630,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
 
     let cleanText = articleBody || serverCleanText || "";
     cleanText = ensureMultiSectionFromHtml(html, cleanText, url);
-    console.log(
+    if (DEBUG) console.log(
       "[recipeParser] articleBody:",
       articleBody.length,
       "cleanText:",
@@ -628,13 +641,13 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
 
     if (cleanText.length > 100) {
       if (!canUseAiFallback) {
-        console.log("[recipeParser] Skipping main OpenAI extraction (not entitled)");
+        if (DEBUG) console.log("[recipeParser] Skipping main OpenAI extraction (not entitled)");
       } else try {
-        console.log("[recipeParser] Trying OpenAI extraction...");
+        if (DEBUG) console.log("[recipeParser] Trying OpenAI extraction...");
         const { extractRecipeFromText: aiExtract } =
           await import("../services/openai");
         const aiResult = await aiExtract(cleanText);
-        console.log("[recipeParser] OpenAI result:", aiResult);
+        if (DEBUG) console.log("[recipeParser] OpenAI result:", aiResult);
 
         if (aiResult && !aiResult.error) {
           if (hadJsonLdRecipe) {
@@ -661,7 +674,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
       }
 
       try {
-        console.log("[recipeParser] Trying local text parsing...");
+        if (DEBUG) console.log("[recipeParser] Trying local text parsing...");
         const textResult = parseRecipeFromText(cleanText);
         if (!hadJsonLdRecipe && textResult.name) recipe.name = textResult.name;
         if (textResult.ingredients.length > 0)
