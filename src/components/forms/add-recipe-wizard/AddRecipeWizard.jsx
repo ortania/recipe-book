@@ -19,6 +19,7 @@ import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
 import { FEATURES } from "../../../config/entitlements";
 import useEntitlements from "../../../hooks/useEntitlements";
+import { PremiumFeaturePopup } from "../../premium-popup";
 import buttonClasses from "../../../styles/shared/buttons.module.css";
 import catShared from "../../../styles/shared/category-chips.module.css";
 import shared from "../../../styles/shared/form-shared.module.css";
@@ -138,6 +139,7 @@ function AddRecipeWizard({
   const [recipeText, setRecipeText] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [importError, setImportError] = useState("");
+  const [premiumPopup, setPremiumPopup] = useState({ open: false, type: "hard" });
   const [uploadingImage, setUploadingImage] = useState(false);
   const [generatingAiImage, setGeneratingAiImage] = useState(false);
   const [isRecording, setIsRecording] = useState(false);
@@ -494,7 +496,7 @@ function AddRecipeWizard({
   const doImportWithAI = async () => {
     const voiceCheck = canUse(FEATURES.IMPORT_VOICE);
     if (!voiceCheck.allowed) {
-      setImportError(t("premium", "premiumOnly"));
+      setPremiumPopup({ open: true, type: "hard" });
       return;
     }
     const text =
@@ -582,7 +584,7 @@ function AddRecipeWizard({
     }
     const textCheck = canUse(FEATURES.IMPORT_TEXT);
     if (!textCheck.allowed) {
-      setImportError(t("premium", "limitReached"));
+      setPremiumPopup({ open: true, type: "limit" });
       return;
     }
     setIsImporting(true);
@@ -634,7 +636,7 @@ function AddRecipeWizard({
 
     const photoCheck = canUse(FEATURES.IMPORT_PHOTO);
     if (!photoCheck.allowed) {
-      setImportError(t("premium", "limitReached"));
+      setPremiumPopup({ open: true, type: "limit" });
       try { inputEl.value = ""; } catch {}
       if (photoFileInputRef.current) photoFileInputRef.current.value = "";
       return;
@@ -856,12 +858,7 @@ function AddRecipeWizard({
   const handleGenerateAiImage = async () => {
     const dalleCheck = canUse(FEATURES.DALLE_IMAGE);
     if (!dalleCheck.allowed) {
-      setImageToast({
-        open: true,
-        message: t("premium", "premiumOnly"),
-        variant: "error",
-        duration: 3000,
-      });
+      setPremiumPopup({ open: true, type: "hard" });
       return;
     }
     if (!recipe.name?.trim()) {
@@ -1117,7 +1114,8 @@ function AddRecipeWizard({
     let nutrition = recipe.nutrition || {};
     const hasNutrition =
       nutrition.calories && String(nutrition.calories) !== "0";
-    if (filledIngredients.length > 0 && !hasNutrition) {
+    const nutritionAllowed = canUse(FEATURES.NUTRITION_CALC).allowed;
+    if (filledIngredients.length > 0 && !hasNutrition && nutritionAllowed) {
       try {
         const result = await calculateNutrition(
           filledIngredients,
@@ -1428,6 +1426,11 @@ function AddRecipeWizard({
       >
         {imageToast.message}
       </Toast>
+      <PremiumFeaturePopup
+        open={premiumPopup.open}
+        onClose={() => setPremiumPopup({ open: false, type: "hard" })}
+        type={premiumPopup.type}
+      />
     </>
   );
 }

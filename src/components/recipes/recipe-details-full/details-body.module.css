@@ -510,6 +510,16 @@
   border: 1px solid var(--clr-border-light);
 }
 
+.premiumNutritionBanner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1rem;
+  font-size: var(--basic-font);
+  color: var(--clr-warning);
+  background: var(--clr-warning-bg);
+}
+
 .nutritionToggle {
   display: flex;
   align-items: center;

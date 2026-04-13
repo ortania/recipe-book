@@ -16,6 +16,7 @@ import { uploadRecipeImage } from "../../firebase/imageService";
 import { generateRecipeImageDataUrl } from "../../services/openai";
 import { FEATURES } from "../../config/entitlements";
 import useEntitlements from "../../hooks/useEntitlements";
+import { PremiumFeaturePopup } from "../premium-popup";
 import {
   CATEGORY_ICONS,
   DEFAULT_ICON_ID,
@@ -82,6 +83,7 @@ function CategoriesManagement({
   const [generatingAiImage, setGeneratingAiImage] = useState(false);
   const [imageDragOver, setImageDragOver] = useState(false);
   const [imageToast, setImageToast] = useState({ open: false, message: "", variant: "success" });
+  const [premiumPopup, setPremiumPopup] = useState(false);
   const imageInputRef = useRef(null);
 
   // Drag and drop
@@ -184,11 +186,7 @@ function CategoriesManagement({
   const handleGenerateAiImage = async () => {
     const dalleCheck = canUse(FEATURES.DALLE_IMAGE);
     if (!dalleCheck.allowed) {
-      setImageToast({
-        open: true,
-        message: t("premium", "premiumOnly"),
-        variant: "error",
-      });
+      setPremiumPopup(true);
       return;
     }
     if (!formName.trim()) {
@@ -496,6 +494,11 @@ function CategoriesManagement({
       >
         {imageToast.message}
       </Toast>
+      <PremiumFeaturePopup
+        open={premiumPopup}
+        onClose={() => setPremiumPopup(false)}
+        type="hard"
+      />
     </>
   );
 }

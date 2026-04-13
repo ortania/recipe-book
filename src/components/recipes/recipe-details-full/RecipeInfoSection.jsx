@@ -6,6 +6,7 @@ import {
   ChevronDown,
   ChevronUp,
   Apple,
+  Crown,
   Flame,
   Drumstick,
   Droplet,
@@ -24,6 +25,8 @@ import {
 import { AddButton } from "../../controls/add-button";
 import { useRecipeDetails } from "../RecipeDetailsContext";
 import { hasTime, formatTime } from "../utils";
+import useEntitlements from "../../../hooks/useEntitlements";
+import { FEATURES } from "../../../config/entitlements";
 
 export default function RecipeInfoSection() {
   const navigate = useNavigate();
@@ -49,6 +52,9 @@ export default function RecipeInfoSection() {
     classes,
     t,
   } = useRecipeDetails();
+
+  const { canUse } = useEntitlements();
+  const canNutrition = canUse(FEATURES.NUTRITION_CALC).allowed;
 
   return (
     <>
@@ -275,7 +281,22 @@ export default function RecipeInfoSection() {
         </span>
       </div>
 
-      {recipe.nutrition &&
+      {!canNutrition && (
+        <div className={classes.nutritionSection}>
+          <div className={classes.nutritionToggle} style={{ cursor: "default" }}>
+            <div className={classes.nutritionTitleWrapper}>
+              <Apple className={classes.nutritionIcon} size={16} />
+              <span>{t("recipes", "nutrition")}</span>
+            </div>
+          </div>
+          <div className={classes.premiumNutritionBanner}>
+            <Crown size={16} />
+            <span>{t("premium", "premiumOnly")}</span>
+          </div>
+        </div>
+      )}
+
+      {canNutrition && recipe.nutrition &&
         Object.entries(recipe.nutrition).some(
           ([k, v]) => v && k !== "note",
         ) && (

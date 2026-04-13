@@ -10,6 +10,7 @@ import { useRecipeBook } from "../../context/RecipesBookContext";
 import { useLanguage } from "../../context";
 import { FEATURES } from "../../config/entitlements";
 import useEntitlements from "../../hooks/useEntitlements";
+import { PremiumFeaturePopup } from "../../components/premium-popup";
 import { getRecipeById } from "../../firebase/recipeService";
 import { copyRecipeToUser as copyRecipeToUserGlobal } from "../../firebase/globalRecipeService";
 import { getUserRating, setUserRating } from "../../firebase/ratingService";
@@ -146,7 +147,7 @@ function RecipeDetailsPage() {
     setSaveToastOpen(false);
     setEditingRecipe(null);
   }, []);
-  const [gateToastOpen, setGateToastOpen] = useState(false);
+  const [premiumPopup, setPremiumPopup] = useState(false);
   const [detailActiveTab, setDetailActiveTab] = useState("ingredients");
   const [servings, setServings] = useState(recipe?.servings || 4);
 
@@ -289,7 +290,7 @@ function RecipeDetailsPage() {
     if (!recipe) return;
     const variationCheck = canUse(FEATURES.CREATE_VARIATION);
     if (!variationCheck.allowed) {
-      setGateToastOpen(true);
+      setPremiumPopup(true);
       return;
     }
     const draft = {
@@ -439,14 +440,11 @@ function RecipeDetailsPage() {
         <CircleCheck size={18} aria-hidden />
         <span>{t("recipes", "saved")}</span>
       </Toast>
-      <Toast
-        open={gateToastOpen}
-        onClose={() => setGateToastOpen(false)}
-        variant="error"
-        duration={3000}
-      >
-        <span>{t("premium", "limitReached")}</span>
-      </Toast>
+      <PremiumFeaturePopup
+        open={premiumPopup}
+        onClose={() => setPremiumPopup(false)}
+        type="limit"
+      />
     </div>
   );
 }

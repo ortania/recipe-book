@@ -19,6 +19,7 @@ import { ChatInput } from "../controls/chat-input";
 import { FEATURES } from "../../config/entitlements";
 import useEntitlements from "../../hooks/useEntitlements";
 import { UsageIndicator } from "../usage-indicator";
+import { PremiumFeaturePopup } from "../premium-popup";
 import classes from "./chat-window.module.css";
 
 import { ChatWindowContext } from "./ChatWindowContext";
@@ -67,6 +68,7 @@ function ChatWindow({
   const [input, setInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
+  const [premiumPopup, setPremiumPopup] = useState({ open: false, type: "hard" });
   const [applyingIdx, setApplyingIdx] = useState(null);
   const [customUpdateIdx, setCustomUpdateIdx] = useState(null);
   const [customUpdateText, setCustomUpdateText] = useState("");
@@ -140,7 +142,7 @@ function ChatWindow({
     if (!file) return;
     const photoCheck = canUse(FEATURES.NUTRITION_PHOTO);
     if (!photoCheck.allowed) {
-      setError(t("premium", "premiumOnly"));
+      setPremiumPopup({ open: true, type: "hard" });
       return;
     }
     if (!file.type.startsWith("image/") && !/\.jfif$/i.test(file.name)) {
@@ -466,7 +468,7 @@ Return the COMPLETE updated recipe as JSON. Include ALL ingredients and ALL inst
     if (!recipeContext || applyingIdx !== null) return;
     const variationCheck = canUse(FEATURES.CREATE_VARIATION);
     if (!variationCheck.allowed) {
-      setError(t("premium", "limitReached"));
+      setPremiumPopup({ open: true, type: "limit" });
       return;
     }
     setApplyingIdx(msgIndex);
@@ -637,6 +639,11 @@ Include the COMPLETE ingredients and instructions arrays with changes applied. K
           ))}
         </div>
       </BottomSheet>
+      <PremiumFeaturePopup
+        open={premiumPopup.open}
+        onClose={() => setPremiumPopup({ open: false, type: "hard" })}
+        type={premiumPopup.type}
+      />
     </ChatWindowContext.Provider>
   );
 }

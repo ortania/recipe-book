@@ -50,12 +50,7 @@ export const FEATURE_CONFIG = {
   [FEATURES.IMPORT_VOICE]: { gate: GATE_TYPES.HARD },
   [FEATURES.AI_URL_FALLBACK]: { gate: GATE_TYPES.HARD },
   [FEATURES.OCR]: { gate: GATE_TYPES.HARD },
-  [FEATURES.NUTRITION_CALC]: {
-    gate: GATE_TYPES.USAGE,
-    counter: "nutritionCalcs",
-    freeLimit: 3,
-    reset: "monthly",
-  },
+  [FEATURES.NUTRITION_CALC]: { gate: GATE_TYPES.HARD },
   [FEATURES.NUTRITION_PHOTO]: { gate: GATE_TYPES.HARD },
   [FEATURES.DALLE_IMAGE]: { gate: GATE_TYPES.HARD },
   [FEATURES.CREATE_VARIATION]: {

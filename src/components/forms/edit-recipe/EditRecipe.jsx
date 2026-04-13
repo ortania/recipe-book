@@ -19,6 +19,7 @@ import { useTouchDragDrop } from "../../../hooks/useTouchDragDrop";
 import useTranslatedList from "../../../hooks/useTranslatedList";
 import { FEATURES } from "../../../config/entitlements";
 import useEntitlements from "../../../hooks/useEntitlements";
+import { PremiumFeaturePopup } from "../../premium-popup";
 import buttonClasses from "../../../styles/shared/buttons.module.css";
 import catShared from "../../../styles/shared/category-chips.module.css";
 import shared from "../../../styles/shared/form-shared.module.css";
@@ -102,6 +103,7 @@ function EditRecipe({
   const [savedMessage, setSavedMessage] = useState("");
   const [saving, setSaving] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [premiumPopup, setPremiumPopup] = useState({ open: false, type: "hard" });
   const [imageToast, setImageToast] = useState({
     open: false,
     message: null,
@@ -357,12 +359,7 @@ function EditRecipe({
   const handleGenerateAiImage = async () => {
     const dalleCheck = canUse(FEATURES.DALLE_IMAGE);
     if (!dalleCheck.allowed) {
-      setImageToast({
-        open: true,
-        message: t("premium", "premiumOnly"),
-        variant: "error",
-        duration: 3000,
-      });
+      setPremiumPopup({ open: true, type: "hard" });
       return;
     }
     if (!editedRecipe.name?.trim()) {
@@ -580,8 +577,7 @@ function EditRecipe({
     if (filledIngredients.length > 0 && ingredientsChanged) {
       const nutritionCheck = canUse(FEATURES.NUTRITION_CALC);
       if (!nutritionCheck.allowed) {
-        setSavedMessage(t("premium", "limitReached"));
-        await new Promise((r) => setTimeout(r, 2000));
+        /* skip nutrition — free users see the premium banner on recipe page */
       } else {
         try {
           setSavedMessage(
@@ -907,6 +903,11 @@ function EditRecipe({
           confirmText={t("confirm", "yesDelete")}
         />
       )}
+      <PremiumFeaturePopup
+        open={premiumPopup.open}
+        onClose={() => setPremiumPopup({ open: false, type: "hard" })}
+        type={premiumPopup.type}
+      />
     </>
   );
 }

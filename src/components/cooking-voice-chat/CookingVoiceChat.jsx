@@ -5,6 +5,7 @@ import { useLanguage, useRadio } from "../../context";
 import { auth } from "../../firebase/config";
 import { FEATURES } from "../../config/entitlements";
 import useEntitlements from "../../hooks/useEntitlements";
+import { PremiumFeaturePopup } from "../premium-popup";
 import classes from "./cooking-voice-chat.module.css";
 
 const SPEECH_LANG_MAP = {
@@ -116,6 +117,7 @@ function CookingVoiceChat({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [statusText, setStatusText] = useState("");
+  const [premiumPopup, setPremiumPopup] = useState(false);
   const [lastResponse, setLastResponse] = useState("");
 
   const recognitionRef = useRef(null);
@@ -655,8 +657,7 @@ function CookingVoiceChat({
     } else {
       const voiceCheck = canUse(FEATURES.COOKING_VOICE);
       if (!voiceCheck.allowed) {
-        setStatusText(t("premium", "premiumOnly"));
-        setTimeout(() => setStatusText(""), 3000);
+        setPremiumPopup(true);
         return;
       }
       isActiveRef.current = true;
@@ -708,6 +709,11 @@ function CookingVoiceChat({
           )}
         </div>
       )}
+      <PremiumFeaturePopup
+        open={premiumPopup}
+        onClose={() => setPremiumPopup(false)}
+        type="hard"
+      />
     </>
   );
 }
