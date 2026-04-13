@@ -58,7 +58,8 @@ function Navigation({ onLogout, links }) {
   };
 
   const loadChatHistory = () => {
-    const savedMessages = localStorage.getItem("chatMessages");
+    const key = currentUser?.uid ? `chatMessages_${currentUser.uid}` : null;
+    const savedMessages = key ? localStorage.getItem(key) : null;
     if (savedMessages) {
       const messages = JSON.parse(savedMessages);
       const userQuestions = messages

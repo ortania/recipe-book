@@ -218,11 +218,17 @@ function BottomSheet({ open, onClose, title, children, fullHeight }) {
   /* ── Android back button (history) ───────────────────── */
   useEffect(() => {
     if (!mounted) return;
+    let closedViaBack = false;
     window.history.pushState({ bottomSheet: true }, "");
-    const onPop = () => handleClose();
+    const onPop = () => {
+      window.__overlaySweeper.handled = true;
+      closedViaBack = true;
+      handleClose();
+    };
     window.addEventListener("popstate", onPop);
     return () => {
       window.removeEventListener("popstate", onPop);
+      if (!closedViaBack) window.__overlaySweeper.orphans++;
     };
   }, [mounted, handleClose]);
 

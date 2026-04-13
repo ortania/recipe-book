@@ -100,7 +100,7 @@ export default function RecordingScreen() {
 
       <div className={`${classes.tipBox} ${classes.tipBoxPurple}`}>
         <span className={classes.tipIcon}>
-          <Mic size={16} />
+          <Mic size={20} />
         </span>
         <span>
           <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
@@ -117,7 +117,7 @@ export default function RecordingScreen() {
 
       <div className={`${classes.tipBox} ${classes.tipBoxGreen}`}>
         <span className={classes.tipIcon}>
-          <Lightbulb size={16} />
+          <Lightbulb size={20} />
         </span>
         <span>{t("addWizard", "recordingExample")}</span>
       </div>

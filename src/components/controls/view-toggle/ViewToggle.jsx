@@ -24,7 +24,21 @@ function ViewToggle({ activeView, onViewChange, recipesLabel, chatLabel }) {
   useEffect(() => {
     updateIndicator();
     window.addEventListener("resize", updateIndicator);
-    return () => window.removeEventListener("resize", updateIndicator);
+
+    const container = containerRef.current;
+    if (!container || typeof IntersectionObserver === "undefined") {
+      return () => window.removeEventListener("resize", updateIndicator);
+    }
+    const io = new IntersectionObserver(
+      ([entry]) => { if (entry.isIntersecting) updateIndicator(); },
+      { threshold: 0.1 },
+    );
+    io.observe(container);
+
+    return () => {
+      window.removeEventListener("resize", updateIndicator);
+      io.disconnect();
+    };
   }, [updateIndicator]);
 
   return (

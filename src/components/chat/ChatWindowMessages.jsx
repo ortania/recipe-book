@@ -12,7 +12,6 @@ import {
   Leaf,
   WheatOff,
   Copy,
-  Crown,
   Eye,
   PenLine,
 } from "lucide-react";
@@ -98,16 +97,8 @@ export default function ChatWindowMessages() {
   } = useChatWindow();
   const navigate = useNavigate();
   const { canUse } = useEntitlements();
-  const [applyGateIdx, setApplyGateIdx] = useState(null);
-
-  const handleGatedApply = (content, index, instruction) => {
-    const check = canUse(FEATURES.APPLY_AI_SUGGESTION);
-    if (!check.allowed) {
-      setApplyGateIdx(index);
-      return;
-    }
-    handleApplyUpdate(content, index, instruction);
-  };
+  const applyCheck = canUse(FEATURES.APPLY_AI_SUGGESTION);
+  const canApplySuggestions = applyCheck.allowed;
 
   const [previewOpen, setPreviewOpen] = useState(false);
   const [previewName, setPreviewName] = useState("");
@@ -249,7 +240,7 @@ export default function ChatWindowMessages() {
                   )}
                   {bubbleText}
 
-                  {handleApplyUpdate && (
+                  {handleApplyUpdate && canApplySuggestions && (
                     <div className={classes.applySection}>
                       {appliedFields[index] ? (
                         <div className={classes.updateSummary}>
@@ -302,7 +293,7 @@ export default function ChatWindowMessages() {
                             <button
                               className={classes.applyBtn}
                               onClick={() =>
-                                handleGatedApply(
+                                handleApplyUpdate(
                                   message.content,
                                   index,
                                   customUpdateIdx === index &&
@@ -347,18 +338,6 @@ export default function ChatWindowMessages() {
                               </button>
                             )}
                           </div>
-                          {applyGateIdx === index && (
-                            <div className={classes.applyGateHint}>
-                              <Crown size={14} />
-                              <span>{t("premium", "premiumOnly")}</span>
-                              <button
-                                className={classes.applyGateDismiss}
-                                onClick={() => setApplyGateIdx(null)}
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          )}
                         </div>
                       )}
                     </div>

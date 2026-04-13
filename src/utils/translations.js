@@ -5788,6 +5788,13 @@ const translations = {
       de: "Aufgebraucht",
       mixed: "נוצל",
     },
+    resetsOn: {
+      he: "מתחדש",
+      en: "Resets",
+      ru: "Обновится",
+      de: "Erneuert sich",
+      mixed: "מתחדש",
+    },
   },
 };
 

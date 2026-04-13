@@ -47,10 +47,15 @@ function ChatWindow({
   const navigate = useNavigate();
   const { canUse, incrementUsage } = useEntitlements();
 
+  const chatStorageKey = currentUser?.uid ? `chatMessages_${currentUser.uid}` : null;
+
   const [internalMessages, setInternalMessages] = useState(() => {
     if (externalMessages !== undefined) return [];
-    const saved = localStorage.getItem("chatMessages");
-    return saved ? JSON.parse(saved) : [];
+    if (!chatStorageKey) return [];
+    try {
+      const saved = localStorage.getItem(chatStorageKey);
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
   });
   const messages = externalMessages !== undefined ? externalMessages : internalMessages;
   const setMessages = onMessagesChange || setInternalMessages;
@@ -95,26 +100,28 @@ function ChatWindow({
   }, [recipe, servings, externalRecipeContext]);
 
   const scrollToBottom = useCallback(() => {
-    setTimeout(() => {
-      if (messagesAreaRef.current) {
-        messagesAreaRef.current.scrollTo({
-          top: messagesAreaRef.current.scrollHeight,
-          behavior: "smooth",
-        });
-      }
-    }, 150);
+    const go = () => {
+      const el = messagesEndRef.current;
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "end" });
+    };
+    requestAnimationFrame(() => requestAnimationFrame(go));
   }, []);
 
   useEffect(() => {
     if (messages.length > 0) scrollToBottom();
-  }, [messages, customUpdateIdx]);
+  }, [messages, customUpdateIdx, scrollToBottom]);
 
   useEffect(() => {
-    if (externalMessages === undefined) {
+    if (!isLoading && messages.length > 0) scrollToBottom();
+  }, [isLoading, messages.length, scrollToBottom]);
+
+  useEffect(() => {
+    if (externalMessages === undefined && chatStorageKey) {
       const forStorage = messages.map(({ image, ...rest }) => rest);
-      localStorage.setItem("chatMessages", JSON.stringify(forStorage));
+      localStorage.setItem(chatStorageKey, JSON.stringify(forStorage));
     }
-  }, [messages, externalMessages]);
+  }, [messages, externalMessages, chatStorageKey]);
 
   const userInitial = currentUser?.displayName
     ? currentUser.displayName.charAt(0).toUpperCase()
@@ -126,7 +133,7 @@ function ChatWindow({
     setError("");
     setCustomUpdateIdx(null);
     setCustomUpdateText("");
-    if (externalMessages === undefined) localStorage.removeItem("chatMessages");
+    if (externalMessages === undefined && chatStorageKey) localStorage.removeItem(chatStorageKey);
   };
 
   const handleImageFile = (file) => {

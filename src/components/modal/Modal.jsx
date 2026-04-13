@@ -1,25 +1,49 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React, { useEffect, useRef } from "react";
 import classes from "./modal.module.css";
+
+/* ── Global sweeper: auto-skips orphaned overlay history entries ── */
+if (!window.__overlaySweeper) {
+  window.__overlaySweeper = { orphans: 0, handled: false };
+  window.addEventListener("popstate", () => {
+    const s = window.__overlaySweeper;
+    queueMicrotask(() => {
+      if (!s.handled && s.orphans > 0) {
+        s.orphans--;
+        window.history.back();
+      }
+      s.handled = false;
+    });
+  });
+}
 
 function Modal({ children, onClose, className, fullscreen, maxWidth, bottomSheet }) {
   const overlayRef = useRef(null);
   const contentRef = useRef(null);
-  const stableClose = useCallback(() => onClose(), [onClose]);
+  const onCloseRef = useRef(onClose);
+  onCloseRef.current = onClose;
 
   /* ── Android back button (history) ───────────────────── */
   useEffect(() => {
+    let closedViaBack = false;
     window.history.pushState({ modal: true }, "");
-    const onPop = () => stableClose();
+    const onPop = () => {
+      window.__overlaySweeper.handled = true;
+      closedViaBack = true;
+      onCloseRef.current();
+    };
     window.addEventListener("popstate", onPop);
-    return () => window.removeEventListener("popstate", onPop);
-  }, [stableClose]);
+    return () => {
+      window.removeEventListener("popstate", onPop);
+      if (!closedViaBack) window.__overlaySweeper.orphans++;
+    };
+  }, []);
 
   /* ── Escape key ──────────────────────────────────────── */
   useEffect(() => {
-    const onKey = (e) => { if (e.key === "Escape") stableClose(); };
+    const onKey = (e) => { if (e.key === "Escape") onCloseRef.current(); };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [stableClose]);
+  }, []);
 
   useEffect(() => {
     document.body.classList.add("modal-open");
