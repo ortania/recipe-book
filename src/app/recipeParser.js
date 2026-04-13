@@ -188,7 +188,10 @@ const extractTipsFromHtml = (html) => {
     while (el) {
       if (el.tagName.match(/^H[1-6]$/i)) break;
       const t = (el.textContent || "").trim();
-      if (t) parts.push(t);
+      if (t && t.length > 3 && isLikelyRecipeNote(t) && !JUNK_LINE_RE.test(t)) {
+        parts.push(t);
+      }
+      if (parts.length >= 10) break;
       el = el.nextElementSibling;
     }
     if (parts.length > 0) return parts.join("\n");
@@ -270,6 +273,54 @@ const ensureMultiSectionFromHtml = (html, currentText, pageUrl) => {
   return currentText + "\n\n" + text;
 };
 
+const SERVING_SUGGESTIONS_RE =
+  /^(הצעות להגשה|הצעות הגשה|אפשרויות הגשה|serving suggestions?|ways to serve)/i;
+
+const JUNK_LINE_RE =
+  /\[.*?\]|the_ad_group|widget|sidebar|newsletter|copyright|©|@|favicon|\.ico|\.png|\.jpg/i;
+
+const RECIPE_NOTE_WORDS_RE =
+  /טיפ|הערה|תחליף|אפשר (גם |ל)|במקום|ניתן (גם |ל)|מומלץ|שימו לב|חשוב|אם (אין |רוצים |מעדיפים )|מעלות|דקות|שעה|שעות|תנור|מקרר|לצנן|tip|note|substitut|instead|can also|optional|recommend|preheat|degrees|minute|hour|cool|refrig/i;
+
+const isLikelyRecipeNote = (line) => {
+  if (line.length > 80) return true;
+  if (RECIPE_NOTE_WORDS_RE.test(line)) return true;
+  return false;
+};
+
+const cleanRecipeResult = (recipe) => {
+  if (recipe.instructions && typeof recipe.instructions === "string") {
+    const lines = recipe.instructions.split("\n");
+    const cleaned = [];
+    let inServingSuggestions = false;
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) continue;
+      if (SERVING_SUGGESTIONS_RE.test(trimmed)) {
+        inServingSuggestions = true;
+        continue;
+      }
+      if (inServingSuggestions) continue;
+      if (JUNK_LINE_RE.test(trimmed)) continue;
+      cleaned.push(line);
+    }
+    recipe.instructions = cleaned.join("\n");
+  }
+
+  if (recipe.notes && typeof recipe.notes === "string") {
+    const lines = recipe.notes.split("\n");
+    const cleaned = lines.filter((line) => {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.length <= 2) return false;
+      if (JUNK_LINE_RE.test(trimmed)) return false;
+      return isLikelyRecipeNote(trimmed);
+    });
+    recipe.notes = cleaned.join("\n");
+  }
+
+  return recipe;
+};
+
 export const parseRecipeFromUrl = async (url, options = {}) => {
   const { canUseAiFallback = true } = options;
   try {
@@ -337,7 +388,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
       ) {
         recipe.instructions = serverMicrodata.instructions.join("\n");
       }
-      if (recipe.name && recipe.ingredients) return recipe;
+      if (recipe.name && recipe.ingredients) return cleanRecipeResult(recipe);
     }
 
     // --- Try client-side microdata extraction from HTML ---
@@ -385,7 +436,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
         ) {
           recipe.instructions = serverMicrodata.instructions.join("\n");
         }
-        if (recipe.name && recipe.ingredients) return recipe;
+        if (recipe.name && recipe.ingredients) return cleanRecipeResult(recipe);
       }
     }
 
@@ -577,7 +628,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
           const finalIngCount = recipe.ingredients
             ? recipe.ingredients.split("\n").filter(Boolean).length
             : 0;
-          if (finalIngCount >= 6) return recipe;
+          if (finalIngCount >= 6) return cleanRecipeResult(recipe);
           if (DEBUG) console.log(
             "[recipeParser] JSON-LD ingredients insufficient (" +
               finalIngCount +
@@ -667,7 +718,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
             recipe.servings = aiResult.servings || "";
           }
           if (aiResult.notes && !recipe.notes) recipe.notes = aiResult.notes;
-          return recipe;
+          return cleanRecipeResult(recipe);
         }
       } catch (aiError) {
         console.error("[recipeParser] OpenAI extraction failed:", aiError);
@@ -682,7 +733,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
         if (!hadJsonLdRecipe && textResult.instructions.length > 0)
           recipe.instructions = textResult.instructions.join("\n");
         if (textResult.notes && !recipe.notes) recipe.notes = textResult.notes;
-        if (recipe.name && recipe.ingredients) return recipe;
+        if (recipe.name && recipe.ingredients) return cleanRecipeResult(recipe);
       } catch (textError) {
         console.error("[recipeParser] Local text parsing failed:", textError);
       }
@@ -696,7 +747,7 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
       recipe.ingredients = normalizeIngredientsSections(recipe.ingredients);
     }
 
-    return recipe;
+    return cleanRecipeResult(recipe);
   } catch (error) {
     console.error("Error parsing recipe:", error);
     throw error;

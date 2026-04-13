@@ -388,7 +388,7 @@ export const extractRecipeFromText = async (text) => {
   const buildUserMessage = (retry = false) =>
     retry
       ? `Second attempt: the text has multiple ingredient sections (e.g. לבלילה:, למלית:, לבלילת העוגה, לקישוט העוגה). List EVERY section and ALL ingredients for each. Output full JSON:\n\n${truncated}`
-      : `Extract the recipe from this webpage text. IMPORTANT: If the text has section headers like "לבלילה:", "למלית:", "לבלילת העוגה:", "לקישוט העוגה:" (or similar), you MUST list ingredients for EVERY section - do not stop after the first. Include ALL ingredients from every section (לבלילה, למלית, לקישוט, לציפוי, לעיטור, להגשה, etc.) and ALL steps. Ignore ads:\n\n${truncated}`;
+      : `Extract the recipe from this webpage text. IMPORTANT: If the text has section headers like "לבלילה:", "למלית:", "לבלילת העוגה:", "לקישוט העוגה:" (or similar), you MUST list ingredients for EVERY section - do not stop after the first. Include ALL ingredients from every section (לבלילה, למלית, לקישוט, לציפוי, לעיטור, להגשה, etc.) and ALL steps. IGNORE serving suggestions ("הצעות להגשה"), site navigation, category menus, and any non-recipe text:\n\n${truncated}`;
 
   const systemContent = `You are a recipe extraction expert. Given raw text from a webpage, extract ONLY the recipe information.
 You MUST respond with valid JSON in this exact format:
@@ -411,8 +411,9 @@ You MUST respond with valid JSON in this exact format:
 - prepTime: preparation/hands-on time in minutes only (no units). Return "" if not found.
 - cookTime: cooking, baking, or oven time in minutes only (no units). This includes any time labeled as אפייה, בישול, זמן תנור, זמן אפייה, baking time, cooking time, oven time. For ranges like "45-55 דקות", return the higher value (e.g. "55"). Return "" if not found.
 - CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
-- notes: extract any tips, notes, serving suggestions, substitutions, or extra info found in sections labeled "טיפים", "הערות", "טיפים ותחליפים", "tips", "notes", or similar. Also include oven temperature details or cooling instructions if mentioned outside the main steps. Combine all tips into a single string separated by newlines. Return "" if none found.
-- IMPORTANT: ONLY extract the actual recipe content. Completely IGNORE any of these: advertisements, recommendations, "you might also like", related articles, comments, social media links, navigation, author bio, newsletter signup, or any other non-recipe content.
+- notes: extract ONLY actual cooking tips, substitutions, or chef notes found in sections labeled "טיפים", "הערות", "טיפים ותחליפים", "tips", "notes", or similar. Also include oven temperature details or cooling instructions if mentioned outside the main steps. Combine all tips into a single string separated by newlines. Return "" if none found.
+- CRITICAL: "הצעות להגשה" (serving suggestions) are NOT recipe instructions. If the text has a section with serving suggestions or serving ideas (e.g. "הצעות להגשה", "אפשרויות הגשה", "serving suggestions"), do NOT add them to "instructions". You may briefly mention them in "notes" only if they are short and useful.
+- CRITICAL: ONLY extract the actual recipe content. Completely IGNORE any of these: site navigation menus, category lists, sidebar links, advertisements, recommendations, "you might also like", related articles, comments, social media links, author bio, newsletter signup, tags, breadcrumbs, or any other non-recipe website content. These often appear as short Hebrew phrases like "פרשת השבוע", "זוגיות", "הורים וילדים", "צרכנות", "מגזין" etc. — NEVER include them in any field.
 - If you cannot find a recipe in the text, return: {"error": "No recipe found"}`;
 
   const parseResponse = (raw) => {

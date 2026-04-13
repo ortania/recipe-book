@@ -4,19 +4,25 @@
   font-size: var(--small-font);
   font-weight: var(--medium-font-weight);
   color: var(--clr-text-muted);
-  padding: 0.15em 0.45em;
-  border-radius: 6px;
+  padding: 0.2em 0.55em;
+  border-radius: 8px;
   background: var(--clr-bg-hover);
   white-space: nowrap;
   user-select: none;
+  line-height: 1.4;
+  transition: background 0.2s, color 0.2s;
 }
 
 .low {
-  color: var(--clr-warning, #d97706);
-  background: var(--clr-warning-light, #fef3c7);
+  color: var(--clr-warning);
+  background: var(--clr-warning-bg);
+  border: 1px solid var(--clr-warning);
 }
 
 .depleted {
-  color: var(--clr-danger-600, #dc2626);
-  background: var(--clr-danger-light, #fee2e2);
+  color: var(--clr-danger-600);
+  background: var(--clr-danger-100);
+  border: 1px solid var(--clr-danger-300);
+  font-weight: var(--font-weight-heading);
+  padding: 0.3em 0.65em;
 }

@@ -5795,6 +5795,27 @@ const translations = {
       de: "Erneuert sich",
       mixed: "מתחדש",
     },
+    allUsesExhausted: {
+      he: "נוצלו כל {limit} השאלות החינמיות",
+      en: "All {limit} free questions used",
+      ru: "Все {limit} бесплатных вопросов использованы",
+      de: "Alle {limit} kostenlosen Fragen verbraucht",
+      mixed: "נוצלו כל {limit} השאלות החינמיות",
+    },
+    lastQuestionLeft: {
+      he: "נשארה שאלה אחת אחרונה",
+      en: "One question left",
+      ru: "Остался один вопрос",
+      de: "Eine Frage übrig",
+      mixed: "נשארה שאלה אחת אחרונה",
+    },
+    outOf: {
+      he: "מתוך",
+      en: "of",
+      ru: "из",
+      de: "von",
+      mixed: "מתוך",
+    },
     detailsTitle: {
       he: "מה כלול בפרימיום?",
       en: "What's included in Premium?",

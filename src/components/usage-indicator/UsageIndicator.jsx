@@ -29,15 +29,24 @@ export default function UsageIndicator({ featureKey }) {
   const isLow = remaining <= 1 && remaining > 0;
   const isDepleted = remaining <= 0;
 
-  const depletedText = config.reset === "monthly"
-    ? `${t("premium", "noUsesLeft")} · ${t("premium", "resetsOn") || "מתחדש"} ${getNextMonthLabel(language)}`
-    : t("premium", "noUsesLeft");
+  let text;
+  if (isDepleted) {
+    const allUsed = t("premium", "allUsesExhausted")
+      .replace("{limit}", String(limit));
+    text = config.reset === "monthly"
+      ? `${allUsed} · ${t("premium", "resetsOn") || "מתחדש"} ${getNextMonthLabel(language)}`
+      : allUsed;
+  } else if (isLow) {
+    text = t("premium", "lastQuestionLeft");
+  } else {
+    text = `${remaining} ${t("premium", "outOf")} ${limit}`;
+  }
 
   return (
     <span
       className={`${classes.indicator} ${isDepleted ? classes.depleted : ""} ${isLow ? classes.low : ""}`}
     >
-      {isDepleted ? depletedText : `${remaining}/${limit}`}
+      {text}
     </span>
   );
 }
