@@ -261,7 +261,9 @@ function AddRecipeWizard({
       setManualStep(0);
     } catch (err) {
       console.error("[ImportURL]", err);
-      if (err.message && err.message.startsWith("BLOCKED:")) {
+      if (err.message === "AI_FALLBACK_BLOCKED") {
+        setImportError(t("addWizard", "importNeedsAi"));
+      } else if (err.message && err.message.startsWith("BLOCKED:")) {
         setImportError(t("addWizard", "importBlocked"));
       } else {
         const detail = err.message || String(err);

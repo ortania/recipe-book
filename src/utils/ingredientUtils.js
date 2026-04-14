@@ -26,11 +26,11 @@ export function isGroupHeader(s) {
 }
 
 export function getGroupName(s) {
-  return s.slice(GROUP_PREFIX.length).trim();
+  return s.slice(GROUP_PREFIX.length);
 }
 
 export function makeGroupHeader(name) {
-  return `${GROUP_PREFIX}${name.trim()}`;
+  return `${GROUP_PREFIX}${name}`;
 }
 
 /**

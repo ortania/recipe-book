@@ -4128,6 +4128,13 @@ const translations = {
       mixed:
         'האתר חוסם גישה אוטומטית. העתק את טקסט המתכון מהאתר והדבק אותו בלשונית "הוספה מטקסט".',
     },
+    importNeedsAi: {
+      he: 'לא הצלחנו לחלץ את המתכון מאתר זה. באמצעות AI של פרימיום ייתכן שיצליח. לחלופין, העתק את טקסט המתכון והשתמש ב"הוספה מטקסט".',
+      en: 'Could not extract the recipe from this site. Premium AI extraction may succeed. Alternatively, copy the recipe text and use "Add from Text".',
+      ru: 'Не удалось извлечь рецепт с этого сайта. AI-извлечение Premium может помочь. Или скопируйте текст рецепта и используйте "Из текста".',
+      de: 'Rezept konnte nicht extrahiert werden. Premium-AI-Extraktion könnte helfen. Alternativ kopieren Sie den Rezepttext und nutzen Sie "Aus Text".',
+      mixed: 'לא הצלחנו לחלץ את המתכון מאתר זה. באמצעות AI של פרימיום ייתכן שיצליח. לחלופין, העתק את טקסט המתכון והשתמש ב"הוספה מטקסט".',
+    },
     fromTextTitle: {
       he: "הוספה מטקסט",
       en: "Add from Text",

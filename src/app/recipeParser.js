@@ -740,6 +740,9 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
     }
 
     if (!recipe.name || !recipe.ingredients) {
+      if (!canUseAiFallback) {
+        throw new Error("AI_FALLBACK_BLOCKED");
+      }
       throw new Error("Could not extract enough recipe data.");
     }
 

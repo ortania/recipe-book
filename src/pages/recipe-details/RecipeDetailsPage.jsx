@@ -206,6 +206,16 @@ function RecipeDetailsPage() {
     };
   }, [cookingMode]);
 
+  const notFoundTimerRef = React.useRef(null);
+  React.useEffect(() => {
+    if (!recipe && !fetchingRemote) {
+      notFoundTimerRef.current = setTimeout(() => navigate(-1), 2000);
+    }
+    return () => {
+      if (notFoundTimerRef.current) clearTimeout(notFoundTimerRef.current);
+    };
+  }, [recipe, fetchingRemote, navigate]);
+
   if (!recipe) {
     if (fetchingRemote) {
       return (
@@ -220,7 +230,7 @@ function RecipeDetailsPage() {
       <div className={classes.pageContainer}>
         <div className={classes.notFound}>
           <p>{t("common", "notFound") || "Recipe not found"}</p>
-          <BackButton onClick={() => navigate("/categories")} />
+          <BackButton onClick={() => navigate(-1)} />
         </div>
       </div>
     );

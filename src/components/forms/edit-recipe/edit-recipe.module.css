@@ -367,9 +367,9 @@
   color: var(--clr-white);
 }
 
-  input.formInput[type="url"] {
-    direction: ltr;
-  }
+input.formInput[type="url"] {
+  direction: ltr;
+}
 
 /* ========== Responsive ========== */
 @media (max-width: 768px) {
@@ -473,8 +473,8 @@
   }
 
   .sidebarTabDelete {
-    margin-top: 0;
-    padding-bottom: 0;
+    margin-top: auto;
+    padding-bottom: 1rem;
   }
 
   .sidebarTabDelete:hover {

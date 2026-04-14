@@ -177,8 +177,8 @@
   padding: 0;
   border: none;
   font-size: var(--basic-font);
-  font-weight: var(--font-weight-heading);
-  color: var(--clr-accent-secondary);
+  font-weight: var(--font-weight-primary);
+  color: var(--clr-text-primary);
   outline: none;
   background: transparent;
   font-family: inherit;
@@ -187,6 +187,7 @@
 .groupInput::placeholder {
   color: var(--clr-input-placeholder);
   font-style: italic;
+  font-weight: var(--font-weight-primary);
 }
 
 /* ========== Action Buttons ========== */
@@ -213,9 +214,7 @@
   flex: 1;
 }
 
-
-.addDashedBtn:hover
- {
+.addDashedBtn:hover {
   border-color: var(--clr-input-border-focus);
   color: var(--clr-input-text);
 }
@@ -450,7 +449,7 @@
   background: var(--clr-input-bg);
 }
 
-.formInput[type='url'] {
+.formInput[type="url"] {
   direction: ltr;
 }
 

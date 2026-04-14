@@ -38,17 +38,23 @@ function GlobalRadioPlayer() {
 
 const HIDE_FOOTER_ROUTES = ["/settings"];
 
+function shouldHideFooter(pathname) {
+  if (HIDE_FOOTER_ROUTES.includes(pathname)) return true;
+  if (pathname.startsWith("/recipe/")) return true;
+  return false;
+}
+
 function ProtectedLayout() {
   const { isLoggedIn, logout } = useRecipeBook();
   const { pathname } = useLocation();
-  const hideFooter = HIDE_FOOTER_ROUTES.includes(pathname);
+  const hideFooter = shouldHideFooter(pathname);
   const isOnline = useNetworkStatus();
   useEffect(() => {
     document.body.classList.remove("sidebar-open", "modal-open");
   }, []);
 
   useEffect(() => {
-    if (!HIDE_FOOTER_ROUTES.includes(pathname)) {
+    if (!shouldHideFooter(pathname)) {
       document.body.classList.remove("hide-footer");
     }
   }, [pathname]);
