@@ -172,10 +172,15 @@ function CookingVoiceChat({
       ctx.resume().catch(() => {});
     }
     try {
-      const buf = ctx.createBuffer(1, 1, 22050);
+      const sampleRate = ctx.sampleRate || 22050;
+      const length = Math.ceil(sampleRate * 0.05);
+      const buf = ctx.createBuffer(1, length, sampleRate);
       const src = ctx.createBufferSource();
       src.buffer = buf;
-      src.connect(ctx.destination);
+      const gain = ctx.createGain();
+      gain.gain.value = 0;
+      src.connect(gain);
+      gain.connect(ctx.destination);
       src.start(0);
     } catch {}
   }
@@ -485,15 +490,13 @@ function CookingVoiceChat({
       isProcessingRef.current = false;
       if (isActiveRef.current) {
         setStatusText("מקשיב...");
-        // If recognition died during processing/TTS, restart it
+        // Restart recognition quickly; the onresult cooldown filters echo
         if (!recognitionRef.current) {
-          const sinceTts = Date.now() - ttsEndTimeRef.current;
-          const delay = Math.max(500, 3500 - sinceTts + 200);
           setTimeout(() => {
             if (isActiveRef.current && !recognitionRef.current) {
               listenRef.current?.();
             }
-          }, delay);
+          }, 300);
         }
       } else {
         setStatusText("");
@@ -532,11 +535,11 @@ function CookingVoiceChat({
     recognition.onresult = (event) => {
       const lastIdx = event.results.length - 1;
 
-      // While busy or within 3.5s of TTS end, skip all accumulated results
+      // While busy or within 1.5s of TTS end, discard (prevents echo loop)
       if (
         isProcessingRef.current ||
         isSpeakingRef.current ||
-        Date.now() - ttsEndTimeRef.current < 3500
+        Date.now() - ttsEndTimeRef.current < 1500
       ) {
         processedUpTo = lastIdx;
         return;
@@ -576,7 +579,7 @@ function CookingVoiceChat({
           if (isProcessingRef.current || isSpeakingRef.current) return;
           processedUpTo = capturedIdx;
           processRef.current?.(capturedText);
-        }, 1500);
+        }, 800);
       } else {
         setStatusText(`"${text}"...`);
       }
@@ -591,7 +594,7 @@ function CookingVoiceChat({
       recognitionRef.current = null;
       if (!isActiveRef.current) return;
       // If busy, the finally block in processInput will handle restart.
-      // If idle (browser timeout), restart after a long delay to minimize clicks.
+      // If idle (browser timeout), restart with a longer delay to minimize clicks.
       if (!isProcessingRef.current && !isSpeakingRef.current) {
         setTimeout(() => {
           if (
@@ -602,7 +605,7 @@ function CookingVoiceChat({
           ) {
             listenRef.current?.();
           }
-        }, 500);
+        }, 1000);
       }
     };
 
