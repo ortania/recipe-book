@@ -33,7 +33,13 @@ function Signup() {
 
   const getError = (field, value, pw) => {
     if (field === "displayName") {
-      if (!value.trim()) return t("auth", "nameRequired");
+      const trimmed = value.trim();
+      if (!trimmed) return t("auth", "nameRequired");
+      if (trimmed.length < 2) return t("auth", "nameTooShort");
+      if (trimmed.length > 30) return t("auth", "nameTooLong");
+      // Allow Hebrew letters, English letters, numbers, spaces, hyphens and dots
+      const validNameRegex = /^[\u0590-\u05FF\uFB1D-\uFB4Fa-zA-Z0-9\s\-.]+$/;
+      if (!validNameRegex.test(trimmed)) return t("auth", "nameInvalidChars");
     }
     if (field === "email") {
       if (!value.trim()) return t("auth", "emailError");
@@ -182,6 +188,7 @@ function Signup() {
         >
           <User size={16} />
         </FormInput>
+        <p className={classes.helperText}>{t("auth", "nameHelper")}</p>
 
         <FormInput
           type="email"
@@ -198,7 +205,7 @@ function Signup() {
 
         <FormInput
           type="password"
-          placeholder={t("auth", "password")}
+          placeholder={t("auth", "passwordHint")}
           value={password}
           onChange={(e) => handleChange("password", e.target.value)}
           isLoading={isLoading}

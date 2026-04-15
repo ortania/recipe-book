@@ -394,11 +394,11 @@ const translations = {
       mixed: "Confirm Password",
     },
     displayName: {
-      he: "שם ",
-      en: "Name",
+      he: "שם תצוגה",
+      en: "Display name",
       ru: "Имя",
       de: "Anzeigename",
-      mixed: "Name",
+      mixed: "Display name",
     },
     loggingIn: {
       he: "מתחבר...",
@@ -533,6 +533,34 @@ const translations = {
       ru: "Неверный пароль (минимум 6 символов)",
       de: "Ungültiges Passwort (mindestens 6 Zeichen)",
       mixed: "Invalid password (at least 6 characters)",
+    },
+    nameTooShort: {
+      he: "שם חייב להכיל לפחות 2 תווים",
+      en: "Name must be at least 2 characters",
+      ru: "Имя должно содержать минимум 2 символа",
+      de: "Name muss mindestens 2 Zeichen enthalten",
+      mixed: "Name must be at least 2 characters",
+    },
+    nameTooLong: {
+      he: "שם יכול להכיל עד 30 תווים",
+      en: "Name can be up to 30 characters",
+      ru: "Имя может содержать до 30 символов",
+      de: "Name kann bis zu 30 Zeichen enthalten",
+      mixed: "Name can be up to 30 characters",
+    },
+    nameInvalidChars: {
+      he: "שם יכול להכיל רק אותיות, מספרים, רווחים, מקפים ונקודות",
+      en: "Name can only contain letters, numbers, spaces, hyphens and dots",
+      ru: "Имя может содержать только буквы, цифры, пробелы, дефисы и точки",
+      de: "Name darf nur Buchstaben, Zahlen, Leerzeichen, Bindestriche und Punkte enthalten",
+      mixed: "Name can only contain letters, numbers, spaces, hyphens and dots",
+    },
+    nameHelper: {
+      he: "אותיות, מספרים, רווחים ומקפים • 2-30 תווים",
+      en: "Letters, numbers, spaces & hyphens • 2-30 chars",
+      ru: "Буквы, цифры, пробелы, дефисы • 2-30 символов",
+      de: "Buchstaben, Zahlen, Leerzeichen, Bindestriche • 2-30 Zeichen",
+      mixed: "Letters, numbers, spaces & hyphens • 2-30 chars",
     },
     passwordHint: {
       he: "סיסמה (לפחות 6 תווים)",
@@ -4133,7 +4161,8 @@ const translations = {
       en: 'Could not extract the recipe from this site. Premium AI extraction may succeed. Alternatively, copy the recipe text and use "Add from Text".',
       ru: 'Не удалось извлечь рецепт с этого сайта. AI-извлечение Premium может помочь. Или скопируйте текст рецепта и используйте "Из текста".',
       de: 'Rezept konnte nicht extrahiert werden. Premium-AI-Extraktion könnte helfen. Alternativ kopieren Sie den Rezepttext und nutzen Sie "Aus Text".',
-      mixed: 'לא הצלחנו לחלץ את המתכון מאתר זה. באמצעות AI של פרימיום ייתכן שיצליח. לחלופין, העתק את טקסט המתכון והשתמש ב"הוספה מטקסט".',
+      mixed:
+        'לא הצלחנו לחלץ את המתכון מאתר זה. באמצעות AI של פרימיום ייתכן שיצליח. לחלופין, העתק את טקסט המתכון והשתמש ב"הוספה מטקסט".',
     },
     fromTextTitle: {
       he: "הוספה מטקסט",
