@@ -200,7 +200,7 @@ async function speakViaCloud(text) {
       if (user) headers.Authorization = `Bearer ${await user.getIdToken()}`;
     } catch {}
     const res = await fetch(
-      "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts",
+      import.meta.env.VITE_CLOUD_TTS_URL,
       {
         method: "POST",
         headers,

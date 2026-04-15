@@ -8,6 +8,16 @@ import useEntitlements from "../../hooks/useEntitlements";
 import { PremiumFeaturePopup } from "../premium-popup";
 import classes from "./cooking-voice-chat.module.css";
 
+const IS_MOBILE =
+  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+    navigator.userAgent,
+  ) ||
+  (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+// Local commands that can be detected from interim results for faster response
+const LOCAL_CMD_RE =
+  /שלב הבא|המשך|תתקדם|סיימתי|קדימה|מה השלב הבא|שלב קודם|תחזור|אחורה|מה השלב הקודם|טיימר|טימר|תיימר|תימר|דקה|דקות|minute|הגבר|תגביר|הנמך|תנמיך|נמוך|רדיו|מוסיקה|מוזיקה|תשתיק|השתק|שתיקה|עצור|עצר|הפסק|תפסיק|כבה|תכב|הפעיל|תפעיל|הפעל|תקריא|חזור על/;
+
 const SPEECH_LANG_MAP = {
   he: "he-IL",
   en: "en-US",
@@ -214,7 +224,7 @@ function CookingVoiceChat({
         if (user) headers.Authorization = `Bearer ${await user.getIdToken()}`;
       } catch {}
       const response = await fetch(
-        "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts",
+        import.meta.env.VITE_CLOUD_TTS_URL,
         {
           method: "POST",
           headers,
@@ -490,13 +500,19 @@ function CookingVoiceChat({
       isProcessingRef.current = false;
       if (isActiveRef.current) {
         setStatusText("מקשיב...");
-        // Restart recognition quickly; the onresult cooldown filters echo
+        // Mobile: wait for echo cooldown to end before restarting (avoids
+        // clicks from premature start/stop cycles during the cooldown window).
+        // Desktop: restart quickly, the onresult cooldown filters echo.
         if (!recognitionRef.current) {
+          const sinceTts = Date.now() - ttsEndTimeRef.current;
+          const delay = IS_MOBILE
+            ? Math.max(300, 1500 - sinceTts + 200)
+            : 300;
           setTimeout(() => {
             if (isActiveRef.current && !recognitionRef.current) {
               listenRef.current?.();
             }
-          }, 300);
+          }, delay);
         }
       } else {
         setStatusText("");
@@ -580,6 +596,20 @@ function CookingVoiceChat({
           processedUpTo = capturedIdx;
           processRef.current?.(capturedText);
         }, 800);
+      } else if (!IS_MOBILE) {
+        // Desktop only: isFinal can take 2-4s on desktop Chrome.
+        // Detect local commands instantly, or use inactivity timeout
+        // for AI queries. None of this runs on mobile.
+        setStatusText(`"${text}"...`);
+        if (debounceTimer) clearTimeout(debounceTimer);
+        const capturedText = text;
+        const capturedIdx = lastIdx;
+        const delay = text.length >= 3 && LOCAL_CMD_RE.test(text) ? 150 : 2000;
+        debounceTimer = setTimeout(() => {
+          if (isProcessingRef.current || isSpeakingRef.current) return;
+          processedUpTo = capturedIdx;
+          processRef.current?.(capturedText);
+        }, delay);
       } else {
         setStatusText(`"${text}"...`);
       }
@@ -594,7 +624,7 @@ function CookingVoiceChat({
       recognitionRef.current = null;
       if (!isActiveRef.current) return;
       // If busy, the finally block in processInput will handle restart.
-      // If idle (browser timeout), restart with a longer delay to minimize clicks.
+      // If idle (browser timeout), restart to keep listening.
       if (!isProcessingRef.current && !isSpeakingRef.current) {
         setTimeout(() => {
           if (
@@ -605,7 +635,7 @@ function CookingVoiceChat({
           ) {
             listenRef.current?.();
           }
-        }, 1000);
+        }, 500);
       }
     };
 

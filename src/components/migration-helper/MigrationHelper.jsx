@@ -54,9 +54,6 @@ function MigrationHelper() {
           <CircleCheck size={18} /> {result.message}
         </>,
       );
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
     } else {
       setStatus(
         <>
@@ -75,9 +72,6 @@ function MigrationHelper() {
           <CircleCheck size={18} /> Categories initialized successfully!
         </>,
       );
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
     } catch (error) {
       setStatus(
         <>
@@ -104,9 +98,6 @@ function MigrationHelper() {
           <CircleCheck size={18} /> {result.message}
         </>,
       );
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
     } else {
       setStatus(
         <>

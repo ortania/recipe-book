@@ -2,10 +2,8 @@ import { auth } from "../firebase/config";
 
 const DEBUG = import.meta.env.DEV;
 
-const CLOUD_FUNCTION_URL =
-  "https://us-central1-recipe-book-82d57.cloudfunctions.net/fetchUrl";
-const CLOUD_FUNCTION_BROWSER_URL =
-  "https://us-central1-recipe-book-82d57.cloudfunctions.net/fetchUrlBrowser";
+const CLOUD_FUNCTION_URL = import.meta.env.VITE_CLOUD_FETCH_URL;
+const CLOUD_FUNCTION_BROWSER_URL = import.meta.env.VITE_CLOUD_FETCH_BROWSER_URL;
 
 async function getAuthHeaders() {
   const user = auth.currentUser;

@@ -12,14 +12,10 @@ async function batchedMap(items, fn, concurrency = 5) {
   return results;
 }
 
-const CLOUD_CHAT_URL =
-  "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiChat";
-const CLOUD_TTS_URL =
-  "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiTts";
-const CLOUD_OCR_URL =
-  "https://us-central1-recipe-book-82d57.cloudfunctions.net/ocrImage";
-const CLOUD_RECIPE_IMAGE_URL =
-  "https://us-central1-recipe-book-82d57.cloudfunctions.net/openaiRecipeImage";
+const CLOUD_CHAT_URL = import.meta.env.VITE_CLOUD_CHAT_URL;
+const CLOUD_TTS_URL = import.meta.env.VITE_CLOUD_TTS_URL;
+const CLOUD_OCR_URL = import.meta.env.VITE_CLOUD_OCR_URL;
+const CLOUD_RECIPE_IMAGE_URL = import.meta.env.VITE_CLOUD_RECIPE_IMAGE_URL;
 
 async function getAuthHeaders() {
   const user = auth.currentUser;

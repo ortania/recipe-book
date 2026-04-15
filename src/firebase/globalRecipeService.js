@@ -12,8 +12,7 @@ import { db } from "./config";
 import { translateRecipeContent } from "../utils/translateContent";
 
 const RECIPES_COLLECTION = "recipes";
-const SEARCH_COMMUNITY_URL =
-  "https://us-central1-recipe-book-82d57.cloudfunctions.net/searchCommunityRecipes";
+const SEARCH_COMMUNITY_URL = import.meta.env.VITE_CLOUD_SEARCH_URL;
 
 export const fetchGlobalRecipesCount = async () => {
   try {
