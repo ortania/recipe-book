@@ -32,3 +32,8 @@ video*
 
 # windsurf rules
 .windsurfrules
+
+# Capacitor Android build output
+android/app/build/
+android/.gradle/
+android/build/
