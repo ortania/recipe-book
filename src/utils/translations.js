@@ -5825,11 +5825,11 @@ const translations = {
       mixed: "נוצל",
     },
     resetsOn: {
-      he: "מתחדש",
-      en: "Resets",
+      he: "מתחדש בתאריך",
+      en: "Resets on",
       ru: "Обновится",
-      de: "Erneuert sich",
-      mixed: "מתחדש",
+      de: "Erneuert sich am",
+      mixed: "מתחדש בתאריך",
     },
     allUsesExhausted: {
       he: "נוצלו כל {limit} השאלות החינמיות",

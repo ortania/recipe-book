@@ -111,6 +111,7 @@
 .assistantMessage .bubble {
   background: var(--clr-bubble-assistant-bg);
   color: var(--clr-bubble-assistant-text);
+  border-radius: 14px;
   border-bottom-left-radius: 4px;
 }
 
@@ -304,10 +305,11 @@
 /* ── Shared follow-up container (chooser + recipe results) ── */
 
 .assistantFollowUp {
-  /* border: 1.5px solid var(--clr-border-light); */
-  /* border-radius: 14px; */
   overflow: hidden;
   background: var(--clr-bubble-assistant-bg);
+  border-radius: 14px;
+  border-bottom-left-radius: 4px;
+  padding: 0.5rem;
 }
 
 /* ── Recipe-idea chooser (section inside assistantFollowUp) ── */
@@ -984,7 +986,8 @@
   display: flex;
   flex-wrap: wrap;
   gap: 1rem;
-  padding: 0.3rem 0;
+  padding: 0.75rem 1rem;
+  background: var(--clr-bubble-assistant-bg);
 }
 
 .recipeChooserCompact .recipeChooserOption {
