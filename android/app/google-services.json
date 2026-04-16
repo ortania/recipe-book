@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "537500563579",
+    "project_id": "recipe-book-82d57",
+    "storage_bucket": "recipe-book-82d57.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:537500563579:android:5085675da81a6cd1000ade",
+        "android_client_info": {
+          "package_name": "com.tania.cookipal"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "537500563579-an2k41r4qbate65ebvbjqss1p1nnq29f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.tania.cookipal",
+            "certificate_hash": "7dde5a565cedc7471713f34433af2e5edf54ae18"
+          }
+        },
+        {
+          "client_id": "537500563579-tq8f9pib59qvrbvaf79dgks8idk5cj8g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBgd9S83UlpI3012oIy1XALLWyxqLIQCps"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "537500563579-tq8f9pib59qvrbvaf79dgks8idk5cj8g.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

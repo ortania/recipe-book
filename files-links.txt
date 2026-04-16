@@ -53,3 +53,11 @@ Capacitor
 
 Prompt To Cursor:
 "Wrap the app with Capacitor for iOS and Android. Handle: Wake Lock, Google Sign-In, voice/speech features, and share. Keep image upload as-is (or upgrade to native camera). Make sure safe areas and status bar work correctly."
+
+
+Android run
+-----------
+
+npx cap open android
+
+npm run build && npx cap sync android
