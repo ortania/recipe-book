@@ -18,7 +18,9 @@ function Login() {
   const { login } = useRecipeBook();
   const { t } = useLanguage();
 
-  const isReturningUser = !!localStorage.getItem("onboardingDone");
+  const [isReturningUser, setIsReturningUser] = useState(
+    !!localStorage.getItem("onboardingDone"),
+  );
 
   const getSavedEmails = () => {
     try {
@@ -381,7 +383,7 @@ function Login() {
               <span
                 onClick={() => {
                   localStorage.setItem("onboardingDone", "true");
-                  window.location.reload();
+                  setIsReturningUser(true);
                 }}
                 className={classes.link}
               >
