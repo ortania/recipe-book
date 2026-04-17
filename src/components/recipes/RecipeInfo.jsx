@@ -33,6 +33,9 @@ function RecipeInfo({
   followingList = [],
   linkState,
   hideRating = false,
+  showCategoryLabel = false,
+  getTranslatedGroup,
+  visibleCategories,
 }) {
   const { t } = useLanguage();
   const { currentUser } = useRecipeBook();
@@ -319,6 +322,21 @@ function RecipeInfo({
 
         <div className={classes.recipeInfo}>
           <h3 className={classes.recipeName}>{translatedName}</h3>
+          {showCategoryLabel && recipeGroups.length > 0 && (
+            <div className={classes.categoryLabels}>
+              {recipeGroups
+                .filter((g) =>
+                  visibleCategories
+                    ? visibleCategories.includes(g.id)
+                    : true,
+                )
+                .map((g) => (
+                  <span key={g.id} className={classes.categoryChip}>
+                    {getTranslatedGroup ? getTranslatedGroup(g) : g.name}
+                  </span>
+                ))}
+            </div>
+          )}
           {recipe.author && !onSaveRecipe && !onCopyRecipe && (
             <p className={classes.authorLabel}>{t("recipes", "source")}: {recipe.author}</p>
           )}
@@ -484,7 +502,8 @@ const MemoizedRecipeInfo = React.memo(RecipeInfo, (prev, next) => {
     prev.onEdit === next.onEdit &&
     prev.onDelete === next.onDelete &&
     prev.onToggleFavorite === next.onToggleFavorite &&
-    prev.onCopyRecipe === next.onCopyRecipe
+    prev.onCopyRecipe === next.onCopyRecipe &&
+    prev.showCategoryLabel === next.showCategoryLabel
   );
 });
 

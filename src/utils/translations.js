@@ -1868,6 +1868,13 @@ const translations = {
       de: "Kürzlich angesehen",
       mixed: "Recently Viewed",
     },
+    sortByCategory: {
+      he: "לפי קטגוריה",
+      en: "By Category",
+      ru: "По категории",
+      de: "Nach Kategorie",
+      mixed: "By Category",
+    },
     byIngredients: {
       he: "לפי מרכיבים",
       en: "By Ingredients",

@@ -91,6 +91,23 @@
   transform: var(--link-transform-hover);
 }
 
+.categoryLabels {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+  margin-bottom: 0.25rem;
+}
+
+.categoryChip {
+  font-size: var(--very-small-font, 0.7rem);
+  color: var(--clr-text-secondary, #666);
+  background: var(--clr-bg-secondary, #f0f0f0);
+  padding: 0.1em 0.5em;
+  border-radius: 4px;
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
 .recipeMetadata {
   display: flex;
   align-items: center;

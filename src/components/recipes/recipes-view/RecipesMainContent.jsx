@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   History,
   UtensilsCrossed,
@@ -57,9 +57,42 @@ export default function RecipesMainContent() {
     hasMoreRecipes,
     loadMoreRecipes,
     onSaved,
+    isMultiCategory,
+    sortField,
+    selectedCategories,
   } = useRecipesView();
 
   const [recipeToDelete, setRecipeToDelete] = useState(null);
+
+  const isCategorySort = sortField === "category";
+  const showCategoryLabel = isMultiCategory && !isCategorySort;
+
+  const categoryGroupedRecipes = useMemo(() => {
+    if (!isCategorySort) return null;
+    const selectedSet = new Set(
+      selectedCategories.filter((id) => id !== "all"),
+    );
+    const groupMap = new Map();
+    for (const group of groups) {
+      if (selectedSet.has(group.id)) {
+        groupMap.set(group.id, { group, recipes: [] });
+      }
+    }
+    for (const recipe of filteredAndSortedRecipes) {
+      if (recipe.categories) {
+        for (const catId of recipe.categories) {
+          if (groupMap.has(catId)) {
+            groupMap.get(catId).recipes.push(recipe);
+          }
+        }
+      }
+    }
+    const result = [];
+    for (const [, entry] of groupMap) {
+      if (entry.recipes.length > 0) result.push(entry);
+    }
+    return result;
+  }, [isCategorySort, filteredAndSortedRecipes, groups, selectedCategories]);
 
   const handleCompactDeleteClick = (recipe) => {
     setRecipeToDelete(recipe);
@@ -534,6 +567,46 @@ export default function RecipesMainContent() {
             </div>
           ))}
         </div>
+      ) : isCategorySort && categoryGroupedRecipes ? (
+        <div>
+          {categoryGroupedRecipes.map(({ group, recipes: groupRecipes }) => (
+            <div key={group.id} className={classes.categorySection}>
+              <div className={classes.sectionHeader}>
+                <h2 className={classes.sectionTitle}>
+                  {getTranslatedGroup(group)}
+                </h2>
+                <span className={classes.recipeCount}>
+                  {groupRecipes.length}
+                </span>
+              </div>
+              <div className={classes.recipeGrid}>
+                {groupRecipes.map((recipe) => (
+                  <RecipeInfo
+                    key={recipe.id}
+                    recipe={recipe}
+                    groups={groups}
+                    onEdit={onEditRecipe ? handleEditClick : undefined}
+                    onDelete={onDeleteRecipe}
+                    onToggleFavorite={
+                      showAddAndFavorites ? handleToggleFavorite : undefined
+                    }
+                    onCopyRecipe={onCopyRecipe}
+                    onSaveRecipe={onSaveRecipe}
+                    isSaved={savedRecipes.includes(recipe.id)}
+                    onRate={onRate}
+                    userRating={userRatings[recipe.id] || 0}
+                    onCardClick={
+                      recentlyViewedKey ? trackRecentlyViewed : undefined
+                    }
+                    followingList={followingList}
+                    linkState={linkState}
+                    hideRating={hideRating}
+                  />
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
       ) : (
         <div className={classes.recipeGrid}>
           {filteredAndSortedRecipes.map((recipe) => (
@@ -555,6 +628,9 @@ export default function RecipesMainContent() {
               followingList={followingList}
               linkState={linkState}
               hideRating={hideRating}
+              showCategoryLabel={showCategoryLabel}
+              getTranslatedGroup={getTranslatedGroup}
+              visibleCategories={isMultiCategory ? selectedCategories : undefined}
             />
           ))}
         </div>

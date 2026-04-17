@@ -28,6 +28,7 @@ function SortDropdown({
     favorites: t("recipesView", "sortByFavorites"),
     saved: t("recipesView", "sortBySaved"),
     recentlyViewed: t("recipesView", "sortByRecentlyViewed"),
+    category: t("recipesView", "sortByCategory"),
   };
 
   const hintMap = {

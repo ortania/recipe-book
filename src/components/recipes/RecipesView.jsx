@@ -660,23 +660,32 @@ function RecipesView({
     "name",
   );
 
-  const recipeSortOptions = onSaveRecipe
-    ? [
-        { field: "name", defaultDir: "asc" },
-        { field: "newest", defaultDir: "desc" },
-        { field: "prepTime", defaultDir: "asc" },
-        { field: "difficulty", defaultDir: "asc" },
-        { field: "rating", defaultDir: "desc" },
-        { field: "saved", defaultDir: "desc" },
-      ]
-    : [
-        { field: "name", defaultDir: "asc" },
-        { field: "newest", defaultDir: "desc" },
-        { field: "prepTime", defaultDir: "asc" },
-        { field: "difficulty", defaultDir: "asc" },
-        { field: "rating", defaultDir: "desc" },
-        { field: "favorites", defaultDir: "desc" },
-      ];
+  const isMultiCategory =
+    !selectedCategories.includes("all") && selectedCategories.length > 1;
+
+  const recipeSortOptions = useMemo(() => {
+    const base = onSaveRecipe
+      ? [
+          { field: "name", defaultDir: "asc" },
+          { field: "newest", defaultDir: "desc" },
+          { field: "prepTime", defaultDir: "asc" },
+          { field: "difficulty", defaultDir: "asc" },
+          { field: "rating", defaultDir: "desc" },
+          { field: "saved", defaultDir: "desc" },
+        ]
+      : [
+          { field: "name", defaultDir: "asc" },
+          { field: "newest", defaultDir: "desc" },
+          { field: "prepTime", defaultDir: "asc" },
+          { field: "difficulty", defaultDir: "asc" },
+          { field: "rating", defaultDir: "desc" },
+          { field: "favorites", defaultDir: "desc" },
+        ];
+    if (isMultiCategory) {
+      base.push({ field: "category", defaultDir: "asc", lockedDir: "asc" });
+    }
+    return base;
+  }, [onSaveRecipe, isMultiCategory]);
 
   useEffect(() => {
     const validFields = recipeSortOptions.map((o) => o.field);
@@ -684,7 +693,7 @@ function RecipesView({
       setSortField(defaultSortField);
       setSortDirection(defaultSortDirection);
     }
-  }, []);
+  }, [recipeSortOptions]);
 
   const handleRecipeSortChange = (field, direction) => {
     setSortField(field);
@@ -920,6 +929,7 @@ function RecipesView({
     selectedCount,
     selectedCategoryObjects,
     hasSelectedCategories,
+    isMultiCategory,
     currentUser,
     getGroupContacts,
     getTranslatedGroup,
