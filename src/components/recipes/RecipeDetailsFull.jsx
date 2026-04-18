@@ -12,6 +12,7 @@ import _headerClasses from "./recipe-details-full/details-header.module.css";
 import _imageClasses from "./recipe-details-full/details-image.module.css";
 import _bodyClasses from "./recipe-details-full/details-body.module.css";
 const classes = Object.assign({}, _bodyClasses, _headerClasses, _imageClasses);
+import { Share } from "@capacitor/share";
 import { useLanguage } from "../../context";
 import { parseIngredients, scaleIngredient } from "../../utils/ingredientUtils";
 import { Menu } from "lucide-react";
@@ -263,18 +264,16 @@ function RecipeDetailsFull({
   }, []);
 
   const handleShare = async () => {
-    const shareData = {
-      title: recipe.name,
-      text: `${recipe.name}\n\n${t("recipes", "ingredients")}:\n${(recipe.ingredients || []).join("\n")}\n\n${t("recipes", "instructions")}:\n${(recipe.instructions || []).join("\n")}`,
-    };
-    if (recipe.sourceUrl) {
-      shareData.url = recipe.sourceUrl;
-    }
+    const title = recipe.name;
+    const text = `${recipe.name}\n\n${t("recipes", "ingredients")}:\n${(recipe.ingredients || []).join("\n")}\n\n${t("recipes", "instructions")}:\n${(recipe.instructions || []).join("\n")}`;
+    const url = recipe.sourceUrl || undefined;
     try {
-      if (navigator.share) {
-        await navigator.share(shareData);
+      if (window.Capacitor?.isNativePlatform?.()) {
+        await Share.share({ title, text, url });
+      } else if (navigator.share) {
+        await navigator.share({ title, text, url });
       } else {
-        await navigator.clipboard.writeText(shareData.text);
+        await navigator.clipboard.writeText(text);
       }
     } catch (err) {
       if (err.name !== "AbortError") {

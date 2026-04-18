@@ -51,7 +51,7 @@ export default function SummaryStep() {
         <div className={classes.previewOverlay}>
           <div className={classes.previewCard}>
             <CloseButton
-              type="button"
+              type="circle"
               className={classes.previewCloseBtn}
               onClick={() => setShowPreview(false)}
             />
