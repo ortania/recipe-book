@@ -166,9 +166,24 @@ export const RecipeBookProvider = ({ children }) => {
           return;
         }
 
-        // Unblock the UI immediately using the basic Firebase user object.
-        // Full Firestore user data and recipes load in the background.
-        const basicUser = { uid: user.uid, email: user.email, displayName: user.displayName };
+        // Unblock the UI immediately. If we have cached user data, preserve
+        // entitlement fields (isAdmin, accessRole, plan, premiumUntil) so the
+        // user isn't temporarily treated as free while Firestore loads.
+        const cachedUser = SESSION_CACHE?.user;
+        const basicUser = {
+          uid: user.uid,
+          email: user.email,
+          displayName: user.displayName,
+          ...(cachedUser?.uid === user.uid
+            ? {
+                isAdmin: cachedUser.isAdmin,
+                accessRole: cachedUser.accessRole,
+                plan: cachedUser.plan,
+                premiumUntil: cachedUser.premiumUntil,
+                usage: cachedUser.usage,
+              }
+            : {}),
+        };
         setCurrentUser(basicUser);
         setIsAdmin(true);
         setIsLoggedIn(true);

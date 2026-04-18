@@ -61,3 +61,7 @@ Android run
 npx cap open android
 
 npm run build && npx cap sync android
+
+
+npm run build
+npx cap sync android
