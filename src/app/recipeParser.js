@@ -6,11 +6,51 @@ const CLOUD_FUNCTION_URL = import.meta.env.VITE_CLOUD_FETCH_URL;
 const CLOUD_FUNCTION_BROWSER_URL = import.meta.env.VITE_CLOUD_FETCH_BROWSER_URL;
 
 async function getAuthHeaders() {
-  const user = auth.currentUser;
+  let user = auth.currentUser;
+  // iOS Safari (ITP) sometimes has auth.currentUser still null briefly after
+  // page load even when the user IS signed in. Give it a short chance to settle
+  // so we don't silently fall back to the anonymous proxies.
+  if (!user) {
+    user = await new Promise((resolve) => {
+      let settled = false;
+      const finish = (u) => {
+        if (settled) return;
+        settled = true;
+        try { unsub(); } catch {}
+        resolve(u);
+      };
+      const unsub = auth.onAuthStateChanged((u) => finish(u));
+      setTimeout(() => finish(null), 1500);
+    });
+  }
   if (!user) return {};
-  const token = await user.getIdToken();
-  return { Authorization: `Bearer ${token}` };
+  try {
+    const token = await user.getIdToken();
+    return { Authorization: `Bearer ${token}` };
+  } catch {
+    return {};
+  }
 }
+
+/**
+ * Strip <script>, <style>, <noscript> from an HTML string before feeding it to
+ * DOMParser. JSON-LD scripts are preserved because we still parse them.
+ *
+ * Why: when Cloud Function auth fails (common on iPhone Safari due to ITP) we
+ * fall back to public proxies that return raw HTML. Without stripping, the DOM
+ * textContent ends up containing cookie/GDPR/analytics JS code, which then
+ * leaks into ingredients/instructions.
+ */
+const sanitizeHtml = (html) => {
+  if (!html || typeof html !== "string") return "";
+  return html
+    .replace(
+      /<script\b(?![^>]*application\/ld\+json)[\s\S]*?<\/script>/gi,
+      "",
+    )
+    .replace(/<style\b[\s\S]*?<\/style>/gi, "")
+    .replace(/<noscript\b[\s\S]*?<\/noscript>/gi, "");
+};
 
 const isBotBlocked = (html) => {
   const lower = html.toLowerCase();
@@ -161,7 +201,7 @@ const fetchWithProxy = async (url) => {
 const cleanHtml = (text) => {
   if (!text) return "";
   const tmp = document.createElement("div");
-  tmp.innerHTML = text;
+  tmp.innerHTML = sanitizeHtml(String(text));
   return tmp.textContent.replace(/\s+/g, " ").trim();
 };
 
@@ -336,7 +376,11 @@ export const parseRecipeFromUrl = async (url, options = {}) => {
     }
 
     const fetchResult = await fetchWithProxy(url);
-    const html = fetchResult.contents || "";
+    // Strip <script>/<style>/<noscript> client-side before any DOM parsing.
+    // Fixes iPhone Safari case where the auth token wasn't available and the
+    // public-proxy fallback returned raw HTML — otherwise DOM textContent
+    // leaks cookie/GDPR JS into ingredients.
+    const html = sanitizeHtml(fetchResult.contents || "");
     const serverCleanText = fetchResult.cleanText || "";
     const serverJsonLd = fetchResult.jsonLd || [];
     const serverOgImage = fetchResult.ogImage || "";

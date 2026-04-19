@@ -51,6 +51,11 @@ export default function UrlScreen() {
         placeholder="https://example.com/recipe/chocolate-cake"
         value={recipeUrl}
         onChange={(e) => setRecipeUrl(e.target.value)}
+        inputMode="url"
+        autoCapitalize="off"
+        autoCorrect="off"
+        spellCheck={false}
+        dir="ltr"
       />
 
       <label className={classes.fieldLabel}>

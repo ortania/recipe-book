@@ -1,4 +1,13 @@
+import { Filesystem, Directory } from "@capacitor/filesystem";
+import { Share } from "@capacitor/share";
+import { CapacitorHttp } from "@capacitor/core";
+import { Media } from "@capacitor-community/media";
+
 function loadImage(src) {
+  const isNative =
+    typeof window !== "undefined" &&
+    window.Capacitor?.isNativePlatform?.() === true;
+
   const proxyUrl = src.includes("firebasestorage.googleapis.com")
     ? src.replace("https://firebasestorage.googleapis.com", "/firebase-storage")
     : null;
@@ -29,6 +38,69 @@ function loadImage(src) {
     });
   }
 
+  function loadCrossOriginImg(url) {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = () => resolve(img);
+      img.onerror = reject;
+      img.src = url;
+    });
+  }
+
+  // On Capacitor / Android, browser fetch() and crossOrigin <img> are both
+  // subject to CORS. Recipes imported from arbitrary third-party sites will
+  // not have Access-Control-Allow-Origin headers, so both of those fail.
+  //
+  // CapacitorHttp performs requests from the native (Java/Kotlin) side, which
+  // is NOT subject to browser CORS. That's the only reliable way to pull an
+  // arbitrary image into a canvas on native. It returns the body as a base64
+  // string when responseType is "blob" / "arraybuffer".
+  if (isNative) {
+    const errors = [];
+
+    async function loadViaCapacitorHttp() {
+      const res = await CapacitorHttp.request({
+        method: "GET",
+        url: src,
+        responseType: "blob",
+      });
+      if (!res || res.status < 200 || res.status >= 300) {
+        throw new Error(`HTTP ${res?.status ?? "?"}`);
+      }
+      // Guess MIME from URL extension; JPEG is a safe default since the
+      // browser's <img> decodes any common image regardless of declared type.
+      const lower = src.split("?")[0].toLowerCase();
+      const mime = lower.endsWith(".png")
+        ? "image/png"
+        : lower.endsWith(".webp")
+          ? "image/webp"
+          : lower.endsWith(".gif")
+            ? "image/gif"
+            : "image/jpeg";
+      const dataUrl = `data:${mime};base64,${res.data}`;
+      return loadAsImg(dataUrl);
+    }
+
+    return loadViaCapacitorHttp()
+      .catch((e) => {
+        errors.push("CapacitorHttp: " + (e?.message || e));
+        return fetchAsDataUrl(src).then(loadAsImg);
+      })
+      .catch((e) => {
+        errors.push("fetch→dataURL: " + (e?.message || e));
+        return loadCrossOriginImg(src);
+      })
+      .catch((e) => {
+        errors.push("crossOrigin: " + (e?.message || e));
+        const err = new Error(
+          "All native image load attempts failed. " + errors.join(" | "),
+        );
+        err.attempts = errors;
+        throw err;
+      });
+  }
+
   // Dev image proxy: routes any URL through Vite's Node server (no CORS restriction)
   const devProxyUrl =
     typeof window !== "undefined" &&
@@ -56,13 +128,7 @@ function loadImage(src) {
       const cb = src.includes("?")
         ? `&_cb=${Date.now()}`
         : `?_cb=${Date.now()}`;
-      return new Promise((resolve, reject) => {
-        const img = new Image();
-        img.crossOrigin = "anonymous";
-        img.onload = () => resolve(img);
-        img.onerror = reject;
-        img.src = src + cb;
-      });
+      return loadCrossOriginImg(src + cb);
     });
 }
 
@@ -211,6 +277,10 @@ const THEME = {
 const FONT_FAMILY = '"Noto Sans Hebrew", sans-serif';
 
 export async function generateRecipeImage(recipe, t, language) {
+  const isNative =
+    typeof window !== "undefined" &&
+    window.Capacitor?.isNativePlatform?.() === true;
+
   const WIDTH = 1080;
   const PADDING = 60;
   const CONTENT_WIDTH = WIDTH - PADDING * 2;
@@ -238,17 +308,7 @@ export async function generateRecipeImage(recipe, t, language) {
   let loadedImg = null;
   if (recipeImageSrc) {
     try {
-      console.log(
-        "[ExportImage] Loading image:",
-        recipeImageSrc.substring(0, 80) + "...",
-      );
       loadedImg = await loadImage(recipeImageSrc);
-      console.log(
-        "[ExportImage] Image loaded successfully:",
-        loadedImg.width,
-        "x",
-        loadedImg.height,
-      );
     } catch (err) {
       console.warn("[ExportImage] Failed to load image:", err);
       loadedImg = null;
@@ -321,32 +381,76 @@ export async function generateRecipeImage(recipe, t, language) {
   }
   if (ingredientsArray.length === 0) totalHeight += LINE_HEIGHT;
 
-  // Instructions section
+  // Instructions section — keep per-item heights so we can truncate later
+  // if the total canvas would exceed the native height limit.
   totalHeight += 90; // section header + spacing
+  const instructionHeights = [];
   for (let i = 0; i < instructionsArray.length; i++) {
     const lines = wrapText(
       ctx,
       `${i + 1}. ${instructionsArray[i]}`,
       CONTENT_WIDTH - 20,
     );
-    totalHeight += lines.length * LINE_HEIGHT + 12;
+    const h = lines.length * LINE_HEIGHT + 12;
+    instructionHeights.push(h);
+    totalHeight += h;
   }
   if (instructionsArray.length === 0) totalHeight += LINE_HEIGHT;
 
   // Notes section
+  let notesHeight = 0;
   if (recipe.notes) {
-    totalHeight += 90; // divider + section header
     ctx.font = NOTES_FONT;
     const notesLines = wrapText(ctx, recipe.notes, CONTENT_WIDTH - 40);
-    totalHeight += notesLines.length * LINE_HEIGHT + 16;
-    totalHeight += 40; // extra bottom spacing after notes
+    // 90 header + 16 padding + 40 bottom spacing + text lines
+    notesHeight = 90 + notesLines.length * LINE_HEIGHT + 16 + 40;
+    totalHeight += notesHeight;
   }
 
   // Footer
   totalHeight += 80;
 
-  // Set final canvas height
-  canvas.height = totalHeight;
+  // ─── Native canvas sizing ───
+  //
+  // Earlier approach was to scale the whole canvas down to fit under an
+  // Android height limit. That made the image very narrow (scale 0.55 →
+  // 594 px wide) which looks terrible in the phone gallery.
+  //
+  // New approach: keep canvas at full 1080 px wide, no scaling. If the
+  // content would produce a canvas taller than the WebView can handle
+  // reliably, truncate trailing content (notes first, then instructions
+  // from the bottom) and show a "truncated" marker. Image, title, meta,
+  // and ALL ingredients are always kept.
+  const MAX_NATIVE_H = 4500; // safe upper bound for Android canvas export
+  const TRUNC_NOTICE_H = 60;
+  let truncated = false;
+  let skipNotes = false;
+  let keptInstructions = instructionsArray.length;
+
+  if (isNative && totalHeight > MAX_NATIVE_H) {
+    // Step 1: drop notes entirely if present.
+    if (notesHeight > 0) {
+      totalHeight -= notesHeight;
+      skipNotes = true;
+      truncated = true;
+    }
+    // Step 2: if still too tall, drop instructions from the end.
+    if (totalHeight + TRUNC_NOTICE_H > MAX_NATIVE_H) {
+      const target = MAX_NATIVE_H - TRUNC_NOTICE_H;
+      while (keptInstructions > 0 && totalHeight > target) {
+        keptInstructions -= 1;
+        totalHeight -= instructionHeights[keptInstructions];
+      }
+      truncated = true;
+    }
+    // Add space for the truncation notice we'll draw later.
+    if (truncated) {
+      totalHeight += TRUNC_NOTICE_H;
+    }
+  }
+
+  canvas.width = WIDTH;
+  canvas.height = Math.round(totalHeight);
 
   // ─── Direction ───
   ctx.direction = isRTL ? "rtl" : "ltr";
@@ -614,7 +718,13 @@ export async function generateRecipeImage(recipe, t, language) {
   ctx.font = BODY_FONT;
   if (instructionsArray.length > 0) {
     ctx.textBaseline = "middle";
-    for (let i = 0; i < instructionsArray.length; i++) {
+    // Render only the first `keptInstructions` items; the rest (if any)
+    // were dropped to keep the canvas under the native height limit.
+    const instructionCount = Math.min(
+      instructionsArray.length,
+      keptInstructions,
+    );
+    for (let i = 0; i < instructionCount; i++) {
       // Step number circle — centered with first text line
       const circleX = isRTL ? WIDTH - PADDING - 14 : PADDING + 14;
       ctx.fillStyle = THEME.accent;
@@ -652,7 +762,7 @@ export async function generateRecipeImage(recipe, t, language) {
   }
 
   // ─── Notes Section ───
-  if (recipe.notes) {
+  if (recipe.notes && !skipNotes) {
     y += 20;
     ctx.strokeStyle = THEME.divider;
     ctx.beginPath();
@@ -695,6 +805,39 @@ export async function generateRecipeImage(recipe, t, language) {
     y += notesBgHeight;
   }
 
+  // ─── Truncation notice ───
+  // Shown when the recipe was too long to fit in a native-safe canvas and
+  // we dropped notes / trailing instructions. Tells the user the image is
+  // a shortened version and full recipe lives in the app.
+  if (truncated) {
+    y += 20;
+    ctx.font = `500 18px ${FONT_FAMILY}`;
+    ctx.fillStyle = THEME.footerText;
+    ctx.textAlign = "center";
+    const droppedSteps = instructionsArray.length - keptInstructions;
+    const parts = [];
+    if (droppedSteps > 0) {
+      parts.push(
+        t
+          ? `${droppedSteps} ${t("recipes", "moreSteps") || "more steps"}`
+          : `${droppedSteps} more steps`,
+      );
+    }
+    if (skipNotes) {
+      parts.push(t ? t("recipes", "notes") || "notes" : "notes");
+    }
+    const suffix = parts.length > 0 ? ` (${parts.join(", ")})` : "";
+    ctx.fillText(
+      (t
+        ? t("recipes", "imageTruncatedSeeApp") ||
+          "Shortened for image export — see full recipe in the app"
+        : "Shortened for image export — see full recipe in the app") + suffix,
+      WIDTH / 2,
+      y,
+    );
+    y += 20;
+  }
+
   // ─── Footer ───
   y += 30;
   ctx.strokeStyle = THEME.divider;
@@ -712,17 +855,125 @@ export async function generateRecipeImage(recipe, t, language) {
   y += 40;
 
   // ─── Export ───
-  return new Promise((resolve) => {
-    canvas.toBlob((blob) => {
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${(recipe.name || "recipe").replace(/[^a-zA-Z0-9\u0590-\u05FF ]/g, "").trim()}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-      setTimeout(() => URL.revokeObjectURL(url), 1000);
-      resolve();
-    }, "image/png");
+  const safeName = (recipe.name || "recipe")
+    .replace(/[^a-zA-Z0-9\u0590-\u05FF ]/g, "")
+    .trim() || "recipe";
+  // On native we export JPEG — it's 5–10× smaller than PNG at the same visual
+  // quality, which makes the base64 round-trip (canvas → Blob → FileReader →
+  // Filesystem.writeFile) far more reliable on Android WebView. Web keeps PNG
+  // because browsers handle large PNGs fine and users may expect lossless.
+  const fileName = isNative ? `${safeName}.jpg` : `${safeName}.png`;
+
+  if (isNative) {
+    // On native we ONLY generate the image and write it to cache. The caller
+    // (ExportImageButton) then asks the user what to do with it —
+    // Save to Gallery or Share — so we never auto-hand-off to another app
+    // (which causes Android to kill our backgrounded process).
+    //
+    // NOTE: canvas.toDataURL() can truncate / corrupt the base64 output on
+    // large Android canvases. canvas.toBlob() + FileReader is more reliable.
+    const blob = await new Promise((resolve, reject) => {
+      canvas.toBlob(
+        (b) => (b ? resolve(b) : reject(new Error("toBlob returned null"))),
+        "image/jpeg",
+        0.92,
+      );
+    });
+
+    const base64 = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const result = String(reader.result || "");
+        const comma = result.indexOf(",");
+        resolve(comma >= 0 ? result.slice(comma + 1) : result);
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+
+    const { uri } = await Filesystem.writeFile({
+      path: fileName,
+      data: base64,
+      directory: Directory.Cache,
+    });
+
+    return { uri, fileName, safeName };
+  } else {
+    // Web path — unchanged
+    return new Promise((resolve) => {
+      canvas.toBlob((blob) => {
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        setTimeout(() => URL.revokeObjectURL(url), 1000);
+        resolve();
+      }, "image/png");
+    });
+  }
+}
+
+/**
+ * Save a file that was written by generateRecipeImage into the device Gallery
+ * (Photos / Pictures) using the @capacitor-community/media plugin.
+ * Native-only. On Android this creates/reuses a "CookiPal" album.
+ */
+export async function saveImageToGallery({ uri, safeName }) {
+  try {
+    await Media.createAlbum({ name: "CookiPal" });
+  } catch (_createErr) {
+    /* already exists or platform quirk; continue */
+  }
+
+  let albumIdentifier;
+  try {
+    const albumsPathRes =
+      typeof Media.getAlbumsPath === "function"
+        ? await Media.getAlbumsPath()
+        : null;
+    const albumsPath = albumsPathRes?.path || "";
+    const { albums } = await Media.getAlbums();
+    const ours = (albums || []).find(
+      (a) =>
+        a?.name === "CookiPal" &&
+        (!albumsPath || a?.identifier?.startsWith(albumsPath)),
+    );
+    albumIdentifier = ours?.identifier;
+  } catch (_getErr) {
+    /* ignore — will fail below with clearer message */
+  }
+
+  if (!albumIdentifier) {
+    throw new Error("Could not find or create CookiPal album");
+  }
+
+  await Media.savePhoto({
+    path: uri,
+    albumIdentifier,
+    fileName: safeName,
   });
+}
+
+/**
+ * Open the native share sheet for a file that was written by
+ * generateRecipeImage. Native-only.
+ * Returns { cancelled: true } if the user cancelled the share sheet.
+ */
+export async function shareImageFile({ uri, title, dialogTitle }) {
+  try {
+    await Share.share({
+      title: title || "Recipe",
+      dialogTitle: dialogTitle || "Export recipe",
+      files: [uri],
+    });
+    return { shared: true };
+  } catch (err) {
+    if (err?.message && /cancel/i.test(err.message)) {
+      return { cancelled: true };
+    }
+    throw err;
+  }
 }

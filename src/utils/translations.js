@@ -1307,6 +1307,13 @@ const translations = {
       de: "Als Bild exportieren",
       mixed: "Export to Image",
     },
+    savedToGallery: {
+      he: "✓ נשמר לגלריה",
+      en: "✓ Saved to Gallery",
+      ru: "✓ Сохранено",
+      de: "✓ Gespeichert",
+      mixed: "✓ נשמר לגלריה",
+    },
     generating: {
       he: "מייצר...",
       en: "Generating...",
@@ -1320,6 +1327,34 @@ const translations = {
       ru: "Экспорт как изображение",
       de: "Als Bild exportieren",
       mixed: "Export as image",
+    },
+    exportChoiceTitle: {
+      he: "איפה לשמור?",
+      en: "Where to save?",
+      ru: "Куда сохранить?",
+      de: "Wohin speichern?",
+      mixed: "Where to save?",
+    },
+    saveToGallery: {
+      he: "שמירה לגלריה",
+      en: "Save to Gallery",
+      ru: "Сохранить в галерею",
+      de: "In Galerie speichern",
+      mixed: "Save to Gallery",
+    },
+    shareImage: {
+      he: "שיתוף",
+      en: "Share",
+      ru: "Поделиться",
+      de: "Teilen",
+      mixed: "Share",
+    },
+    cancel: {
+      he: "ביטול",
+      en: "Cancel",
+      ru: "Отмена",
+      de: "Abbrechen",
+      mixed: "Cancel",
     },
     noIngredientsListed: {
       he: "לא נמצאו מרכיבים",
