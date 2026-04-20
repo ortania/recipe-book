@@ -1,5 +1,11 @@
 {
   "appId": "com.tania.cookipal",
   "appName": "CookiPal",
-  "webDir": "dist"
+  "webDir": "dist",
+  "plugins": {
+    "FirebaseAuthentication": {
+      "skipNativeAuth": false,
+      "providers": ["google.com"]
+    }
+  }
 }

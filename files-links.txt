@@ -58,10 +58,16 @@ Prompt To Cursor:
 Android run
 -----------
 
-npx cap open android
 
-npm run build && npx cap sync android
+# open android studio
+npx cap open android
 
 
 npm run build
 npx cap sync android
+
+ - App icon: green gradient background, white cooking pot with steam and a smile, in square/round/adaptive variants
+  - Splash screen: cream background, the rounded green icon centered, "CookiPal" in warm brown below
+
+  If you want to tweak the design (colors, shape, layout), just edit scripts/generate-assets.cjs and re-run node scripts/generate-assets.cjs  
+  && npx @capacitor/assets generate --android.

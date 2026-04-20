@@ -4,4 +4,5 @@
     <string name="title_activity_main">CookiPal</string>
     <string name="package_name">com.tania.cookipal</string>
     <string name="custom_url_scheme">com.tania.cookipal</string>
+    <string name="default_web_client_id">537500563579-tq8f9pib59qvrbvaf79dgks8idk5cj8g.apps.googleusercontent.com</string>
 </resources>

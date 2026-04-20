@@ -3,6 +3,7 @@ import {
   signInWithEmailAndPassword,
   signInWithPopup,
   signInWithRedirect,
+  signInWithCredential,
   GoogleAuthProvider,
   signOut,
   onAuthStateChanged,
@@ -11,6 +12,7 @@ import {
   browserLocalPersistence,
   browserSessionPersistence,
 } from "firebase/auth";
+import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 import {
   doc,
   setDoc,
@@ -91,6 +93,34 @@ export const ensureGoogleUserDoc = async (user) => {
 };
 
 export const signInWithGoogle = async () => {
+  const isNative =
+    typeof window !== "undefined" &&
+    window.Capacitor?.isNativePlatform?.() === true;
+
+  if (isNative) {
+    // Native Android/iOS: use the Capacitor Firebase plugin
+    try {
+      const result = await FirebaseAuthentication.signInWithGoogle();
+      const idToken = result.credential?.idToken;
+      if (!idToken) throw new Error("Google sign-in: no idToken returned");
+      const credential = GoogleAuthProvider.credential(idToken);
+      const userCredential = await signInWithCredential(auth, credential);
+      console.log("✅ Google sign-in (native):", userCredential.user.uid);
+      return userCredential.user;
+    } catch (error) {
+      if (
+        error.message?.includes("cancelled") ||
+        error.message?.includes("canceled") ||
+        error.code === "SIGN_IN_CANCELLED"
+      ) {
+        return null;
+      }
+      console.error("Error signing in with Google (native):", error);
+      throw error;
+    }
+  }
+
+  // Web: popup with redirect fallback
   try {
     await setPersistence(auth, browserLocalPersistence);
     const result = await signInWithPopup(auth, googleProvider);
