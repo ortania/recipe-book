@@ -364,3 +364,17 @@
   border: 1px solid var(--clr-success-200);
 }
 /* Note: .success keeps green tones as intentional success styling */
+
+.privacyLink {
+  text-align: center;
+  font-size: var(--basic-font);
+  color: var(--clr-link);
+  margin-top: 0.25rem;
+  font-weight: var(--link-font-weight);
+  text-decoration: underline;
+}
+
+.privacyLink:hover {
+  transform: var(--link-transform-hover);
+  color: var(--clr-link-hover);
+}

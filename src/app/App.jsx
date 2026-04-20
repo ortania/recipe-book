@@ -50,6 +50,7 @@ const SharerProfile = React.lazy(
 );
 const MigratePage = React.lazy(() => import("../pages/migrate"));
 const Repair = React.lazy(() => import("../pages/repair/Repair"));
+const PrivacyPolicy = React.lazy(() => import("../pages/privacy/PrivacyPolicy"));
 
 const SKELETON_WIDTHS = [70, 85, 60, 78, 65, 80, 72, 58, 82, 66, 75, 62];
 
@@ -602,6 +603,16 @@ function AppContent() {
           }
         />
       </Route>
+
+      {/* Public standalone pages */}
+      <Route
+        path="/privacy"
+        element={
+          <Lazy>
+            <PrivacyPolicy />
+          </Lazy>
+        }
+      />
 
       {/* Redirect unknown routes */}
       <Route

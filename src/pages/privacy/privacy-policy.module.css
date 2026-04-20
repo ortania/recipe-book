@@ -1,0 +1,124 @@
+.page {
+  min-height: 100vh;
+  background: var(--clr-bg-page);
+  padding: 2rem 1.6rem 4rem;
+  direction: rtl;
+  font-family: var(--font-primary);
+}
+
+.backRow {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-bottom: 1.6rem;
+}
+
+.backLabel {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+}
+
+.container {
+  max-width: 680px;
+  margin: 0 auto;
+  background: var(--clr-bg-card);
+  border-radius: 16px;
+  padding: 2.4rem 2rem 2.8rem;
+  box-shadow: var(--shadow-md);
+}
+
+.logoRow {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.logo {
+  font-size: 2.8rem;
+  font-weight: 400;
+  color: var(--clr-text-primary);
+  font-family: var(--font-primary);
+}
+
+.logoPal {
+  color: var(--clr-text-primary);
+  font-weight: var(--font-weight-heading);
+}
+
+.title {
+  font-size: var(--large-font);
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+  text-align: center;
+  margin: 0 0 0.4rem;
+  text-transform: none;
+}
+
+.date {
+  text-align: center;
+  color: var(--clr-text-primary);
+  font-size: var(--small-font);
+  margin-bottom: 2rem;
+}
+
+/* tip styling — matches tipBox from the app */
+.intro {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  background: var(--clr-tip-bg);
+  border-radius: var(--tip-border-radius);
+  border: 1px solid var(--clr-tip-border);
+  font-size: var(--basic-font);
+  color: var(--clr-tip-text);
+  line-height: 1.7;
+  margin-bottom: 2rem;
+}
+
+.section {
+  margin-bottom: 2rem;
+}
+
+.section h2 {
+  font-size: var(--basic-font);
+  font-weight: 700;
+  color: var(--clr-text-heading);
+  margin-bottom: 0.8rem;
+  padding-bottom: 0.4rem;
+  border-bottom: 1px solid var(--clr-border-light);
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.section p {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  line-height: 1.7;
+  margin: 0;
+}
+
+.section ul {
+  padding-right: 1.6rem;
+  padding-left: 0;
+  margin: 0;
+  list-style-type: disc;
+}
+
+.section li {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  margin-bottom: 0.6rem;
+  line-height: 1.7;
+}
+
+.email {
+  color: var(--clr-link);
+  font-weight: var(--link-font-weight);
+  text-decoration: underline;
+  transition: var(--transition-fast);
+}
+
+.email:hover {
+  color: var(--clr-link-hover);
+  transform: var(--link-transform-hover);
+}

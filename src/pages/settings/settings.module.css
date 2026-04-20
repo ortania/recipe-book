@@ -360,3 +360,20 @@
     padding: 1rem;
   }
 }
+
+.privacyRow {
+  text-align: center;
+  margin-top: 1.5rem;
+}
+
+.privacyLink {
+  font-size: var(--basic-font);
+  color: var(--clr-link);
+  text-decoration: underline;
+  font-weight: var(--link-font-weight);
+}
+
+.privacyLink:hover {
+  transform: var(--link-transform-hover);
+  color: var(--clr-link-hover);
+}

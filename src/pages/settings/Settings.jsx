@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { FiSun, FiMoon } from "react-icons/fi";
 import {
   Palette,
@@ -188,6 +188,12 @@ function Settings() {
             )}
           </div>
         ))}
+      </div>
+
+      <div className={classes.privacyRow}>
+        <Link to="/privacy" className={classes.privacyLink}>
+          Privacy Policy
+        </Link>
       </div>
 
       {openSetting === "language" && (

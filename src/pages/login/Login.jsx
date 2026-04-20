@@ -335,6 +335,15 @@ function Login() {
                   {t("auth", "signup")}
                 </span>
               </p>
+
+              <p className={classes.privacyLink}>
+                <span
+                  onClick={() => navigate("/privacy")}
+                  className={classes.link}
+                >
+                  Privacy Policy
+                </span>
+              </p>
             </form>
 
             <span
