@@ -1,40 +1,44 @@
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wdth,wght@75,400;75,500;75,600;75,700;75,800&display=swap");
+
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-}
-
-:root {
-  --clr-bg: #f5f4f0;
-  --clr-card: #ffffff;
-  --clr-border: #e4e0d8;
-  --clr-border-section: #ece8e0;
-  --clr-text-primary: #2c2a26;
-  --clr-text-secondary: #6b6560;
-  --clr-accent: #c0392b;
-  --clr-accent-light: #fdf3f2;
-  --clr-accent-border: #f0c5c0;
-  --clr-link: #c0392b;
-  --clr-link-hover: #96281b;
-  --clr-logo-pal: #c0392b;
-  --clr-footer-bg: #2c2a26;
-  --clr-footer-text: #ccc9c3;
-  --clr-footer-link: #e8b4af;
-  --shadow: 0 2px 16px rgba(0, 0, 0, 0.07);
-  --radius: 1rem;
-  --font: "Segoe UI", "Arial Hebrew", Arial, sans-serif;
+  font-family: "Noto Sans Hebrew", sans-serif;
+  font-stretch: condensed;
+  font-variation-settings: "wdth" 75;
 }
 
 html {
-  font-size: 16px;
+  font-size: 62.5%;
+}
+
+:root {
+  --clr-bg-page:     #f8f6f4;
+  --clr-bg-card:     #ffffff;
+  --clr-text-primary:  #4a453e;
+  --clr-text-secondary: #625c55;
+  --clr-text-heading:  #463737;
+  --clr-border-light:  #ddd9d4;
+  --clr-tip-bg:      #ebe3d7;
+  --clr-tip-border:  #d6c7b2;
+  --clr-tip-text:    #2f2b27;
+  --clr-link:        #9e3e2b;
+  --clr-link-hover:  #7a2c1e;
+  --shadow-md:       0 2px 8px rgba(0, 0, 0, 0.1);
+  --font-primary:    "Noto Sans Hebrew", sans-serif;
 }
 
 body {
   margin: 0;
   padding: 0;
-  background: var(--clr-bg);
-  font-family: var(--font);
+  background: var(--clr-bg-page);
+  font-family: var(--font-primary);
+  font-stretch: condensed;
+  font-size: 1.2rem;
+  font-weight: 400;
   color: var(--clr-text-primary);
+  line-height: 1.5;
   direction: rtl;
   min-height: 100vh;
   display: flex;
@@ -45,64 +49,68 @@ body {
 
 main {
   flex: 1;
-  padding: 2.5rem 1.25rem 4rem;
+  padding: 2rem 1.6rem 4rem;
 }
 
 .container {
-  max-width: 42rem;
+  max-width: 680px;
   margin: 0 auto;
-  background: var(--clr-card);
-  border-radius: var(--radius);
-  padding: 2.5rem 2rem 3rem;
-  box-shadow: var(--shadow);
+  background: var(--clr-bg-card);
+  border-radius: 16px;
+  padding: 2.4rem 2rem 2.8rem;
+  box-shadow: var(--shadow-md);
 }
 
 /* ── Logo ── */
 
 .logo-row {
   text-align: center;
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.2rem;
 }
 
 .logo {
-  font-size: 2.4rem;
+  font-size: 2.8rem;
   font-weight: 400;
   color: var(--clr-text-primary);
-  letter-spacing: -0.01em;
+  font-family: var(--font-primary);
 }
 
 .logo-pal {
-  color: var(--clr-logo-pal);
-  font-weight: 700;
+  color: var(--clr-text-primary);
+  font-weight: 600;
 }
 
-/* ── Header ── */
+/* ── Title ── */
 
 .page-title {
-  font-size: 1.5rem;
-  font-weight: 700;
+  font-size: 1.8rem;
+  font-weight: 600;
+  color: var(--clr-text-primary);
   text-align: center;
   margin: 0 0 0.4rem;
-  color: var(--clr-text-primary);
+  text-transform: none;
 }
 
 .page-subtitle {
   text-align: center;
-  font-size: 0.8rem;
-  color: var(--clr-text-secondary);
+  color: var(--clr-text-primary);
+  font-size: 1.4rem;
   margin: 0 0 2rem;
 }
 
 /* ── Intro box ── */
 
 .intro {
-  background: var(--clr-accent-light);
-  border: 1px solid var(--clr-accent-border);
-  border-radius: 0.6rem;
-  padding: 0.9rem 1.1rem;
-  font-size: 0.95rem;
-  line-height: 1.75;
-  color: var(--clr-text-primary);
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.8rem 1rem;
+  background: var(--clr-tip-bg);
+  border-radius: 12px;
+  border: 1px solid var(--clr-tip-border);
+  font-size: 1.6rem;
+  color: var(--clr-tip-text);
+  line-height: 1.7;
   margin-bottom: 2rem;
 }
 
@@ -113,66 +121,44 @@ main {
 }
 
 .section h2 {
-  font-size: 1rem;
+  font-size: 1.6rem;
   font-weight: 700;
-  color: var(--clr-text-primary);
-  margin: 0 0 0.75rem;
+  color: var(--clr-text-heading);
+  margin: 0 0 0.8rem;
   padding-bottom: 0.4rem;
-  border-bottom: 1px solid var(--clr-border-section);
+  border-bottom: 1px solid var(--clr-border-light);
+  text-transform: none;
+  letter-spacing: 0;
 }
 
 .section p {
-  font-size: 0.95rem;
-  line-height: 1.75;
+  font-size: 1.6rem;
   color: var(--clr-text-primary);
-  margin: 0;
-}
-
-.section p + p {
-  margin-top: 0.75rem;
-}
-
-/* ── Steps list ── */
-
-.steps {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.steps li {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.75rem;
-  font-size: 0.95rem;
   line-height: 1.7;
+  margin: 0;
+}
+
+.section ul {
+  padding-right: 1.6rem;
+  padding-left: 0;
+  margin: 0;
+  list-style-type: disc;
+}
+
+.section li {
+  font-size: 1.6rem;
   color: var(--clr-text-primary);
+  margin-bottom: 0.6rem;
+  line-height: 1.7;
 }
 
-.step-num {
-  flex-shrink: 0;
-  width: 1.6rem;
-  height: 1.6rem;
-  border-radius: 50%;
-  background: var(--clr-accent);
-  color: #fff;
-  font-size: 0.78rem;
-  font-weight: 700;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-top: 0.15rem;
-}
-
-/* ── Link ── */
+/* ── Links ── */
 
 a {
   color: var(--clr-link);
-  font-weight: 600;
+  font-weight: 500;
   text-decoration: underline;
+  transition: all 0.15s ease;
 }
 
 a:hover {
@@ -182,22 +168,26 @@ a:hover {
 /* ── Footer ── */
 
 footer {
-  background: var(--clr-footer-bg);
-  color: var(--clr-footer-text);
+  background: var(--clr-bg-card);
+  border-top: 1px solid var(--clr-border-light);
+  color: var(--clr-text-secondary);
   text-align: center;
-  padding: 1.25rem 1rem;
-  font-size: 0.85rem;
-  line-height: 1.7;
+  padding: 1.4rem 1rem;
+  font-size: 1.4rem;
+  font-family: var(--font-primary);
+}
+
+footer p {
+  margin: 0;
 }
 
 footer a {
-  color: var(--clr-footer-link);
-  text-decoration: underline;
-  font-weight: 400;
+  color: var(--clr-link);
+  font-weight: 500;
 }
 
 footer a:hover {
-  color: #fff;
+  color: var(--clr-link-hover);
 }
 
 /* ── Responsive ── */
@@ -205,13 +195,5 @@ footer a:hover {
 @media (max-width: 480px) {
   .container {
     padding: 1.75rem 1.25rem 2.25rem;
-  }
-
-  .logo {
-    font-size: 2rem;
-  }
-
-  .page-title {
-    font-size: 1.25rem;
   }
 }
