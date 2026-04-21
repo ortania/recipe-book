@@ -17,7 +17,7 @@ import {
   fetchGlobalRecipesCount,
   searchCommunityRecipes,
 } from "../../firebase/globalRecipeService";
-import { useRecipeBook, useLanguage } from "../../context";
+import { useRecipeBook, useLanguage, useBlockedUsers } from "../../context";
 import { useMealPlanner } from "../../hooks/useMealPlanner";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import { SearchBox } from "../../components/controls/search";
@@ -385,6 +385,7 @@ function MealPickerWrapper({
 }) {
   const navigate = useNavigate();
   const { getTranslated } = useTranslatedList(categories, "name");
+  const { blockedUserIds } = useBlockedUsers();
   const [selectedMeal, setSelectedMeal] = useState(picker.meal);
   const [selectedCat, setSelectedCat] = useState(picker._savedCat || null);
   const [search, setSearch] = useState(picker._savedSearch || "");
@@ -406,9 +407,17 @@ function MealPickerWrapper({
       .finally(() => setLoadingGlobal(false));
   }, [selectedCat, currentUserId, globalRecipes.length]);
 
+  const visibleGlobalRecipes = useMemo(
+    () =>
+      blockedUserIds.size === 0
+        ? globalRecipes
+        : globalRecipes.filter((r) => !blockedUserIds.has(r.userId)),
+    [globalRecipes, blockedUserIds],
+  );
+
   const getRecipesForCat = (catId) => {
     if (catId === "all") return recipes;
-    if (catId === "global") return globalRecipes;
+    if (catId === "global") return visibleGlobalRecipes;
     if (catId === "general")
       return recipes.filter((r) => !r.categories || r.categories.length === 0);
     return recipes.filter((r) => r.categories && r.categories.includes(catId));

@@ -5,7 +5,7 @@ import { PiArrowFatLineUp } from "react-icons/pi";
 import { IoCopyOutline, IoSearchOutline } from "react-icons/io5";
 import { IoMdStarOutline } from "react-icons/io";
 import { BsGrid3X3Gap } from "react-icons/bs";
-import { useRecipeBook, useLanguage } from "../../context";
+import { useRecipeBook, useLanguage, useBlockedUsers } from "../../context";
 import { copyRecipeToUser } from "../../firebase/globalRecipeService";
 import {
   getUserRatingsBatch,
@@ -21,14 +21,23 @@ function GlobalRecipes() {
   useScrollRestore("globalRecipes");
   const { t, language } = useLanguage();
   const { currentUser, addRecipe, setRecipes, categories } = useRecipeBook();
+  const { blockedUserIds } = useBlockedUsers();
 
   const {
-    allRecipes,
+    allRecipes: allRecipesRaw,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
     isLoading,
   } = useGlobalRecipes(currentUser?.uid);
+
+  const allRecipes = useMemo(
+    () =>
+      blockedUserIds.size === 0
+        ? allRecipesRaw
+        : allRecipesRaw.filter((r) => !blockedUserIds.has(r.userId)),
+    [allRecipesRaw, blockedUserIds],
+  );
 
   const [savedRecipeIds, setSavedRecipeIds] = useState(() => {
     try {

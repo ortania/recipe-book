@@ -6,6 +6,13 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if request.auth != null;
       allow write: if request.auth != null && request.auth.uid == userId;
+
+      // Blocked-users subcollection: strictly private to the owner.
+      // Each doc id IS the blocked user's uid.
+      match /blockedUsers/{blockedUserId} {
+        allow read, write: if request.auth != null
+                           && request.auth.uid == userId;
+      }
     }
 
     // Recipes: any logged-in user can read & create (create needed for copy-to-user), only owner can update/delete
@@ -61,6 +68,17 @@ service cloud.firestore {
       allow read: if request.auth != null;
       allow write: if request.auth != null
                    && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+    // Community reports: any logged-in user can create a report scoped to
+    // their own uid. Reports are write-only from clients; only admins (via
+    // Cloud Functions / Firebase console) can read or moderate them.
+    match /communityReports/{reportId} {
+      allow create: if request.auth != null
+                    && request.resource.data.reporterUserId == request.auth.uid
+                    && request.resource.data.reason in
+                       ['offensive','infringement','misleading','spam','other'];
+      allow read, update, delete: if false;
     }
   }
 }

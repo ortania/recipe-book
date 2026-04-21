@@ -5,9 +5,12 @@ import RecipeDetailsCookingMode from "../../components/recipes/RecipeDetailsCook
 import { EditRecipe } from "../../components/forms/edit-recipe";
 import { BackButton } from "../../components/controls/back-button";
 import { Toast } from "../../components/controls";
-import { CircleCheck } from "lucide-react";
+import { CircleCheck, Flag } from "lucide-react";
+import { ReportRecipeDialog } from "../../components/forms/report-recipe-dialog";
+import { ConfirmDialog } from "../../components/forms/confirm-dialog";
+import { reportCommunityRecipe } from "../../firebase/moderationService";
 import { useRecipeBook } from "../../context/RecipesBookContext";
-import { useLanguage } from "../../context";
+import { useLanguage, useBlockedUsers } from "../../context";
 import { FEATURES } from "../../config/entitlements";
 import useEntitlements from "../../hooks/useEntitlements";
 import { PremiumFeaturePopup } from "../../components/premium-popup";
@@ -148,6 +151,11 @@ function RecipeDetailsPage() {
     setEditingRecipe(null);
   }, []);
   const [premiumPopup, setPremiumPopup] = useState(false);
+  const [reportDialogOpen, setReportDialogOpen] = useState(false);
+  const [reportToastOpen, setReportToastOpen] = useState(false);
+  const [blockConfirmOpen, setBlockConfirmOpen] = useState(false);
+  const [blocking, setBlocking] = useState(false);
+  const { blockUser: blockUserAction } = useBlockedUsers();
   const [detailActiveTab, setDetailActiveTab] = useState("ingredients");
   const [servings, setServings] = useState(recipe?.servings || 4);
 
@@ -265,6 +273,36 @@ function RecipeDetailsPage() {
 
   const handleToggleFavorite = (rec) => {
     editRecipe({ ...rec, isFavorite: !rec.isFavorite });
+  };
+
+  const handleOpenReport = () => setReportDialogOpen(true);
+
+  const handleSubmitReport = async ({ reason, details }) => {
+    if (!recipe || !currentUser) return;
+    await reportCommunityRecipe({
+      recipeId: recipe.id,
+      recipeOwnerId: recipe.userId || "",
+      reporterUserId: currentUser.uid,
+      reason,
+      details,
+    });
+    setReportDialogOpen(false);
+    setReportToastOpen(true);
+  };
+
+  const handleOpenBlock = () => setBlockConfirmOpen(true);
+
+  const handleConfirmBlock = async () => {
+    if (!recipe || !currentUser || !recipe.userId || blocking) return;
+    setBlocking(true);
+    try {
+      await blockUserAction(recipe.userId);
+    } catch (err) {
+      // Toast is shown by BlockedUsersProvider.
+    } finally {
+      setBlockConfirmOpen(false);
+      setBlocking(false);
+    }
   };
 
   const handleDuplicate = async () => {
@@ -415,6 +453,14 @@ function RecipeDetailsPage() {
               }
             : undefined
         }
+        onReport={
+          isGlobalRecipe && currentUser ? handleOpenReport : undefined
+        }
+        onBlockUser={
+          isGlobalRecipe && currentUser && recipe?.userId
+            ? handleOpenBlock
+            : undefined
+        }
         currentUserId={currentUser?.uid}
         onToggleFavorite={isOwner ? handleToggleFavorite : undefined}
         onRate={
@@ -450,6 +496,39 @@ function RecipeDetailsPage() {
         <CircleCheck size={18} aria-hidden />
         <span>{t("recipes", "saved")}</span>
       </Toast>
+
+      {reportDialogOpen && (
+        <ReportRecipeDialog
+          onSubmit={handleSubmitReport}
+          onClose={() => setReportDialogOpen(false)}
+        />
+      )}
+
+      <Toast
+        open={reportToastOpen}
+        onClose={() => setReportToastOpen(false)}
+        variant="success"
+      >
+        <Flag size={18} aria-hidden />
+        <span>{t("report", "reportSent")}</span>
+      </Toast>
+
+      {blockConfirmOpen && (
+        <ConfirmDialog
+          title={t("blockedUsers", "blockConfirmTitle")}
+          message={t("blockedUsers", "blockConfirmMessage")}
+          confirmText={
+            blocking
+              ? t("blockedUsers", "blocking")
+              : t("blockedUsers", "blockConfirm")
+          }
+          cancelText={t("common", "cancel")}
+          onConfirm={handleConfirmBlock}
+          onCancel={() => {
+            if (!blocking) setBlockConfirmOpen(false);
+          }}
+        />
+      )}
       <PremiumFeaturePopup
         open={premiumPopup}
         onClose={() => setPremiumPopup(false)}

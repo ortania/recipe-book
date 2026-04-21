@@ -10,10 +10,12 @@ import {
   UserCog,
   LogOut,
   Trash2,
+  UserX,
 } from "lucide-react";
 import { applyFontScale } from "../../utils/applyFontScale";
 import { getStoredTheme, applyTheme } from "../../utils/theme";
-import { useLanguage, useRecipeBook } from "../../context";
+import { useLanguage, useRecipeBook, useBlockedUsers } from "../../context";
+import { BlockedUsersPanel } from "../../components/forms/blocked-users-panel";
 import {
   updateUserProfile,
   getPrimaryAuthProvider,
@@ -33,6 +35,7 @@ const STEP = 0.1;
 function Settings() {
   const { language, setLanguage, t } = useLanguage();
   const { currentUser, logout } = useRecipeBook();
+  const { blockedUsersList } = useBlockedUsers();
   const navigate = useNavigate();
   const [openSetting, setOpenSetting] = useState(null);
 
@@ -166,6 +169,15 @@ function Settings() {
         : t("settings", "privateProfileLabel"),
     },
     {
+      id: "blockedUsers",
+      icon: <UserX size={20} />,
+      label: t("blockedUsers", "sectionTitle"),
+      value:
+        blockedUsersList.length > 0
+          ? `${blockedUsersList.length}`
+          : t("blockedUsers", "none"),
+    },
+    {
       id: "account",
       icon: <UserCog size={20} />,
       label: t("settings", "account"),
@@ -267,6 +279,13 @@ function Settings() {
                 </label>
               </div>
             )}
+
+            {openSetting === "blockedUsers" &&
+              item.id === "blockedUsers" && (
+                <div className={classes.expandedPanel}>
+                  <BlockedUsersPanel />
+                </div>
+              )}
 
             {openSetting === "account" && item.id === "account" && (
               <div className={classes.expandedPanel}>
@@ -454,6 +473,7 @@ function Settings() {
           </div>
         </Modal>
       )}
+
     </div>
   );
 }

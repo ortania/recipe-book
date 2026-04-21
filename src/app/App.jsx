@@ -18,6 +18,7 @@ import {
   RecipeBookProvider,
   useRecipeBook,
   LanguageProvider,
+  BlockedUsersProvider,
 } from "../context";
 import { auth } from "../firebase/config";
 import { ErrorBoundary } from "../components/error-boundary";
@@ -454,9 +455,11 @@ function App() {
           highlightColor="var(--clr-bg-hover)"
         >
           <RecipeBookProvider>
-            <Router>
-              <AppContent />
-            </Router>
+            <BlockedUsersProvider>
+              <Router>
+                <AppContent />
+              </Router>
+            </BlockedUsersProvider>
           </RecipeBookProvider>
         </SkeletonTheme>
       </LanguageProvider>

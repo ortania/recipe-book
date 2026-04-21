@@ -1,6 +1,6 @@
 import {
   EllipsisVertical, FilePenLine, Link, Files, Forward,
-  Printer, Trash2, Heart, Share2, MonitorSmartphone, ChefHat, GitBranch, Copy,
+  Printer, Trash2, Heart, Share2, MonitorSmartphone, ChefHat, GitBranch, Copy, Flag, UserX,
 } from "lucide-react";
 import { ExportImageButton } from "../export-image-button";
 import { useRecipeDetails } from "../RecipeDetailsContext";
@@ -10,7 +10,7 @@ export default function RecipeActionBar() {
     actionBarRef,
     moreMenuRef, showMoreMenu, setShowMoreMenu, copyToMySuccess,
     onEdit, recipe, onDuplicate, onCreateVariation, onCopyRecipe, handleCopyClick,
-    onCopyToMyRecipes, setCopyToMySuccess, onDelete, handleDeleteClick,
+    onCopyToMyRecipes, setCopyToMySuccess, onReport, onBlockUser, onDelete, handleDeleteClick,
     onToggleFavorite, handleShare, wakeLockWrapperRef, wakeLockActive,
     toggleWakeLock, wakeLockToast, onEnterCookingMode,
     variations, onShowVariations,
@@ -173,6 +173,38 @@ export default function RecipeActionBar() {
                     <Printer size={18} />
                   </span>
                 </button>
+                {onReport && (
+                  <button
+                    className={classes.moreMenuItem}
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      onReport();
+                    }}
+                  >
+                    <span className={classes.moreMenuLabel}>
+                      {t("report", "reportRecipe")}
+                    </span>
+                    <span className={classes.moreMenuIcon}>
+                      <Flag size={18} />
+                    </span>
+                  </button>
+                )}
+                {onBlockUser && (
+                  <button
+                    className={classes.moreMenuItem}
+                    onClick={() => {
+                      setShowMoreMenu(false);
+                      onBlockUser();
+                    }}
+                  >
+                    <span className={classes.moreMenuLabel}>
+                      {t("blockedUsers", "blockUser")}
+                    </span>
+                    <span className={classes.moreMenuIcon}>
+                      <UserX size={18} />
+                    </span>
+                  </button>
+                )}
                 {onDelete && (
                   <button
                     className={`${classes.moreMenuItem} ${classes.moreMenuItemDanger}`}

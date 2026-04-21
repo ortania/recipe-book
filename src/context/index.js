@@ -2,6 +2,10 @@ import { RecipeBookProvider, useRecipeBook } from "./RecipesBookContext";
 import { LanguageProvider, useLanguage } from "./LanguageContext";
 import { RadioProvider, useRadio } from "./RadioContext";
 import { TimerProvider, useTimers } from "./TimerContext";
+import {
+  BlockedUsersProvider,
+  useBlockedUsers,
+} from "./BlockedUsersContext";
 
 export {
   RecipeBookProvider,
@@ -12,4 +16,6 @@ export {
   useRadio,
   TimerProvider,
   useTimers,
+  BlockedUsersProvider,
+  useBlockedUsers,
 };

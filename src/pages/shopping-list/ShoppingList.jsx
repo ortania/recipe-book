@@ -5,7 +5,7 @@ import { Globe, Trash2 } from "lucide-react";
 import SearchBox from "../../components/controls/search/SearchBox";
 import { SortButton } from "../../components/controls/sort-button";
 import { search } from "../../components/recipes/utils";
-import { useRecipeBook, useLanguage } from "../../context";
+import { useRecipeBook, useLanguage, useBlockedUsers } from "../../context";
 import {
   searchCommunityRecipes,
   fetchGlobalRecipesCount,
@@ -29,6 +29,7 @@ const DEBOUNCE_MS = 1500;
 function ShoppingList() {
   const { t } = useLanguage();
   const { recipes, categories, currentUser } = useRecipeBook();
+  const { blockedUserIds } = useBlockedUsers();
   const { getTranslated } = useTranslatedList(categories, "name");
   const [selectedRecipes, setSelectedRecipes] = useState([]);
   const [selectedCat, setSelectedCat] = useState(null);
@@ -148,6 +149,14 @@ function ShoppingList() {
       return recipes.filter((r) => !r.categories || r.categories.length === 0);
     return recipes.filter((r) => r.categories && r.categories.includes(catId));
   };
+
+  const visibleGlobalRecipes = useMemo(
+    () =>
+      blockedUserIds.size === 0
+        ? globalRecipes
+        : globalRecipes.filter((r) => !blockedUserIds.has(r.userId)),
+    [globalRecipes, blockedUserIds],
+  );
 
   const allAvailableRecipes = useMemo(() => {
     const map = new Map(recipes.map((r) => [r.id, r]));
@@ -452,7 +461,7 @@ function ShoppingList() {
                 {selectedCat === "community"
                   ? loadingGlobal
                     ? ""
-                    : `${globalRecipes.length} ${t("recipesView", "recipesCount")}`
+                    : `${visibleGlobalRecipes.length} ${t("recipesView", "recipesCount")}`
                   : `${getRecipesForCat(selectedCat).length} ${t("recipesView", "recipesCount")}`}
               </span>
             </div>
@@ -494,7 +503,7 @@ function ShoppingList() {
               <div className={classes.recipeList}>
                 {search(
                   selectedCat === "community"
-                    ? globalRecipes
+                    ? visibleGlobalRecipes
                     : getRecipesForCat(selectedCat),
                   folderSearch,
                   sortField,

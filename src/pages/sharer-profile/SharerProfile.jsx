@@ -3,7 +3,7 @@ import { createPortal } from "react-dom";
 import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { UserPlus, UserCheck } from "lucide-react";
 import { BackButton } from "../../components/controls/back-button";
-import { useRecipeBook, useLanguage } from "../../context";
+import { useRecipeBook, useLanguage, useBlockedUsers } from "../../context";
 import useTranslatedList from "../../hooks/useTranslatedList";
 import {
   fetchSharerRecipes,
@@ -23,6 +23,8 @@ function SharerProfile() {
   const location = useLocation();
   const { t, language } = useLanguage();
   const { currentUser, setCurrentUser, setRecipes } = useRecipeBook();
+  const { blockedUserIds } = useBlockedUsers();
+  const isSharerBlocked = blockedUserIds.has(sharerUserId);
 
   useScrollRestore(`sharerProfile-${sharerUserId}`);
 
@@ -140,8 +142,11 @@ function SharerProfile() {
   );
 
   const recipesWithoutSharer = useMemo(
-    () => recipes.map(({ sharerName, ...rest }) => rest),
-    [recipes],
+    () =>
+      isSharerBlocked
+        ? []
+        : recipes.map(({ sharerName, ...rest }) => rest),
+    [recipes, isSharerBlocked],
   );
 
   const toggleCategory = useCallback((categoryId) => {
