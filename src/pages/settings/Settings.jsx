@@ -332,6 +332,10 @@ function Settings() {
         <Link to="/terms" className={classes.privacyLink}>
           תנאי שימוש
         </Link>
+        <span className={classes.privacySep}>·</span>
+        <Link to="/delete-account" className={classes.privacyLink}>
+          מחיקת חשבון
+        </Link>
       </div>
 
       {openSetting === "language" && (
