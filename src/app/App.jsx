@@ -51,6 +51,7 @@ const SharerProfile = React.lazy(
 const MigratePage = React.lazy(() => import("../pages/migrate"));
 const Repair = React.lazy(() => import("../pages/repair/Repair"));
 const PrivacyPolicy = React.lazy(() => import("../pages/privacy/PrivacyPolicy"));
+const TermsOfService = React.lazy(() => import("../pages/terms/TermsOfService"));
 
 const SKELETON_WIDTHS = [70, 85, 60, 78, 65, 80, 72, 58, 82, 66, 75, 62];
 
@@ -610,6 +611,14 @@ function AppContent() {
         element={
           <Lazy>
             <PrivacyPolicy />
+          </Lazy>
+        }
+      />
+      <Route
+        path="/terms"
+        element={
+          <Lazy>
+            <TermsOfService />
           </Lazy>
         }
       />

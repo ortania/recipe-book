@@ -377,3 +377,8 @@
   transform: var(--link-transform-hover);
   color: var(--clr-link-hover);
 }
+
+.privacySep {
+  color: var(--clr-text-muted);
+  font-size: 0.8rem;
+}

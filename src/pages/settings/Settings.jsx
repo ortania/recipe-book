@@ -110,7 +110,9 @@ function Settings() {
         {settingItems.map((item) => (
           <div key={item.id}>
             <button
-              className={`${classes.settingItem} ${openSetting === item.id ? classes.settingItemOpen : ""}`}
+              className={`${classes.settingItem} ${
+                openSetting === item.id ? classes.settingItemOpen : ""
+              }`}
               onClick={() =>
                 setOpenSetting(openSetting === item.id ? null : item.id)
               }
@@ -121,7 +123,9 @@ function Settings() {
                 <span className={classes.settingItemValue}>{item.value}</span>
               </span>
               <ChevronDown
-                className={`${classes.settingItemChevron} ${openSetting === item.id ? classes.chevronOpen : ""}`}
+                className={`${classes.settingItemChevron} ${
+                  openSetting === item.id ? classes.chevronOpen : ""
+                }`}
                 size={20}
               />
             </button>
@@ -192,7 +196,11 @@ function Settings() {
 
       <div className={classes.privacyRow}>
         <Link to="/privacy" className={classes.privacyLink}>
-          Privacy Policy
+          מדיניות פרטיות
+        </Link>
+        <span className={classes.privacySep}>·</span>
+        <Link to="/terms" className={classes.privacyLink}>
+          תנאי שימוש
         </Link>
       </div>
 
@@ -232,14 +240,18 @@ function Settings() {
           <div className={classes.modalBody}>
             <div className={classes.themeToggle}>
               <button
-                className={`${classes.themeBtn} ${theme === "light" ? classes.themeBtnActive : ""}`}
+                className={`${classes.themeBtn} ${
+                  theme === "light" ? classes.themeBtnActive : ""
+                }`}
                 onClick={() => handleThemeChange("light")}
               >
                 <FiSun />
                 <span>{t("settings", "lightMode")}</span>
               </button>
               <button
-                className={`${classes.themeBtn} ${theme === "dark" ? classes.themeBtnActive : ""}`}
+                className={`${classes.themeBtn} ${
+                  theme === "dark" ? classes.themeBtnActive : ""
+                }`}
                 onClick={() => handleThemeChange("dark")}
               >
                 <FiMoon />

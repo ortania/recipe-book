@@ -341,7 +341,14 @@ function Login() {
                   onClick={() => navigate("/privacy")}
                   className={classes.link}
                 >
-                  Privacy Policy
+                  מדיניות פרטיות
+                </span>
+                {" · "}
+                <span
+                  onClick={() => navigate("/terms")}
+                  className={classes.link}
+                >
+                  תנאי שימוש
                 </span>
               </p>
             </form>
