@@ -367,14 +367,18 @@
 
 .privacyLink {
   text-align: center;
-  font-size: var(--basic-font);
-  color: var(--clr-link);
+
   margin-top: 0.25rem;
   font-weight: var(--link-font-weight);
+}
+
+.privacyLink span {
+  font-size: var(--basic-font);
+  color: var(--clr-link);
   text-decoration: underline;
 }
 
-.privacyLink:hover {
+.privacyLink span:hover {
   transform: var(--link-transform-hover);
   color: var(--clr-link-hover);
 }

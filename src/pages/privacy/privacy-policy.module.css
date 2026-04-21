@@ -97,6 +97,13 @@
   margin: 0;
 }
 
+.subheading {
+  font-size: var(--basic-font);
+  font-weight: 700;
+  color: var(--clr-text-secondary);
+  margin: 1rem 0 0.4rem;
+}
+
 .section ul {
   padding-right: 1.6rem;
   padding-left: 0;

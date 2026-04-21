@@ -334,6 +334,143 @@
   margin-top: 0.5rem;
 }
 
+/* ===== Account section ===== */
+.accountInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.25rem 0 1rem;
+  border-bottom: 1px solid var(--clr-border-light);
+  margin-bottom: 1rem;
+}
+
+.accountInfoLabel {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+}
+
+.accountInfoEmail {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  font-weight: var(--font-weight-heading);
+  word-break: break-all;
+}
+
+.accountActions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.accountBtn {
+  width: 100%;
+  padding: 0.85em 1.2em;
+  border-radius: 10px;
+  border: 1px solid var(--clr-border-light);
+  background: var(--clr-bg-secondary);
+  color: var(--clr-text-primary);
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  cursor: pointer;
+  transition: var(--transition);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.accountBtn:hover {
+  background: var(--clr-bg-hover);
+  border-color: var(--clr-border-accent-primary);
+}
+
+.accountBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.accountBtnDanger {
+  background: var(--clr-danger-100);
+  border: 1px solid var(--clr-danger-600);
+  color: var(--clr-danger-600);
+}
+
+.accountBtnDanger:hover {
+  background: var(--clr-danger-600);
+  border-color: var(--clr-danger-600);
+  color: var(--clr-white);
+}
+
+.accountDivider {
+  height: 1px;
+  background: var(--clr-border-light);
+  margin: 0.25rem 0;
+}
+
+/* ===== Delete-account modal ===== */
+.deleteModalBody {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.deleteWarning {
+  font-size: var(--basic-font);
+  color: var(--clr-text-primary);
+  line-height: 1.5;
+  margin: 0;
+}
+
+.deleteHint {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+  margin: 0;
+}
+
+.deleteField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.deleteFieldLabel {
+  font-size: var(--small-font);
+  color: var(--clr-text-muted);
+}
+
+.deleteInput {
+  padding: 0.7em 0.9em;
+  border: 1px solid var(--clr-input-border);
+  border-radius: 10px;
+  font-size: var(--basic-font);
+  outline: none;
+  transition: var(--transition);
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--clr-input-bg);
+  color: var(--clr-text-primary);
+}
+
+.deleteInput:focus {
+  border-color: var(--clr-danger-600);
+}
+
+.deleteError {
+  font-size: var(--small-font);
+  color: var(--clr-danger-600);
+  margin: 0;
+}
+
+.deleteActions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.deleteActions > button {
+  flex: 1;
+}
+
 @media (max-width: 768px) {
   .settingsPage {
     position: fixed;
@@ -362,7 +499,9 @@
 }
 
 .privacyRow {
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
   margin-top: 1.5rem;
 }
 

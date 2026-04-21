@@ -7,11 +7,18 @@ import {
   ShieldCheck,
   Globe,
   ChevronDown,
+  UserCog,
+  LogOut,
+  Trash2,
 } from "lucide-react";
 import { applyFontScale } from "../../utils/applyFontScale";
 import { getStoredTheme, applyTheme } from "../../utils/theme";
 import { useLanguage, useRecipeBook } from "../../context";
-import { updateUserProfile } from "../../firebase/authService";
+import {
+  updateUserProfile,
+  getPrimaryAuthProvider,
+  deleteAccount,
+} from "../../firebase/authService";
 import { CloseButton } from "../../components/controls/close-button";
 import { Modal } from "../../components/modal";
 import { LANGUAGES, RTL_LANGUAGES } from "../../utils/translations";
@@ -25,9 +32,15 @@ const STEP = 0.1;
 
 function Settings() {
   const { language, setLanguage, t } = useLanguage();
-  const { currentUser } = useRecipeBook();
+  const { currentUser, logout } = useRecipeBook();
   const navigate = useNavigate();
   const [openSetting, setOpenSetting] = useState(null);
+
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   const [scale, setScale] = useState(() => {
     const saved = localStorage.getItem("fontScale");
@@ -79,6 +92,64 @@ function Settings() {
 
   const closePanel = () => setOpenSetting(null);
 
+  const provider = getPrimaryAuthProvider();
+  const isGoogleUser = provider === "google.com";
+  const isPasswordUser = provider === "password";
+
+  const openDeleteModal = () => {
+    setDeleteConfirmText("");
+    setDeletePassword("");
+    setDeleteError("");
+    setDeleting(false);
+    setDeleteModalOpen(true);
+  };
+
+  const closeDeleteModal = () => {
+    if (deleting) return;
+    setDeleteModalOpen(false);
+  };
+
+  const canConfirmDelete =
+    deleteConfirmText.trim().toUpperCase() === "DELETE" &&
+    (!isPasswordUser || deletePassword.length > 0);
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (!canConfirmDelete || deleting) return;
+    setDeleting(true);
+    setDeleteError("");
+    try {
+      await deleteAccount({
+        password: isPasswordUser ? deletePassword : undefined,
+      });
+      setDeleteModalOpen(false);
+      try {
+        await logout();
+      } catch {}
+    } catch (err) {
+      console.error("Delete account failed:", err);
+      if (err?.code === "auth/wrong-password") {
+        setDeleteError(t("settings", "deleteWrongPassword"));
+      } else if (err?.code === "auth/missing-password") {
+        setDeleteError(t("settings", "deleteWrongPassword"));
+      } else {
+        setDeleteError(
+          err?.message
+            ? `${t("settings", "deleteFailed")} (${err.message})`
+            : t("settings", "deleteFailed"),
+        );
+      }
+      setDeleting(false);
+    }
+  };
+
   const settingItems = [
     {
       id: "accessibility",
@@ -93,6 +164,12 @@ function Settings() {
       value: publicProfile
         ? t("settings", "publicProfile")
         : t("settings", "privateProfileLabel"),
+    },
+    {
+      id: "account",
+      icon: <UserCog size={20} />,
+      label: t("settings", "account"),
+      value: currentUser?.email || "",
     },
   ];
 
@@ -190,6 +267,40 @@ function Settings() {
                 </label>
               </div>
             )}
+
+            {openSetting === "account" && item.id === "account" && (
+              <div className={classes.expandedPanel}>
+                {currentUser?.email && (
+                  <div className={classes.accountInfo}>
+                    <span className={classes.accountInfoLabel}>
+                      {t("settings", "signedInAs")}
+                    </span>
+                    <span className={classes.accountInfoEmail}>
+                      {currentUser.email}
+                    </span>
+                  </div>
+                )}
+                <div className={classes.accountActions}>
+                  <button
+                    type="button"
+                    className={classes.accountBtn}
+                    onClick={handleLogout}
+                  >
+                    <LogOut size={18} />
+                    <span>{t("settings", "logOut")}</span>
+                  </button>
+                  <div className={classes.accountDivider} />
+                  <button
+                    type="button"
+                    className={`${classes.accountBtn} ${classes.accountBtnDanger}`}
+                    onClick={openDeleteModal}
+                  >
+                    <Trash2 size={18} />
+                    <span>{t("settings", "deleteAccount")}</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         ))}
       </div>
@@ -257,6 +368,88 @@ function Settings() {
                 <FiMoon />
                 <span>{t("settings", "darkMode")}</span>
               </button>
+            </div>
+          </div>
+        </Modal>
+      )}
+
+      {deleteModalOpen && (
+        <Modal onClose={closeDeleteModal} maxWidth="420px">
+          <div className={classes.modalHeader}>
+            <h2 className={classes.modalTitle}>
+              <Trash2 size={20} />
+              <span>{t("settings", "deleteAccount")}</span>
+            </h2>
+            <CloseButton onClick={closeDeleteModal} />
+          </div>
+          <div className={classes.modalBody}>
+            <div className={classes.deleteModalBody}>
+              <p className={classes.deleteWarning}>
+                {t("settings", "deleteAccountWarning")}
+              </p>
+              {isGoogleUser && (
+                <p className={classes.deleteHint}>
+                  {t("settings", "deleteAccountGoogleHint")}
+                </p>
+              )}
+
+              <div className={classes.deleteField}>
+                <label className={classes.deleteFieldLabel}>
+                  {t("settings", "typeDeleteToConfirm")}
+                </label>
+                <input
+                  type="text"
+                  className={classes.deleteInput}
+                  value={deleteConfirmText}
+                  onChange={(e) => setDeleteConfirmText(e.target.value)}
+                  autoCapitalize="characters"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  placeholder="DELETE"
+                  disabled={deleting}
+                />
+              </div>
+
+              {isPasswordUser && (
+                <div className={classes.deleteField}>
+                  <label className={classes.deleteFieldLabel}>
+                    {t("settings", "currentPassword")}
+                  </label>
+                  <input
+                    type="password"
+                    className={classes.deleteInput}
+                    value={deletePassword}
+                    onChange={(e) => setDeletePassword(e.target.value)}
+                    autoComplete="current-password"
+                    disabled={deleting}
+                  />
+                </div>
+              )}
+
+              {deleteError && (
+                <p className={classes.deleteError}>{deleteError}</p>
+              )}
+
+              <div className={classes.deleteActions}>
+                <button
+                  type="button"
+                  className={classes.accountBtn}
+                  onClick={closeDeleteModal}
+                  disabled={deleting}
+                >
+                  {t("settings", "cancel")}
+                </button>
+                <button
+                  type="button"
+                  className={`${classes.accountBtn} ${classes.accountBtnDanger}`}
+                  onClick={handleDeleteAccount}
+                  disabled={!canConfirmDelete || deleting}
+                >
+                  {deleting
+                    ? t("settings", "deleteInProgress")
+                    : t("settings", "confirmDelete")}
+                </button>
+              </div>
             </div>
           </div>
         </Modal>

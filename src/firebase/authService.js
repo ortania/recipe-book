@@ -5,6 +5,10 @@ import {
   signInWithRedirect,
   signInWithCredential,
   GoogleAuthProvider,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup,
+  deleteUser,
   signOut,
   onAuthStateChanged,
   sendPasswordResetEmail,
@@ -18,6 +22,7 @@ import {
   setDoc,
   getDoc,
   updateDoc,
+  deleteDoc,
   collection,
   getDocs,
   query,
@@ -27,6 +32,7 @@ import { auth, db } from "./config";
 import { DEFAULT_USAGE } from "../config/entitlements";
 
 const USERS_COLLECTION = "users";
+const RECIPES_COLLECTION = "recipes";
 
 export const signupUser = async (email, password, displayName) => {
   try {
@@ -152,6 +158,163 @@ export const logoutUser = async () => {
     console.error("Error logging out:", error);
     throw error;
   }
+};
+
+/**
+ * Return the primary sign-in provider for the currently signed-in user.
+ * Useful for the Settings > Account UI to decide whether to ask for a
+ * password (email/password) or to trigger a Google reauth popup/native flow.
+ *
+ * Returns: "password" | "google.com" | null
+ */
+export const getPrimaryAuthProvider = () => {
+  const user = auth.currentUser;
+  if (!user || !user.providerData || user.providerData.length === 0) {
+    return null;
+  }
+  return user.providerData[0]?.providerId || null;
+};
+
+/**
+ * Clean up the user's owned content right before the Auth account is deleted.
+ *
+ * Strategy (privacy-aware):
+ *  - Private recipes  (shareToGlobal !== true) → delete.
+ *  - Shared recipes   (shareToGlobal === true) → keep the recipe but clear
+ *    `sharerName` and `sharerUserId` so the community feed no longer shows
+ *    the deleted user's name. The recipe itself stays useful for other users.
+ *  - Categories owned by the user → delete.
+ *  - Meal plan docs (`mealPlans/{uid}`, `{uid}_checked`, `{uid}_shoppingList`)
+ *    → delete.
+ *
+ * NOT handled here (known limitation):
+ *  - Comments the user left on other users' recipes. They live in a
+ *    subcollection (`recipes/{recipeId}/comments/{commentId}`); finding them
+ *    requires a Firestore collection-group index on `comments.userId` that
+ *    isn't deployed today. These comments keep the user's name for now.
+ *
+ * Every step is best-effort: failures are logged and swallowed so a single
+ * failed doc doesn't block the full delete flow.
+ */
+const cleanupUserContent = async (uid) => {
+  try {
+    const recipesSnap = await getDocs(
+      query(collection(db, RECIPES_COLLECTION), where("userId", "==", uid)),
+    );
+    await Promise.all(
+      recipesSnap.docs.map((d) => {
+        const data = d.data();
+        if (data.shareToGlobal === true) {
+          return updateDoc(d.ref, {
+            sharerName: "",
+            sharerUserId: "",
+          }).catch((e) =>
+            console.warn("Failed to anonymize recipe", d.id, e),
+          );
+        }
+        return deleteDoc(d.ref).catch((e) =>
+          console.warn("Failed to delete recipe", d.id, e),
+        );
+      }),
+    );
+  } catch (err) {
+    console.warn("cleanupUserContent: recipes step failed:", err);
+  }
+
+  try {
+    const catsSnap = await getDocs(
+      query(collection(db, "categories"), where("userId", "==", uid)),
+    );
+    await Promise.all(
+      catsSnap.docs.map((d) =>
+        deleteDoc(d.ref).catch((e) =>
+          console.warn("Failed to delete category", d.id, e),
+        ),
+      ),
+    );
+  } catch (err) {
+    console.warn("cleanupUserContent: categories step failed:", err);
+  }
+
+  try {
+    await Promise.all([
+      deleteDoc(doc(db, "mealPlans", uid)).catch(() => {}),
+      deleteDoc(doc(db, "mealPlans", `${uid}_checked`)).catch(() => {}),
+      deleteDoc(doc(db, "mealPlans", `${uid}_shoppingList`)).catch(() => {}),
+    ]);
+  } catch (err) {
+    console.warn("cleanupUserContent: mealPlans step failed:", err);
+  }
+};
+
+/**
+ * Permanently delete the current user's account.
+ *
+ * Flow:
+ *  1. Reauthenticate (Firebase requires a fresh credential for destructive ops):
+ *     - password users → EmailAuthProvider.credential + reauthenticateWithCredential
+ *     - google.com users on native → FirebaseAuthentication.signInWithGoogle() then reauthenticateWithCredential
+ *     - google.com users on web    → reauthenticateWithPopup
+ *  2. Clean up user content: delete private recipes, anonymize shared recipes
+ *     (clear sharerName/sharerUserId), delete categories, delete meal plans.
+ *  3. Delete the Firestore users/{uid} document (done while still authenticated).
+ *  4. Delete the Firebase Auth account.
+ *
+ * On failure in step 1 nothing is deleted. Steps 2–3 are best-effort (errors
+ * are logged but don't block step 4) so the user isn't left with a half-
+ * deleted account they can log back into.
+ *
+ * @param {{ password?: string }} options
+ */
+export const deleteAccount = async ({ password } = {}) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("No user logged in");
+
+  const providerId = user.providerData[0]?.providerId;
+
+  if (providerId === "password") {
+    if (!password) {
+      const err = new Error("Password required");
+      err.code = "auth/missing-password";
+      throw err;
+    }
+    const credential = EmailAuthProvider.credential(user.email, password);
+    await reauthenticateWithCredential(user, credential);
+  } else if (providerId === "google.com") {
+    const isNative =
+      typeof window !== "undefined" &&
+      window.Capacitor?.isNativePlatform?.() === true;
+    if (isNative) {
+      const result = await FirebaseAuthentication.signInWithGoogle();
+      const idToken = result.credential?.idToken;
+      if (!idToken) {
+        const err = new Error("Google reauth failed");
+        err.code = "auth/reauth-failed";
+        throw err;
+      }
+      const credential = GoogleAuthProvider.credential(idToken);
+      await reauthenticateWithCredential(user, credential);
+    } else {
+      await reauthenticateWithPopup(user, googleProvider);
+    }
+  } else {
+    const err = new Error(`Unsupported provider: ${providerId}`);
+    err.code = "auth/unsupported-provider";
+    throw err;
+  }
+
+  const uid = user.uid;
+
+  await cleanupUserContent(uid);
+
+  try {
+    await deleteDoc(doc(db, USERS_COLLECTION, uid));
+  } catch (docErr) {
+    console.warn("Failed to delete user doc:", docErr);
+  }
+
+  await deleteUser(user);
+  console.log("✅ User account deleted:", uid);
 };
 
 export const getUserData = async (userId) => {
