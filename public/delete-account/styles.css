@@ -1,12 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+Hebrew:wdth,wght@75,400;75,500;75,600;75,700;75,800&display=swap");
-
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-  font-family: "Noto Sans Hebrew", sans-serif;
-  font-stretch: condensed;
-  font-variation-settings: "wdth" 75;
 }
 
 html {
