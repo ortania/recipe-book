@@ -10,6 +10,8 @@ import { auth } from "../../firebase/config";
 import { Navigation, Header, Footer } from "../../components";
 import { RadioPlayer } from "../../components/radio-player";
 import TimerWidget from "../../components/timer-widget/TimerWidget";
+import { EmailVerificationBanner } from "../../components/banners/email-verification-banner";
+import { PostSignupVerifyModal } from "../../components/banners/post-signup-verify-modal";
 import useNetworkStatus from "../../hooks/useNetworkStatus";
 
 import { links } from "../data/navLinks";
@@ -76,6 +78,7 @@ function ProtectedLayout() {
                 אין חיבור לאינטרנט — חלק מהתכונות לא זמינות
               </div>
             )}
+            <EmailVerificationBanner />
             <main className={classes.main}>
               <Outlet />
             </main>
@@ -84,6 +87,7 @@ function ProtectedLayout() {
           </div>
           <GlobalRadioPlayer />
           <TimerWidget />
+          <PostSignupVerifyModal />
         </div>
       </TimerProvider>
     </RadioProvider>

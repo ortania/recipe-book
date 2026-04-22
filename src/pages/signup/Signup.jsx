@@ -5,6 +5,15 @@ import { useRecipeBook, useLanguage } from "../../context";
 import FormInput from "../login/FormInput";
 import Onboarding from "../onboarding/Onboarding";
 import { User, Mail, Lock, ShieldCheck, TriangleAlert } from "lucide-react";
+import { suggestEmailCorrection } from "../../utils/emailTypos";
+
+// sessionStorage key read by <PostSignupVerifyModal /> inside the
+// authenticated layout: when it's present we know the user just came
+// from the signup flow and deserves an explicit "verification link sent"
+// modal. We can't render that modal inside Signup.jsx itself because
+// App.jsx force-redirects logged-in users off /signup the moment
+// Firebase's onAuthStateChanged fires.
+export const POST_SIGNUP_EMAIL_KEY = "postSignupEmail";
 
 import buttonClasses from "../../styles/shared/buttons.module.css";
 import classes from "../login/login.module.css";
@@ -21,6 +30,11 @@ function Signup() {
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  // Suggested corrected email when the user types a common typo like
+  // "gmial.com" — shown inline under the email field. Dismissed when the
+  // user accepts it, edits past it, or explicitly keeps what they typed.
+  const [emailSuggestion, setEmailSuggestion] = useState("");
+  const [suggestionDismissed, setSuggestionDismissed] = useState(false);
   const [onboardingDone, setOnboardingDone] = useState(
     () => !!localStorage.getItem("onboardingDone"),
   );
@@ -76,6 +90,14 @@ function Signup() {
     };
     setters[field](value);
 
+    // Any edit on the email field invalidates a stale suggestion. We only
+    // recompute on blur — showing a suggestion while the user is still
+    // typing is noisy.
+    if (field === "email") {
+      setEmailSuggestion("");
+      setSuggestionDismissed(false);
+    }
+
     if (field === "password" || field === "confirmPassword") {
       if (fieldErrors[field] && !getError(field, value)) {
         setFieldErrors((prev) => ({ ...prev, [field]: "" }));
@@ -102,6 +124,27 @@ function Signup() {
       ...prev,
       [field]: getError(field, values[field]),
     }));
+
+    if (field === "email" && !suggestionDismissed) {
+      const suggestion = suggestEmailCorrection(values.email);
+      setEmailSuggestion(suggestion || "");
+    }
+  };
+
+  const acceptEmailSuggestion = () => {
+    if (!emailSuggestion) return;
+    setEmail(emailSuggestion);
+    setEmailSuggestion("");
+    setSuggestionDismissed(false);
+    setFieldErrors((prev) => ({
+      ...prev,
+      email: getError("email", emailSuggestion),
+    }));
+  };
+
+  const dismissEmailSuggestion = () => {
+    setEmailSuggestion("");
+    setSuggestionDismissed(true);
   };
 
   const handleGoogleSignIn = async () => {
@@ -141,10 +184,27 @@ function Signup() {
 
     setIsLoading(true);
 
+    // Stash the address for <PostSignupVerifyModal /> BEFORE kicking off
+    // signupUser. Reason: createUserWithEmailAndPassword auto-signs the
+    // user in and Firebase's onAuthStateChanged listener fires while
+    // signupUser is still awaiting (setDoc + sendEmailVerification).
+    // That flips `isLoggedIn → true`, which makes App.jsx redirect
+    // /signup → /categories. By the time our code runs AFTER the await,
+    // <PostSignupVerifyModal /> has already mounted and read an empty
+    // sessionStorage. Writing the flag up-front guarantees the modal
+    // sees it on its very first render.
+    try {
+      sessionStorage.setItem(POST_SIGNUP_EMAIL_KEY, email);
+    } catch {}
+
     try {
       await signupUser(email, password, displayName);
       navigate("/categories");
     } catch (error) {
+      // Signup failed → the modal must not appear on next app load.
+      try {
+        sessionStorage.removeItem(POST_SIGNUP_EMAIL_KEY);
+      } catch {}
       if (error.code === "auth/email-already-in-use") {
         setError(t("auth", "emailAlreadyInUse"));
       } else if (error.code === "auth/invalid-email") {
@@ -202,6 +262,29 @@ function Signup() {
         >
           <Mail size={16} />
         </FormInput>
+
+        {emailSuggestion && (
+          <div className={classes.emailSuggestion}>
+            <span>
+              {t("auth", "emailDidYouMean")}{" "}
+              <button
+                type="button"
+                className={classes.emailSuggestionBtn}
+                onClick={acceptEmailSuggestion}
+              >
+                {emailSuggestion}
+              </button>
+              ?
+            </span>
+            <button
+              type="button"
+              className={classes.emailSuggestionKeep}
+              onClick={dismissEmailSuggestion}
+            >
+              {t("auth", "emailKeepAsTyped")}
+            </button>
+          </div>
+        )}
 
         <FormInput
           type="password"

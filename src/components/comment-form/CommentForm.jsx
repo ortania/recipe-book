@@ -11,7 +11,7 @@ function CommentForm({ onSubmit, currentUser, disabled }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!text.trim() || submitting || !currentUser) return;
+    if (!text.trim() || submitting || !currentUser || disabled) return;
     setSubmitting(true);
     try {
       await onSubmit(text.trim());
@@ -72,7 +72,7 @@ function CommentForm({ onSubmit, currentUser, disabled }) {
         <button
           type="submit"
           className={classes.sendBtn}
-          disabled={!text.trim() || submitting}
+          disabled={!text.trim() || submitting || disabled}
         >
           <Send size={16} />
         </button>

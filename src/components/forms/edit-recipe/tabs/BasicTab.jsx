@@ -1,6 +1,8 @@
 import React from "react";
 import { Heart, Globe, Star } from "lucide-react";
 import { useEditRecipe } from "../EditRecipeContext";
+import { useRecipeBook } from "../../../../context";
+import { VerifyEmailHint } from "../../../banners/verify-email-hint";
 
 export default function BasicTab() {
   const {
@@ -15,6 +17,12 @@ export default function BasicTab() {
     buttonClasses,
     t,
   } = useEditRecipe();
+
+  const { currentUser } = useRecipeBook();
+  // Gate community sharing on verified email. If the recipe is already
+  // shared and the user somehow becomes unverified, we still allow them
+  // to uncheck the box — we only block turning sharing ON.
+  const canShareToCommunity = currentUser?.emailVerified === true;
 
   return (
     <>
@@ -211,13 +219,23 @@ export default function BasicTab() {
 
       {!recipe.copiedFrom && (
         <div className={shared.formGroup}>
-          <label className={classes.checkboxLabel}>
+          <label
+            className={`${classes.checkboxLabel} ${
+              !canShareToCommunity && !editedRecipe.shareToGlobal
+                ? classes.shareDisabled
+                : ""
+            }`}
+          >
             <input
               type="checkbox"
               name="shareToGlobal"
               className={buttonClasses.checkBox}
               checked={editedRecipe.shareToGlobal}
+              disabled={!canShareToCommunity && !editedRecipe.shareToGlobal}
               onChange={(e) => {
+                // Allow turning OFF sharing at any time. Only block turning
+                // it ON if the email isn't verified.
+                if (e.target.checked && !canShareToCommunity) return;
                 handleChange(e);
                 if (!e.target.checked) {
                   setEditedRecipe((prev) => ({ ...prev, showMyName: false }));
@@ -227,6 +245,9 @@ export default function BasicTab() {
             <Globe size={16} />
             <span>{t("recipes", "shareToGlobal")}</span>
           </label>
+          {!canShareToCommunity && !editedRecipe.shareToGlobal && (
+            <VerifyEmailHint message={t("auth", "verifyShareBlocked")} />
+          )}
         </div>
       )}
     </>

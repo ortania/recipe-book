@@ -357,6 +357,12 @@
   animation: spin 1s linear infinite;
 }
 
+/* Dim the "share to community" label when the user's email is not
+ * verified. The actionable hint itself is rendered by <VerifyEmailHint />. */
+.shareDisabled {
+  opacity: 0.6;
+}
+
 /* ========== Responsive ========== */
 @media (max-width: 500px) {
   .navButtons {

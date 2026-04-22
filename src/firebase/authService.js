@@ -15,6 +15,9 @@ import {
   setPersistence,
   browserLocalPersistence,
   browserSessionPersistence,
+  verifyBeforeUpdateEmail,
+  sendEmailVerification,
+  reload,
 } from "firebase/auth";
 import { FirebaseAuthentication } from "@capacitor-firebase/authentication";
 import {
@@ -53,12 +56,51 @@ export const signupUser = async (email, password, displayName) => {
       createdAt: new Date().toISOString(),
     });
 
+    // Best-effort: fire the verification email right after signup.
+    // A failure here (rate limit, transient network) must NOT block the
+    // signup flow; the user can resend from the in-app banner.
+    try {
+      await sendEmailVerification(user);
+      console.log("📧 Verification email sent to:", user.email);
+    } catch (verifyErr) {
+      console.warn("Failed to send verification email:", verifyErr);
+    }
+
     console.log("✅ User created:", user.uid);
     return user;
   } catch (error) {
     console.error("Error signing up:", error);
     throw error;
   }
+};
+
+/**
+ * Resend the verification email to the currently signed-in user. Used by
+ * the in-app banner and by the typo-recovery flow in Settings → Account.
+ *
+ * Safe to call only for password accounts. Google users are always
+ * verified by Google itself, so the banner is never shown for them.
+ */
+export const resendVerificationEmail = async () => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("No user logged in");
+  await sendEmailVerification(user);
+  console.log("📧 Verification email resent to:", user.email);
+};
+
+/**
+ * Force Firebase Auth to reload the current user's profile from the server.
+ * After the user clicks the verification link in their inbox, the
+ * `emailVerified` flag on the local `auth.currentUser` object is still
+ * stale — calling `reload()` refreshes it without requiring a full sign-out.
+ *
+ * Returns the refreshed `user.emailVerified` for convenience.
+ */
+export const reloadAuthUser = async () => {
+  const user = auth.currentUser;
+  if (!user) return false;
+  await reload(user);
+  return auth.currentUser?.emailVerified ?? false;
 };
 
 export const loginUser = async (email, password, rememberMe = true) => {
@@ -315,6 +357,69 @@ export const deleteAccount = async ({ password } = {}) => {
 
   await deleteUser(user);
   console.log("✅ User account deleted:", uid);
+};
+
+/**
+ * Start the "change email" flow for the current user.
+ *
+ * Firebase requires:
+ *  - A recent credential (fresh reauth) for security.
+ *  - The new email to be verified by the owner: Firebase sends a
+ *    verification link to the new address, and the email actually changes
+ *    only after the user clicks that link.
+ *
+ * Only supported for email/password accounts. Google users' email is
+ * controlled by Google itself; the UI hides this action for them, and this
+ * function throws `auth/unsupported-provider` as a safety net.
+ *
+ * Side effects:
+ *  - Sends an email to `newEmail` via Firebase's hosted verification page.
+ *  - Does NOT update Firestore yet. `RecipeBookProvider` syncs the
+ *    Firestore `users/{uid}.email` the next time Auth reports a new email
+ *    (i.e. after the user clicks the verification link).
+ *
+ * @param {{ newEmail: string, password: string }} options
+ */
+export const changeUserEmail = async ({ newEmail, password } = {}) => {
+  const user = auth.currentUser;
+  if (!user) throw new Error("No user logged in");
+
+  const providerId = user.providerData[0]?.providerId;
+  if (providerId !== "password") {
+    const err = new Error(
+      "Email change is only available for password accounts.",
+    );
+    err.code = "auth/unsupported-provider";
+    throw err;
+  }
+
+  const trimmed = (newEmail || "").trim();
+  if (!trimmed) {
+    const err = new Error("New email is required");
+    err.code = "auth/missing-email";
+    throw err;
+  }
+
+  if (
+    user.email &&
+    trimmed.toLowerCase() === user.email.toLowerCase()
+  ) {
+    const err = new Error("The new email is the same as the current one");
+    err.code = "auth/same-email";
+    throw err;
+  }
+
+  if (!password) {
+    const err = new Error("Password required");
+    err.code = "auth/missing-password";
+    throw err;
+  }
+
+  const credential = EmailAuthProvider.credential(user.email, password);
+  await reauthenticateWithCredential(user, credential);
+
+  await verifyBeforeUpdateEmail(user, trimmed);
+  console.log("✅ Verification email sent to:", trimmed);
 };
 
 export const getUserData = async (userId) => {

@@ -2,6 +2,8 @@ import React from "react";
 import { Check, Eye, Star, Heart, Globe, Clock, Flame, Utensils } from "lucide-react";
 import { CloseButton } from "../../../controls";
 import { useWizard } from "../WizardContext";
+import { useRecipeBook } from "../../../../context";
+import { VerifyEmailHint } from "../../../banners/verify-email-hint";
 import { isGroupHeader, getGroupName } from "../../../../utils/ingredientUtils";
 import { formatTime } from "../../../recipes/utils";
 
@@ -16,6 +18,11 @@ export default function SummaryStep() {
     buttonClasses,
     t,
   } = useWizard();
+
+  const { currentUser } = useRecipeBook();
+  // Community sharing is gated on verified email. Google users are verified
+  // by Google (emailVerified === true), so the toggle stays enabled for them.
+  const canShareToCommunity = currentUser?.emailVerified === true;
 
   const filledIngredients = recipe.ingredients.filter((i) => i.trim());
   const filledInstructions = recipe.instructions.filter((i) => i.trim());
@@ -161,12 +168,18 @@ export default function SummaryStep() {
       </label>
 
       {/* Share to global */}
-      <label className={classes.favoriteToggle}>
+      <label
+        className={`${classes.favoriteToggle} ${
+          !canShareToCommunity ? classes.shareDisabled : ""
+        }`}
+      >
         <input
           type="checkbox"
           className={classes.favoriteCheckbox + " " + buttonClasses.checkBox}
-          checked={recipe.shareToGlobal}
+          checked={!!recipe.shareToGlobal && canShareToCommunity}
+          disabled={!canShareToCommunity}
           onChange={() => {
+            if (!canShareToCommunity) return;
             const next = !recipe.shareToGlobal;
             updateRecipe("shareToGlobal", next);
             if (!next) updateRecipe("showMyName", false);
@@ -177,6 +190,9 @@ export default function SummaryStep() {
           {t("recipes", "shareToGlobal")}
         </span>
       </label>
+      {!canShareToCommunity && (
+        <VerifyEmailHint message={t("auth", "verifyShareBlocked")} />
+      )}
     </div>
   );
 }

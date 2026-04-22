@@ -10,6 +10,7 @@ import {
 } from "../../firebase/commentService";
 import { CommentItem } from "../comment-item";
 import { CommentForm } from "../comment-form";
+import { VerifyEmailHint } from "../banners/verify-email-hint";
 import classes from "./comments-section.module.css";
 
 function CommentsSection({ recipeId }) {
@@ -66,7 +67,14 @@ function CommentsSection({ recipeId }) {
 
       {expanded && (
         <div className={classes.content}>
-          <CommentForm onSubmit={handleAddComment} currentUser={currentUser} />
+          {currentUser && currentUser.emailVerified === false && (
+            <VerifyEmailHint message={t("auth", "verifyCommentsBlocked")} />
+          )}
+          <CommentForm
+            onSubmit={handleAddComment}
+            currentUser={currentUser}
+            disabled={currentUser ? currentUser.emailVerified === false : false}
+          />
 
           {!loading && comments.length === 0 && (
             <p className={classes.emptyText}>{t("comments", "empty")}</p>

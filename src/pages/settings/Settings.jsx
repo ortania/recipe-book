@@ -11,17 +11,23 @@ import {
   LogOut,
   Trash2,
   UserX,
+  Mail,
+  CircleCheck,
+  AlertCircle,
 } from "lucide-react";
 import { applyFontScale } from "../../utils/applyFontScale";
 import { getStoredTheme, applyTheme } from "../../utils/theme";
 import { useLanguage, useRecipeBook, useBlockedUsers } from "../../context";
 import { BlockedUsersPanel } from "../../components/forms/blocked-users-panel";
+import { ChangeEmailDialog } from "../../components/forms/change-email-dialog";
 import {
   updateUserProfile,
   getPrimaryAuthProvider,
   deleteAccount,
+  changeUserEmail,
 } from "../../firebase/authService";
 import { CloseButton } from "../../components/controls/close-button";
+import { Toast } from "../../components/controls";
 import { Modal } from "../../components/modal";
 import { LANGUAGES, RTL_LANGUAGES } from "../../utils/translations";
 import buttonClasses from "../../styles/shared/buttons.module.css";
@@ -54,6 +60,10 @@ function Settings() {
   const [deletePassword, setDeletePassword] = useState("");
   const [deleteError, setDeleteError] = useState("");
   const [deleting, setDeleting] = useState(false);
+
+  const [changeEmailOpen, setChangeEmailOpen] = useState(false);
+  const [emailSuccessToastOpen, setEmailSuccessToastOpen] = useState(false);
+  const [emailErrorToastOpen, setEmailErrorToastOpen] = useState(false);
 
   const [scale, setScale] = useState(() => {
     const saved = localStorage.getItem("fontScale");
@@ -131,6 +141,29 @@ function Settings() {
       await logout();
     } catch (err) {
       console.error("Logout failed:", err);
+    }
+  };
+
+  const handleSubmitChangeEmail = async ({ newEmail, password }) => {
+    try {
+      await changeUserEmail({ newEmail, password });
+      setChangeEmailOpen(false);
+      setEmailSuccessToastOpen(true);
+    } catch (err) {
+      // Let the dialog render the inline, typed error for wrong-password /
+      // email-in-use / invalid-email. Anything else surfaces as a toast
+      // after the dialog swallows it via its generic-error branch.
+      const KNOWN_INLINE = new Set([
+        "auth/wrong-password",
+        "auth/invalid-credential",
+        "auth/email-already-in-use",
+        "auth/invalid-email",
+        "auth/same-email",
+      ]);
+      if (!err?.code || !KNOWN_INLINE.has(err.code)) {
+        setEmailErrorToastOpen(true);
+      }
+      throw err;
     }
   };
 
@@ -307,6 +340,16 @@ function Settings() {
                   </div>
                 )}
                 <div className={classes.accountActions}>
+                  {isPasswordUser && (
+                    <button
+                      type="button"
+                      className={classes.accountBtn}
+                      onClick={() => setChangeEmailOpen(true)}
+                    >
+                      <Mail size={18} />
+                      <span>{t("settings", "changeEmail")}</span>
+                    </button>
+                  )}
                   <button
                     type="button"
                     className={classes.accountBtn}
@@ -484,6 +527,37 @@ function Settings() {
           </div>
         </Modal>
       )}
+
+      {changeEmailOpen && (
+        <ChangeEmailDialog
+          currentEmail={currentUser?.email || ""}
+          onSubmit={handleSubmitChangeEmail}
+          onClose={() => setChangeEmailOpen(false)}
+        />
+      )}
+
+      {/* Longer duration than the 2.5s default: the message is two
+       * Hebrew sentences explaining that the new address only takes
+       * effect after the user clicks the verification link. Users need
+       * time to actually read that. */}
+      <Toast
+        open={emailSuccessToastOpen}
+        onClose={() => setEmailSuccessToastOpen(false)}
+        variant="success"
+        duration={7000}
+      >
+        <CircleCheck size={18} aria-hidden />
+        <span>{t("settings", "changeEmailSuccess")}</span>
+      </Toast>
+
+      <Toast
+        open={emailErrorToastOpen}
+        onClose={() => setEmailErrorToastOpen(false)}
+        variant="error"
+      >
+        <AlertCircle size={18} aria-hidden />
+        <span>{t("settings", "changeEmailGenericError")}</span>
+      </Toast>
 
     </div>
   );

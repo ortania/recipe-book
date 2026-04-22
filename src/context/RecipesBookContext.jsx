@@ -24,9 +24,44 @@ import {
   getUserData,
   logoutUser,
   ensureGoogleUserDoc,
+  reloadAuthUser,
 } from "../firebase/authService";
-import { doc, writeBatch } from "firebase/firestore";
+import { doc, updateDoc, writeBatch } from "firebase/firestore";
 import { db, auth } from "../firebase/config";
+
+/**
+ * Extract auth-only fields from a Firebase Auth user that we want to keep
+ * on `currentUser` alongside the Firestore data. Kept deliberately small:
+ *  - `emailVerified` — drives the "please verify your email" banner and the
+ *    gating of community actions (share, comment).
+ *  - `providerId` — lets consumers decide whether to show password-only UI
+ *    (e.g. the banner hides itself for Google users).
+ */
+const buildAuthMeta = (user) => ({
+  emailVerified: user?.emailVerified ?? false,
+  providerId: user?.providerData?.[0]?.providerId || null,
+});
+
+/**
+ * Keep the Firestore `users/{uid}.email` in sync with Firebase Auth.
+ *
+ * After a user finishes Firebase's "verify before update email" flow, the
+ * next auth state change carries the new `user.email`, while the Firestore
+ * doc may still hold the old address. Detect the mismatch, patch Firestore,
+ * and return a userData object using the authoritative value from Auth.
+ *
+ * Best-effort: errors are logged but don't block anything.
+ */
+const reconcileUserEmail = async (user, userData) => {
+  if (!user?.email || !userData) return userData;
+  if (userData.email && userData.email === user.email) return userData;
+  try {
+    await updateDoc(doc(db, "users", user.uid), { email: user.email });
+  } catch (err) {
+    console.warn("Failed to sync user email to Firestore:", err);
+  }
+  return { ...userData, email: user.email };
+};
 
 const RecipeBookContext = createContext();
 
@@ -150,9 +185,10 @@ export const RecipeBookProvider = ({ children }) => {
         if (initialLoadDone.current) {
           // Token refresh — update user object but skip full reload
           try {
-            const userData = await getUserData(user.uid);
+            let userData = await getUserData(user.uid);
             if (userData) {
-              const updated = { uid: user.uid, ...userData };
+              userData = await reconcileUserEmail(user, userData);
+              const updated = { uid: user.uid, ...userData, ...buildAuthMeta(user) };
               setCurrentUser(updated);
               // Keep cache fresh
               try {
@@ -183,6 +219,7 @@ export const RecipeBookProvider = ({ children }) => {
                 usage: cachedUser.usage,
               }
             : {}),
+          ...buildAuthMeta(user),
         };
         setCurrentUser(basicUser);
         setIsAdmin(true);
@@ -206,7 +243,12 @@ export const RecipeBookProvider = ({ children }) => {
             userData = await getUserData(user.uid);
           }
           if (cancelled) return;
-          const confirmedUser = { uid: user.uid, ...userData };
+          userData = await reconcileUserEmail(user, userData);
+          const confirmedUser = {
+            uid: user.uid,
+            ...userData,
+            ...buildAuthMeta(user),
+          };
           setCurrentUser(confirmedUser);
           await loadUserData(confirmedUser);
         } catch (err) {
@@ -595,6 +637,28 @@ export const RecipeBookProvider = ({ children }) => {
     }
   };
 
+  /**
+   * Pull the latest `emailVerified` flag from Firebase Auth and mirror it
+   * onto our local `currentUser`. Used by the "please verify your email"
+   * banner: after the user clicks the verification link in a different
+   * tab / email client, calling this refreshes the flag without requiring
+   * a full sign-out.
+   */
+  const refreshAuthUser = async () => {
+    try {
+      await reloadAuthUser();
+      const fresh = auth.currentUser;
+      if (!fresh) return false;
+      setCurrentUser((prev) =>
+        prev ? { ...prev, ...buildAuthMeta(fresh) } : prev,
+      );
+      return fresh.emailVerified ?? false;
+    } catch (err) {
+      console.warn("refreshAuthUser failed:", err);
+      return false;
+    }
+  };
+
   const value = {
     categories,
     recipes,
@@ -605,6 +669,7 @@ export const RecipeBookProvider = ({ children }) => {
     categoriesLoaded,
     currentUser,
     setCurrentUser,
+    refreshAuthUser,
     hasMoreRecipes,
     selectedCategories,
     toggleCategory,

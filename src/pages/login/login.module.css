@@ -59,6 +59,56 @@
   line-height: 1.3;
 }
 
+/* "Did you mean ..." email typo suggestion shown under the email input
+ * on the signup form. Kept visually distinct from errors — this is a
+ * gentle suggestion, not a blocking error. */
+.emailSuggestion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  margin: -0.25rem 0 0.75rem 0;
+  padding: 0.5rem 0.75rem;
+  background: var(--clr-bg-secondary);
+  border: 1px solid var(--clr-border-light);
+  border-radius: 8px;
+  font-size: var(--small-font);
+  color: var(--clr-text-primary);
+  line-height: 1.3;
+  text-align: start;
+}
+
+.emailSuggestion .emailSuggestionBtn {
+  background: none;
+  border: none;
+  color: var(--clr-brown-700, #6d4c41);
+  font-weight: 700;
+  cursor: pointer;
+  padding: 0.1em 0.3em;
+  text-decoration: underline;
+  font-size: inherit;
+  font-family: inherit;
+}
+
+.emailSuggestion .emailSuggestionBtn:hover {
+  color: var(--clr-brown-900, #3e2723);
+}
+
+.emailSuggestionKeep {
+  color: var(--clr-text-muted);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: var(--very-small-font);
+  font-family: inherit;
+  padding: 0.1em 0.3em;
+  margin-inline-start: auto;
+}
+
+.emailSuggestionKeep:hover {
+  color: var(--clr-text-primary);
+}
+
 .loginForm input:not([type="checkbox"]) {
   box-shadow: none;
   padding: 1rem 1.2rem;

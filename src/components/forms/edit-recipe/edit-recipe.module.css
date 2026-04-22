@@ -270,6 +270,13 @@
   user-select: none;
 }
 
+/* Dim the share-to-community label when the user's email is not
+ * verified. The actionable hint itself is rendered by <VerifyEmailHint />. */
+.shareDisabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* ========== Star Rating ========== */
 .starRating {
   display: flex;
