@@ -71,3 +71,12 @@ npx cap sync android
 
   If you want to tweak the design (colors, shape, layout), just edit scripts/generate-assets.cjs and re-run node scripts/generate-assets.cjs  
   && npx @capacitor/assets generate --android.
+
+
+  Google Play console:
+  --------------------
+  https://play.google.com/console
+
+  https://play.google.com/console/u/0/developers/8156496983587710607/app-list?onboardingflow=signup
+
+  מספר חשבון: 8156496983587710607
