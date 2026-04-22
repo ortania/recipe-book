@@ -27,6 +27,15 @@
     margin-inline-start: 0;
     height: 100%;
     overflow: clip;
+    /* Offset the fixed mobile top bar once, at the wrapper level, so
+     * every direct child (offline banner, email-verification banner,
+     * <main>) starts below the top bar. Previously this offset lived
+     * on <main>'s padding-top which, when a banner was also shown
+     * above <main>, produced an empty 3.5rem strip inside <main>'s
+     * scroll container — visible as "content leaking above sticky
+     * headers" on pages like meal-planner / recipe-details. */
+    padding-top: calc(3.5rem + env(safe-area-inset-top, 0px));
+    box-sizing: border-box;
   }
 }
 
@@ -47,7 +56,7 @@
 @media (max-width: 768px) {
   .main {
     padding: 0;
-    padding-top: calc(3.5rem + env(safe-area-inset-top, 0px));
+    /* top offset lives on .contentWrapper on mobile */
     padding-bottom: calc(7rem + env(safe-area-inset-bottom, 0px));
     overflow-y: auto;
     min-height: 0;

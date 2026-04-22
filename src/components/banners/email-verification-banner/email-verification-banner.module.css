@@ -126,15 +126,10 @@
 }
 
 @media (max-width: 768px) {
-  /* On mobile the Navigation renders a `position: fixed` top bar at
-   * the very top of the viewport. Without adjustment, the banner — which
-   * sits in normal flow at the top of .contentWrapper — is physically
-   * rendered underneath that fixed bar and invisible. Giving it the same
-   * top offset as <main>'s padding-top moves it below the top bar into
-   * the visible area. */
+  /* .contentWrapper provides the mobile top-bar offset (padding-top),
+   * so the banner needs no extra margin-top here. */
   .banner {
-    padding: 0.6rem 0.75rem;
-    margin-top: calc(3.5rem + env(safe-area-inset-top, 0px));
+    padding: 0.6rem 1rem;
   }
   .title {
     font-size: var(--small-font);
