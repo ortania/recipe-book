@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import { FiSun, FiMoon } from "react-icons/fi";
 import {
   Palette,
@@ -37,7 +37,17 @@ function Settings() {
   const { currentUser, logout } = useRecipeBook();
   const { blockedUsersList } = useBlockedUsers();
   const navigate = useNavigate();
+  const location = useLocation();
   const [openSetting, setOpenSetting] = useState(null);
+
+  const handleClose = () => {
+    const from = location.state?.from;
+    if (typeof from === "string" && from && from !== "/settings") {
+      navigate(from);
+    } else {
+      navigate(-1);
+    }
+  };
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState("");
@@ -189,10 +199,7 @@ function Settings() {
     <div className={classes.settingsPage}>
       <div className={classes.header}>
         <h1 className={classes.title}>{t("settings", "title")}</h1>
-        <CloseButton
-          onClick={() => navigate(-1)}
-          title={t("common", "close")}
-        />
+        <CloseButton onClick={handleClose} title={t("common", "close")} />
       </div>
 
       <div className={classes.settingsList}>

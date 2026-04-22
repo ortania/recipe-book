@@ -9,14 +9,13 @@ import {
   Trash2,
   Copy,
   UserCheck,
-  UserX,
   Bookmark,
   UtensilsCrossed,
 } from "lucide-react";
 import { Button } from "../controls/button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { formatDifficulty, formatTime } from "./utils";
-import { useLanguage, useRecipeBook, useBlockedUsers } from "../../context";
+import { useLanguage, useRecipeBook } from "../../context";
 import useTranslatedText from "../../hooks/useTranslatedText";
 
 function RecipeInfo({
@@ -40,7 +39,6 @@ function RecipeInfo({
 }) {
   const { t } = useLanguage();
   const { currentUser } = useRecipeBook();
-  const { blockUser: blockUserAction } = useBlockedUsers();
   const navigate = useNavigate();
   const translatedName = useTranslatedText(recipe.name);
   const [isFavorite, setIsFavorite] = useState(recipe.isFavorite || false);
@@ -51,15 +49,7 @@ function RecipeInfo({
   const [copySuccess, setCopySuccess] = useState(false);
   const [hoverStar, setHoverStar] = useState(0);
   const [touchActionsVisible, setTouchActionsVisible] = useState(false);
-  const [showBlockConfirm, setShowBlockConfirm] = useState(false);
-  const [blocking, setBlocking] = useState(false);
 
-  const canBlockOwner =
-    !!recipe.userId &&
-    !!currentUser?.uid &&
-    recipe.userId !== currentUser.uid &&
-    !onEdit &&
-    !onDelete;
   const longPressTimerRef = useRef(null);
   const touchStartPosRef = useRef({ x: 0, y: 0 });
   const ignoreNextClickRef = useRef(false);
@@ -193,30 +183,6 @@ function RecipeInfo({
     setShowDeleteConfirm(false);
   };
 
-  const handleBlockClick = (e) => {
-    e.stopPropagation();
-    setTouchActionsVisible(false);
-    setShowBlockConfirm(true);
-  };
-
-  const handleCancelBlock = () => {
-    if (blocking) return;
-    setShowBlockConfirm(false);
-  };
-
-  const handleConfirmBlock = async () => {
-    if (blocking || !recipe.userId) return;
-    setBlocking(true);
-    try {
-      await blockUserAction(recipe.userId);
-    } catch (err) {
-      // Toast is shown by BlockedUsersProvider.
-    } finally {
-      setShowBlockConfirm(false);
-      setBlocking(false);
-    }
-  };
-
   const handleEdit = (e) => {
     e.stopPropagation();
     setTouchActionsVisible(false);
@@ -268,18 +234,6 @@ function RecipeInfo({
               }}
             />
           )}
-          {canBlockOwner && (
-            <button
-              type="button"
-              className={classes.blockButton}
-              onClick={handleBlockClick}
-              aria-label={t("blockedUsers", "blockUser")}
-              title={t("blockedUsers", "blockUser")}
-            >
-              <UserX size={16} />
-            </button>
-          )}
-
           {onSaveRecipe ? (
             <button
               className={`${classes.favoriteButton} ${isSaved ? classes.active : ""}`}
@@ -518,21 +472,6 @@ function RecipeInfo({
             onConfirm={handleConfirmDelete}
             onCancel={handleCancelDelete}
             confirmText={t("confirm", "yesDelete")}
-            cancelText={t("common", "cancel")}
-          />
-        )}
-
-        {showBlockConfirm && (
-          <ConfirmDialog
-            title={t("blockedUsers", "blockConfirmTitle")}
-            message={t("blockedUsers", "blockConfirmMessage")}
-            onConfirm={handleConfirmBlock}
-            onCancel={handleCancelBlock}
-            confirmText={
-              blocking
-                ? t("blockedUsers", "blocking")
-                : t("blockedUsers", "blockConfirm")
-            }
             cancelText={t("common", "cancel")}
           />
         )}

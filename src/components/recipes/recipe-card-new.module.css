@@ -174,42 +174,6 @@
   z-index: 2;
 }
 
-/* Block-user button for community cards.
-   Sits in the opposite top corner from .favoriteButton so they never collide:
-   .favoriteButton is top/right, .blockButton is top/left.
-   Only rendered on cards whose recipe.userId !== currentUser.uid and which
-   aren't owner cards (no edit/delete buttons), so there is no overlap with
-   .actionButtons. */
-.blockButton {
-  position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
-  background: rgba(255, 255, 255, 0.9);
-  border: none;
-  border-radius: 50%;
-  width: 2.25rem;
-  height: 2.25rem;
-  padding: 0;
-  margin: 0;
-  box-sizing: border-box;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: var(--transition);
-  z-index: 2;
-  color: var(--clr-text-primary);
-  -webkit-appearance: none;
-  appearance: none;
-  line-height: 0;
-}
-
-.blockButton:hover {
-  background: var(--clr-bg-card);
-  color: var(--clr-danger-600);
-  transform: scale(1.08);
-}
-
 /* Mouse / trackpad only — iPhone first-tap was triggering sticky :hover instead of opening recipe */
 @media (hover: hover) and (pointer: fine) {
   .recipeCard:hover .actionButtons {

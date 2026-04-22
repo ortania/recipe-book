@@ -13,7 +13,7 @@ import {
   Tags,
   Music,
 } from "lucide-react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { CloseButton } from "../controls/close-button";
 import { useNavigation } from "./NavigationContext";
 
@@ -56,6 +56,11 @@ export default function NavigationSidebar() {
     classes,
     t,
   } = useNavigation();
+  const location = useLocation();
+  const settingsFrom =
+    location.pathname === "/settings"
+      ? undefined
+      : `${location.pathname}${location.search || ""}`;
 
   return (
     <nav className={`${classes.nav} ${isOpen ? classes.open : ""}`}>
@@ -159,6 +164,7 @@ export default function NavigationSidebar() {
         <div className={classes.separator}></div>
         <NavLink
           to="/settings"
+          state={settingsFrom ? { from: settingsFrom } : undefined}
           onClick={closeSidebar}
           className={({ isActive }) =>
             `${classes.navLink} ${isActive ? classes.active : ""}`
