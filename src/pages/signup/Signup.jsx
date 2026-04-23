@@ -35,6 +35,7 @@ function Signup() {
   // user accepts it, edits past it, or explicitly keeps what they typed.
   const [emailSuggestion, setEmailSuggestion] = useState("");
   const [suggestionDismissed, setSuggestionDismissed] = useState(false);
+  const [ageConsent, setAgeConsent] = useState(false);
   const [onboardingDone, setOnboardingDone] = useState(
     () => !!localStorage.getItem("onboardingDone"),
   );
@@ -73,7 +74,8 @@ function Signup() {
     !getError("displayName", displayName) &&
     !getError("email", email) &&
     !getError("password", password) &&
-    !getError("confirmPassword", confirmPassword);
+    !getError("confirmPassword", confirmPassword) &&
+    ageConsent;
 
   const handleFocus = () => {};
 
@@ -318,6 +320,32 @@ function Signup() {
           <ShieldCheck size={16} />
         </FormInput>
 
+        <label className={classes.consentRow}>
+          <input
+            type="checkbox"
+            className={buttonClasses.checkBox}
+            checked={ageConsent}
+            onChange={(e) => setAgeConsent(e.target.checked)}
+          />
+          <span className={classes.consentText}>
+            אני מאשר/ת שאני בן/בת 13 ומעלה, וקראתי והסכמתי ל
+            <span
+              className={classes.link}
+              onClick={() => navigate("/terms")}
+            >
+              תנאי השימוש
+            </span>
+            {" ול"}
+            <span
+              className={classes.link}
+              onClick={() => navigate("/privacy")}
+            >
+              מדיניות הפרטיות
+            </span>
+            .
+          </span>
+        </label>
+
         <button
           type="submit"
           disabled={isLoading || !isFormValid}
@@ -334,7 +362,7 @@ function Signup() {
           type="button"
           className={classes.googleBtn}
           onClick={handleGoogleSignIn}
-          disabled={isGoogleLoading}
+          disabled={isGoogleLoading || !ageConsent}
         >
           <svg width="20" height="20" viewBox="0 0 48 48">
             <path
