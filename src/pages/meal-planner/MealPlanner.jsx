@@ -265,24 +265,39 @@ function MealPlanner() {
                 </span>
               </div>
 
-              {mealRecipes.map((recipe) => (
-                <div
-                  key={recipe.id}
-                  className={classes.mealRecipeItem}
-                  onClick={() => navigate(`/recipe/${recipe.id}`)}
-                >
-                  <ChevronLeft size={16} className={classes.recipeNavArrow} />
-                  <span className={classes.recipeName}>{recipe.name}</span>
-                  <CloseButton
-                    className={classes.removeBtn}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      removeRecipeFromDay(selectedDay, meal, recipe.id);
-                    }}
-                    size={16}
-                  />
+              {mealRecipes.length > 0 && (
+                <div className={classes.mealRecipes}>
+                  {mealRecipes.map((recipe) => (
+                    <div
+                      key={recipe.id}
+                      className={classes.mealRecipeItem}
+                      onClick={() => navigate(`/recipe/${recipe.id}`)}
+                    >
+                      <CloseButton
+                        className={classes.removeBtn}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          removeRecipeFromDay(selectedDay, meal, recipe.id);
+                        }}
+                        size={14}
+                      />
+                      {recipe.image_src ? (
+                        <img
+                          src={recipe.image_src}
+                          alt=""
+                          className={classes.mealRecipeImage}
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className={classes.mealRecipeImageFallback}>
+                          🍽️
+                        </span>
+                      )}
+                      <span className={classes.recipeName}>{recipe.name}</span>
+                    </div>
+                  ))}
                 </div>
-              ))}
+              )}
 
               <button
                 className={`${shared.addDashedBtn} ${classes.addMealArea}`}
