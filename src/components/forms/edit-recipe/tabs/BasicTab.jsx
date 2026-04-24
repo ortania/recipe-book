@@ -24,6 +24,14 @@ export default function BasicTab() {
   // to uncheck the box — we only block turning sharing ON.
   const canShareToCommunity = currentUser?.emailVerified === true;
 
+  // Lock the sourceUrl field when the recipe was imported from a URL.
+  // Also treat legacy recipes (flag undefined but sourceUrl present) as
+  // imported, so their attribution cannot be silently removed.
+  const isSourceUrlLocked =
+    editedRecipe.importedFromUrl === true ||
+    (editedRecipe.importedFromUrl === undefined &&
+      !!(editedRecipe.sourceUrl && editedRecipe.sourceUrl.trim()));
+
   return (
     <>
       <h3 className={classes.sectionTitle}>{t("addWizard", "basicInfo")}</h3>
@@ -207,7 +215,8 @@ export default function BasicTab() {
           type="url"
           className={shared.formInput}
           placeholder="https://..."
-          value={editedRecipe.sourceUrl}
+          value={editedRecipe.sourceUrl || ""}
+          readOnly={isSourceUrlLocked}
           onChange={(e) =>
             setEditedRecipe((prev) => ({
               ...prev,
@@ -215,6 +224,11 @@ export default function BasicTab() {
             }))
           }
         />
+        {isSourceUrlLocked ? (
+          <small className={classes.shareRightsNote}>
+            {t("recipes", "sourceUrlLockedNote")}
+          </small>
+        ) : null}
       </div>
 
       {!recipe.copiedFrom && (

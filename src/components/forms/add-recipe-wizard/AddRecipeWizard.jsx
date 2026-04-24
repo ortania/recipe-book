@@ -59,6 +59,7 @@ const INITIAL_RECIPE = {
   servings: "",
   difficulty: "Unknown",
   sourceUrl: "",
+  importedFromUrl: false,
   author: "",
   videoUrl: "",
   image_src: "",
@@ -248,9 +249,12 @@ function AddRecipeWizard({
         prepTime: parsed.prepTime || prev.prepTime,
         cookTime: parsed.cookTime || prev.cookTime,
         servings: parsed.servings || prev.servings,
-        image_src: parsed.image_src || prev.image_src,
-        images: parsed.image_src ? [parsed.image_src] : prev.images,
+        // Do NOT copy image_src from imported URL (avoid hotlinking external
+        // images). User can upload their own image later.
+        image_src: prev.image_src,
+        images: prev.images,
         sourceUrl: recipeUrl,
+        importedFromUrl: true,
         author: recipeAuthor.trim() || prev.author,
         notes: parsed.notes || prev.notes,
       }));

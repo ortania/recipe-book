@@ -177,12 +177,12 @@ const translations = {
       mixed: "Public profile",
     },
     publicProfileDesc: {
-      he: "כשמסומן ומתכון שותף לקהילה עם שם המשתמש — לחיצה על השם תציג את כל המתכונים של אותו משתמש.",
-      en: "When enabled and a recipe is shared to the community with your name — tapping the name shows all your recipes.",
-      ru: "Когда включено и рецепт опубликован с вашим именем — нажатие на имя покажет все ваши рецепты.",
-      de: "Wenn aktiviert und ein Rezept mit deinem Namen geteilt wird — zeigt ein Tipp auf den Namen alle deine Rezepte.",
+      he: "כשמסומן — לחיצה על שמך על מתכון ששיתפת לקהילה תציג את שאר המתכונים ששיתפת לקהילה בלבד. מתכונים אישיים לעולם לא יוצגו.",
+      en: "When enabled, tapping your name on a recipe you shared to the community will show only the other recipes you shared. Your private recipes are never shown.",
+      ru: "Когда включено, нажатие на ваше имя у опубликованного рецепта покажет только другие рецепты, которые вы опубликовали. Личные рецепты никогда не показываются.",
+      de: "Wenn aktiviert: Ein Tipp auf deinen Namen bei einem geteilten Rezept zeigt nur weitere Rezepte, die du geteilt hast. Private Rezepte werden nie angezeigt.",
       mixed:
-        "When enabled and a recipe is shared to the community with your name — tapping the name shows all your recipes.",
+        "When enabled, tapping your name on a recipe you shared to the community will show only the other recipes you shared. Your private recipes are never shown.",
     },
     privateProfileLabel: {
       he: "פרופיל פרטי",
@@ -1107,6 +1107,22 @@ const translations = {
       en: "Only share recipes you created yourself or have rights to share. Do not upload text, instructions, or images that you do not own.",
       ru: "Публикуйте только те рецепты, которые вы создали сами или имеете право публиковать. Не загружайте тексты, инструкции или изображения, которые вам не принадлежат.",
       de: "Teilen Sie nur Rezepte, die Sie selbst erstellt haben oder für die Sie die Rechte zum Teilen besitzen. Laden Sie keine Texte, Anweisungen oder Bilder hoch, die Ihnen nicht gehören.",
+    },
+    sourceUrlLockedNote: {
+      he: "מתכון זה יובא מקישור חיצוני — הקישור למקור נשמר לצורך ייחוס ולא ניתן לשינוי.",
+      en: "This recipe was imported from an external link — the source URL is kept for attribution and cannot be edited.",
+      ru: "Этот рецепт импортирован по внешней ссылке — ссылка на источник сохранена для атрибуции и не может быть изменена.",
+      de: "Dieses Rezept wurde von einem externen Link importiert — die Quell-URL wird zur Zuordnung beibehalten und kann nicht bearbeitet werden.",
+      mixed:
+        "This recipe was imported from an external link — the source URL is kept for attribution and cannot be edited.",
+    },
+    noImageImportedTip: {
+      he: "טיפ: למתכון מיובא אין תמונה כדי לא להשתמש בתמונות מאתרים חיצוניים. מומלץ להוסיף תמונה משלכם או להשאיר ריק.",
+      en: "Tip: imported recipes have no image by default so we don't reuse external-site images. You can add your own image or leave it empty.",
+      ru: "Совет: у импортированных рецептов нет изображения по умолчанию, чтобы не использовать фото с внешних сайтов. Добавьте своё изображение или оставьте пустым.",
+      de: "Tipp: Importierte Rezepte haben standardmäßig kein Bild, damit keine Bilder externer Websites verwendet werden. Du kannst ein eigenes Bild hinzufügen oder das Feld leer lassen.",
+      mixed:
+        "Tip: imported recipes have no image by default so we don't reuse external-site images. You can add your own image or leave it empty.",
     },
     shareToGlobal: {
       he: "שתף במתכוני קהילה — שמך יוצג לצד המתכון",

@@ -132,6 +132,13 @@ export default function SummaryStep() {
         </div>
       )}
 
+      {/* Friendly tip when an imported recipe has no image */}
+      {recipe.importedFromUrl && !recipe.image_src ? (
+        <small className={classes.shareRightsNote}>
+          {t("recipes", "noImageImportedTip")}
+        </small>
+      ) : null}
+
       {/* Rating */}
       <div className={shared.formGroup}>
         <label className={shared.formLabel}>{t("addWizard", "rating")}</label>

@@ -31,7 +31,8 @@ import {
   query,
   where,
 } from "firebase/firestore";
-import { auth, db } from "./config";
+import { ref as storageRef, listAll, deleteObject } from "firebase/storage";
+import { auth, db, storage } from "./config";
 import { DEFAULT_USAGE } from "../config/entitlements";
 
 const USERS_COLLECTION = "users";
@@ -218,16 +219,41 @@ export const getPrimaryAuthProvider = () => {
 };
 
 /**
+ * Extract the Storage object path from a Firebase download URL.
+ *
+ * Download URLs follow the shape:
+ *   https://firebasestorage.googleapis.com/v0/b/<bucket>/o/<urlEncodedPath>?...
+ * Returns `null` for anything that isn't a Firebase Storage URL (e.g. an
+ * external/hotlinked image from a legacy import).
+ */
+const extractStoragePathFromUrl = (url) => {
+  if (!url || typeof url !== "string") return null;
+  try {
+    const parsed = new URL(url);
+    if (!parsed.hostname.includes("firebasestorage")) return null;
+    const match = parsed.pathname.match(/\/o\/([^?]+)/);
+    if (!match) return null;
+    return decodeURIComponent(match[1]);
+  } catch {
+    return null;
+  }
+};
+
+/**
  * Clean up the user's owned content right before the Auth account is deleted.
  *
  * Strategy (privacy-aware):
- *  - Private recipes  (shareToGlobal !== true) → delete.
+ *  - Private recipes  (shareToGlobal !== true) → delete the Firestore doc AND
+ *    delete any uploaded images that belong to it from Storage.
  *  - Shared recipes   (shareToGlobal === true) → keep the recipe but clear
  *    `sharerName` and `sharerUserId` so the community feed no longer shows
- *    the deleted user's name. The recipe itself stays useful for other users.
+ *    the deleted user's name. Their uploaded image is KEPT in Storage so the
+ *    recipe stays useful for other users.
  *  - Categories owned by the user → delete.
  *  - Meal plan docs (`mealPlans/{uid}`, `{uid}_checked`, `{uid}_shoppingList`)
  *    → delete.
+ *  - Any leftover files in `recipes/{uid}/` in Storage that aren't referenced
+ *    by a surviving (shared) recipe → delete.
  *
  * NOT handled here (known limitation):
  *  - Comments the user left on other users' recipes. They live in a
@@ -239,6 +265,9 @@ export const getPrimaryAuthProvider = () => {
  * failed doc doesn't block the full delete flow.
  */
 const cleanupUserContent = async (uid) => {
+  // Paths of images we must KEEP (belong to shared recipes we're keeping).
+  const imagesToKeep = new Set();
+
   try {
     const recipesSnap = await getDocs(
       query(collection(db, RECIPES_COLLECTION), where("userId", "==", uid)),
@@ -247,6 +276,13 @@ const cleanupUserContent = async (uid) => {
       recipesSnap.docs.map((d) => {
         const data = d.data();
         if (data.shareToGlobal === true) {
+          // Collect shared recipes' image paths so we don't delete them.
+          const primary = extractStoragePathFromUrl(data.image_src);
+          if (primary) imagesToKeep.add(primary);
+          (data.images || []).forEach((u) => {
+            const p = extractStoragePathFromUrl(u);
+            if (p) imagesToKeep.add(p);
+          });
           return updateDoc(d.ref, {
             sharerName: "",
             sharerUserId: "",
@@ -261,6 +297,24 @@ const cleanupUserContent = async (uid) => {
     );
   } catch (err) {
     console.warn("cleanupUserContent: recipes step failed:", err);
+  }
+
+  // Storage cleanup: delete every uploaded image under `recipes/{uid}/` that
+  // doesn't belong to a surviving shared recipe.
+  try {
+    const folderRef = storageRef(storage, `recipes/${uid}`);
+    const listResult = await listAll(folderRef);
+    await Promise.all(
+      listResult.items
+        .filter((itemRef) => !imagesToKeep.has(itemRef.fullPath))
+        .map((itemRef) =>
+          deleteObject(itemRef).catch((e) =>
+            console.warn("Failed to delete storage file", itemRef.fullPath, e),
+          ),
+        ),
+    );
+  } catch (err) {
+    console.warn("cleanupUserContent: storage step failed:", err);
   }
 
   try {

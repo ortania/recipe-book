@@ -4,6 +4,14 @@ import { useWizard } from "../WizardContext";
 export default function BasicInfoStep() {
   const { recipe, updateRecipe, classes, shared, t } = useWizard();
 
+  // Lock the sourceUrl field when the recipe was imported from a URL so
+  // attribution cannot be accidentally removed. Also covers legacy recipes
+  // where the flag is absent but a sourceUrl is already present.
+  const isSourceUrlLocked =
+    recipe.importedFromUrl === true ||
+    (recipe.importedFromUrl === undefined &&
+      !!(recipe.sourceUrl && recipe.sourceUrl.trim()));
+
   return (
     <div className={classes.stepContent}>
       <h3 className={classes.stepSectionTitle}>
@@ -117,9 +125,15 @@ export default function BasicInfoStep() {
           type="url"
           className={shared.formInput}
           placeholder="https://..."
-          value={recipe.sourceUrl}
+          value={recipe.sourceUrl || ""}
+          readOnly={isSourceUrlLocked}
           onChange={(e) => updateRecipe("sourceUrl", e.target.value)}
         />
+        {isSourceUrlLocked ? (
+          <small className={classes.shareRightsNote}>
+            {t("recipes", "sourceUrlLockedNote")}
+          </small>
+        ) : null}
       </div>
     </div>
   );

@@ -62,6 +62,12 @@ export default function ImageCategoriesStep() {
           t={t}
         />
 
+        {recipe.importedFromUrl && !recipe.image_src ? (
+          <small className={classes.shareRightsNote}>
+            {t("recipes", "noImageImportedTip")}
+          </small>
+        ) : null}
+
         {importError && <p className={classes.errorText}>{importError}</p>}
       </div>
 

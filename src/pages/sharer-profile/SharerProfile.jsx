@@ -58,7 +58,7 @@ function SharerProfile() {
 
         if (sharer?.publicProfile) {
           const [sharerRecipes, cats] = await Promise.all([
-            fetchSharerRecipes(sharerUserId, true),
+            fetchSharerRecipes(sharerUserId),
             fetchCategories(sharerUserId),
           ]);
           setSharerRecipes(sharerRecipes);

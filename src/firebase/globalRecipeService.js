@@ -76,21 +76,25 @@ export const fetchGlobalRecipes = async (currentUserId) => {
   });
 };
 
-export const fetchSharerRecipes = async (sharerUserId, isPublicProfile) => {
+export const fetchSharerRecipes = async (sharerUserId) => {
   try {
     const ref = collection(db, RECIPES_COLLECTION);
 
-    const snap = await getDocs(query(ref, where("userId", "==", sharerUserId)));
+    // Always restrict to recipes the user explicitly shared to the community.
+    // publicProfile only controls whether the profile itself is visible; it
+    // must never expose private/personal recipes.
+    const snap = await getDocs(
+      query(
+        ref,
+        where("userId", "==", sharerUserId),
+        where("shareToGlobal", "==", true),
+      ),
+    );
 
-    let recipes = [];
+    const recipes = [];
     snap.forEach((d) => {
-      const data = d.data();
-      recipes.push({ id: d.id, ...data });
+      recipes.push({ id: d.id, ...d.data() });
     });
-
-    if (!isPublicProfile) {
-      recipes = recipes.filter((r) => r.shareToGlobal === true);
-    }
 
     recipes.sort((a, b) =>
       (b.updatedAt || "").localeCompare(a.updatedAt || ""),
@@ -114,6 +118,18 @@ export const copyRecipeToUser = async (recipeId, targetUserId, targetLang) => {
       avgRating, ratingCount,
       ...recipeData
     } = srcData;
+
+    // If the source recipe was imported from the web (either explicitly
+    // flagged or legacy recipes that have a non-empty sourceUrl), keep
+    // attribution on the copy and do NOT carry over the external image.
+    const isImported =
+      recipeData.importedFromUrl === true ||
+      (recipeData.importedFromUrl === undefined && !!recipeData.sourceUrl);
+    if (isImported) {
+      recipeData.importedFromUrl = true;
+      recipeData.image_src = "";
+      recipeData.images = [];
+    }
 
     let translatedData = recipeData;
     if (targetLang && targetLang !== "mixed") {

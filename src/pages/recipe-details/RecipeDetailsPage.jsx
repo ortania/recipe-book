@@ -307,6 +307,12 @@ function RecipeDetailsPage() {
 
   const handleDuplicate = async () => {
     if (!recipe) return;
+    // If the source recipe was imported from a URL (explicitly, or legacy
+    // recipes that have a non-empty sourceUrl), keep attribution on the
+    // duplicate too.
+    const isImported =
+      recipe.importedFromUrl === true ||
+      (recipe.importedFromUrl === undefined && !!recipe.sourceUrl);
     const duplicated = {
       name: `${recipe.name} (${t("recipes", "copy")})`,
       ingredients: [...(recipe.ingredients || [])],
@@ -316,6 +322,7 @@ function RecipeDetailsPage() {
       servings: recipe.servings,
       difficulty: recipe.difficulty,
       sourceUrl: recipe.sourceUrl,
+      importedFromUrl: isImported,
       image_src: recipe.image_src,
       images: recipe.images ? [...recipe.images] : [],
       categories: [...(recipe.categories || [])],
@@ -350,6 +357,9 @@ function RecipeDetailsPage() {
       servings: recipe.servings || "",
       difficulty: recipe.difficulty || "Unknown",
       sourceUrl: recipe.sourceUrl || "",
+      importedFromUrl:
+        recipe.importedFromUrl === true ||
+        (recipe.importedFromUrl === undefined && !!recipe.sourceUrl),
       author: recipe.author || "",
       image_src: recipe.image_src || "",
       images: recipe.images ? [...recipe.images] : [],
