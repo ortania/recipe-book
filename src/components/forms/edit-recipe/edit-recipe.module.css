@@ -289,6 +289,84 @@
   line-height: 1.35;
 }
 
+/* ─── "Already shared" panel ─────────────────────────────────────
+ * Shown instead of the share checkbox when the recipe is currently
+ * published to the community. Communicates that the community
+ * version is frozen and lets the user open the unshare dialog. */
+.sharedPanel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  padding: 0.9rem 1rem;
+  border-radius: 12px;
+  border: 1px solid var(--clr-border-light);
+  background: var(--clr-bg-card);
+}
+
+.sharedPanelHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--clr-text-primary);
+  font-weight: var(--font-weight-heading);
+  font-size: var(--basic-font);
+}
+
+.sharedBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.15em 0.6em;
+  border-radius: 999px;
+  font-size: var(--very-small-font);
+  font-weight: var(--font-weight-heading);
+  background: color-mix(in srgb, #2ecc71 14%, transparent);
+  color: #1f9a52;
+  white-space: nowrap;
+}
+
+.sharedMeta {
+  font-size: var(--very-small-font);
+  color: var(--clr-text-muted);
+  line-height: 1.4;
+}
+
+.sharedWarning {
+  display: block;
+  margin-top: 0.15rem;
+  padding: 0.5em 0.75em;
+  border-radius: 8px;
+  background: color-mix(in srgb, #f5a524 14%, transparent);
+  color: color-mix(in srgb, #b26d00 80%, var(--clr-text-primary));
+  font-size: var(--very-small-font);
+  line-height: 1.4;
+}
+
+.unshareBtn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4em;
+  padding: 0.55em 1em;
+  border-radius: 999px;
+  border: 1px solid var(--clr-border-light);
+  background: transparent;
+  color: var(--clr-text-primary);
+  font-size: var(--very-small-font);
+  font-weight: var(--font-weight-heading);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.unshareBtn:hover {
+  background: var(--clr-bg-hover);
+}
+
+.unshareBtn:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
 /* ========== Star Rating ========== */
 .starRating {
   display: flex;

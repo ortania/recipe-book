@@ -277,15 +277,37 @@ const cleanupUserContent = async (uid) => {
         const data = d.data();
         if (data.shareToGlobal === true) {
           // Collect shared recipes' image paths so we don't delete them.
+          // Community viewers see the snapshot fields, so preserve images
+          // referenced there too (in addition to the live fields, which
+          // are there for legacy shared recipes without a snapshot).
           const primary = extractStoragePathFromUrl(data.image_src);
           if (primary) imagesToKeep.add(primary);
           (data.images || []).forEach((u) => {
             const p = extractStoragePathFromUrl(u);
             if (p) imagesToKeep.add(p);
           });
+          const snap = data.publishedSnapshot;
+          if (snap) {
+            const snapPrimary = extractStoragePathFromUrl(snap.image_src);
+            if (snapPrimary) imagesToKeep.add(snapPrimary);
+            (snap.images || []).forEach((u) => {
+              const p = extractStoragePathFromUrl(u);
+              if (p) imagesToKeep.add(p);
+            });
+          }
+          // Anonymize the recipe at both the top level (used by the
+          // sharer-profile query and the community feed filter) and
+          // inside the frozen snapshot (used by community viewers).
           return updateDoc(d.ref, {
             sharerName: "",
             sharerUserId: "",
+            showMyName: false,
+            ...(snap
+              ? {
+                  "publishedSnapshot.sharerName": "",
+                  "publishedSnapshot.sharerUserId": "",
+                }
+              : {}),
           }).catch((e) =>
             console.warn("Failed to anonymize recipe", d.id, e),
           );

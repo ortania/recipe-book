@@ -31,6 +31,7 @@ import {
 } from "../../../services/openai";
 import { ingredientsOnly } from "../../../utils/ingredientUtils";
 import { makeGroupHeader } from "../../../utils/ingredientUtils";
+import { buildPublishedSnapshot } from "../../../utils/publishedSnapshot";
 import { EditRecipeContext } from "./EditRecipeContext";
 import { ConfirmDialog } from "../confirm-dialog";
 import BasicTab from "./tabs/BasicTab";
@@ -157,6 +158,11 @@ function EditRecipe({
     rating: recipe.rating || 0,
     shareToGlobal: recipe.shareToGlobal || false,
     showMyName: recipe.showMyName || false,
+    // Tracked in local state so the "shared / unshared" panel can react
+    // to immediate writes (publish / unshare dialog) without refetching.
+    publishedSnapshot: recipe.publishedSnapshot || null,
+    sharerUserId: recipe.sharerUserId || "",
+    sharerName: recipe.sharerName || "",
     nutrition: {
       calories: "",
       protein: "",
@@ -205,6 +211,10 @@ function EditRecipe({
       notes: recipe.notes || "",
       rating: recipe.rating || 0,
       shareToGlobal: recipe.shareToGlobal || false,
+      showMyName: recipe.showMyName || false,
+      publishedSnapshot: recipe.publishedSnapshot || null,
+      sharerUserId: recipe.sharerUserId || "",
+      sharerName: recipe.sharerName || "",
       nutrition: {
         calories: "",
         protein: "",
@@ -641,8 +651,38 @@ function EditRecipe({
       author: editedRecipe.author || "",
       shareToGlobal: editedRecipe.shareToGlobal,
       showMyName: editedRecipe.shareToGlobal ? editedRecipe.showMyName : false,
+      // Carry snapshot + sharer fields from local state so the save
+      // reflects any immediate unshare/anonymize that happened in the
+      // form. If the user just toggled sharing ON for the first time,
+      // we build a fresh snapshot from the current content below.
+      publishedSnapshot: editedRecipe.publishedSnapshot || undefined,
+      sharerUserId: editedRecipe.shareToGlobal
+        ? editedRecipe.sharerUserId || ""
+        : "",
+      sharerName: editedRecipe.shareToGlobal
+        ? editedRecipe.sharerName || ""
+        : "",
       nutrition,
     };
+
+    // Publishing for the first time: freeze the current content into a
+    // snapshot. Subsequent edits won't change the community version.
+    const wasShared = recipe.shareToGlobal === true;
+    const willBeShared = editedRecipe.shareToGlobal === true;
+    const hadSnapshot = !!recipe.publishedSnapshot;
+    if (!wasShared && willBeShared && !hadSnapshot) {
+      const showMyName = !!editedRecipe.showMyName;
+      const snapshot = buildPublishedSnapshot(updatedRecipe, {
+        sharerUserId: showMyName ? currentUser?.uid : "",
+        sharerName: showMyName ? currentUser?.displayName || "" : "",
+      });
+      updatedRecipe.publishedSnapshot = snapshot;
+      updatedRecipe.sharerUserId = snapshot.sharerUserId || "";
+      updatedRecipe.sharerName = snapshot.sharerName || "";
+      updatedRecipe.avgRating = 0;
+      updatedRecipe.ratingCount = 0;
+    }
+
     if (updatedRecipe.parentRecipeId === updatedRecipe.id) {
       delete updatedRecipe.parentRecipeId;
       delete updatedRecipe.parentRecipeName;

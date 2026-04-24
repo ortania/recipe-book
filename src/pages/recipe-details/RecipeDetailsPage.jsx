@@ -16,6 +16,7 @@ import useEntitlements from "../../hooks/useEntitlements";
 import { PremiumFeaturePopup } from "../../components/premium-popup";
 import { getRecipeById } from "../../firebase/recipeService";
 import { copyRecipeToUser as copyRecipeToUserGlobal } from "../../firebase/globalRecipeService";
+import { resolveCommunityView } from "../../utils/publishedSnapshot";
 import { getUserRating, setUserRating } from "../../firebase/ratingService";
 import useTranslatedRecipe from "../../hooks/useTranslatedRecipe";
 import useTranslatedList from "../../hooks/useTranslatedList";
@@ -56,10 +57,18 @@ function RecipeDetailsPage() {
   const [fetchedRecipe, setFetchedRecipe] = useState(null);
   const [fetchingRemote, setFetchingRemote] = useState(false);
 
-  const recipe = localRecipe || contextRecipe || fetchedRecipe;
+  const rawRecipe = localRecipe || contextRecipe || fetchedRecipe;
 
-  const isOwner = recipe && currentUser && recipe.userId === currentUser.uid;
-  const isGlobalRecipe = recipe && !isOwner;
+  const isOwner =
+    rawRecipe && currentUser && rawRecipe.userId === currentUser.uid;
+  const isGlobalRecipe = rawRecipe && !isOwner;
+
+  // Non-owners see the frozen community snapshot, never the sharer's
+  // private edits. Owners keep seeing their live, editable content.
+  const recipe = useMemo(
+    () => (isGlobalRecipe ? resolveCommunityView(rawRecipe) : rawRecipe),
+    [rawRecipe, isGlobalRecipe],
+  );
 
   const [globalUserRating, setGlobalUserRating] = useState(0);
 

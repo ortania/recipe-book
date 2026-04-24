@@ -1,0 +1,128 @@
+.dialog {
+  padding: 2rem 1.75rem;
+  text-align: start;
+}
+
+.dialog h3 {
+  margin: 0 0 0.5rem;
+  color: var(--clr-text-primary);
+  font-size: var(--large-font);
+  font-weight: var(--font-weight-heading);
+  text-align: center;
+}
+
+.recipeName {
+  margin: 0 0 1rem;
+  text-align: center;
+  font-style: italic;
+  color: var(--clr-text-secondary);
+  font-size: var(--basic-font);
+}
+
+.intro {
+  margin: 0 0 1.25rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: var(--clr-text-secondary);
+  text-align: center;
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.option {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.9em 1em;
+  border-radius: 14px;
+  border: 1px solid var(--clr-border-light);
+  background: var(--clr-bg-card);
+  cursor: pointer;
+  transition: var(--transition);
+  text-align: start;
+  color: var(--clr-text-primary);
+}
+
+.option:hover {
+  background: var(--clr-bg-hover);
+}
+
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: var(--clr-bg-primary);
+  color: var(--clr-text-primary);
+}
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.text strong {
+  font-size: 0.95rem;
+  font-weight: var(--font-weight-heading);
+  color: var(--clr-text-primary);
+}
+
+.text small {
+  font-size: 0.8rem;
+  color: var(--clr-text-secondary);
+  line-height: 1.45;
+}
+
+.primary {
+  border-color: var(--clr-accent, #f5a524);
+}
+
+.primary .icon {
+  background: color-mix(in srgb, var(--clr-accent, #f5a524) 15%, transparent);
+  color: var(--clr-accent, #f5a524);
+}
+
+.danger .icon {
+  background: color-mix(in srgb, #d33a3a 12%, transparent);
+  color: #d33a3a;
+}
+
+.cancel {
+  width: 100%;
+  padding: 0.7em 1em;
+  border-radius: 50px;
+  font-size: var(--basic-font);
+  font-weight: var(--font-weight-heading);
+  background: transparent;
+  color: var(--clr-text-secondary);
+  border: 1px solid var(--clr-border-light);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.cancel:hover {
+  background: var(--clr-bg-hover);
+}
+
+@media (max-width: 500px) {
+  .dialog {
+    padding: 1.5rem 1.25rem;
+  }
+  .option {
+    padding: 0.8em;
+  }
+  .icon {
+    width: 36px;
+    height: 36px;
+  }
+}

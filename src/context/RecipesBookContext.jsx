@@ -438,10 +438,17 @@ export const RecipeBookProvider = ({ children }) => {
     try {
       if (!currentUser) throw new Error("No user logged in");
       const enriched = { ...newRecipe };
-      if (enriched.shareToGlobal) {
+      // Attribute the shared recipe only when the user actually asked to
+      // show their name. An anonymous share (showMyName === false) must
+      // keep the sharer fields empty so community viewers don't see who
+      // published it.
+      if (enriched.shareToGlobal && enriched.showMyName !== false) {
         enriched.sharerName =
           currentUser.displayName || currentUser.email?.split("@")[0] || "";
         enriched.sharerUserId = currentUser.uid;
+      } else if (enriched.shareToGlobal) {
+        enriched.sharerName = "";
+        enriched.sharerUserId = "";
       } else {
         enriched.sharerName = "";
         enriched.sharerUserId = "";
@@ -459,10 +466,14 @@ export const RecipeBookProvider = ({ children }) => {
   const _editRecipeBase = handleEditRecipe(setRecipes);
   const editRecipe = async (editedRecipe) => {
     const enriched = { ...editedRecipe };
-    if (enriched.shareToGlobal && currentUser) {
+    // Preserve anonymize-unshare state: if the recipe is shared but the
+    // user chose to hide their name, never auto-re-add attribution here.
+    if (enriched.shareToGlobal && currentUser && enriched.showMyName !== false) {
       enriched.sharerName =
         currentUser.displayName || currentUser.email?.split("@")[0] || "";
       enriched.sharerUserId = currentUser.uid;
+    } else if (enriched.shareToGlobal) {
+      // Anonymously shared — leave sharer fields as provided (cleared).
     } else if (!enriched.copiedFrom) {
       enriched.sharerName = "";
       enriched.sharerUserId = "";

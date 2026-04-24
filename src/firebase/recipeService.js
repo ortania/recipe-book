@@ -12,9 +12,11 @@ import {
   limit,
   startAfter,
   writeBatch,
+  deleteField,
 } from "firebase/firestore";
 import { db } from "./config";
 import { translateRecipeContent } from "../utils/translateContent";
+import { buildPublishedSnapshot } from "../utils/publishedSnapshot";
 
 const RECIPES_COLLECTION = "recipes";
 export const RECIPES_PER_PAGE = 50;
@@ -141,6 +143,83 @@ export const updateRecipe = async (recipeId, updatedData) => {
     console.error("Error updating recipe:", error);
     throw error;
   }
+};
+
+/**
+ * Publish a recipe to the community. Freezes the current content into a
+ * `publishedSnapshot` field on the same doc and flips `shareToGlobal`.
+ * Subsequent edits to the live fields on this doc do NOT change the
+ * community view — the community reads from the snapshot.
+ *
+ * Re-publishing (after a previous unshare) creates a fresh snapshot and
+ * resets ratings.
+ */
+export const publishRecipeToCommunity = async (
+  recipeId,
+  recipeContent,
+  { sharerUserId, sharerName, showMyName = true } = {},
+) => {
+  try {
+    const recipeRef = doc(db, RECIPES_COLLECTION, recipeId);
+    const snapshot = buildPublishedSnapshot(recipeContent, {
+      sharerUserId: showMyName ? sharerUserId : "",
+      sharerName: showMyName ? sharerName || "" : "",
+    });
+    await updateDoc(recipeRef, {
+      shareToGlobal: true,
+      showMyName: !!showMyName,
+      // Keep top-level sharer fields in sync with the snapshot so existing
+      // queries that read the top-level fields (community feed, sharer
+      // profile filter) continue to work without a server-side change.
+      sharerUserId: snapshot.sharerUserId || "",
+      sharerName: snapshot.sharerName || "",
+      publishedSnapshot: snapshot,
+      // A new publication resets community feedback.
+      avgRating: 0,
+      ratingCount: 0,
+      updatedAt: new Date().toISOString(),
+    });
+    return snapshot;
+  } catch (error) {
+    console.error("Error publishing recipe to community:", error);
+    throw error;
+  }
+};
+
+/**
+ * Unshare a previously-shared recipe.
+ *
+ * @param {"remove"|"anonymize"} mode
+ *   - "remove"   : fully pull from the community. `shareToGlobal = false`,
+ *                  `publishedSnapshot` is deleted, sharer attribution is
+ *                  cleared. The recipe becomes private again.
+ *   - "anonymize": keep the community post visible but remove the
+ *                  sharer's name/id. `shareToGlobal` stays `true`, the
+ *                  snapshot stays (content is unchanged), only the
+ *                  attribution fields are cleared.
+ */
+export const unshareRecipeFromCommunity = async (recipeId, mode) => {
+  const recipeRef = doc(db, RECIPES_COLLECTION, recipeId);
+  if (mode === "anonymize") {
+    await updateDoc(recipeRef, {
+      sharerUserId: "",
+      sharerName: "",
+      showMyName: false,
+      "publishedSnapshot.sharerUserId": "",
+      "publishedSnapshot.sharerName": "",
+      updatedAt: new Date().toISOString(),
+    });
+    return;
+  }
+  // "remove" (default / fallback)
+  await updateDoc(recipeRef, {
+    shareToGlobal: false,
+    showMyName: false,
+    sharerUserId: "",
+    sharerName: "",
+    publishedSnapshot: deleteField(),
+    updatedAt: new Date().toISOString(),
+  });
 };
 
 export const deleteRecipe = async (recipeId) => {

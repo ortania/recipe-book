@@ -10,6 +10,7 @@ import {
 } from "firebase/firestore";
 import { db } from "./config";
 import { translateRecipeContent } from "../utils/translateContent";
+import { resolveCommunityView } from "../utils/publishedSnapshot";
 
 const RECIPES_COLLECTION = "recipes";
 const SEARCH_COMMUNITY_URL = import.meta.env.VITE_CLOUD_SEARCH_URL;
@@ -93,7 +94,9 @@ export const fetchSharerRecipes = async (sharerUserId) => {
 
     const recipes = [];
     snap.forEach((d) => {
-      recipes.push({ id: d.id, ...d.data() });
+      // Always surface the frozen community version, not the sharer's
+      // current private edits.
+      recipes.push(resolveCommunityView({ id: d.id, ...d.data() }));
     });
 
     recipes.sort((a, b) =>
@@ -112,12 +115,22 @@ export const copyRecipeToUser = async (recipeId, targetUserId, targetLang) => {
     const snap = await getDoc(srcRef);
     if (!snap.exists()) throw new Error("Recipe not found");
 
-    const srcData = snap.data();
+    // Always copy the community-visible version of the recipe — this is
+    // the frozen snapshot that was published, not the sharer's current
+    // private edits. Legacy recipes without a snapshot fall back to the
+    // live fields (which IS what the community sees for them).
+    const communityView = resolveCommunityView({ id: snap.id, ...snap.data() });
     const {
+      id: _srcId,
       userId, createdAt, updatedAt, order, categories,
       avgRating, ratingCount,
+      publishedSnapshot,
+      shareToGlobal,
+      sharerUserId,
+      sharerName,
+      showMyName,
       ...recipeData
-    } = srcData;
+    } = communityView;
 
     // If the source recipe was imported from the web (either explicitly
     // flagged or legacy recipes that have a non-empty sourceUrl), keep

@@ -1,15 +1,39 @@
-import React from "react";
-import { Heart, Globe, Star } from "lucide-react";
+import { useState } from "react";
+import { Heart, Globe, Star, CheckCircle2, AlertCircle } from "lucide-react";
 import { useEditRecipe } from "../EditRecipeContext";
-import { useRecipeBook } from "../../../../context";
+import { useRecipeBook, useLanguage } from "../../../../context";
 import { VerifyEmailHint } from "../../../banners/verify-email-hint";
+import { ConfirmDialog } from "../../confirm-dialog";
+import { UnshareDialog } from "../../unshare-dialog";
+import { Toast } from "../../../controls";
+import { unshareRecipeFromCommunity } from "../../../../firebase/recipeService";
+import { hasUnpublishedChanges } from "../../../../utils/publishedSnapshot";
+
+/**
+ * Format a publishedAt ISO string for a short, localized display.
+ * Falls back to the raw string if Date parsing fails.
+ */
+const formatPublishedDate = (iso, lang) => {
+  if (!iso) return "";
+  try {
+    const d = new Date(iso);
+    const locale =
+      lang === "he" ? "he-IL" : lang === "ru" ? "ru-RU" : lang === "de" ? "de-DE" : "en-US";
+    return d.toLocaleDateString(locale, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  } catch {
+    return iso;
+  }
+};
 
 export default function BasicTab() {
   const {
     editedRecipe,
     setEditedRecipe,
     recipe,
-    handleChange,
     handleServingsChange,
     toggleFavorite,
     classes,
@@ -19,6 +43,7 @@ export default function BasicTab() {
   } = useEditRecipe();
 
   const { currentUser } = useRecipeBook();
+  const { language } = useLanguage();
   // Gate community sharing on verified email. If the recipe is already
   // shared and the user somehow becomes unverified, we still allow them
   // to uncheck the box — we only block turning sharing ON.
@@ -31,6 +56,116 @@ export default function BasicTab() {
     editedRecipe.importedFromUrl === true ||
     (editedRecipe.importedFromUrl === undefined &&
       !!(editedRecipe.sourceUrl && editedRecipe.sourceUrl.trim()));
+
+  // ── Share / unshare UI state ───────────────────────────────────
+  // The source of truth for "is this recipe currently shared?" is the
+  // persisted `recipe.shareToGlobal`, not the form state. That way the
+  // checkbox vs. "already shared" panel doesn't flicker mid-edit.
+  const isPersistedShared = recipe.shareToGlobal === true;
+  const publishedAt =
+    editedRecipe.publishedSnapshot?.publishedAt ||
+    recipe.publishedSnapshot?.publishedAt ||
+    "";
+  // Show the "you have unpublished edits" warning when the owner has
+  // changed content-fields since the last publish.
+  const showDriftWarning = hasUnpublishedChanges({
+    ...editedRecipe,
+    publishedSnapshot: editedRecipe.publishedSnapshot,
+  });
+
+  const [showPublishConfirm, setShowPublishConfirm] = useState(false);
+  const [showUnshareDialog, setShowUnshareDialog] = useState(false);
+  const [unsharing, setUnsharing] = useState(false);
+  const [toast, setToast] = useState({ open: false, message: "", variant: "success" });
+
+  // User ticks the "share" checkbox (from off → on). We don't flip the
+  // state yet — first, explain the freeze semantics and get confirmation.
+  const handleShareClick = () => {
+    if (!canShareToCommunity) return;
+    setShowPublishConfirm(true);
+  };
+
+  const confirmPublish = () => {
+    setShowPublishConfirm(false);
+    setEditedRecipe((prev) => ({
+      ...prev,
+      shareToGlobal: true,
+      showMyName: true,
+    }));
+    setToast({
+      open: true,
+      message: t("recipes", "publishSuccess"),
+      variant: "success",
+    });
+  };
+
+  // User picks "anonymize" or "remove" in the unshare dialog. We write
+  // to Firestore *immediately* so the community sees the change without
+  // waiting for the main Save button. The form's local state is kept in
+  // sync so the main Save doesn't roll the change back.
+  const handleUnsharePick = async (mode) => {
+    if (unsharing) return;
+    setUnsharing(true);
+    try {
+      await unshareRecipeFromCommunity(recipe.id, mode);
+      if (mode === "remove") {
+        setEditedRecipe((prev) => ({
+          ...prev,
+          shareToGlobal: false,
+          showMyName: false,
+          publishedSnapshot: null,
+          sharerUserId: "",
+          sharerName: "",
+        }));
+        // Mutate the prop so spread-based save paths don't re-introduce
+        // the stale snapshot. The parent refetches on next interaction.
+        recipe.shareToGlobal = false;
+        recipe.publishedSnapshot = null;
+        recipe.sharerUserId = "";
+        recipe.sharerName = "";
+        setToast({
+          open: true,
+          message: t("recipes", "unshareSuccessRemove"),
+          variant: "success",
+        });
+      } else {
+        setEditedRecipe((prev) => ({
+          ...prev,
+          showMyName: false,
+          sharerUserId: "",
+          sharerName: "",
+          publishedSnapshot: prev.publishedSnapshot
+            ? {
+                ...prev.publishedSnapshot,
+                sharerUserId: "",
+                sharerName: "",
+              }
+            : prev.publishedSnapshot,
+        }));
+        recipe.sharerUserId = "";
+        recipe.sharerName = "";
+        if (recipe.publishedSnapshot) {
+          recipe.publishedSnapshot.sharerUserId = "";
+          recipe.publishedSnapshot.sharerName = "";
+        }
+        setToast({
+          open: true,
+          message: t("recipes", "unshareSuccessAnonymize"),
+          variant: "success",
+        });
+      }
+      setShowUnshareDialog(false);
+    } catch (err) {
+      console.error("Unshare failed:", err);
+      setToast({
+        open: true,
+        message: err.message || "Failed",
+        variant: "error",
+      });
+    } finally {
+      setUnsharing(false);
+    }
+  };
 
   return (
     <>
@@ -233,41 +368,121 @@ export default function BasicTab() {
 
       {!recipe.copiedFrom && (
         <div className={shared.formGroup}>
-          <label
-            className={`${classes.checkboxLabel} ${
-              !canShareToCommunity && !editedRecipe.shareToGlobal
-                ? classes.shareDisabled
-                : ""
-            }`}
-          >
-            <input
-              type="checkbox"
-              name="shareToGlobal"
-              className={buttonClasses.checkBox}
-              checked={editedRecipe.shareToGlobal}
-              disabled={!canShareToCommunity && !editedRecipe.shareToGlobal}
-              onChange={(e) => {
-                // Allow turning OFF sharing at any time. Only block turning
-                // it ON if the email isn't verified.
-                if (e.target.checked && !canShareToCommunity) return;
-                handleChange(e);
-                if (!e.target.checked) {
-                  setEditedRecipe((prev) => ({ ...prev, showMyName: false }));
-                }
-              }}
-            />
-            <Globe size={16} />
-            <span>{t("recipes", "shareToGlobal")}</span>
-          </label>
-          {!canShareToCommunity && !editedRecipe.shareToGlobal ? (
-            <VerifyEmailHint message={t("auth", "verifyShareBlocked")} />
+          {isPersistedShared ? (
+            /* ─── Already-shared panel ─────────────────────────── */
+            <div className={classes.sharedPanel}>
+              <div className={classes.sharedPanelHeader}>
+                <span className={classes.sharedBadge}>
+                  <CheckCircle2 size={14} /> {t("recipes", "shareToGlobal")}
+                </span>
+                {publishedAt ? (
+                  <span className={classes.sharedMeta}>
+                    {t("recipes", "publishedOn")}{" "}
+                    {formatPublishedDate(publishedAt, language)}
+                  </span>
+                ) : null}
+              </div>
+              <div className={classes.sharedMeta}>
+                {t("recipes", "shareFreezeNote")}
+              </div>
+              {showDriftWarning ? (
+                <span className={classes.sharedWarning}>
+                  <AlertCircle
+                    size={14}
+                    style={{ verticalAlign: "text-bottom", marginInlineEnd: 4 }}
+                  />
+                  {t("recipes", "unpublishedEditsHint")}
+                </span>
+              ) : null}
+              <button
+                type="button"
+                className={classes.unshareBtn}
+                onClick={() => setShowUnshareDialog(true)}
+                disabled={unsharing}
+              >
+                <Globe size={14} /> {t("recipes", "unshareBtn")}
+              </button>
+            </div>
           ) : (
-            <small className={classes.shareRightsNote}>
-              {t("recipes", "shareRightsNote")}
-            </small>
+            /* ─── Not shared: checkbox → publish confirmation ───── */
+            <>
+              <label
+                className={`${classes.checkboxLabel} ${
+                  !canShareToCommunity && !editedRecipe.shareToGlobal
+                    ? classes.shareDisabled
+                    : ""
+                }`}
+              >
+                <input
+                  type="checkbox"
+                  name="shareToGlobal"
+                  className={buttonClasses.checkBox}
+                  checked={editedRecipe.shareToGlobal}
+                  disabled={!canShareToCommunity && !editedRecipe.shareToGlobal}
+                  onChange={(e) => {
+                    if (e.target.checked) {
+                      // Turning ON → open confirmation; actual flip
+                      // happens in `confirmPublish`.
+                      handleShareClick();
+                    } else {
+                      // Turning OFF (never-saved state only — once
+                      // persisted-shared, the checkbox is replaced by
+                      // the panel above). Simple local revert.
+                      setEditedRecipe((prev) => ({
+                        ...prev,
+                        shareToGlobal: false,
+                        showMyName: false,
+                      }));
+                    }
+                  }}
+                />
+                <Globe size={16} />
+                <span>{t("recipes", "shareToGlobal")}</span>
+              </label>
+              {!canShareToCommunity && !editedRecipe.shareToGlobal ? (
+                <VerifyEmailHint message={t("auth", "verifyShareBlocked")} />
+              ) : (
+                <>
+                  <small className={classes.shareRightsNote}>
+                    {t("recipes", "shareRightsNote")}
+                  </small>
+                  <small className={classes.shareRightsNote}>
+                    {t("recipes", "shareFreezeNote")}
+                  </small>
+                </>
+              )}
+            </>
           )}
         </div>
       )}
+
+      {showPublishConfirm && (
+        <ConfirmDialog
+          title={t("recipes", "publishConfirmTitle")}
+          message={t("recipes", "publishConfirmBody")}
+          confirmText={t("recipes", "publishConfirmBtn")}
+          cancelText={t("common", "cancel")}
+          onConfirm={confirmPublish}
+          onCancel={() => setShowPublishConfirm(false)}
+        />
+      )}
+
+      {showUnshareDialog && (
+        <UnshareDialog
+          recipeName={editedRecipe.name || recipe.name}
+          onPick={handleUnsharePick}
+          onCancel={() => (unsharing ? null : setShowUnshareDialog(false))}
+        />
+      )}
+
+      <Toast
+        open={toast.open}
+        onClose={() => setToast((prev) => ({ ...prev, open: false }))}
+        variant={toast.variant}
+        duration={4000}
+      >
+        {toast.message}
+      </Toast>
     </>
   );
 }

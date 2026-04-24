@@ -189,7 +189,8 @@ export default function SummaryStep() {
             if (!canShareToCommunity) return;
             const next = !recipe.shareToGlobal;
             updateRecipe("shareToGlobal", next);
-            if (!next) updateRecipe("showMyName", false);
+            // Default to attributed publishing when sharing; clear on unshare.
+            updateRecipe("showMyName", next);
           }}
         />
         <Globe size={16} />
@@ -198,9 +199,16 @@ export default function SummaryStep() {
         </span>
       </label>
       {canShareToCommunity ? (
-        <small className={classes.shareRightsNote}>
-          {t("recipes", "shareRightsNote")}
-        </small>
+        <>
+          <small className={classes.shareRightsNote}>
+            {t("recipes", "shareRightsNote")}
+          </small>
+          {recipe.shareToGlobal ? (
+            <small className={classes.shareRightsNote}>
+              {t("recipes", "shareFreezeNote")}
+            </small>
+          ) : null}
+        </>
       ) : (
         <VerifyEmailHint message={t("auth", "verifyShareBlocked")} />
       )}

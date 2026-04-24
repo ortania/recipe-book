@@ -33,6 +33,7 @@ const classes = Object.assign(
   _summaryClasses,
 );
 import { translateRecipeContent } from "../../../utils/translateContent";
+import { buildPublishedSnapshot } from "../../../utils/publishedSnapshot";
 import {
   makeGroupHeader,
   ingredientsOnly,
@@ -1171,6 +1172,24 @@ function AddRecipeWizard({
       showMyName: recipe.shareToGlobal ? recipe.showMyName : false,
       nutrition,
     };
+
+    // If the user chose to share during creation, freeze the published
+    // content into a snapshot on the very first save. This way the
+    // community version is immutable from day one — future edits on the
+    // sharer's private copy won't leak into the community.
+    if (newRecipe.shareToGlobal) {
+      const wantsName = !!recipe.showMyName;
+      const snapshot = buildPublishedSnapshot(newRecipe, {
+        sharerUserId: wantsName ? currentUser?.uid : "",
+        sharerName: wantsName ? currentUser?.displayName || "" : "",
+      });
+      newRecipe.publishedSnapshot = snapshot;
+      newRecipe.sharerUserId = snapshot.sharerUserId || "";
+      newRecipe.sharerName = snapshot.sharerName || "";
+      newRecipe.avgRating = 0;
+      newRecipe.ratingCount = 0;
+    }
+
     if (recipe.parentRecipeId) {
       newRecipe.parentRecipeId = recipe.parentRecipeId;
       newRecipe.parentRecipeName = recipe.parentRecipeName || "";

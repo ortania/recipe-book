@@ -718,6 +718,36 @@ exports.searchCommunityRecipes = onRequest(
       sharerUserId = null,
     } = req.body;
 
+    // Fields frozen at publish time; when `publishedSnapshot` is present
+    // on a doc, the community must see THOSE values — the sharer's later
+    // edits to the live doc don't count. Keep this list in sync with the
+    // client's `src/utils/publishedSnapshot.js:SNAPSHOT_FIELDS`.
+    const SNAPSHOT_FIELDS = [
+      "name",
+      "ingredients",
+      "instructions",
+      "prepTime",
+      "cookTime",
+      "servings",
+      "difficulty",
+      "nutrition",
+      "image_src",
+      "images",
+      "sourceUrl",
+      "importedFromUrl",
+      "author",
+      "notes",
+    ];
+    const resolveCommunityView = (doc) => {
+      if (!doc || !doc.publishedSnapshot) return doc;
+      const merged = { ...doc };
+      const snap = doc.publishedSnapshot;
+      for (const k of SNAPSHOT_FIELDS) {
+        if (snap[k] !== undefined) merged[k] = snap[k];
+      }
+      return merged;
+    };
+
     try {
       const db = getFirestore();
       let q = db.collection("recipes").where("shareToGlobal", "==", true);
@@ -736,7 +766,9 @@ exports.searchCommunityRecipes = onRequest(
       snapshot.forEach((doc) => {
         const data = doc.data();
         if (excludeUserId && data.userId === excludeUserId) return;
-        recipes.push({ id: doc.id, ...data });
+        // Project the published snapshot over the live fields so callers
+        // always get the frozen community version of each recipe.
+        recipes.push(resolveCommunityView({ id: doc.id, ...data }));
       });
 
       if (searchTerm.trim()) {
