@@ -1,5 +1,5 @@
 import React from "react";
-import { ChevronRight, Lightbulb } from "lucide-react";
+import { ChevronRight, Lightbulb, ShieldAlert } from "lucide-react";
 import { CloseButton } from "../../../controls";
 import { useWizard } from "../WizardContext";
 
@@ -77,6 +77,13 @@ export default function UrlScreen() {
           <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
           {t("addWizard", "urlTip")}
         </span>
+      </div>
+
+      <div className={classes.tipBox}>
+        <span className={classes.tipIcon}>
+          <ShieldAlert size={16} />
+        </span>
+        <span>{t("addWizard", "urlRightsNote")}</span>
       </div>
 
       {isImporting && (

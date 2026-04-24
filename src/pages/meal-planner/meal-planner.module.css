@@ -734,6 +734,18 @@
     font-size: var(--large-font);
   }
 
+  /* Pin the shopping banner to the bottom of the viewport on mobile.
+   * .main (the scrolling ancestor) has padding-bottom ≈ 7rem to clear
+   * the fixed bottom nav, so sticky bottom:0 naturally sits above the
+   * nav without hard-coding its height. */
+  .shoppingBanner {
+    position: sticky;
+    bottom: 0;
+    z-index: 50;
+    margin-top: 1rem;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.06);
+  }
+
   .mealRecipes {
     grid-template-columns: repeat(auto-fill, minmax(88px, 1fr));
     gap: 0.5rem;

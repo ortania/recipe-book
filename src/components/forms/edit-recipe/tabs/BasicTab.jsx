@@ -245,8 +245,12 @@ export default function BasicTab() {
             <Globe size={16} />
             <span>{t("recipes", "shareToGlobal")}</span>
           </label>
-          {!canShareToCommunity && !editedRecipe.shareToGlobal && (
+          {!canShareToCommunity && !editedRecipe.shareToGlobal ? (
             <VerifyEmailHint message={t("auth", "verifyShareBlocked")} />
+          ) : (
+            <small className={classes.shareRightsNote}>
+              {t("recipes", "shareRightsNote")}
+            </small>
           )}
         </div>
       )}

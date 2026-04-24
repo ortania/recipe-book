@@ -363,6 +363,18 @@
   opacity: 0.6;
 }
 
+/* Small rights-and-attribution note shown under the "share to
+ * community" toggle — a passive reminder that users must have
+ * permission for any content they share. */
+.shareRightsNote {
+  display: block;
+  margin: 0.35rem 0 0.25rem;
+  padding-inline-start: 1.6rem;
+  font-size: var(--very-small-font);
+  color: var(--clr-text-muted);
+  line-height: 1.35;
+}
+
 /* ========== Responsive ========== */
 @media (max-width: 500px) {
   .navButtons {

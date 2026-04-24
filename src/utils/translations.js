@@ -1102,6 +1102,12 @@ const translations = {
       de: "Zubereitungsvideo ansehen",
       mixed: "צפו בסרטון ההכנה",
     },
+    shareRightsNote: {
+      he: "שתפו רק מתכונים שיצרתם בעצמכם או שיש לכם הרשאה לשתף. אין להעלות טקסטים, הוראות או תמונות שאינם בבעלותכם.",
+      en: "Only share recipes you created yourself or have rights to share. Do not upload text, instructions, or images that you do not own.",
+      ru: "Публикуйте только те рецепты, которые вы создали сами или имеете право публиковать. Не загружайте тексты, инструкции или изображения, которые вам не принадлежат.",
+      de: "Teilen Sie nur Rezepte, die Sie selbst erstellt haben oder für die Sie die Rechte zum Teilen besitzen. Laden Sie keine Texte, Anweisungen oder Bilder hoch, die Ihnen nicht gehören.",
+    },
     shareToGlobal: {
       he: "שתף במתכוני קהילה — שמך יוצג לצד המתכון",
       en: "Share in community — your name will appear next to the recipe",
@@ -4725,6 +4731,12 @@ const translations = {
       ru: "Совет",
       de: "Tipp",
       mixed: "טיפ",
+    },
+    urlRightsNote: {
+      he: "מתכון שמיובא מאתר חיצוני נשמר לשימוש אישי שלכם. לפני שיתוף בקהילה ודאו שיש לכם הרשאה לשתף את התוכן.",
+      en: "A recipe imported from an external site is saved for your personal use. Before sharing it in the community, make sure you have permission to share the content.",
+      ru: "Рецепт, импортированный с внешнего сайта, сохраняется для вашего личного использования. Перед публикацией в сообществе убедитесь, что у вас есть разрешение на распространение этого контента.",
+      de: "Ein von einer externen Website importiertes Rezept wird für Ihren persönlichen Gebrauch gespeichert. Stellen Sie vor dem Teilen in der Community sicher, dass Sie zur Weitergabe des Inhalts berechtigt sind.",
     },
     urlTip: {
       he: "נתמך באתרים פופולריים כמו ynet, haaretz, mako ועוד",

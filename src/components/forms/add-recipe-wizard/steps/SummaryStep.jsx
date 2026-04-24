@@ -190,7 +190,11 @@ export default function SummaryStep() {
           {t("recipes", "shareToGlobal")}
         </span>
       </label>
-      {!canShareToCommunity && (
+      {canShareToCommunity ? (
+        <small className={classes.shareRightsNote}>
+          {t("recipes", "shareRightsNote")}
+        </small>
+      ) : (
         <VerifyEmailHint message={t("auth", "verifyShareBlocked")} />
       )}
     </div>
