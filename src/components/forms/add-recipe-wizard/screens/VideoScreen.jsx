@@ -45,6 +45,26 @@ export default function VideoScreen() {
         {t("addWizard", "fromVideoSubtitle")}
       </p>
 
+      <div className={`${classes.tipBox} ${classes.tipBoxPurple}`}>
+        <span className={classes.tipIcon}>
+          <Lightbulb size={16} />
+        </span>
+        <span>
+          <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
+          {t("addWizard", "videoTip")}
+        </span>
+      </div>
+
+      <label className={classes.fieldLabel}>
+        {t("addWizard", "pasteVideoText")}
+      </label>
+      <textarea
+        className={shared.formTextarea}
+        placeholder={t("addWizard", "pasteVideoTextPlaceholder")}
+        value={recipeVideoText}
+        onChange={(e) => setRecipeVideoText(e.target.value)}
+      />
+
       <label className={classes.fieldLabel}>
         {t("addWizard", "videoUrlLabel")}
       </label>
@@ -60,26 +80,6 @@ export default function VideoScreen() {
         spellCheck={false}
         dir="ltr"
       />
-
-      <label className={classes.fieldLabel}>
-        {t("addWizard", "pasteVideoText")}
-      </label>
-      <textarea
-        className={shared.formTextarea}
-        placeholder={t("addWizard", "pasteVideoTextPlaceholder")}
-        value={recipeVideoText}
-        onChange={(e) => setRecipeVideoText(e.target.value)}
-      />
-
-      <div className={`${classes.tipBox} ${classes.tipBoxPurple}`}>
-        <span className={classes.tipIcon}>
-          <Lightbulb size={16} />
-        </span>
-        <span>
-          <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
-          {t("addWizard", "videoTip")}
-        </span>
-      </div>
 
       <div className={classes.tipBox}>
         <span className={classes.tipIcon}>
