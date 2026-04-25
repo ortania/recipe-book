@@ -1,5 +1,5 @@
 import React from "react";
-import { Camera, Link, ClipboardList, Mic, Pencil } from "lucide-react";
+import { Camera, Link, ClipboardList, Mic, Pencil, Video } from "lucide-react";
 import { CloseButton } from "../../../controls";
 import { useWizard } from "../WizardContext";
 
@@ -64,6 +64,25 @@ export default function MethodSelectionScreen() {
             </h3>
             <p className={classes.methodCardDesc}>
               {t("addWizard", "fromTextDesc")}
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={`${classes.methodCard} ${classes.methodCardVideo || ""}`}
+          onClick={() => setScreen("video")}
+        >
+          <div
+            className={`${classes.methodIcon} ${classes.methodIconVideo || ""}`}
+          >
+            <Video size={24} />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "fromVideo")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "fromVideoDesc")}
             </p>
           </div>
         </div>

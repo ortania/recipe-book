@@ -384,6 +384,13 @@
   transform: var(--link-transform-hover);
 }
 
+.videoSourceTag {
+  font-size: 0.85rem;
+  font-weight: 400;
+  color: var(--clr-text-secondary);
+  margin-inline-start: 0.15rem;
+}
+
 .ingredientGroupHeader {
   padding: 0.6rem 0 0.3rem;
   font-weight: var(--font-weight-heading);

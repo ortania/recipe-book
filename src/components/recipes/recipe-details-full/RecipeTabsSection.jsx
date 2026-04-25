@@ -189,6 +189,11 @@ export default function RecipeTabsSection() {
               >
                 <Video size={18} />
                 {t("recipes", "watchVideo")}
+                {recipe.importedFromVideo ? (
+                  <span className={classes.videoSourceTag}>
+                    · {t("recipes", "externalSourceLabel")}
+                  </span>
+                ) : null}
               </a>
             )}
           </>

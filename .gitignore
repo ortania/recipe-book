@@ -28,6 +28,9 @@ dist-ssr
 *.sln
 *.sw?
 video*
+# Allow source files whose name starts with "video"/"Video"
+!src/utils/videoSourceDetector.js
+!src/components/forms/add-recipe-wizard/screens/VideoScreen.jsx
 
 
 # windsurf rules

@@ -34,6 +34,7 @@ const classes = Object.assign(
 );
 import { translateRecipeContent } from "../../../utils/translateContent";
 import { buildPublishedSnapshot } from "../../../utils/publishedSnapshot";
+import { detectVideoSource } from "../../../utils/videoSourceDetector";
 import {
   makeGroupHeader,
   ingredientsOnly,
@@ -47,6 +48,7 @@ import { WizardContext } from "./WizardContext";
 import MethodSelectionScreen from "./screens/MethodSelectionScreen";
 import UrlScreen from "./screens/UrlScreen";
 import TextScreen from "./screens/TextScreen";
+import VideoScreen from "./screens/VideoScreen";
 import RecordingScreen from "./screens/RecordingScreen";
 import PhotoScreen from "./screens/PhotoScreen";
 import ManualScreen from "./screens/ManualScreen";
@@ -61,6 +63,7 @@ const INITIAL_RECIPE = {
   difficulty: "Unknown",
   sourceUrl: "",
   importedFromUrl: false,
+  importedFromVideo: false,
   author: "",
   videoUrl: "",
   image_src: "",
@@ -139,6 +142,8 @@ function AddRecipeWizard({
   const [recipeUrl, setRecipeUrl] = useState("");
   const [recipeAuthor, setRecipeAuthor] = useState("");
   const [recipeText, setRecipeText] = useState("");
+  const [recipeVideoUrl, setRecipeVideoUrl] = useState("");
+  const [recipeVideoText, setRecipeVideoText] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [importError, setImportError] = useState("");
   const [premiumPopup, setPremiumPopup] = useState({ open: false, type: "hard" });
@@ -631,6 +636,91 @@ function AddRecipeWizard({
       setManualStep(0);
     } catch (err) {
       setImportError(t("addWizard", "parseFailed"));
+    } finally {
+      setIsImporting(false);
+    }
+  };
+
+  // Video import: we never fetch the YouTube/Instagram URL ourselves —
+  // copyright-safe by design. The user pastes the description text and we
+  // run it through the same AI pipeline that powers free-speech recording
+  // imports. The original link is stored on both `sourceUrl` (for
+  // attribution) and `videoUrl` (so the existing "Watch video" link in the
+  // recipe view shows up automatically).
+  const handleImportFromVideo = async () => {
+    const text = recipeVideoText.trim();
+    if (!text) {
+      setImportError(t("addWizard", "videoNoTextError"));
+      return;
+    }
+    const textCheck = canUse(FEATURES.IMPORT_TEXT);
+    if (!textCheck.allowed) {
+      setPremiumPopup({ open: true, type: "limit" });
+      return;
+    }
+    setIsImporting(true);
+    setImportError("");
+    try {
+      const categoryNames = groups
+        .filter((g) => g.id !== "all")
+        .map((g) => g.name)
+        .filter(Boolean);
+      const parsed = await parseFreeSpeechRecipe(text, categoryNames);
+      if (parsed?.error) {
+        setImportError(parsed.error);
+        return;
+      }
+      const ingredientsFromParse = Array.isArray(parsed.ingredients)
+        ? parsed.ingredients
+        : typeof parsed.ingredients === "string" && parsed.ingredients.trim()
+          ? parsed.ingredients
+              .replace(/\r\n/g, "\n")
+              .split(/\n/)
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [];
+      const instructionsFromParse = Array.isArray(parsed.instructions)
+        ? parsed.instructions
+        : typeof parsed.instructions === "string" &&
+            parsed.instructions.trim()
+          ? parsed.instructions
+              .split(/[.\n]+/)
+              .map((s) => s.trim())
+              .filter(Boolean)
+          : [];
+      const trimmedUrl = recipeVideoUrl.trim();
+      // Only persist the URL if it parses as http(s); avoids storing garbage
+      // like "abc" or "youtube" in sourceUrl/videoUrl.
+      const validUrl = detectVideoSource(trimmedUrl) ? trimmedUrl : "";
+      setRecipe((prev) => ({
+        ...prev,
+        name: parsed.name?.trim() || prev.name,
+        ingredients:
+          ingredientsFromParse.length > 0
+            ? ingredientsFromParse
+            : prev.ingredients,
+        instructions:
+          instructionsFromParse.length > 0
+            ? instructionsFromParse
+            : prev.instructions,
+        prepTime: parsed.prepTime ? `${parsed.prepTime}min` : prev.prepTime,
+        cookTime: parsed.cookTime ? `${parsed.cookTime}min` : prev.cookTime,
+        servings: parsed.servings || prev.servings,
+        notes: parsed.notes || prev.notes,
+        // Never copy any image_src/thumbnail from the video — user uploads
+        // their own image (or leaves it empty).
+        image_src: prev.image_src,
+        images: prev.images,
+        sourceUrl: validUrl || prev.sourceUrl || "",
+        videoUrl: validUrl || prev.videoUrl || "",
+        importedFromVideo: true,
+      }));
+      await incrementUsage(FEATURES.IMPORT_TEXT);
+      needsTranslationRef.current = true;
+      setScreen("manual");
+      setManualStep(0);
+    } catch (err) {
+      setImportError(err.message || t("addWizard", "parseFailed"));
     } finally {
       setIsImporting(false);
     }
@@ -1160,6 +1250,7 @@ function AddRecipeWizard({
       servings: recipe.servings ? parseInt(recipe.servings) : null,
       difficulty: recipe.difficulty,
       sourceUrl: recipe.sourceUrl,
+      importedFromVideo: !!recipe.importedFromVideo,
       author: recipe.author || "",
       videoUrl: recipe.videoUrl,
       image_src: images[0] || recipe.image_src,
@@ -1302,6 +1393,8 @@ function AddRecipeWizard({
       setVisitedSteps(new Set([0]));
       setRecipeUrl("");
       setRecipeAuthor("");
+      setRecipeVideoUrl("");
+      setRecipeVideoText("");
       setScreen("method");
     }
   };
@@ -1320,6 +1413,10 @@ function AddRecipeWizard({
     setRecipeAuthor,
     recipeText,
     setRecipeText,
+    recipeVideoUrl,
+    setRecipeVideoUrl,
+    recipeVideoText,
+    setRecipeVideoText,
     isImporting,
     importError,
     setImportError,
@@ -1366,6 +1463,7 @@ function AddRecipeWizard({
     handleClose,
     handleImportFromUrl,
     handleImportFromText,
+    handleImportFromVideo,
     handleImportFromRecording,
     doImportWithAI,
     handleStartRecording,
@@ -1417,6 +1515,8 @@ function AddRecipeWizard({
         return <UrlScreen />;
       case "text":
         return <TextScreen />;
+      case "video":
+        return <VideoScreen />;
       case "recording":
         return <RecordingScreen />;
       case "photo":

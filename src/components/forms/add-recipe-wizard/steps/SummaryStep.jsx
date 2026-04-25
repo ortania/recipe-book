@@ -208,6 +208,11 @@ export default function SummaryStep() {
               {t("recipes", "shareFreezeNote")}
             </small>
           ) : null}
+          {recipe.importedFromVideo && recipe.shareToGlobal ? (
+            <small className={classes.shareRightsNote}>
+              {t("addWizard", "videoCommunityShareWarning")}
+            </small>
+          ) : null}
         </>
       ) : (
         <VerifyEmailHint message={t("auth", "verifyShareBlocked")} />
