@@ -63,16 +63,24 @@ function SharerProfile() {
           ]);
           setSharerRecipes(sharerRecipes);
 
-          // Build category list: keep only categories that have recipes
+          // Build category list: keep only categories that have recipes.
+          // Recipes count as "general" if they have no categories OR if they
+          // explicitly include the "general" id (matches RecipesView).
           const usedCatIds = new Set();
-          const hasUncategorized = sharerRecipes.some(
-            (r) => !r.categories || r.categories.length === 0,
+          const hasGeneralRecipe = sharerRecipes.some(
+            (r) =>
+              !r.categories ||
+              r.categories.length === 0 ||
+              r.categories.includes("general"),
           );
           sharerRecipes.forEach((r) => {
-            if (r.categories) r.categories.forEach((c) => usedCatIds.add(c));
+            if (r.categories)
+              r.categories.forEach((c) => {
+                if (c !== "general") usedCatIds.add(c);
+              });
           });
           const filtered = cats.filter((c) => usedCatIds.has(c.id));
-          const generalCat = hasUncategorized
+          const generalCat = hasGeneralRecipe
             ? [{ id: "general", name: t("categories", "general") }]
             : [];
           setSharerCategories([
@@ -194,7 +202,10 @@ function SharerProfile() {
       if (catId === "all") return uniqueRecipes.length;
       if (catId === "general") {
         return uniqueRecipes.filter(
-          (r) => !r.categories || r.categories.length === 0,
+          (r) =>
+            !r.categories ||
+            r.categories.length === 0 ||
+            r.categories.includes("general"),
         ).length;
       }
       return uniqueRecipes.filter(

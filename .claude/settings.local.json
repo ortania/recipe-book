@@ -20,7 +20,8 @@
       "Bash(node -e \"const g = JSON.parse\\(require\\('fs'\\).readFileSync\\('android/app/google-services.json'\\)\\); const clients = g.client[0].oauth_client; clients.forEach\\(c => console.log\\('type:', c.client_type, 'id:', c.client_info.mobilesdk_app_id || c.client_id?.client_id || JSON.stringify\\(c.client_id\\)\\)\\)\")",
       "Bash(node -e \"const g = JSON.parse\\(require\\('fs'\\).readFileSync\\('android/app/google-services.json'\\)\\); const clients = g.client[0].oauth_client; clients.forEach\\(c => console.log\\(JSON.stringify\\(c\\)\\)\\)\")",
       "Bash(npm show:*)",
-      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const v=JSON.parse\\(d\\); console.log\\(v.slice\\(-5\\).join\\('\\\\n'\\)\\)\")"
+      "Bash(node -e \"const d=require\\('fs'\\).readFileSync\\('/dev/stdin','utf8'\\); const v=JSON.parse\\(d\\); console.log\\(v.slice\\(-5\\).join\\('\\\\n'\\)\\)\")",
+      "mcp__plugin_figma_figma__get_design_context"
     ]
   }
 }
