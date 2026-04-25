@@ -32,6 +32,7 @@ import {
 import { ingredientsOnly } from "../../../utils/ingredientUtils";
 import { makeGroupHeader } from "../../../utils/ingredientUtils";
 import { buildPublishedSnapshot } from "../../../utils/publishedSnapshot";
+import { unshareRecipeFromCommunity } from "../../../firebase/recipeService";
 import { EditRecipeContext } from "./EditRecipeContext";
 import { ConfirmDialog } from "../confirm-dialog";
 import BasicTab from "./tabs/BasicTab";
@@ -665,12 +666,19 @@ function EditRecipe({
       nutrition,
     };
 
-    // Publishing for the first time: freeze the current content into a
-    // snapshot. Subsequent edits won't change the community version.
+    // ── Resolve share-state transitions at save-time ───────────────
+    // BasicTab only mutates local state when the user toggles share,
+    // confirms publish, or picks an unshare mode. Here on Save we
+    // diff `recipe` (last persisted) vs. `editedRecipe` (intent) and
+    // apply the appropriate Firestore writes.
     const wasShared = recipe.shareToGlobal === true;
     const willBeShared = editedRecipe.shareToGlobal === true;
     const hadSnapshot = !!recipe.publishedSnapshot;
-    if (!wasShared && willBeShared && !hadSnapshot) {
+    const wantsToUnshareRemove = wasShared && !willBeShared;
+
+    if (!wasShared && willBeShared) {
+      // First-time (or re-)publish — freeze the form's current
+      // content into a fresh snapshot. Reset community ratings.
       const showMyName = !!editedRecipe.showMyName;
       const snapshot = buildPublishedSnapshot(updatedRecipe, {
         sharerUserId: showMyName ? currentUser?.uid : "",
@@ -682,10 +690,9 @@ function EditRecipe({
       updatedRecipe.avgRating = 0;
       updatedRecipe.ratingCount = 0;
     } else if (wasShared && willBeShared && !hadSnapshot) {
-      // Legacy share auto-migration: this recipe was published before the
-      // immutable-snapshot system existed, so the community is currently
-      // showing the live doc. Freeze the *original* content (not the
-      // user's pending edits) so the community version stays stable
+      // Legacy share auto-migration: this recipe was published
+      // before the immutable-snapshot system existed. Freeze the
+      // *original* content so the community version stays stable
       // going forward and any in-progress edits don't leak.
       const showMyName = !!recipe.showMyName;
       const snapshot = buildPublishedSnapshot(recipe, {
@@ -699,6 +706,30 @@ function EditRecipe({
       updatedRecipe.publishedSnapshot = snapshot;
       updatedRecipe.sharerUserId = snapshot.sharerUserId || "";
       updatedRecipe.sharerName = snapshot.sharerName || "";
+    } else if (wantsToUnshareRemove) {
+      // Pull the recipe from the community. We let the dedicated
+      // service handle the actual write so it can use Firestore's
+      // `deleteField()` to fully remove `publishedSnapshot` (a plain
+      // null in the regular save path is filtered out as undefined).
+      try {
+        await unshareRecipeFromCommunity(recipe.id, "remove");
+      } catch (err) {
+        console.error("Failed to unshare recipe:", err);
+        setSaving(false);
+        setSavedMessage(
+          <>
+            <AlertTriangle size={18} /> {t("recipes", "saveFailed")}
+          </>,
+        );
+        return;
+      }
+      // Strip share/snapshot fields from the regular save payload so
+      // the unshare write isn't accidentally reverted.
+      delete updatedRecipe.publishedSnapshot;
+      updatedRecipe.shareToGlobal = false;
+      updatedRecipe.showMyName = false;
+      updatedRecipe.sharerUserId = "";
+      updatedRecipe.sharerName = "";
     }
 
     if (updatedRecipe.parentRecipeId === updatedRecipe.id) {

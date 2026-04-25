@@ -63,11 +63,27 @@ function RecipeDetailsPage() {
     rawRecipe && currentUser && rawRecipe.userId === currentUser.uid;
   const isGlobalRecipe = rawRecipe && !isOwner;
 
+  // A non-owner may *only* view this recipe if it's currently shared
+  // to the community OR has a publishedSnapshot we can fall back to.
+  // Otherwise, even though Firestore rules technically allow the read,
+  // we don't want to leak the sharer's private content (e.g. when the
+  // sharer has unshared while the viewer's tab was idle, or when an
+  // older link points to a since-unshared recipe).
+  const communityViewable =
+    !isGlobalRecipe ||
+    rawRecipe?.shareToGlobal === true ||
+    !!rawRecipe?.publishedSnapshot;
+
   // Non-owners see the frozen community snapshot, never the sharer's
   // private edits. Owners keep seeing their live, editable content.
   const recipe = useMemo(
-    () => (isGlobalRecipe ? resolveCommunityView(rawRecipe) : rawRecipe),
-    [rawRecipe, isGlobalRecipe],
+    () =>
+      isGlobalRecipe
+        ? communityViewable
+          ? resolveCommunityView(rawRecipe)
+          : null
+        : rawRecipe,
+    [rawRecipe, isGlobalRecipe, communityViewable],
   );
 
   const [globalUserRating, setGlobalUserRating] = useState(0);
@@ -226,12 +242,26 @@ function RecipeDetailsPage() {
   const notFoundTimerRef = React.useRef(null);
   React.useEffect(() => {
     if (!recipe && !fetchingRemote) {
-      notFoundTimerRef.current = setTimeout(() => navigate(-1), 2000);
+      notFoundTimerRef.current = setTimeout(() => navigate(-1), 1500);
     }
     return () => {
-      if (notFoundTimerRef.current) clearTimeout(notFoundTimerRef.current);
+      if (notFoundTimerRef.current) {
+        clearTimeout(notFoundTimerRef.current);
+        notFoundTimerRef.current = null;
+      }
     };
   }, [recipe, fetchingRemote, navigate]);
+
+  // Immediate-back used in the not-found view: cancels the auto-nav
+  // timer first so a fast tap can't get followed by a stray
+  // navigate(-1) once the timer fires, which would pop history twice.
+  const handleNotFoundBack = () => {
+    if (notFoundTimerRef.current) {
+      clearTimeout(notFoundTimerRef.current);
+      notFoundTimerRef.current = null;
+    }
+    navigate(-1);
+  };
 
   if (!recipe) {
     if (fetchingRemote) {
@@ -243,11 +273,21 @@ function RecipeDetailsPage() {
         </div>
       );
     }
+    // Distinguish "the sharer pulled this from the community" from a
+    // generic not-found. Either way the action is the same (go back),
+    // but a clearer message reduces user confusion.
+    const removedFromCommunity =
+      rawRecipe && !isOwner && rawRecipe.shareToGlobal !== true;
     return (
       <div className={classes.pageContainer}>
         <div className={classes.notFound}>
-          <p>{t("common", "notFound") || "Recipe not found"}</p>
-          <BackButton onClick={() => navigate(-1)} />
+          <p>
+            {removedFromCommunity
+              ? t("recipes", "removedFromCommunity") ||
+                "This recipe is no longer available in the community."
+              : t("common", "notFound") || "Recipe not found"}
+          </p>
+          <BackButton onClick={handleNotFoundBack} />
         </div>
       </div>
     );

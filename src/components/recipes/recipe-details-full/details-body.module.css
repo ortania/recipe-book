@@ -420,6 +420,12 @@
   align-items: flex-start;
   gap: 0.75rem;
   user-select: none;
+  /* Whole-row click target: tapping anywhere on the row toggles the
+   * checkbox via native <label>→<input> association. The cursor +
+   * tap-highlight cue makes that affordance obvious on both desktop
+   * and mobile. */
+  cursor: pointer;
+  -webkit-tap-highlight-color: rgba(0, 0, 0, 0.04);
 }
 
 .checkboxLabel span {

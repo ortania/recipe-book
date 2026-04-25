@@ -124,10 +124,7 @@ export default function RecipeTabsSection() {
                   </li>
                 ) : (
                   <li key={index} className={classes.ingredientItem}>
-                    <label
-                      className={classes.checkboxLabel}
-                      style={{ pointerEvents: "none" }}
-                    >
+                    <label className={classes.checkboxLabel}>
                       <input
                         type="checkbox"
                         checked={checkedIngredients[index] || false}
@@ -135,7 +132,6 @@ export default function RecipeTabsSection() {
                         className={
                           classes.checkbox + " " + buttonClasses.checkBox
                         }
-                        style={{ pointerEvents: "auto" }}
                       />
                       <span
                         className={
@@ -160,10 +156,7 @@ export default function RecipeTabsSection() {
               {instructionsArray.length > 0 ? (
                 instructionsArray.map((instruction, index) => (
                   <li key={index} className={classes.instructionItem}>
-                    <div
-                      className={classes.checkboxLabel}
-                      style={{ pointerEvents: "none" }}
-                    >
+                    <label className={classes.checkboxLabel}>
                       <input
                         type="checkbox"
                         checked={checkedInstructions[index] || false}
@@ -171,7 +164,6 @@ export default function RecipeTabsSection() {
                         className={
                           classes.checkbox + " " + buttonClasses.checkBox
                         }
-                        style={{ pointerEvents: "auto" }}
                       />
                       <span className={classes.stepNumber}>{index + 1}.</span>
                       <span
@@ -181,7 +173,7 @@ export default function RecipeTabsSection() {
                       >
                         {renderInstruction(instruction)}
                       </span>
-                    </div>
+                    </label>
                   </li>
                 ))
               ) : (

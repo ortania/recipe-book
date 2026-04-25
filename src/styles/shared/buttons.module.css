@@ -297,12 +297,22 @@
   border: none;
   padding: 0.4rem;
   flex-shrink: 0;
+  /* Snappy tap on mobile: skip the legacy 300ms double-tap-zoom
+   * delay so navigate(-1) fires immediately on tap, not on the
+   * synthesized click event a moment later. */
+  touch-action: manipulation;
 }
 .backBtn svg {
   stroke-width: 1.5;
 }
-.backBtn:hover {
-  transform: scale(var(--scale));
+/* Only animate hover on devices that actually have a hover pointer
+ * (desktop). On touch devices the :hover state stays "stuck" after
+ * tap, causing a paint between touchend and the route change that
+ * the user perceives as the button "not responding immediately." */
+@media (hover: hover) {
+  .backBtn:hover {
+    transform: scale(var(--scale));
+  }
 }
 
 /* ── Size modifiers ────────────────────────────────────────── */
