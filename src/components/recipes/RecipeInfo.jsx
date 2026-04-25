@@ -341,27 +341,50 @@ function RecipeInfo({
           {recipe.author && !onSaveRecipe && !onCopyRecipe && (
             <p className={classes.authorLabel}>{t("recipes", "source")}: {recipe.author}</p>
           )}
-          {recipe.sharerName && recipe.sharerUserId !== currentUser?.uid && (
-            <div
-              className={classes.sharerName}
-              onClick={(e) => {
+          {recipe.sharerName &&
+            recipe.sharerUserId !== currentUser?.uid &&
+            (() => {
+              const canOpenProfile = !!recipe.sharerUserId;
+              const goToProfile = (e) => {
+                if (!canOpenProfile) return;
                 e.stopPropagation();
+                e.preventDefault();
                 navigate(`/sharer/${recipe.sharerUserId}`);
-              }}
-              onTouchStart={(e) => e.stopPropagation()}
-            >
-              {followingList.includes(recipe.sharerUserId) && (
-                <UserCheck
-                  size={14}
-                  style={{ marginInlineEnd: "0.2rem", verticalAlign: "middle" }}
-                />
-              )}
-              {recipe.copiedFrom
-                ? t("recipes", "copiedFrom")
-                : t("recipes", "sharedBy")}{" "}
-              {recipe.sharerName}
-            </div>
-          )}
+              };
+              return (
+                <div
+                  className={`${classes.sharerName} ${canOpenProfile ? "" : classes.sharerNameStatic}`}
+                  role={canOpenProfile ? "link" : undefined}
+                  tabIndex={canOpenProfile ? 0 : undefined}
+                  onClick={goToProfile}
+                  onTouchStart={
+                    canOpenProfile ? (e) => e.stopPropagation() : undefined
+                  }
+                  onKeyDown={(e) => {
+                    if (
+                      canOpenProfile &&
+                      (e.key === "Enter" || e.key === " ")
+                    ) {
+                      goToProfile(e);
+                    }
+                  }}
+                >
+                  {followingList.includes(recipe.sharerUserId) && (
+                    <UserCheck
+                      size={14}
+                      style={{
+                        marginInlineEnd: "0.2rem",
+                        verticalAlign: "middle",
+                      }}
+                    />
+                  )}
+                  {recipe.copiedFrom
+                    ? t("recipes", "copiedFrom")
+                    : t("recipes", "sharedBy")}{" "}
+                  {recipe.sharerName}
+                </div>
+              );
+            })()}
           <div className={classes.recipeMetadata}>
             {recipe.prepTime && (
               <p className={classes.recipeTime}>

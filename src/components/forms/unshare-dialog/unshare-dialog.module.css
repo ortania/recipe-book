@@ -85,17 +85,17 @@
 }
 
 .primary {
-  border-color: var(--clr-accent, #f5a524);
+  border-color: var(--clr-warning);
 }
 
 .primary .icon {
-  background: color-mix(in srgb, var(--clr-accent, #f5a524) 15%, transparent);
-  color: var(--clr-accent, #f5a524);
+  background: var(--clr-warning-bg);
+  color: var(--clr-warning-hover);
 }
 
 .danger .icon {
-  background: color-mix(in srgb, #d33a3a 12%, transparent);
-  color: #d33a3a;
+  background: var(--clr-danger-bg);
+  color: var(--clr-danger-text);
 }
 
 .cancel {

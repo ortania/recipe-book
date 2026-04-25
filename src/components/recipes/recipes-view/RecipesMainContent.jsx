@@ -482,26 +482,51 @@ export default function RecipesMainContent() {
               </span>
               <span className={classes.compactName}>{recipe.name}</span>
               {recipe.sharerName &&
-                recipe.sharerUserId !== currentUser?.uid && (
-                  <span
-                    className={classes.compactSharer}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      navigate(`/sharer/${recipe.sharerUserId}`);
-                    }}
-                  >
-                    {followingList.includes(recipe.sharerUserId) && (
-                      <UserCheck
-                        size={14}
-                        style={{
-                          marginInlineEnd: "0.2rem",
-                          verticalAlign: "middle",
-                        }}
-                      />
-                    )}
-                    {recipe.sharerName}
-                  </span>
-                )}
+                recipe.sharerUserId !== currentUser?.uid &&
+                (() => {
+                  const canOpenProfile = !!recipe.sharerUserId;
+                  const goToProfile = (e) => {
+                    if (!canOpenProfile) return;
+                    e.stopPropagation();
+                    e.preventDefault();
+                    navigate(`/sharer/${recipe.sharerUserId}`);
+                  };
+                  return (
+                    <span
+                      className={classes.compactSharer}
+                      role={canOpenProfile ? "link" : undefined}
+                      tabIndex={canOpenProfile ? 0 : undefined}
+                      onClick={goToProfile}
+                      onTouchStart={
+                        canOpenProfile ? (e) => e.stopPropagation() : undefined
+                      }
+                      onKeyDown={(e) => {
+                        if (
+                          canOpenProfile &&
+                          (e.key === "Enter" || e.key === " ")
+                        ) {
+                          goToProfile(e);
+                        }
+                      }}
+                      style={
+                        canOpenProfile
+                          ? undefined
+                          : { cursor: "default", textDecoration: "none" }
+                      }
+                    >
+                      {followingList.includes(recipe.sharerUserId) && (
+                        <UserCheck
+                          size={14}
+                          style={{
+                            marginInlineEnd: "0.2rem",
+                            verticalAlign: "middle",
+                          }}
+                        />
+                      )}
+                      {recipe.sharerName}
+                    </span>
+                  );
+                })()}
               {showAddAndFavorites && (
                 <div className={classes.compactActions}>
                   <button

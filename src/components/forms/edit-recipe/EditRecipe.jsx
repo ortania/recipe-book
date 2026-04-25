@@ -681,6 +681,24 @@ function EditRecipe({
       updatedRecipe.sharerName = snapshot.sharerName || "";
       updatedRecipe.avgRating = 0;
       updatedRecipe.ratingCount = 0;
+    } else if (wasShared && willBeShared && !hadSnapshot) {
+      // Legacy share auto-migration: this recipe was published before the
+      // immutable-snapshot system existed, so the community is currently
+      // showing the live doc. Freeze the *original* content (not the
+      // user's pending edits) so the community version stays stable
+      // going forward and any in-progress edits don't leak.
+      const showMyName = !!recipe.showMyName;
+      const snapshot = buildPublishedSnapshot(recipe, {
+        sharerUserId: showMyName
+          ? recipe.sharerUserId || currentUser?.uid || ""
+          : "",
+        sharerName: showMyName
+          ? recipe.sharerName || currentUser?.displayName || ""
+          : "",
+      });
+      updatedRecipe.publishedSnapshot = snapshot;
+      updatedRecipe.sharerUserId = snapshot.sharerUserId || "";
+      updatedRecipe.sharerName = snapshot.sharerName || "";
     }
 
     if (updatedRecipe.parentRecipeId === updatedRecipe.id) {
