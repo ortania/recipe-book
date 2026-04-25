@@ -314,11 +314,23 @@ export const RecipeBookProvider = ({ children }) => {
         description: "Uncategorized recipes",
         color: "#9E9E9E",
       };
-      const hasAll = categoriesFromFirestore.some((c) => c.id === "all");
-      const withAll = hasAll
-        ? categoriesFromFirestore
-        : [allCategory, ...categoriesFromFirestore];
-      const finalCategories = [...withAll, otherCategory];
+      // The "all" and "general" entries are virtual UI categories. They may
+      // exist as real Firestore docs only when the user has customized them
+      // (e.g. set a cover image). Merge any persisted overrides on top of
+      // the synthetic defaults, but always render "all" first and "general"
+      // last so the order doesn't depend on Firestore `order` values.
+      const persistedAll = categoriesFromFirestore.find((c) => c.id === "all");
+      const persistedGeneral = categoriesFromFirestore.find(
+        (c) => c.id === "general",
+      );
+      const regular = categoriesFromFirestore.filter(
+        (c) => c.id !== "all" && c.id !== "general",
+      );
+      const finalCategories = [
+        { ...allCategory, ...(persistedAll || {}) },
+        ...regular,
+        { ...otherCategory, ...(persistedGeneral || {}) },
+      ];
       setCategories(finalCategories);
       setCategoriesLoaded(true);
 
@@ -383,6 +395,53 @@ export const RecipeBookProvider = ({ children }) => {
       console.error("Error editing category:", error);
       throw error;
     }
+  };
+
+  /**
+   * Set (or clear) the cover image of a category.
+   *
+   * Works for regular categories (already persisted in Firestore) AND for
+   * synthetic ones like "all" / "general" that only exist in memory until
+   * the user customizes them. In the synthetic case we lazily create the
+   * Firestore doc on first save, so the existing fetch path
+   * (RecipesBookContext loadUserData) automatically picks it up next load.
+   */
+  const setCategoryImage = async (categoryId, imageUrl) => {
+    if (!currentUser) throw new Error("No user logged in");
+    const cat = categories.find((c) => c.id === categoryId);
+    if (!cat) throw new Error("Category not found");
+
+    const nextImage = imageUrl || "";
+
+    if (cat.docId) {
+      const { docId, ...rest } = cat;
+      await updateCategoryInFirestore(docId, { ...rest, image: nextImage });
+      setCategories((prev) =>
+        prev.map((c) =>
+          c.id === categoryId ? { ...c, image: nextImage } : c,
+        ),
+      );
+      return;
+    }
+
+    const created = await addCategoryToFirestore(
+      {
+        id: cat.id,
+        name: cat.name || categoryId,
+        description: cat.description || "",
+        color: cat.color || "#607D8B",
+        icon: cat.icon || "",
+        image: nextImage,
+      },
+      currentUser.uid,
+    );
+    setCategories((prev) =>
+      prev.map((c) =>
+        c.id === categoryId
+          ? { ...c, image: nextImage, docId: created.docId }
+          : c,
+      ),
+    );
   };
 
   const deleteCategory = async (categoryId) => {
@@ -691,6 +750,7 @@ export const RecipeBookProvider = ({ children }) => {
     setRecipesLoaded,
     addCategory,
     editCategory,
+    setCategoryImage,
     deleteCategory,
     addRecipe,
     editRecipe,

@@ -2167,6 +2167,27 @@ const translations = {
       de: "Bild hinzufügen",
       mixed: "Add Image",
     },
+    coverImage: {
+      he: "תמונת שער",
+      en: "Cover Image",
+      ru: "Обложка",
+      de: "Titelbild",
+      mixed: "Cover Image",
+    },
+    coverImageHint: {
+      he: "התמונה שתוצג בכרטיס \"כל המתכונים\". אם לא תיבחר, תוצג תמונה מאחד המתכונים.",
+      en: "Image shown on the \"All Recipes\" card. If none is set, an image from one of your recipes is used.",
+      ru: "Изображение для карточки «Все рецепты». Если не задано, будет использовано фото одного из рецептов.",
+      de: "Bild für die \"Alle Rezepte\"-Karte. Ohne Auswahl wird ein Bild eines deiner Rezepte verwendet.",
+      mixed: "Image shown on the \"All Recipes\" card. If none is set, an image from one of your recipes is used.",
+    },
+    changeCoverImage: {
+      he: "שנה תמונת שער",
+      en: "Change cover image",
+      ru: "Изменить обложку",
+      de: "Titelbild ändern",
+      mixed: "Change cover image",
+    },
     done: {
       he: "הצג מתכונים",
       en: "Done",

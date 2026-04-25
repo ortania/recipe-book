@@ -3,7 +3,13 @@ import { FaRegEdit } from "react-icons/fa";
 import { GoTrash } from "react-icons/go";
 import { PiPlusLight } from "react-icons/pi";
 import { LuArrowUpDown } from "react-icons/lu";
-import { GripVertical, CircleCheck, AlertTriangle } from "lucide-react";
+import {
+  GripVertical,
+  CircleCheck,
+  AlertTriangle,
+  UtensilsCrossed,
+  ImagePlus,
+} from "lucide-react";
 import { Modal } from "../modal";
 import { CloseButton } from "../controls/close-button"; 
 import { Toast } from "../controls";
@@ -62,7 +68,11 @@ function CategoriesManagement({
   getGroupContacts,
 }) {
   const { t } = useLanguage();
-  const { currentUser } = useRecipeBook();
+  const { currentUser, categories: ctxCategories, setCategoryImage } =
+    useRecipeBook();
+  const allCategory = (ctxCategories || categories).find(
+    (c) => c.id === "all",
+  );
   const { canUse } = useEntitlements();
   const { getTranslated } = useTranslatedList(categories, "name");
   const isMobile = window.innerWidth < 768;
@@ -70,6 +80,13 @@ function CategoriesManagement({
   const [categoryToDelete, setCategoryToDelete] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
+  const [editingAllCover, setEditingAllCover] = useState(false);
+  const [allCoverImage, setAllCoverImage] = useState("");
+  const [savingAllCover, setSavingAllCover] = useState(false);
+  const allImageInputRef = useRef(null);
+  const [allUploadingImage, setAllUploadingImage] = useState(false);
+  const [allGeneratingAiImage, setAllGeneratingAiImage] = useState(false);
+  const [allImageDragOver, setAllImageDragOver] = useState(false);
   const [dragIndex, setDragIndex] = useState(null);
   const listRef = useRef(null);
 
@@ -233,12 +250,147 @@ function CategoriesManagement({
 
   const handleAddClick = () => {
     setEditingId(null);
+    setEditingAllCover(false);
     resetForm();
     setShowAddForm(true);
   };
 
+  // ---- "All Recipes" cover image (special row) -------------------------
+  const handleEditAllCover = () => {
+    setShowAddForm(false);
+    setEditingId(null);
+    resetForm();
+    setAllCoverImage(allCategory?.image || "");
+    setAllUploadingImage(false);
+    setAllGeneratingAiImage(false);
+    setAllImageDragOver(false);
+    setEditingAllCover(true);
+  };
+
+  const handleCancelAllCover = () => {
+    setEditingAllCover(false);
+    setAllCoverImage("");
+  };
+
+  const handleAllImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file || !currentUser) return;
+    setAllUploadingImage(true);
+    try {
+      const url = await uploadRecipeImage(
+        currentUser.uid,
+        `cat_all_${Date.now()}`,
+        file,
+      );
+      setAllCoverImage(url);
+    } catch (err) {
+      console.error("All-cover image upload failed:", err);
+    }
+    setAllUploadingImage(false);
+    if (allImageInputRef.current) allImageInputRef.current.value = "";
+  };
+
+  const handleAllPasteImage = async (file) => {
+    if (!file || !currentUser || allUploadingImage || allGeneratingAiImage) return;
+    setAllUploadingImage(true);
+    try {
+      const url = await uploadRecipeImage(
+        currentUser.uid,
+        `cat_all_${Date.now()}_paste`,
+        file,
+      );
+      setAllCoverImage(url);
+    } catch (err) {
+      console.error("All-cover paste image failed:", err);
+    }
+    setAllUploadingImage(false);
+  };
+
+  const handleAllImageDrop = (e) => {
+    e.preventDefault();
+    setAllImageDragOver(false);
+    const file = Array.from(e.dataTransfer.files).find(
+      (f) => f.type.startsWith("image/") || /\.jfif$/i.test(f.name),
+    );
+    if (!file) return;
+    handleAllImageUpload({ target: { files: [file] } });
+  };
+
+  const handleGenerateAllAiImage = async () => {
+    const dalleCheck = canUse(FEATURES.DALLE_IMAGE);
+    if (!dalleCheck.allowed) {
+      setPremiumPopup(true);
+      return;
+    }
+    if (allUploadingImage || allGeneratingAiImage) return;
+    setAllGeneratingAiImage(true);
+    const safetyTimer = setTimeout(() => {
+      setAllGeneratingAiImage(false);
+      setImageToast({
+        open: true,
+        message: <><AlertTriangle size={18} /> Timeout</>,
+        variant: "error",
+      });
+    }, 120000);
+    try {
+      const dataUrl = await generateRecipeImageDataUrl({
+        recipeName: t("categories", "allRecipes") || "All Recipes",
+        ingredients: [],
+      });
+      const url = await uploadRecipeImage(
+        currentUser.uid,
+        `cat_all_${Date.now()}_ai`,
+        dataUrl,
+      );
+      setAllCoverImage(url);
+      setImageToast({
+        open: true,
+        message: <><CircleCheck size={18} /> {t("addWizard", "generateAiImageDone")}</>,
+        variant: "success",
+      });
+    } catch (err) {
+      setImageToast({
+        open: true,
+        message: <><AlertTriangle size={18} /> {err.message || t("addWizard", "generateAiImageError")}</>,
+        variant: "error",
+      });
+    } finally {
+      clearTimeout(safetyTimer);
+      setAllGeneratingAiImage(false);
+    }
+  };
+
+  const handleSaveAllCover = async () => {
+    if (!setCategoryImage) return;
+    setSavingAllCover(true);
+    try {
+      await setCategoryImage("all", allCoverImage || "");
+      setEditingAllCover(false);
+      setImageToast({
+        open: true,
+        message: (
+          <>
+            <CircleCheck size={18} /> {t("recipes", "saved")}
+          </>
+        ),
+        variant: "success",
+      });
+    } catch (err) {
+      console.error("Failed to save All cover image:", err);
+      setImageToast({
+        open: true,
+        message: <><AlertTriangle size={18} /> {err.message || "Error"}</>,
+        variant: "error",
+      });
+    } finally {
+      setSavingAllCover(false);
+    }
+  };
+  // ----------------------------------------------------------------------
+
   const handleEditClick = (category) => {
     setShowAddForm(false);
+    setEditingAllCover(false);
     setEditingId(category.id);
     setFormName(getTranslated(category));
     setFormColor(category.color);
@@ -405,6 +557,94 @@ function CategoriesManagement({
       </div>
 
       <div className={classes.listWrap} ref={listRef}>
+        {/* Special "All Recipes" cover image row — image-only edit. */}
+        <div
+          className={`${classes.catRow} ${classes.specialRow}`}
+        >
+          {editingAllCover ? (
+            <div className={classes.inlineForm}>
+              <div className={classes.specialFormHeader}>
+                <span className={classes.catIconWrap}>
+                  <UtensilsCrossed size={16} />
+                </span>
+                <span className={classes.catName}>
+                  {t("categories", "allRecipes")} —{" "}
+                  {t("categories", "coverImage")}
+                </span>
+              </div>
+              <p className={classes.coverHint}>
+                {t("categories", "coverImageHint")}
+              </p>
+              <div className={classes.imagePickerRow}>
+                <RecipeImageUpload
+                  images={allCoverImage ? [allCoverImage] : []}
+                  uploadingImage={allUploadingImage}
+                  generatingAiImage={allGeneratingAiImage}
+                  isDragOver={allImageDragOver}
+                  setIsDragOver={setAllImageDragOver}
+                  onImageUpload={handleAllImageUpload}
+                  onRemoveImage={() => setAllCoverImage("")}
+                  onDrop={handleAllImageDrop}
+                  onPasteImage={handleAllPasteImage}
+                  onGenerateAiImage={handleGenerateAllAiImage}
+                  fileInputRef={allImageInputRef}
+                  isMobile={isMobile}
+                  hideHint
+                  t={t}
+                />
+              </div>
+              <div className={classes.inlineFormActions}>
+                <button
+                  type="button"
+                  className={classes.cancelBtn}
+                  onClick={handleCancelAllCover}
+                  disabled={savingAllCover}
+                >
+                  {t("categories", "cancel")}
+                </button>
+                <button
+                  type="button"
+                  className={classes.addBtn}
+                  onClick={handleSaveAllCover}
+                  disabled={savingAllCover}
+                >
+                  {t("categories", "saveChanges")}
+                </button>
+              </div>
+            </div>
+          ) : (
+            <>
+              <span className={classes.catInfo}>
+                <span className={classes.catIconWrap}>
+                  {allCategory?.image ? (
+                    <img
+                      src={allCategory.image}
+                      alt=""
+                      className={classes.specialThumb}
+                    />
+                  ) : (
+                    <UtensilsCrossed size={16} />
+                  )}
+                </span>
+                <span className={classes.catName}>
+                  {t("categories", "allRecipes")}
+                </span>
+              </span>
+              <div className={classes.catActions}>
+                <button
+                  type="button"
+                  className={classes.editBtn}
+                  onClick={handleEditAllCover}
+                  title={t("categories", "changeCoverImage")}
+                  aria-label={t("categories", "changeCoverImage")}
+                >
+                  <ImagePlus size={18} />
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+
         {editableCategories.map((category, index) => (
           <div
             key={category.id}

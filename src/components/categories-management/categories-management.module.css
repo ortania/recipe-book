@@ -60,6 +60,34 @@
   -webkit-overflow-scrolling: touch;
 }
 
+/* Special row (e.g. "All Recipes" cover image) — no drag handle, no delete. */
+.specialRow {
+  background: var(--clr-bg-tertiary);
+  border-radius: 10px;
+  margin: 0.25rem 0 0.75rem;
+  padding-inline-start: 1rem;
+}
+
+.specialThumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: var(--icon-border-radius);
+}
+
+.specialFormHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.coverHint {
+  margin: 0;
+  font-size: var(--very-small-font);
+  color: var(--clr-text-muted);
+  line-height: 1.4;
+}
+
 /* Category row */
 .catRow {
   display: flex;
