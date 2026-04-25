@@ -268,6 +268,7 @@
   font-size: var(--basic-font);
   color: var(--clr-text-primary);
   user-select: none;
+  padding-top: 1rem;
 }
 
 /* Dim the share-to-community label when the user's email is not
@@ -310,6 +311,7 @@
   color: var(--clr-text-primary);
   font-weight: var(--font-weight-heading);
   font-size: var(--basic-font);
+  padding-top: 1rem;
 }
 
 .sharedBadge {

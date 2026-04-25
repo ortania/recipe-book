@@ -6,7 +6,10 @@ import { VerifyEmailHint } from "../../../banners/verify-email-hint";
 import { ConfirmDialog } from "../../confirm-dialog";
 import { UnshareDialog } from "../../unshare-dialog";
 import { Toast } from "../../../controls";
-import { unshareRecipeFromCommunity } from "../../../../firebase/recipeService";
+import {
+  publishRecipeToCommunity,
+  unshareRecipeFromCommunity,
+} from "../../../../firebase/recipeService";
 import { hasUnpublishedChanges } from "../../../../utils/publishedSnapshot";
 
 /**
@@ -75,6 +78,7 @@ export default function BasicTab() {
 
   const [showPublishConfirm, setShowPublishConfirm] = useState(false);
   const [showUnshareDialog, setShowUnshareDialog] = useState(false);
+  const [publishing, setPublishing] = useState(false);
   const [unsharing, setUnsharing] = useState(false);
   const [toast, setToast] = useState({ open: false, message: "", variant: "success" });
 
@@ -85,18 +89,61 @@ export default function BasicTab() {
     setShowPublishConfirm(true);
   };
 
-  const confirmPublish = () => {
-    setShowPublishConfirm(false);
-    setEditedRecipe((prev) => ({
-      ...prev,
-      shareToGlobal: true,
-      showMyName: true,
-    }));
-    setToast({
-      open: true,
-      message: t("recipes", "publishSuccess"),
-      variant: "success",
-    });
+  // Publishing is symmetrical with unshare: the moment the user confirms,
+  // we write the snapshot + share flags to Firestore so the community can
+  // see the recipe immediately — without requiring an extra Save click.
+  // The snapshot is built from the recipe as it was last saved (the
+  // `recipe` prop). If the user has unsaved content edits in the form,
+  // those won't be part of the published version until they Save (and
+  // the "unpublished edits" hint will surface).
+  const confirmPublish = async () => {
+    if (publishing) return;
+    setPublishing(true);
+    try {
+      const sharerName =
+        currentUser?.displayName ||
+        currentUser?.email?.split("@")[0] ||
+        "";
+      const snapshot = await publishRecipeToCommunity(recipe.id, recipe, {
+        sharerUserId: currentUser?.uid,
+        sharerName,
+        showMyName: true,
+      });
+
+      setEditedRecipe((prev) => ({
+        ...prev,
+        shareToGlobal: true,
+        showMyName: true,
+        publishedSnapshot: snapshot,
+        sharerUserId: snapshot.sharerUserId || "",
+        sharerName: snapshot.sharerName || "",
+      }));
+      // Mutate the prop so the panel renders as "shared" and so the next
+      // Save doesn't accidentally roll back the publish.
+      recipe.shareToGlobal = true;
+      recipe.showMyName = true;
+      recipe.publishedSnapshot = snapshot;
+      recipe.sharerUserId = snapshot.sharerUserId || "";
+      recipe.sharerName = snapshot.sharerName || "";
+      recipe.avgRating = 0;
+      recipe.ratingCount = 0;
+
+      setShowPublishConfirm(false);
+      setToast({
+        open: true,
+        message: t("recipes", "publishSuccess"),
+        variant: "success",
+      });
+    } catch (err) {
+      console.error("Publish failed:", err);
+      setToast({
+        open: true,
+        message: err.message || "Failed",
+        variant: "error",
+      });
+    } finally {
+      setPublishing(false);
+    }
   };
 
   // User picks "anonymize" or "remove" in the unshare dialog. We write
@@ -460,10 +507,16 @@ export default function BasicTab() {
         <ConfirmDialog
           title={t("recipes", "publishConfirmTitle")}
           message={t("recipes", "publishConfirmBody")}
-          confirmText={t("recipes", "publishConfirmBtn")}
+          confirmText={
+            publishing
+              ? t("common", "loading")
+              : t("recipes", "publishConfirmBtn")
+          }
           cancelText={t("common", "cancel")}
           onConfirm={confirmPublish}
-          onCancel={() => setShowPublishConfirm(false)}
+          onCancel={() =>
+            publishing ? null : setShowPublishConfirm(false)
+          }
         />
       )}
 

@@ -73,7 +73,7 @@ function SharerProfile() {
           });
           const filtered = cats.filter((c) => usedCatIds.has(c.id));
           const generalCat = hasUncategorized
-            ? [{ id: "general", name: "כללי" }]
+            ? [{ id: "general", name: t("categories", "general") }]
             : [];
           setSharerCategories([
             { id: "all", name: "all" },
@@ -296,7 +296,9 @@ function SharerProfile() {
               name={
                 cat.id === "all"
                   ? t("categories", "allRecipes")
-                  : getTranslated(cat)
+                  : cat.id === "general"
+                    ? t("categories", "general")
+                    : getTranslated(cat)
               }
               selected={false}
               onClick={() => {

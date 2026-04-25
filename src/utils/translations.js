@@ -1212,12 +1212,12 @@ const translations = {
       mixed: "Publish this recipe to the community?",
     },
     publishConfirmBody: {
-      he: "תוכן המתכון במצבו הנוכחי ייקפא בקהילה. שינויים עתידיים במתכון האישי שלכם לא ישפיעו על גרסת הקהילה. תוכלו לבטל שיתוף בכל עת.",
-      en: "The recipe's current content will be frozen in the community. Future edits to your personal recipe won't change the community version. You can unshare at any time.",
-      ru: "Текущее содержание рецепта будет заморожено в сообществе. Ваши будущие правки не повлияют на версию сообщества. Вы можете снять публикацию в любой момент.",
-      de: "Der aktuelle Inhalt des Rezepts wird in der Community eingefroren. Spätere Änderungen an deinem persönlichen Rezept ändern die Community-Version nicht. Du kannst das Teilen jederzeit aufheben.",
+      he: "המתכון יפורסם בקהילה מיד. הגרסה השמורה הנוכחית תוקפא בקהילה — שינויים עתידיים שלכם לא ישפיעו עליה. אם יש לכם עריכות שלא נשמרו, שמרו אותן קודם ואז פרסמו. תוכלו לבטל שיתוף בכל עת.",
+      en: "The recipe will be published to the community right away. The currently saved version will be frozen — your future edits won't change it. If you have unsaved edits, save them first and then publish. You can unshare at any time.",
+      ru: "Рецепт будет опубликован в сообществе сразу же. Текущая сохранённая версия будет заморожена — ваши будущие правки её не изменят. Если есть несохранённые правки, сначала сохраните их, потом публикуйте. Снять публикацию можно в любой момент.",
+      de: "Das Rezept wird sofort in der Community veröffentlicht. Die aktuell gespeicherte Version wird eingefroren — spätere Änderungen ändern sie nicht. Speicher unveröffentlichte Änderungen zuerst, dann veröffentliche. Du kannst das Teilen jederzeit aufheben.",
       mixed:
-        "The recipe's current content will be frozen in the community. Future edits to your personal recipe won't change the community version. You can unshare at any time.",
+        "The recipe will be published to the community right away. The currently saved version will be frozen — your future edits won't change it. If you have unsaved edits, save them first and then publish. You can unshare at any time.",
     },
     publishConfirmBtn: {
       he: "שתפו ופרסמו",

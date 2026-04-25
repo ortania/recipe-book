@@ -21,9 +21,9 @@
 
 .intro {
   margin: 0 0 1.25rem;
-  font-size: 0.95rem;
+  font-size: var(--basic-font);
   line-height: 1.5;
-  color: var(--clr-text-secondary);
+  color: var(--clr-text-primary);
   text-align: center;
 }
 
@@ -69,16 +69,17 @@
   flex-direction: column;
   gap: 0.25rem;
   min-width: 0;
+
 }
 
 .text strong {
-  font-size: 0.95rem;
+  font-size: var(--basic-font);
   font-weight: var(--font-weight-heading);
   color: var(--clr-text-primary);
 }
 
 .text small {
-  font-size: 0.8rem;
+  font-size: var(--small-font);
   color: var(--clr-text-secondary);
   line-height: 1.45;
 }
