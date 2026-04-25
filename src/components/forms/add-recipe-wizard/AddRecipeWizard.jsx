@@ -106,7 +106,7 @@ function AddRecipeWizard({
     groups,
     "name",
   );
-  const [screen, setScreen] = useState(initialScreen); // method | url | text | photo | manual | recording
+  const [screen, setScreen] = useState(initialScreen); // method | url | text | video | photo | manual | recording
   const [cameFromRecording, setCameFromRecording] = useState(false);
   const [manualStep, setManualStep] = useState(0);
   const [recipe, setRecipe] = useState(() => {

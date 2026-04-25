@@ -1,5 +1,12 @@
 import { useState, useRef, useEffect } from "react";
-import { Link, ClipboardList, FilePenLine, Mic, ImagePlus } from "lucide-react";
+import {
+  Link,
+  ClipboardList,
+  FilePenLine,
+  Mic,
+  ImagePlus,
+  Video,
+} from "lucide-react";
 import { useLanguage } from "../../../context";
 import { AddButton } from "../add-button";
 import classes from "./add-recipe-dropdown.module.css";
@@ -124,6 +131,17 @@ function AddRecipeDropdown({
             </span>
             <span className={classes.dropdownIcon}>
               <ClipboardList size={20} />
+            </span>
+          </button>
+          <button
+            className={classes.dropdownItem}
+            onClick={() => handleClick("video")}
+          >
+            <span className={classes.dropdownLabel}>
+              {t("addWizard", "fromVideo")}
+            </span>
+            <span className={classes.dropdownIcon}>
+              <Video size={20} />
             </span>
           </button>
           <button

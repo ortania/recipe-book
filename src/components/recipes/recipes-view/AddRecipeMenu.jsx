@@ -1,4 +1,11 @@
-import { Link, ClipboardList, Mic, ImagePlus, FilePenLine } from "lucide-react";
+import {
+  Link,
+  ClipboardList,
+  Mic,
+  ImagePlus,
+  FilePenLine,
+  Video,
+} from "lucide-react";
 import fabClasses from "../../controls/fab/fab.module.css";
 
 export default function AddRecipeMenu({ onSelect, t }) {
@@ -26,6 +33,17 @@ export default function AddRecipeMenu({ onSelect, t }) {
         </span>
         <span className={fabClasses.menuIcon}>
           <ClipboardList size={20} />
+        </span>
+      </button>
+      <button
+        className={fabClasses.menuItem}
+        onClick={() => onSelect("video")}
+      >
+        <span className={fabClasses.menuLabel}>
+          {t("addWizard", "fromVideo")}
+        </span>
+        <span className={fabClasses.menuIcon}>
+          <Video size={20} />
         </span>
       </button>
       <button
