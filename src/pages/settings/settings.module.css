@@ -325,6 +325,16 @@
   color: var(--clr-text-primary);
   line-height: 1.4;
 }
+.privacyNote {
+  margin-top: 0.4rem;
+  padding: 0.5rem 0.75rem;
+  background: var(--clr-tip-bg);
+  /* border-inline-start: 3px solid var(--clr-accent, var(--clr-text-secondary)); */
+  border-radius: 8px;
+  font-size: var(--basic-font);
+  color: var(--clr-tip-text);
+  line-height: 1.4;
+}
 
 .expandedPanel {
   background: var(--clr-bg-card);

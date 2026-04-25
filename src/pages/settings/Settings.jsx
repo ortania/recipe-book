@@ -315,6 +315,9 @@ function Settings() {
                     <span className={classes.privacyDesc}>
                       {t("settings", "publicProfileDesc")}
                     </span>
+                    <span className={classes.privacyNote}>
+                      {t("settings", "publicProfileNote")}
+                    </span>
                   </div>
                 </label>
               </div>

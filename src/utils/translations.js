@@ -184,6 +184,14 @@ const translations = {
       mixed:
         "When enabled, tapping your name on a recipe you shared to the community will show only the other recipes you shared. Your private recipes are never shown.",
     },
+    publicProfileNote: {
+      he: "שים לב: בפרופיל הציבורי יופיעו רק מתכונים ששיתפת בקהילה. תוכן פרטי — מתכונים, תמונות וקטגוריות שלא שיתפת — לעולם לא יוצג.",
+      en: "Note: your public profile shows only recipes you shared to the community. Private content — recipes, images and categories you didn't share — is never displayed.",
+      ru: "Обратите внимание: в публичном профиле отображаются только рецепты, которые вы опубликовали в сообществе. Личное содержимое — рецепты, изображения и категории, которыми вы не делились — никогда не отображается.",
+      de: "Hinweis: Dein öffentliches Profil zeigt nur Rezepte, die du in der Community geteilt hast. Private Inhalte — Rezepte, Bilder und Kategorien, die du nicht geteilt hast — werden nie angezeigt.",
+      mixed:
+        "Note: your public profile shows only recipes you shared to the community. Private content — recipes, images and categories you didn't share — is never displayed.",
+    },
     privateProfileLabel: {
       he: "פרופיל פרטי",
       en: "Private profile",
