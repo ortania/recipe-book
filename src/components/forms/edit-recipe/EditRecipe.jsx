@@ -692,15 +692,24 @@ function EditRecipe({
     } else if (wasShared && willBeShared && !hadSnapshot) {
       // Legacy share auto-migration: this recipe was published
       // before the immutable-snapshot system existed. Freeze the
-      // *original* content so the community version stays stable
-      // going forward and any in-progress edits don't leak.
-      const showMyName = !!recipe.showMyName;
+      // *original* content (from `recipe`, not from in-form edits)
+      // so the community version stays stable going forward.
+      // Attribution comes from `editedRecipe`, so a user who
+      // anonymizes a legacy share in the same save still gets a
+      // properly anonymous snapshot.
+      const showMyName = !!editedRecipe.showMyName;
       const snapshot = buildPublishedSnapshot(recipe, {
         sharerUserId: showMyName
-          ? recipe.sharerUserId || currentUser?.uid || ""
+          ? editedRecipe.sharerUserId ||
+            recipe.sharerUserId ||
+            currentUser?.uid ||
+            ""
           : "",
         sharerName: showMyName
-          ? recipe.sharerName || currentUser?.displayName || ""
+          ? editedRecipe.sharerName ||
+            recipe.sharerName ||
+            currentUser?.displayName ||
+            ""
           : "",
       });
       updatedRecipe.publishedSnapshot = snapshot;
