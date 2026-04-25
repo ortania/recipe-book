@@ -555,7 +555,7 @@ function AddRecipeWizard({
   const doImportWithAI = async () => {
     const voiceCheck = canUse(FEATURES.IMPORT_VOICE);
     if (!voiceCheck.allowed) {
-      setPremiumPopup({ open: true, type: "hard" });
+      setPremiumPopup({ open: true, type: "limit" });
       return;
     }
     const text =
@@ -626,6 +626,7 @@ function AddRecipeWizard({
             : prev.categories,
         notes: parsed.notes || prev.notes,
       }));
+      await incrementUsage(FEATURES.IMPORT_VOICE);
       needsTranslationRef.current = true;
       setCameFromRecording(true);
       setScreen("manual");

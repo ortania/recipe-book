@@ -1,6 +1,16 @@
 import React from "react";
-import { ChevronRight, Mic, Sparkles, MessageCircle, Lightbulb } from "lucide-react";
+import {
+  ChevronRight,
+  Mic,
+  Sparkles,
+  MessageCircle,
+  Lightbulb,
+  Crown,
+} from "lucide-react";
 import { CloseButton } from "../../../controls";
+import UsageIndicator from "../../../usage-indicator/UsageIndicator";
+import useEntitlements from "../../../../hooks/useEntitlements";
+import { FEATURES } from "../../../../config/entitlements";
 import { useWizard } from "../WizardContext";
 
 export default function RecordingScreen() {
@@ -26,6 +36,7 @@ export default function RecordingScreen() {
     shared,
     t,
   } = useWizard();
+  const { hasFullAccess } = useEntitlements();
 
   return (
     <div className={classes.wizardContainer}>
@@ -51,6 +62,15 @@ export default function RecordingScreen() {
       <p className={classes.screenSubtitle}>
         {t("addWizard", "fromRecordingSubtitle")}
       </p>
+
+      {!hasFullAccess && (
+        <div className={classes.tipBox}>
+          <span className={classes.tipIcon}>
+            <Crown size={16} />
+          </span>
+          <span>{t("addWizard", "aiParsePremiumNote")}</span>
+        </div>
+      )}
 
       {!isRecording && !recordingText.trim() && (
         <div className={classes.recordingLanguage}>
@@ -186,6 +206,7 @@ export default function RecordingScreen() {
               <>
                 <Sparkles size={16} />
                 {t("addWizard", "aiParse")}
+                <UsageIndicator featureKey={FEATURES.IMPORT_VOICE} />
               </>
             )}
           </button>

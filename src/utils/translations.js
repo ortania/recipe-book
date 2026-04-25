@@ -4927,6 +4927,13 @@ const translations = {
       de: "Ihr Browser unterstützt diese Sprache für die Aufnahme nicht. Wählen Sie eine andere Sprache aus der Liste oder nehmen Sie in einer nahen Sprache auf und korrigieren Sie den Text manuell vor der Umwandlung.",
       mixed: "הדפדפן לא תומך בשפה הזו להקלטה. נסו שפה אחרת מהרשימה, או הקליטו בשפה הקרובה ביותר ותקנו את הטקסט ידנית בתיבה לפני ההמרה.",
     },
+    aiParsePremiumNote: {
+      he: "ההקלטה והכפתור \"חלץ מתכון\" חינמיים. \"חלץ עם AI\" כלול בחבילה החינמית עם 2 שימושים בלבד — אחר כך נדרש שדרוג לפרימיום.",
+      en: "Recording and the 'Parse Recipe' button are free. 'AI Parse' is included with 2 free uses — after that, premium is required.",
+      ru: "Запись и кнопка «Извлечь рецепт» бесплатны. «Извлечь с ИИ» доступен бесплатно 2 раза, далее требуется премиум.",
+      de: "Aufnahme und die Schaltfläche 'Rezept extrahieren' sind kostenlos. 'Mit KI extrahieren' ist 2-mal kostenlos enthalten — danach ist Premium erforderlich.",
+      mixed: "ההקלטה והכפתור \"חלץ מתכון\" חינמיים. \"חלץ עם AI\" כלול בחבילה החינמית עם 2 שימושים בלבד — אחר כך נדרש שדרוג לפרימיום.",
+    },
     langHebrew: {
       he: "עברית",
       en: "Hebrew",

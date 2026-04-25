@@ -11,6 +11,7 @@ const FREE_LIMITED = [
   "premiumFeature_variations",
   "premiumFeature_photoImport",
   "premiumFeature_textImport",
+  "premiumFeature_voiceImport",
 ];
 
 const PREMIUM_ONLY = [
@@ -19,7 +20,6 @@ const PREMIUM_ONLY = [
   "premiumFeature_voice",
   "premiumFeature_aiImage",
   "premiumFeature_aiSuggestions",
-  "premiumFeature_voiceImport",
 ];
 
 export default function PremiumFeaturePopup({ open, onClose, type }) {

@@ -47,7 +47,12 @@ export const FEATURE_CONFIG = {
     freeLimit: 3,
     reset: "never",
   },
-  [FEATURES.IMPORT_VOICE]: { gate: GATE_TYPES.HARD },
+  [FEATURES.IMPORT_VOICE]: {
+    gate: GATE_TYPES.SOFT,
+    counter: "voiceImports",
+    freeLimit: 2,
+    reset: "never",
+  },
   [FEATURES.AI_URL_FALLBACK]: { gate: GATE_TYPES.HARD },
   [FEATURES.OCR]: { gate: GATE_TYPES.HARD },
   [FEATURES.NUTRITION_CALC]: { gate: GATE_TYPES.HARD },
@@ -68,6 +73,7 @@ export const DEFAULT_USAGE = {
   variationsCreated: 0,
   photoImports: 0,
   textImports: 0,
+  voiceImports: 0,
   lastMonthlyReset: null,
 };
 
