@@ -1,8 +1,24 @@
 import React from "react";
-import { ChevronRight, Lightbulb, ShieldAlert } from "lucide-react";
+import {
+  ChevronRight,
+  ShieldAlert,
+  Mic,
+  Camera,
+  Link as LinkIcon,
+  Pencil,
+} from "lucide-react";
 import { CloseButton } from "../../../controls";
 import { useWizard } from "../WizardContext";
 
+// "From Video" is implemented as a router rather than a single import path.
+// Instagram and YouTube intentionally don't expose video content to outside
+// apps, and our original constraints forbid scraping / login bypass / video
+// download. So instead of pretending we can read the video, this screen
+// helps the user pick the right existing flow (recording / photo / blog
+// URL / manual) and stashes the video link for attribution before
+// jumping there. The chosen flow runs unchanged; the video URL and the
+// importedFromVideo flag survive via the existing setRecipe(prev=>...)
+// patterns in each handler.
 export default function VideoScreen() {
   const {
     setScreen,
@@ -10,17 +26,11 @@ export default function VideoScreen() {
     handleClose,
     recipeVideoUrl,
     setRecipeVideoUrl,
-    recipeVideoText,
-    setRecipeVideoText,
-    isImporting,
-    importError,
-    handleImportFromVideo,
+    handleStartFromVideo,
     classes,
     shared,
     t,
   } = useWizard();
-
-  const canContinue = recipeVideoText.trim().length > 0;
 
   return (
     <div className={classes.wizardContainer}>
@@ -45,26 +55,6 @@ export default function VideoScreen() {
         {t("addWizard", "fromVideoSubtitle")}
       </p>
 
-      <div className={`${classes.tipBox} ${classes.tipBoxPurple}`}>
-        <span className={classes.tipIcon}>
-          <Lightbulb size={16} />
-        </span>
-        <span>
-          <span className={classes.tipBold}>{t("addWizard", "tip")}:</span>{" "}
-          {t("addWizard", "videoTip")}
-        </span>
-      </div>
-
-      <label className={classes.fieldLabel}>
-        {t("addWizard", "pasteVideoText")}
-      </label>
-      <textarea
-        className={shared.formTextarea}
-        placeholder={t("addWizard", "pasteVideoTextPlaceholder")}
-        value={recipeVideoText}
-        onChange={(e) => setRecipeVideoText(e.target.value)}
-      />
-
       <label className={classes.fieldLabel}>
         {t("addWizard", "videoUrlLabel")}
       </label>
@@ -81,24 +71,86 @@ export default function VideoScreen() {
         dir="ltr"
       />
 
+      <h3 className={`${classes.fieldLabel} ${classes.methodsHeading}`}>
+        {t("addWizard", "fromVideoMethodsTitle")}
+      </h3>
+
+      <div className={classes.methodCards}>
+        <div
+          className={classes.methodCard}
+          onClick={() => handleStartFromVideo("recording")}
+        >
+          <div className={classes.methodIcon}>
+            <Mic size={24} />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "videoMethodRecording")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "videoMethodRecordingDesc")}
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={classes.methodCard}
+          onClick={() => handleStartFromVideo("photo")}
+        >
+          <div className={classes.methodIcon}>
+            <Camera size={24} />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "videoMethodPhoto")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "videoMethodPhotoDesc")}
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={classes.methodCard}
+          onClick={() => handleStartFromVideo("url")}
+        >
+          <div className={classes.methodIcon}>
+            <LinkIcon size={24} />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "videoMethodBlog")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "videoMethodBlogDesc")}
+            </p>
+          </div>
+        </div>
+
+        <div
+          className={classes.methodCard}
+          onClick={() => handleStartFromVideo("manual")}
+        >
+          <div className={classes.methodIcon}>
+            <Pencil size={24} />
+          </div>
+          <div className={classes.methodCardContent}>
+            <h3 className={classes.methodCardTitle}>
+              {t("addWizard", "videoMethodManual")}
+            </h3>
+            <p className={classes.methodCardDesc}>
+              {t("addWizard", "videoMethodManualDesc")}
+            </p>
+          </div>
+        </div>
+      </div>
+
       <div className={classes.tipBox}>
         <span className={classes.tipIcon}>
           <ShieldAlert size={16} />
         </span>
         <span>{t("addWizard", "videoImageRightsHint")}</span>
       </div>
-
-      {importError && <p className={classes.errorText}>{importError}</p>}
-
-      <button
-        className={classes.continueBtn}
-        onClick={handleImportFromVideo}
-        disabled={isImporting || !canContinue}
-      >
-        {isImporting
-          ? t("addWizard", "importing")
-          : t("addWizard", "parseAndImport")}
-      </button>
     </div>
   );
 }

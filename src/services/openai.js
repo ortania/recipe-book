@@ -495,19 +495,21 @@ Respond with valid JSON in this exact format:
   "category": "category name or empty string",
   "notes": ""
 }
-- Extract ALL ingredients with their exact quantities as separate array items.
-- IMPORTANT: Always write quantities as digits, not words. For example: "3 ביצים" instead of "שלוש ביצים", "2 cups flour" instead of "two cups flour". Always put the number BEFORE the ingredient.
+- Extract EVERY food/ingredient mentioned anywhere in the text (in a dedicated ingredient list OR inside the instructions). If a quantity is given, include it. If no quantity is given, output the ingredient name on its own (e.g. "mushrooms", "garlic", "פטריות"). Do NOT invent quantities that were not stated.
+- IMPORTANT: When quantities are given, always write them as digits, not words. For example: "3 ביצים" instead of "שלוש ביצים", "2 cups flour" instead of "two cups flour". Always put the number BEFORE the ingredient.
 - ONLY use "::" group prefixes for SPECIFIC named sub-sections like "::לבלילה", "::למלית", "::לציפוי", "::לעיטור", "::לקישוט", "::לבצק", "::למילוי", "::For the dough", "::For the filling". Do NOT create groups for generic words like "מרכיבים" (ingredients) or "הוראות" (instructions) - these are NOT groups.
 - CRITICAL for Hebrew: If the user said "לבלילה", "למלית", "לציפוי", "לעיטור", "לקישוט" or similar before a set of ingredients, you MUST output a "::group name" line and then the ingredients for that group. For example: if they said "לבלילה מרכיב 2 ביצים למלית מרכיב 500 גרם גבינה", output ["::לבלילה", "2 ביצים", "::למלית", "500 גרם גבינה"]. Never merge multiple sections into one.
 - Extract ALL instructions as separate steps in order.
 - CRITICAL: ONLY extract instructions that the user ACTUALLY SAID or WROTE. NEVER invent, generate, or add instructions that do not appear in the original text. If the user did not mention any instructions, return an empty array for "instructions".
+- name: if the speaker did not say a recipe name, generate a short descriptive name based on the main ingredients and cooking method (e.g. "Creamy Mushroom Sauce", "פטריות ברוטב שמנת"), in the SAME language as the rest of the text. Never leave the name empty if there is at least one ingredient or one instruction.
 - prepTime: preparation/hands-on time in minutes only (no units). Return "" if not found.
 - cookTime: cooking, baking, or oven time in minutes only (no units). This includes any time labeled as אפייה, בישול, זמן תנור, זמן אפייה, baking time, cooking time, oven time. For ranges like "45-55 דקות", return the higher value (e.g. "55"). Return "" if not found.
 - CRITICAL: Keep the ENTIRE recipe in its original language. Do not translate ANY part - not the name, not the ingredients, not the instructions, and not the group names.
 - notes: if the user mentioned any tips, notes, serving suggestions, or substitutions (e.g. "טיפ", "הערה", "אפשר גם"), include them here. Return "" if none.
 - If difficulty is mentioned, map it to: VeryEasy, Easy, Medium, or Hard.
 - Even if difficulty is NOT explicitly mentioned, try to estimate it from the recipe complexity.${categoriesHint}
-- If you cannot find a recipe in the text, return: {"error": "No recipe found"}`,
+- BE GENEROUS: if the text describes ANY cooking activity (frying, baking, mixing, adding ingredients, seasoning, etc.) treat it as a recipe and extract whatever ingredients and steps you can. Duplicate phrases caused by repeated playback are fine — just dedupe naturally.
+- ONLY return {"error": "No recipe found"} when the text contains no cooking-related content at all (e.g. a weather forecast, a song lyric, random chatter).`,
       },
       {
         role: "user",

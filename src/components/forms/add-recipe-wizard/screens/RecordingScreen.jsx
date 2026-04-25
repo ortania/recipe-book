@@ -11,6 +11,8 @@ export default function RecordingScreen() {
     isRecording,
     recordingText,
     setRecordingText,
+    recordingLocale,
+    setRecordingLocale,
     isImporting,
     importError,
     handleStartRecording,
@@ -49,6 +51,30 @@ export default function RecordingScreen() {
       <p className={classes.screenSubtitle}>
         {t("addWizard", "fromRecordingSubtitle")}
       </p>
+
+      {!isRecording && !recordingText.trim() && (
+        <div className={classes.recordingLanguage}>
+          <label className={classes.fieldLabel} htmlFor="recordingLocale">
+            {t("addWizard", "recordingLanguageLabel")}
+          </label>
+          <select
+            id="recordingLocale"
+            className={shared.formInput}
+            value={recordingLocale}
+            onChange={(e) => setRecordingLocale(e.target.value)}
+          >
+            <option value="he-IL">{t("addWizard", "langHebrew")}</option>
+            <option value="en-US">{t("addWizard", "langEnglish")}</option>
+            <option value="ru-RU">{t("addWizard", "langRussian")}</option>
+            <option value="de-DE">{t("addWizard", "langGerman")}</option>
+            <option value="fr-FR">{t("addWizard", "langFrench")}</option>
+            <option value="it-IT">{t("addWizard", "langItalian")}</option>
+          </select>
+          <p className={classes.fieldHint}>
+            {t("addWizard", "recordingLanguageHint")}
+          </p>
+        </div>
+      )}
 
       <div className={classes.recordingArea}>
         {!isRecording && (

@@ -250,6 +250,10 @@
   margin: 0.4rem 0 0;
 }
 
+.methodsHeading {
+  margin-top: 1.5rem;
+}
+
 .progressBarContainer {
   width: 100%;
   height: 6px;
@@ -361,6 +365,10 @@
 }
 
 /* ===== Recording Screen ===== */
+.recordingLanguage {
+  margin-bottom: 1rem;
+}
+
 .recordingArea {
   display: flex;
   flex-direction: column;

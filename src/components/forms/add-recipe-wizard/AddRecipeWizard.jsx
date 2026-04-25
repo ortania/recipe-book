@@ -143,7 +143,6 @@ function AddRecipeWizard({
   const [recipeAuthor, setRecipeAuthor] = useState("");
   const [recipeText, setRecipeText] = useState("");
   const [recipeVideoUrl, setRecipeVideoUrl] = useState("");
-  const [recipeVideoText, setRecipeVideoText] = useState("");
   const [isImporting, setIsImporting] = useState(false);
   const [importError, setImportError] = useState("");
   const [premiumPopup, setPremiumPopup] = useState({ open: false, type: "hard" });
@@ -300,6 +299,24 @@ function AddRecipeWizard({
     }
   };
 
+  // Map our app language codes to BCP-47 locales SpeechRecognition expects.
+  // Without this the recognizer was hardcoded to he-IL and silently dropped
+  // anything spoken in another language (e.g. German video narration
+  // produced empty transcripts).
+  const APP_LANG_TO_LOCALE = {
+    he: "he-IL",
+    en: "en-US",
+    ru: "ru-RU",
+    de: "de-DE",
+    mixed: "he-IL",
+  };
+
+  // Recording language is independent of UI language: the user might be
+  // running the app in Hebrew but recording a German cooking video.
+  const [recordingLocale, setRecordingLocale] = useState(
+    APP_LANG_TO_LOCALE[language] || "he-IL",
+  );
+
   const startRecognitionSession = () => {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) return;
@@ -310,7 +327,7 @@ function AddRecipeWizard({
     const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     recognition.continuous = !isMobile;
     recognition.interimResults = true;
-    recognition.lang = "he-IL";
+    recognition.lang = recordingLocale;
     recognition.maxAlternatives = 1;
 
     let sessionFinal = "";
@@ -356,6 +373,17 @@ function AddRecipeWizard({
         setImportError(t("addWizard", "noSpeechSupport"));
         return;
       }
+      // Some browsers report this when the chosen lang is unsupported; we
+      // stop the loop so we don't restart endlessly and show a clear hint.
+      if (
+        event.error === "language-not-supported" ||
+        event.error === "bad-grammar"
+      ) {
+        isRecordingRef.current = false;
+        setIsRecording(false);
+        setImportError(t("addWizard", "recordingLangUnsupported"));
+        return;
+      }
       if (event.error === "no-speech" || event.error === "aborted") return;
     };
 
@@ -399,6 +427,25 @@ function AddRecipeWizard({
       recordingTextRef.current = text;
       accumulatedTextRef.current = text;
     }
+  };
+
+  // Wipes everything tied to a previous recording session so fresh entries
+  // into the recording screen don't show stale text and so changing the
+  // recording language can't get tangled with leftover transcript state.
+  const resetRecordingState = () => {
+    isRecordingRef.current = false;
+    killRecognition();
+    setIsRecording(false);
+    accumulatedTextRef.current = "";
+    recordingTextRef.current = "";
+    setRecordingText("");
+    setRecipeText("");
+    setImportError("");
+  };
+
+  const enterRecordingScreen = () => {
+    resetRecordingState();
+    setScreen("recording");
   };
 
   const matchDifficulty = (spoken) => {
@@ -530,7 +577,12 @@ function AddRecipeWizard({
         .filter(Boolean);
       const parsed = await parseFreeSpeechRecipe(text, categoryNames);
       if (parsed.error) {
-        setImportError(parsed.error);
+        const isNoRecipe =
+          typeof parsed.error === "string" &&
+          parsed.error.toLowerCase().includes("no recipe found");
+        setImportError(
+          isNoRecipe ? t("addWizard", "noRecipeInRecording") : parsed.error,
+        );
         return;
       }
       const diff = matchDifficulty(parsed.difficulty);
@@ -641,89 +693,30 @@ function AddRecipeWizard({
     }
   };
 
-  // Video import: we never fetch the YouTube/Instagram URL ourselves —
-  // copyright-safe by design. The user pastes the description text and we
-  // run it through the same AI pipeline that powers free-speech recording
-  // imports. The original link is stored on both `sourceUrl` (for
-  // attribution) and `videoUrl` (so the existing "Watch video" link in the
-  // recipe view shows up automatically).
-  const handleImportFromVideo = async () => {
-    const text = recipeVideoText.trim();
-    if (!text) {
-      setImportError(t("addWizard", "videoNoTextError"));
-      return;
-    }
-    const textCheck = canUse(FEATURES.IMPORT_TEXT);
-    if (!textCheck.allowed) {
-      setPremiumPopup({ open: true, type: "limit" });
-      return;
-    }
-    setIsImporting(true);
+  // "From Video" is a router rather than its own importer. We can't read
+  // the video itself (no scraping / no login bypass / no thumbnail per the
+  // original constraints), so the user picks one of the existing flows and
+  // we only stash the video URL (when valid) plus the importedFromVideo
+  // flag before navigating. The chosen flow's handler keeps prev state via
+  // setRecipe(prev => ...), so videoUrl + importedFromVideo survive even
+  // if it overwrites sourceUrl (e.g. URL/blog flow).
+  const handleStartFromVideo = (target) => {
     setImportError("");
-    try {
-      const categoryNames = groups
-        .filter((g) => g.id !== "all")
-        .map((g) => g.name)
-        .filter(Boolean);
-      const parsed = await parseFreeSpeechRecipe(text, categoryNames);
-      if (parsed?.error) {
-        setImportError(parsed.error);
-        return;
-      }
-      const ingredientsFromParse = Array.isArray(parsed.ingredients)
-        ? parsed.ingredients
-        : typeof parsed.ingredients === "string" && parsed.ingredients.trim()
-          ? parsed.ingredients
-              .replace(/\r\n/g, "\n")
-              .split(/\n/)
-              .map((s) => s.trim())
-              .filter(Boolean)
-          : [];
-      const instructionsFromParse = Array.isArray(parsed.instructions)
-        ? parsed.instructions
-        : typeof parsed.instructions === "string" &&
-            parsed.instructions.trim()
-          ? parsed.instructions
-              .split(/[.\n]+/)
-              .map((s) => s.trim())
-              .filter(Boolean)
-          : [];
-      const trimmedUrl = recipeVideoUrl.trim();
-      // Only persist the URL if it parses as http(s); avoids storing garbage
-      // like "abc" or "youtube" in sourceUrl/videoUrl.
-      const validUrl = detectVideoSource(trimmedUrl) ? trimmedUrl : "";
-      setRecipe((prev) => ({
-        ...prev,
-        name: parsed.name?.trim() || prev.name,
-        ingredients:
-          ingredientsFromParse.length > 0
-            ? ingredientsFromParse
-            : prev.ingredients,
-        instructions:
-          instructionsFromParse.length > 0
-            ? instructionsFromParse
-            : prev.instructions,
-        prepTime: parsed.prepTime ? `${parsed.prepTime}min` : prev.prepTime,
-        cookTime: parsed.cookTime ? `${parsed.cookTime}min` : prev.cookTime,
-        servings: parsed.servings || prev.servings,
-        notes: parsed.notes || prev.notes,
-        // Never copy any image_src/thumbnail from the video — user uploads
-        // their own image (or leaves it empty).
-        image_src: prev.image_src,
-        images: prev.images,
-        sourceUrl: validUrl || prev.sourceUrl || "",
-        videoUrl: validUrl || prev.videoUrl || "",
-        importedFromVideo: true,
-      }));
-      await incrementUsage(FEATURES.IMPORT_TEXT);
-      needsTranslationRef.current = true;
-      setScreen("manual");
+    const trimmedUrl = recipeVideoUrl.trim();
+    const validUrl = detectVideoSource(trimmedUrl) ? trimmedUrl : "";
+    setRecipe((prev) => ({
+      ...prev,
+      sourceUrl: validUrl || prev.sourceUrl || "",
+      videoUrl: validUrl || prev.videoUrl || "",
+      importedFromVideo: true,
+    }));
+    if (target === "manual") {
       setManualStep(0);
-    } catch (err) {
-      setImportError(err.message || t("addWizard", "parseFailed"));
-    } finally {
-      setIsImporting(false);
     }
+    if (target === "recording") {
+      resetRecordingState();
+    }
+    setScreen(target);
   };
 
   const handleImportFromPhoto = async (e) => {
@@ -1394,7 +1387,6 @@ function AddRecipeWizard({
       setRecipeUrl("");
       setRecipeAuthor("");
       setRecipeVideoUrl("");
-      setRecipeVideoText("");
       setScreen("method");
     }
   };
@@ -1415,8 +1407,6 @@ function AddRecipeWizard({
     setRecipeText,
     recipeVideoUrl,
     setRecipeVideoUrl,
-    recipeVideoText,
-    setRecipeVideoText,
     isImporting,
     importError,
     setImportError,
@@ -1425,6 +1415,8 @@ function AddRecipeWizard({
     isRecording,
     recordingText,
     setRecordingText,
+    recordingLocale,
+    setRecordingLocale,
     dragIndex,
     dragField,
     dragOverIndex,
@@ -1463,11 +1455,12 @@ function AddRecipeWizard({
     handleClose,
     handleImportFromUrl,
     handleImportFromText,
-    handleImportFromVideo,
+    handleStartFromVideo,
     handleImportFromRecording,
     doImportWithAI,
     handleStartRecording,
     handleStopRecording,
+    enterRecordingScreen,
     handleImportFromPhoto,
     handlePhotoDrop,
     handlePastePhotoImage,

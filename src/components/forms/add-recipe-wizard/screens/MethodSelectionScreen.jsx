@@ -4,7 +4,8 @@ import { CloseButton } from "../../../controls";
 import { useWizard } from "../WizardContext";
 
 export default function MethodSelectionScreen() {
-  const { setScreen, handleClose, classes, t } = useWizard();
+  const { setScreen, enterRecordingScreen, handleClose, classes, t } =
+    useWizard();
 
   return (
     <div className={classes.wizardContainer}>
@@ -89,7 +90,7 @@ export default function MethodSelectionScreen() {
 
         <div
           className={`${classes.methodCard} ${classes.methodCardRecording}`}
-          onClick={() => setScreen("recording")}
+          onClick={enterRecordingScreen}
         >
           <div
             className={`${classes.methodIcon} ${classes.methodIconRecording}`}
