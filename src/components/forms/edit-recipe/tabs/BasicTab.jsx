@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Heart, Globe, Star, CheckCircle2, AlertCircle } from "lucide-react";
+import { useQueryClient } from "@tanstack/react-query";
 import { useEditRecipe } from "../EditRecipeContext";
 import { useRecipeBook, useLanguage } from "../../../../context";
 import { VerifyEmailHint } from "../../../banners/verify-email-hint";
@@ -45,8 +46,9 @@ export default function BasicTab() {
     t,
   } = useEditRecipe();
 
-  const { currentUser } = useRecipeBook();
+  const { currentUser, setRecipes } = useRecipeBook();
   const { language } = useLanguage();
+  const queryClient = useQueryClient();
   // Gate community sharing on verified email. If the recipe is already
   // shared and the user somehow becomes unverified, we still allow them
   // to uncheck the box — we only block turning sharing ON.
@@ -128,6 +130,31 @@ export default function BasicTab() {
       recipe.avgRating = 0;
       recipe.ratingCount = 0;
 
+      // Trigger a React re-render of any consumers of the recipes list so
+      // the share status is reflected immediately (categories page, public
+      // profile, etc.) without requiring the user to hit Save afterwards.
+      setRecipes((prev) =>
+        prev.map((r) =>
+          r.id === recipe.id
+            ? {
+                ...r,
+                shareToGlobal: true,
+                showMyName: true,
+                publishedSnapshot: snapshot,
+                sharerUserId: snapshot.sharerUserId || "",
+                sharerName: snapshot.sharerName || "",
+                avgRating: 0,
+                ratingCount: 0,
+              }
+            : r,
+        ),
+      );
+
+      // Invalidate any cached community-feed pages so the next visit
+      // shows the freshly-published recipe (react-query keeps results
+      // for ~5 minutes by default).
+      queryClient.invalidateQueries({ queryKey: ["globalRecipes"] });
+
       setShowPublishConfirm(false);
       setToast({
         open: true,
@@ -170,6 +197,20 @@ export default function BasicTab() {
         recipe.publishedSnapshot = null;
         recipe.sharerUserId = "";
         recipe.sharerName = "";
+        setRecipes((prev) =>
+          prev.map((r) =>
+            r.id === recipe.id
+              ? {
+                  ...r,
+                  shareToGlobal: false,
+                  showMyName: false,
+                  publishedSnapshot: null,
+                  sharerUserId: "",
+                  sharerName: "",
+                }
+              : r,
+          ),
+        );
         setToast({
           open: true,
           message: t("recipes", "unshareSuccessRemove"),
@@ -195,12 +236,32 @@ export default function BasicTab() {
           recipe.publishedSnapshot.sharerUserId = "";
           recipe.publishedSnapshot.sharerName = "";
         }
+        setRecipes((prev) =>
+          prev.map((r) =>
+            r.id === recipe.id
+              ? {
+                  ...r,
+                  showMyName: false,
+                  sharerUserId: "",
+                  sharerName: "",
+                  publishedSnapshot: r.publishedSnapshot
+                    ? {
+                        ...r.publishedSnapshot,
+                        sharerUserId: "",
+                        sharerName: "",
+                      }
+                    : r.publishedSnapshot,
+                }
+              : r,
+          ),
+        );
         setToast({
           open: true,
           message: t("recipes", "unshareSuccessAnonymize"),
           variant: "success",
         });
       }
+      queryClient.invalidateQueries({ queryKey: ["globalRecipes"] });
       setShowUnshareDialog(false);
     } catch (err) {
       console.error("Unshare failed:", err);
@@ -418,17 +479,14 @@ export default function BasicTab() {
           {isPersistedShared ? (
             /* ─── Already-shared panel ─────────────────────────── */
             <div className={classes.sharedPanel}>
-              <div className={classes.sharedPanelHeader}>
-                <span className={classes.sharedBadge}>
-                  <CheckCircle2 size={14} /> {t("recipes", "shareToGlobal")}
+              <span className={classes.sharedBadge}>
+                <CheckCircle2 size={14} aria-hidden />
+                <span className={classes.sharedBadgeText}>
+                  {publishedAt
+                    ? `${t("recipes", "publishedOn")} ${formatPublishedDate(publishedAt, language)}`
+                    : t("recipes", "publishedBadge")}
                 </span>
-                {publishedAt ? (
-                  <span className={classes.sharedMeta}>
-                    {t("recipes", "publishedOn")}{" "}
-                    {formatPublishedDate(publishedAt, language)}
-                  </span>
-                ) : null}
-              </div>
+              </span>
               <div className={classes.sharedMeta}>
                 {t("recipes", "shareFreezeNote")}
               </div>

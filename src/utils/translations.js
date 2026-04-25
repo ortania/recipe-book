@@ -1123,6 +1123,13 @@ const translations = {
       de: "In der Community veröffentlicht am",
       mixed: "Published to community on",
     },
+    publishedBadge: {
+      he: "פורסם בקהילה",
+      en: "Published to community",
+      ru: "Опубликовано в сообществе",
+      de: "In der Community veröffentlicht",
+      mixed: "Published to community",
+    },
     unpublishedEditsHint: {
       he: "ערכתם את המתכון מאז הפרסום. גרסת הקהילה נשארת ללא שינוי. לפרסום עדכונים, בטלו שיתוף ושתפו שוב.",
       en: "You've edited the recipe since it was published. The community version stays unchanged. To publish updates, unshare and share again.",
