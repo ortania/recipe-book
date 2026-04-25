@@ -58,8 +58,14 @@ export const searchCommunityRecipes = async ({
     }
 
     const data = await response.json();
+    // Defense in depth: even if the deployed Cloud Function returns the
+    // raw doc (e.g. an older revision that hasn't been redeployed since
+    // the snapshot system was introduced), apply the snapshot projection
+    // on the client too so the community view never leaks the sharer's
+    // post-publish edits.
+    const recipes = (data.recipes || []).map((r) => resolveCommunityView(r));
     return {
-      recipes: data.recipes || [],
+      recipes,
       cursor: data.cursor || null,
       total: data.total || 0,
     };
