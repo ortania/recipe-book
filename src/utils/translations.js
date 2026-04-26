@@ -5502,6 +5502,20 @@ const translations = {
       de: "Sie können mehr als ein Bild hinzufügen",
       mixed: "אפשר להוסיף יותר מתמונה אחת",
     },
+    noRecipeImageYet: {
+      he: "עדיין אין תמונה למתכון",
+      en: "No recipe image yet",
+      ru: "Пока нет фото рецепта",
+      de: "Noch kein Rezeptbild",
+      mixed: "עדיין אין תמונה למתכון",
+    },
+    imageRightsNote: {
+      he: "העלו רק תמונות שצילמתם בעצמכם או שיש לכם הרשאה להשתמש בהן. אין להעלות תמונות מהאינטרנט שאינן בבעלותכם.",
+      en: "Please upload only photos you took yourself or have permission to use. Don't upload images from the web that you don't own.",
+      ru: "Загружайте только фото, сделанные вами, или те, на которые у вас есть права. Не загружайте изображения из интернета, которые вам не принадлежат.",
+      de: "Bitte laden Sie nur Fotos hoch, die Sie selbst gemacht haben oder für die Sie eine Erlaubnis besitzen. Laden Sie keine Bilder aus dem Internet hoch, die Ihnen nicht gehören.",
+      mixed: "העלו רק תמונות שצילמתם בעצמכם או שיש לכם הרשאה להשתמש בהן. אין להעלות תמונות מהאינטרנט שאינן בבעלותכם.",
+    },
     takePhoto: {
       he: "פתח מצלמה",
       en: "Open Camera",

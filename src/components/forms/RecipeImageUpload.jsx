@@ -2,6 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import { X, Camera, Upload, Loader2, Sparkles, Clipboard, GripVertical } from "lucide-react";
 import imgClasses from "../../styles/shared/image-upload.module.css";
 import shared from "../../styles/shared/form-shared.module.css";
+import recipePlaceholder from "../../assets/recipe-placeholder.png";
 
 const fileOverlayStyle = {
   position: "absolute",
@@ -279,6 +280,16 @@ export default function RecipeImageUpload({
         </div>
       )}
 
+      {!hasImages && !busy && !hideHint && (
+        <div className={imgClasses.imagePlaceholder}>
+          <img
+            src={recipePlaceholder}
+            alt={t("addWizard", "noRecipeImageYet")}
+            className={imgClasses.imagePlaceholderImg}
+          />
+        </div>
+      )}
+
       <div
         className={!hasImages ? `${imgClasses.imageUploadButtons} ${isDragOver ? shared.dropActive : ""}` : undefined}
         {...(!hasImages && {
@@ -290,6 +301,11 @@ export default function RecipeImageUpload({
         {actionCards}
         {!hasImages && !hideHint && (
           <p className={imgClasses.imageHint}>{t("addWizard", "multipleImagesHint")}</p>
+        )}
+        {!hideHint && (
+          <p className={imgClasses.imageRightsNote}>
+            {t("addWizard", "imageRightsNote")}
+          </p>
         )}
       </div>
 
