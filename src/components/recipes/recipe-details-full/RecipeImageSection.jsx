@@ -1,6 +1,7 @@
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { CloseButton } from "../../controls/close-button";
 import { useRecipeDetails } from "../RecipeDetailsContext";
+import recipePlaceholder from "../../../assets/recipe-placeholder.png";
 
 export default function RecipeImageSection() {
   const {
@@ -59,7 +60,12 @@ export default function RecipeImageSection() {
           }}
         >
           <div className={classes.noImagePlaceholder}>
-            {t("recipes", "noImage")}
+            <img
+              src={recipePlaceholder}
+              alt=""
+              className={classes.noImagePlaceholderImg}
+              aria-hidden="true"
+            />
           </div>
           <img
             src={allImages[activeImageIndex]}
@@ -113,7 +119,12 @@ export default function RecipeImageSection() {
         </div>
       ) : (
         <div className={classes.noImageStandalone}>
-          {t("recipes", "noImage")}
+          <img
+            src={recipePlaceholder}
+            alt=""
+            className={classes.noImagePlaceholderImg}
+            aria-hidden="true"
+          />
         </div>
       )}
 

@@ -10,8 +10,8 @@ import {
   Copy,
   UserCheck,
   Bookmark,
-  UtensilsCrossed,
 } from "lucide-react";
+import recipePlaceholder from "../../assets/recipe-placeholder.png";
 import { Button } from "../controls/button";
 import { ConfirmDialog } from "../forms/confirm-dialog";
 import { formatDifficulty, formatTime } from "./utils";
@@ -221,7 +221,12 @@ function RecipeInfo({
       >
         <div className={classes.imageContainer}>
           <div className={classes.noImagePlaceholder}>
-            <UtensilsCrossed size={40} />
+            <img
+              src={recipePlaceholder}
+              alt=""
+              className={classes.noImagePlaceholderImg}
+              aria-hidden="true"
+            />
           </div>
           {hasImage && (
             <img
