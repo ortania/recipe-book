@@ -332,7 +332,7 @@ VITE_CLOUD_FETCH_BROWSER_URL
 | User blocking | Block/unblock community users |
 | Content moderation | Report inappropriate recipes |
 | Mobile app | Capacitor/Android build — app ID: `com.tania.cookipal`, app name: CookiPal |
-| Google Play Store prep | Release signing config, Google Sign-In on Android, app icon + splash screen, `app-release.aab` built, Play Console account registered + identity & phone verification complete — next step: create app listing and upload AAB |
+| Google Play Store prep | Release signing config, Google Sign-In on Android, app icon + splash screen, `app-release.aab` built, Play Console account registered + identity & phone verification complete, internal testing track created, testers list set up (including self) — next step: create new release and upload AAB |
 | Age gate on signup | Users must confirm they are 13+ and accept Terms + Privacy before creating an account |
 | Static legal pages | `/privacy` and `/terms` exist as both React routes AND standalone HTML files (required for Play Store listing) |
 | Delete account | Dedicated page + settings link, full data cleanup on deletion |

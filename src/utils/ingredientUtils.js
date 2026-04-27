@@ -14,7 +14,7 @@ import {
   PREP_STRIP_RE,
   PREP_ONLY_LINE_RE,
   PREP_WORDS,
-} from "./ingredientCalc";
+} from "./ingredientCalc.js";
 
 const _prepSet = new Set(PREP_WORDS.map((w) => w.toLowerCase()));
 
@@ -364,21 +364,181 @@ export function parseIngredients(recipe) {
 
 // ---- Ingredient Highlighting in Instructions ----
 
+// Preparation words that are CLEARLY about preparation method (not type/grade).
+// Excluded from PREP_WORDS: "דק/דקה/גס/גסה" — those describe TYPE for items
+// like שיבולת שועל and we want to keep them as part of the ingredient name.
+const CLEAR_PREP = new Set([
+  "מגורד", "מגורדים", "מגורדת",
+  "קלוף", "קלופים", "קלופה",
+  "חצוי", "חצויים", "חצויה",
+  "מומס", "מומסת", "מומסים",
+  "מופשר", "מופשרת", "מופשרים",
+  "קצוץ", "קצוצה", "קצוצים", "קצוצות",
+  "טחון", "טחונה", "טחונים", "טחונות",
+  "חתוך", "חתוכה", "חתוכים", "חתוכות",
+  "מעוך", "מעוכה", "מעוכים", "מעוכות",
+  "פרוס", "פרוסה", "פרוסים", "פרוסות",
+  "מרוסק", "מרוסקת", "מרוסקים", "מרוסקות",
+  "בשל", "בשלה", "בשלים", "בשלות",
+  "מגוררים", "מגוררות", "מגורר", "מגוררת",
+  "ממולחים", "ממולחות",
+  "ללא", "בלי",
+  // Size adjectives — usually just hints (לא סוג נפרד של ירק).
+  // NOTE: "דק/דקה/דקים/דקות" and "גס/גסה/עבה/עבות" are intentionally OMITTED
+  // because they describe the TYPE for products like שיבולת שועל / קמח.
+  "גדול", "גדולה", "גדולים", "גדולות",
+  "קטן", "קטנה", "קטנים", "קטנות",
+  "בינוני", "בינונית", "בינוניים", "בינוניות",
+  "ענק", "ענקית", "ענקיים", "ענקיות",
+  "chopped", "diced", "minced", "sliced", "mashed",
+  "melted", "thawed", "crushed", "grated", "peeled",
+  "without",
+  "large", "small", "medium", "big", "huge",
+]);
+
+// Synonym/default-variant map: aliases on the LEFT collapse to the canonical
+// form on the RIGHT. So "סוכר לבן" merges with plain "סוכר" in the shopping
+// list, and a generic "סוכר" mention in instructions matches a "סוכר לבן"
+// ingredient line. Add entries here as new synonyms come up.
+const DEFAULT_VARIANT = {
+  "סוכר לבן": "סוכר",
+  "סוכר רגיל": "סוכר",
+  "סוכר פשוט": "סוכר",
+  "קמח לבן": "קמח",
+  "קמח רגיל": "קמח",
+  "קמח חיטה": "קמח",
+  "אורז לבן": "אורז",
+  "אורז רגיל": "אורז",
+  "מלח רגיל": "מלח",
+  "מלח שולחן": "מלח",
+  "white sugar": "sugar",
+  "regular sugar": "sugar",
+  "plain sugar": "sugar",
+  "all-purpose flour": "flour",
+  "all purpose flour": "flour",
+  "white flour": "flour",
+  "plain flour": "flour",
+  "white rice": "rice",
+  "table salt": "salt",
+  "regular salt": "salt",
+};
+
+/**
+ * Extract the full descriptive ingredient name (including type/variant adjectives).
+ * Unlike `normalizeKey`, this keeps trailing descriptors so we can distinguish
+ * variants like "סוכר" vs "סוכר חום" or "שיבולת שועל דקה" vs "שיבולת שועל עבה".
+ *
+ * Also:
+ *  - Strips trailing preparation words (קלופים, מומס, chopped, …) so
+ *    "תפוחי אדמה קלופים" merges with "תפוחי אדמה".
+ *  - Canonicalizes synonyms via DEFAULT_VARIANT so "סוכר לבן" → "סוכר".
+ *
+ * "1 כוס סוכר חום"           → "סוכר חום"
+ * "1/2 כוס שיבולת שועל דקה" → "שיבולת שועל דקה"
+ * "2 כפות סוכר"             → "סוכר"
+ * "1 כוס סוכר לבן"           → "סוכר"
+ * "200 גרם תפוחי אדמה קלופים" → "תפוחי אדמה"
+ */
+function extractDisplayKey(rawIngredient) {
+  if (typeof rawIngredient !== "string") return "";
+  let s = rawIngredient
+    .replace(/^[\d\s½¼¾⅓⅔.,/\-]+/, "")
+    .trim()
+    .toLowerCase();
+  while (HE_NUM_WORDS_RE.test(s)) {
+    s = s.replace(HE_NUM_WORDS_RE, "").trim();
+  }
+  if (!s) return "";
+
+  const tokens = s.split(/\s+/).filter(Boolean);
+
+  let i = 0;
+  while (
+    i < tokens.length &&
+    (measurementWords.test(tokens[i]) ||
+      quantityAdverbs.test(tokens[i]) ||
+      _prepSet.has(tokens[i]))
+  ) {
+    i++;
+  }
+  if (i >= tokens.length) return "";
+
+  // Take remaining tokens up to the first comma / parenthesis / semicolon;
+  // these usually introduce a side note, not part of the ingredient name.
+  // Also stop when we hit a trailing quantity/unit pattern such as
+  // "סוכר 200 גרם" — once the ingredient name has started, a numeric token
+  // or a measurement word marks the start of a trailing quantity.
+  const out = [];
+  for (let j = i; j < tokens.length; j++) {
+    const tok = tokens[j];
+    const cutIdx = tok.search(/[,،.;:()\[\]{}]/);
+    if (cutIdx === 0) break;
+    if (cutIdx > 0) {
+      out.push(tok.slice(0, cutIdx));
+      break;
+    }
+    // Trailing quantity: pure number, fraction, or measurement word.
+    if (out.length > 0) {
+      if (/^[\d½¼¾⅓⅔./\-]+$/.test(tok)) break;
+      if (measurementWords.test(tok)) break;
+    }
+    out.push(tok);
+  }
+
+  // Strip trailing preparation words ("תפוחי אדמה קלופים" → "תפוחי אדמה").
+  while (out.length > 1 && CLEAR_PREP.has(out[out.length - 1])) {
+    out.pop();
+  }
+
+  const cleaned = out.filter((t) => /[א-תa-z]/i.test(t));
+  if (cleaned.length === 0) return "";
+  const joined = cleaned.join(" ").trim();
+  // Canonicalize synonyms ("סוכר לבן" → "סוכר").
+  return DEFAULT_VARIANT[joined] || joined;
+}
+
 /**
  * Build search data from ingredients for highlighting in instruction text.
+ *
+ * Strategy:
+ *  - For each ingredient compute a short key (normalizeKey) AND a long key
+ *    (extractDisplayKey, which preserves type/variant adjectives).
+ *  - When two ingredients collapse to the same short key (e.g. "סוכר" and
+ *    "סוכר חום" both → "סוכר"), use the LONG key for both so the regex can
+ *    distinguish them in instruction text. Otherwise keep the short key
+ *    (preserves the existing tolerant matching for single-variant recipes).
+ *
  * Returns entries sorted by name length (longest first) for greedy matching.
  */
 export function buildIngredientSearchData(ingredientsArray) {
-  const entries = [];
-  const seenKeys = new Set();
-
+  const items = [];
   for (const ing of ingredientsArray) {
     if (isGroupHeader(ing)) continue;
-    const key = normalizeKey(ing);
-    if (!key || key.length < 2 || seenKeys.has(key)) continue;
-    seenKeys.add(key);
-    entries.push({ name: key, fullText: ing });
+    const shortName = normalizeKey(ing);
+    if (!shortName || shortName.length < 2) continue;
+    const longName = extractDisplayKey(ing) || shortName;
+    items.push({ shortName, longName, fullText: ing });
   }
+
+  const shortCount = {};
+  for (const it of items) {
+    shortCount[it.shortName] = (shortCount[it.shortName] || 0) + 1;
+  }
+
+  const entries = [];
+  const seenNames = new Set();
+  for (const it of items) {
+    const useName = shortCount[it.shortName] > 1 ? it.longName : it.shortName;
+    if (!useName || useName.length < 2 || seenNames.has(useName)) continue;
+    seenNames.add(useName);
+    entries.push({ name: useName, fullText: it.fullText });
+  }
+
+  // Note: when a short name collides between only specialty variants (e.g.
+  // recipe has "סוכר ונילי" + "סוכר חום" but no plain/white sugar), we DO NOT
+  // register a generic short-name fallback. By design — bare "סוכר" in the
+  // instructions means white/regular sugar; if the recipe has only specials,
+  // we want NO highlight rather than an arbitrary specialty tooltip.
 
   entries.sort((a, b) => b.name.length - a.name.length);
   return entries;
@@ -401,12 +561,23 @@ export function highlightIngredientsInText(text, entries, scaleFn) {
   // Safe Hebrew prefixes: ה (the), ו (and), ב (in), ל (to/for), כ (like).
   // Excludes מ and ש to avoid false positives (מחממים, שמים).
   // Lookbehind/lookahead enforce Hebrew-aware word boundaries.
+  // For multi-word names ("סוכר חום") we also allow an optional ה ("the") on
+  // the inner words so "הסוכר החום" still matches.
   const patterns = entries.map((e) => {
-    const escaped = e.name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
-    return `(?<![א-ת])(?:[הובלכ](?:ה)?)?${escaped}(?![א-ת])`;
+    const words = e.name.split(/\s+/).filter(Boolean);
+    const wordPatterns = words.map((w, idx) => {
+      const escaped = w.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      const prefix = idx === 0 ? "(?:[הובלכ](?:ה)?)?" : "(?:ה)?";
+      return prefix + escaped;
+    });
+    return `(?<![א-ת])${wordPatterns.join("\\s+")}(?![א-ת])`;
   });
 
   const regex = new RegExp(`(${patterns.join("|")})`, "g");
+  // Per-entry anchored regex used to identify which entry produced a match
+  // (a plain `match.includes(entry.name)` fails when Hebrew prefixes appear
+  // on the inner words, e.g. "הסוכר החום").
+  const entryRegexes = patterns.map((p) => new RegExp(`^${p}$`));
 
   const segments = [];
   let lastIndex = 0;
@@ -418,11 +589,10 @@ export function highlightIngredientsInText(text, entries, scaleFn) {
       segments.push({ text: text.slice(lastIndex, match.index) });
     }
 
-    const matchLower = match[0].toLowerCase();
     let tooltip = match[0];
-    for (const entry of entries) {
-      if (matchLower.includes(entry.name)) {
-        tooltip = scaleFn ? scaleFn(entry.fullText) : entry.fullText;
+    for (let k = 0; k < entries.length; k++) {
+      if (entryRegexes[k].test(match[0])) {
+        tooltip = scaleFn ? scaleFn(entries[k].fullText) : entries[k].fullText;
         break;
       }
     }
@@ -472,12 +642,20 @@ export function buildShoppingList(selectedIds, recipes) {
       if (PREP_ONLY_LINE_RE.test(stripped)) return;
       if (SECTION_LIKE_LINE.test(stripped) && !/\d/.test(stripped)) return;
 
-      const rawKey = normalizeKey(raw) || raw.toLowerCase();
+      // Prefer the long descriptive key (e.g. "סוכר חום" not just "סוכר")
+      // so variants don't merge into one wrong shopping line.
+      // Fall back to normalizeKey for items extractDisplayKey can't parse.
+      const rawKey =
+        extractDisplayKey(raw) || normalizeKey(raw) || raw.toLowerCase();
       if (!rawKey) return;
       if (/^\d+$/.test(rawKey)) return;
       if (!/[א-תa-zA-Z]/.test(rawKey)) return;
       if (!/[א-ת]/.test(rawKey) && rawKey.length < 3) return;
       if (NON_INGREDIENT_KEYS.has(rawKey)) return;
+      // Also reject single-word keys that are pure non-ingredients
+      // (e.g. extractDisplayKey may produce a multi-word "נייר אפייה ...").
+      const firstWord = rawKey.split(/\s+/)[0];
+      if (NON_INGREDIENT_KEYS.has(firstWord)) return;
 
       const normalizedName = normalizeIngredientName(rawKey);
       const rawUnit = extractUnit(raw);
